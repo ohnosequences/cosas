@@ -8,16 +8,7 @@ ohnosequences.typesets._` and you have everything in scope.
 
 package ohnosequences
 
-import shapeless._
-
 package object typesets extends TypeSetImplicits {
-  /*  Some context bounds conveniences (`Prepend` not `Merge`!)
-      for saying: `[ LM <: HList : (L ::: M)#is ]`
-      or `implicit append: (L :+ X)#is[LX]`
-  */  
-  // type :::[L <: HList, M <: HList] = { type is[O <: HList] = shapeless.PrependAux[L, M, O] }
-  // type :+[L <: HList, X] = { type is[O <: HList] = (L ::: (X :: HNil))#is[O] }
-    
 
   /*  Means "is not subtype of". If this doesn't hold, an error about ambiguous implicits will 
       arise. Taken from shapeless-2.0.
