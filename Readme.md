@@ -14,3 +14,9 @@ resolvers += "Era7 maven releases" at "http://releases.era7.com.s3.amazonaws.com
 
 libraryDependencies += "ohnosequences" %% "type-sets" % "0.1.0"
 ```
+
+### Documentation
+
+Documentation is generated from the code by [literator](https://github.com/laughedelic/literator) 
+tool. You can start from [TypeSet](docs/src/main/scala/TypeSet.md) definitions and use index for 
+navigation, see also [tests](docs/src/test/scala/TypeSetTests.md) for examples.
