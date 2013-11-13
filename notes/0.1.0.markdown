@@ -1,0 +1,7 @@
+Implemented basic operations on type sets:
+
+* subtraction  
+* union  
+* lookup by type  
+* map-folding  
+* different type-level checks (common bound, subset, etc.)  

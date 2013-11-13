@@ -1,0 +1,1 @@
+[Type Sets](https://github.com/ohnosequences/type-sets) are like `HLists` from shapeless, but cannot have type duplicates and have more "effective" implementation for union, i.e. can check if a type is in the set (in compile time) without traversing the set
