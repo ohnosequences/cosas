@@ -20,7 +20,7 @@ object SetMapFolder {
   
   implicit def cons[H, T <: TypeSet, R, F <: Poly]
     (implicit hc: Case.Aux[F, H, R], tf: SetMapFolder[T, R, F]) =
-      new SetMapFolder[H :+: T, R, F] {
-          def apply(s: H :+: T, in: R, op: (R, R) => R) = op(hc(s.head), tf(s.tail, in, op))
+      new SetMapFolder[H :~: T, R, F] {
+          def apply(s: H :~: T, in: R, op: (R, R) => R) = op(hc(s.head), tf(s.tail, in, op))
       }
 }
