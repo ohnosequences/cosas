@@ -10,6 +10,8 @@ object Bar extends Foo
 
 (1 :~: "abc" :~: 'a' :~: Bar :~: 42).lookup[Foo] == Bar
 ```
+
+------
 */
 
 package ohnosequences.typesets

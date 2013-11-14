@@ -25,7 +25,7 @@ import ohnosequences.typesets._
 import ohnosequences.typesets.implicits._
 ```
 
-Now the actual code:
+------
 
 
 ```scala

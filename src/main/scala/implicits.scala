@@ -8,7 +8,7 @@ import ohnosequences.typesets._
 import ohnosequences.typesets.implicits._
 ```
 
-Now the actual code:
+------
 */
 
 package ohnosequences.typesets
