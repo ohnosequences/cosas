@@ -3,7 +3,7 @@
 
 Here we define type-level sets. The main idea behind this construction is that it cannot contain type-duplicates and uses [TypeUnion](TypeUnion.md), which provides cheap checks whether a type is in the set, and allows to construct an effective union and similar operations.
 
-- all operations are on type level, so `set(true) ~ set(false)`, because they both have type `Boolean :+: ∅`;
+- all operations are on type level, so `set(true) ~ set(false)`, because they both have type `Boolean :~: ∅`;
 - after subtraction, union or other operations on two sets, the order of elements can change, so that operations (like union) are not commutative, but they yield the same type, so the results are considered equivalent (see `~` operator);
 */
 
@@ -26,7 +26,7 @@ sealed trait ∅ extends TypeSet {
 
 
 /* ### Cons constructor */
-case class :+:[E, S <: TypeSet] private[:+:](head: E, tail: S) extends TypeSet {
+case class :~:[E, S <: TypeSet] private[:~:](head: E, tail: S) extends TypeSet {
   type Bound = tail.Bound#or[E]
   def toStr = {
     val h = head match {
@@ -39,9 +39,9 @@ case class :+:[E, S <: TypeSet] private[:+:](head: E, tail: S) extends TypeSet {
   }
 }
 
-/* This `cons` method covers the `:+:` constructor to check that you are not adding a duplicate */
-object :+: { 
-  def cons[E : in[S]#isnot, S <: TypeSet](e: E, set: S) = :+:(e, set) 
+/* This `cons` method covers the `:~:` constructor to check that you are not adding a duplicate */
+object :~: { 
+  def cons[E : in[S]#isnot, S <: TypeSet](e: E, set: S) = :~:(e, set) 
 }
 
 
@@ -51,7 +51,7 @@ trait TypeSetImplicits {
   val ∅ : ∅ = new ∅ {}
 
   // Shortcut for a one element set 
-  def set[E](e: E): E :+: ∅ = e :+: ∅
+  def set[E](e: E): E :~: ∅ = e :~: ∅
 
   // Any type can be converted to a one element set
   implicit def oneElemSet[E](e: E) = TypeSetOps(set(e))
@@ -59,7 +59,7 @@ trait TypeSetImplicits {
 
   /* #### Adding methods to TypeSet */
   implicit class TypeSetOps[S <: TypeSet](set: S) {
-    def :+:[E](e: E)(implicit n: E ∉ S) = ohnosequences.typesets.:+:.cons(e, set)
+    def :~:[E](e: E)(implicit n: E ∉ S) = ohnosequences.typesets.:~:.cons(e, set)
 
     def lookup[E](implicit l: Lookup[S, E]): l.Out = l(set)
 

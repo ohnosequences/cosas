@@ -29,8 +29,8 @@ trait UnionSets_2 extends UnionSets_3 {
 trait UnionSets_3 extends UnionSets_4 {
   implicit def sConsWithoutHead[SH, ST <: TypeSet,  Q <: TypeSet]
     (implicit sh: SH ∈ Q, rest: ST U Q) =
-      new UnionSets[ SH :+: ST,    Q] { type Out = rest.Out
-        def apply(s: SH :+: ST, q: Q) = rest(s.tail, q)
+      new UnionSets[ SH :~: ST,    Q] { type Out = rest.Out
+        def apply(s: SH :~: ST, q: Q) = rest(s.tail, q)
       }
 }
 
@@ -38,8 +38,8 @@ trait UnionSets_3 extends UnionSets_4 {
 trait UnionSets_4 extends UnionSets_5 {
   implicit def qConsWithoutHead[S <: TypeSet,  QH, QT <: TypeSet]
     (implicit qh: QH ∈ S, rest: S U QT) =
-      new UnionSets[ S,    QH :+: QT] { type Out = rest.Out
-        def apply(s: S, q: QH :+: QT) = rest(s, q.tail)
+      new UnionSets[ S,    QH :~: QT] { type Out = rest.Out
+        def apply(s: S, q: QH :~: QT) = rest(s, q.tail)
       }
 }
 
@@ -47,7 +47,7 @@ trait UnionSets_4 extends UnionSets_5 {
 trait UnionSets_5 {
   implicit def newHeads[SH, ST <: TypeSet,  QH, QT <: TypeSet]
     (implicit rest: ST U QT) =
-      new UnionSets[ SH :+: ST,    QH :+: QT] { type Out = SH :+: QH :+: rest.Out
-        def apply(s: SH :+: ST, q: QH :+: QT) = s.head :+: q.head :+: rest(s.tail, q.tail)
+      new UnionSets[ SH :~: ST,    QH :~: QT] { type Out = SH :~: QH :~: rest.Out
+        def apply(s: SH :~: ST, q: QH :~: QT) = s.head :~: q.head :~: rest(s.tail, q.tail)
       }
 }
