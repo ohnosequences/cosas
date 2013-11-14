@@ -8,6 +8,7 @@ import ohnosequences.typesets._
 import ohnosequences.typesets.implicits._
 ```
 
+Now the actual code:
 */
 
 package ohnosequences.typesets
@@ -15,7 +16,7 @@ package ohnosequences.typesets
 object implicits extends TypeSetImplicits {
 
   /*  Means "is not subtype of". If this doesn't hold, an error about ambiguous implicits will 
-      arise. Taken from shapeless-2.0.
+      arise. Taken from shapeless-2.0.  
       Credits: Miles Sabin. 
   */
   trait <:!<[A, B]
