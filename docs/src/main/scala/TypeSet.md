@@ -3,9 +3,9 @@
 + src
   + main
     + scala
-      + [implicits.scala](implicits.md)
       + [LookupInSet.scala](LookupInSet.md)
       + [MapFoldSets.scala](MapFoldSets.md)
+      + [package.scala](package.md)
       + [SubtractSets.scala](SubtractSets.md)
       + [TypeSet.scala](TypeSet.md)
       + [TypeUnion.scala](TypeUnion.md)
@@ -26,8 +26,6 @@ Here we define type-level sets. The main idea behind this construction is that i
 
 ```scala
 package ohnosequences.typesets
-
-import ohnosequences.typesets.implicits._
 ```
 
 ### The main type representing set
@@ -47,7 +45,8 @@ sealed trait ∅ extends TypeSet {
   type Bound = either[Nothing]
   def toStr = ""
 }
-// case object ∅ extends ∅
+
+private object empty extends ∅
 ```
 
 ### Cons constructor
@@ -75,35 +74,40 @@ object :~: {
 }
 ```
 
-### Implicits for sets
+### Type operators and aliases 
+
+See implicits for these operators in the [package object](package.md)
+
+This operator means "is not subtype of". If this doesn't hold, an error about ambiguous implicits
+will arise. Taken from shapeless-2.0.  
+Credits: Miles Sabin.
+
 
 ```scala
-trait TypeSetImplicits {
+trait <:!<[A, B]
 
-  val ∅ : ∅ = new ∅ {}
+sealed class ∈[E : in[S]#is, S <: TypeSet]
+sealed class ∉[E : in[S]#isnot, S <: TypeSet]
 
-  // Shortcut for a one element set 
-  def set[E](e: E): E :~: ∅ = e :~: ∅
+sealed class ⊃[S <: TypeSet : supersetOf[Q]#is, Q <: TypeSet]
+sealed class ⊂[S <: TypeSet : subsetOf[Q]#is, Q <: TypeSet]
 
-  // Any type can be converted to a one element set
-  implicit def oneElemSet[E](e: E) = TypeSetOps(set(e))
+sealed class ~[S <: TypeSet : sameAs[S]#is, Q <: TypeSet]
 ```
 
-#### Adding methods to TypeSet
+### Adding methods to TypeSet
 
 ```scala
-  implicit class TypeSetOps[S <: TypeSet](set: S) {
-    def :~:[E](e: E)(implicit n: E ∉ S) = ohnosequences.typesets.:~:.cons(e, set)
+class TypeSetOps[S <: TypeSet](set: S) {
+  def :~:[E](e: E)(implicit n: E ∉ S) = ohnosequences.typesets.:~:.cons(e, set)
 
-    def lookup[E](implicit l: Lookup[S, E]): l.Out = l(set)
+  def lookup[E](implicit l: Lookup[S, E]): l.Out = l(set)
 
-    def \[Q <: TypeSet](q: Q)(implicit sub: S \ Q) = sub(set, q)
-    def U[Q <: TypeSet](q: Q)(implicit uni: S U Q) = uni(set, q)
+  def \[Q <: TypeSet](q: Q)(implicit sub: S \ Q) = sub(set, q)
+  def U[Q <: TypeSet](q: Q)(implicit uni: S U Q) = uni(set, q)
 
-    def mapFold[R, F](z: R)(f: F)(op: (R, R) => R)
-      (implicit smf: SetMapFolder[S, R, F]): R = smf(set, z, op)
-  }
-
+  def mapFold[R, F](z: R)(f: F)(op: (R, R) => R)
+    (implicit smf: SetMapFolder[S, R, F]): R = smf(set, z, op)
 }
 
 ```

@@ -22,7 +22,6 @@ This is an object which contains all the needed implicits and type aliases. So w
 
 ```scala
 import ohnosequences.typesets._
-import ohnosequences.typesets.implicits._
 ```
 
 ------

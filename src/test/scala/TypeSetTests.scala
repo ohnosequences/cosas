@@ -13,7 +13,6 @@ class TypeSetTests extends org.scalatest.FunSuite {
   }
 
   test("bounding") {
-    // implicitly[Set[∅]#isBoundedBy[Nothing]]
     implicitly[boundedBy[Nothing]#is[∅]]
 
     trait foo

@@ -16,7 +16,6 @@ object Bar extends Foo
 
 package ohnosequences.typesets
 
-import ohnosequences.typesets.implicits._
 
 trait Lookup[S <: TypeSet, E] { type Out
   def apply(s: S): Out

@@ -3,9 +3,9 @@
 + src
   + main
     + scala
-      + [implicits.scala](../../main/scala/implicits.md)
       + [LookupInSet.scala](../../main/scala/LookupInSet.md)
       + [MapFoldSets.scala](../../main/scala/MapFoldSets.md)
+      + [package.scala](../../main/scala/package.md)
       + [SubtractSets.scala](../../main/scala/SubtractSets.md)
       + [TypeSet.scala](../../main/scala/TypeSet.md)
       + [TypeUnion.scala](../../main/scala/TypeUnion.md)
@@ -33,7 +33,6 @@ class TypeSetTests extends org.scalatest.FunSuite {
   }
 
   test("bounding") {
-    // implicitly[Set[∅]#isBoundedBy[Nothing]]
     implicitly[boundedBy[Nothing]#is[∅]]
 
     trait foo

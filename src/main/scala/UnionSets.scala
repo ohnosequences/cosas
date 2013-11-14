@@ -2,7 +2,6 @@
 
 package ohnosequences.typesets
 
-import ohnosequences.typesets.implicits._
 
 trait UnionSets[S <: TypeSet, Q <: TypeSet] {
   type Out <: TypeSet
