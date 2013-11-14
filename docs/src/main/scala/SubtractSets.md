@@ -21,6 +21,7 @@
 ```scala
 package ohnosequences.typesets
 
+
 trait SubtractSets[S <: TypeSet, Q <: TypeSet] {
   type Out <: TypeSet
   def apply(s: S, q: Q): Out
@@ -54,8 +55,8 @@ trait SubtractSets_2 extends SubtractSets_3 {
 ```scala
   implicit def sConsWithoutHead[H, T <: TypeSet,  Q <: TypeSet] 
     (implicit h: H ∈ Q, rest: T \ Q) = 
-      new SubtractSets[H :+: T,    Q] { type Out = rest.Out
-          def apply(s: H :+: T, q: Q) = rest(s.tail, q)
+      new SubtractSets[H :~: T,    Q] { type Out = rest.Out
+          def apply(s: H :~: T, q: Q) = rest(s.tail, q)
       }
 }
 ```
@@ -66,8 +67,8 @@ trait SubtractSets_2 extends SubtractSets_3 {
 trait SubtractSets_3 {
   implicit def sConsAnyHead[H, T <: TypeSet, Q <: TypeSet] 
     (implicit rest: T \ Q) =
-      new SubtractSets[H :+: T,    Q] { type Out = H :+: rest.Out
-          def apply(s: H :+: T, q: Q) = s.head :+: rest(s.tail, q)
+      new SubtractSets[H :~: T,    Q] { type Out = H :~: rest.Out
+          def apply(s: H :~: T, q: Q) = s.head :~: rest(s.tail, q)
       }
 }
 
