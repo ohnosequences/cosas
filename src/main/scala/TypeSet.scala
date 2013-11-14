@@ -3,11 +3,12 @@
 
 Here we define type-level sets. The main idea behind this construction is that it cannot contain type-duplicates and uses [TypeUnion](TypeUnion.md), which provides cheap checks whether a type is in the set, and allows to construct an effective union and similar operations.
 
-- all operations are on type level, so `set(true) ~ set(false)`, because they both have type `Boolean :+: ∅`;
+- all operations are on type level, so `set(true) ~ set(false)`, because they both have type `Boolean :~: ∅`;
 - after subtraction, union or other operations on two sets, the order of elements can change, so that operations (like union) are not commutative, but they yield the same type, so the results are considered equivalent (see `~` operator);
 */
 
 package ohnosequences.typesets
+
 
 /* ### The main type representing set */
 trait TypeSet { set =>
@@ -22,11 +23,12 @@ sealed trait ∅ extends TypeSet {
   type Bound = either[Nothing]
   def toStr = ""
 }
-// case object ∅ extends ∅
+
+private object empty extends ∅
 
 
 /* ### Cons constructor */
-case class :+:[E, S <: TypeSet] private[:+:](head: E, tail: S) extends TypeSet {
+case class :~:[E, S <: TypeSet] private[:~:](head: E, tail: S) extends TypeSet {
   type Bound = tail.Bound#or[E]
   def toStr = {
     val h = head match {
@@ -39,35 +41,40 @@ case class :+:[E, S <: TypeSet] private[:+:](head: E, tail: S) extends TypeSet {
   }
 }
 
-/* This `cons` method covers the `:+:` constructor to check that you are not adding a duplicate */
-object :+: { 
-  def cons[E : in[S]#isnot, S <: TypeSet](e: E, set: S) = :+:(e, set) 
+/* This `cons` method covers the `:~:` constructor to check that you are not adding a duplicate */
+object :~: { 
+  def cons[E : in[S]#isnot, S <: TypeSet](e: E, set: S) = :~:(e, set) 
 }
 
 
-/* ### Implicits for sets */
-trait TypeSetImplicits {
+/*
+### Type operators and aliases 
 
-  val ∅ : ∅ = new ∅ {}
+See implicits for these operators in the [package object](package.md)
 
-  // Shortcut for a one element set 
-  def set[E](e: E): E :+: ∅ = e :+: ∅
+This operator means "is not subtype of". If this doesn't hold, an error about ambiguous implicits
+will arise. Taken from shapeless-2.0.  
+Credits: Miles Sabin.
+*/
+trait <:!<[A, B]
 
-  // Any type can be converted to a one element set
-  implicit def oneElemSet[E](e: E) = TypeSetOps(set(e))
+sealed class ∈[E : in[S]#is, S <: TypeSet]
+sealed class ∉[E : in[S]#isnot, S <: TypeSet]
 
+sealed class ⊃[S <: TypeSet : supersetOf[Q]#is, Q <: TypeSet]
+sealed class ⊂[S <: TypeSet : subsetOf[Q]#is, Q <: TypeSet]
 
-  /* #### Adding methods to TypeSet */
-  implicit class TypeSetOps[S <: TypeSet](set: S) {
-    def :+:[E](e: E)(implicit n: E ∉ S) = ohnosequences.typesets.:+:.cons(e, set)
+sealed class ~[S <: TypeSet : sameAs[S]#is, Q <: TypeSet]
 
-    def lookup[E](implicit l: Lookup[S, E]): l.Out = l(set)
+/* ### Adding methods to TypeSet */
+class TypeSetOps[S <: TypeSet](set: S) {
+  def :~:[E](e: E)(implicit n: E ∉ S) = ohnosequences.typesets.:~:.cons(e, set)
 
-    def \[Q <: TypeSet](q: Q)(implicit sub: S \ Q) = sub(set, q)
-    def U[Q <: TypeSet](q: Q)(implicit uni: S U Q) = uni(set, q)
+  def lookup[E](implicit l: Lookup[S, E]): l.Out = l(set)
 
-    def mapFold[R, F](z: R)(f: F)(op: (R, R) => R)
-      (implicit smf: SetMapFolder[S, R, F]): R = smf(set, z, op)
-  }
+  def \[Q <: TypeSet](q: Q)(implicit sub: S \ Q) = sub(set, q)
+  def U[Q <: TypeSet](q: Q)(implicit uni: S U Q) = uni(set, q)
 
+  def mapFold[R, F](z: R)(f: F)(op: (R, R) => R)
+    (implicit smf: SetMapFolder[S, R, F]): R = smf(set, z, op)
 }
