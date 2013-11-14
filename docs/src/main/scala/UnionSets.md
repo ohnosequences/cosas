@@ -3,9 +3,9 @@
 + src
   + main
     + scala
+      + [implicits.scala](implicits.md)
       + [LookupInSet.scala](LookupInSet.md)
       + [MapFoldSets.scala](MapFoldSets.md)
-      + [package.scala](package.md)
       + [SubtractSets.scala](SubtractSets.md)
       + [TypeSet.scala](TypeSet.md)
       + [TypeUnion.scala](TypeUnion.md)
@@ -20,6 +20,8 @@
 
 ```scala
 package ohnosequences.typesets
+
+import ohnosequences.typesets.implicits._
 
 trait UnionSets[S <: TypeSet, Q <: TypeSet] {
   type Out <: TypeSet

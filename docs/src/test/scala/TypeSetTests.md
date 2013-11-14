@@ -3,9 +3,9 @@
 + src
   + main
     + scala
+      + [implicits.scala](../../main/scala/implicits.md)
       + [LookupInSet.scala](../../main/scala/LookupInSet.md)
       + [MapFoldSets.scala](../../main/scala/MapFoldSets.md)
-      + [package.scala](../../main/scala/package.md)
       + [SubtractSets.scala](../../main/scala/SubtractSets.md)
       + [TypeSet.scala](../../main/scala/TypeSet.md)
       + [TypeUnion.scala](../../main/scala/TypeUnion.md)
@@ -25,8 +25,7 @@ import ohnosequences.typesets._
 class TypeSetTests extends org.scalatest.FunSuite {
 
   test("empty set") {
-    // implicitly[Set[∅]#doesntContain[Any]]
-    // implicitly[in[∅]#isnot[Any]]
+    implicitly[in[∅]#isnot[Any]]
     implicitly[Any ∉ ∅]
 
     assert(set('a') === ('a' :~: ∅))

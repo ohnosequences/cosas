@@ -3,9 +3,9 @@
 + src
   + main
     + scala
+      + [implicits.scala](implicits.md)
       + [LookupInSet.scala](LookupInSet.md)
       + [MapFoldSets.scala](MapFoldSets.md)
-      + [package.scala](package.md)
       + [SubtractSets.scala](SubtractSets.md)
       + [TypeSet.scala](TypeSet.md)
       + [TypeUnion.scala](TypeUnion.md)
@@ -16,17 +16,21 @@
 
 ------
 
-## Package object
+## Implicits and aliases
 
-This is a package object, which mixes other parts of the library, to provide a common namespace,
-where all the definitions are accessible. This way you need just to say `import
-ohnosequences.typesets._` and you have everything in scope.
+This is an object which contains all the needed implicits and type aliases. So when using the library, you should use
+
+```scala
+import ohnosequences.typesets._
+import ohnosequences.typesets.implicits._
+```
+
 
 
 ```scala
-package ohnosequences
+package ohnosequences.typesets
 
-package object typesets extends TypeSetImplicits {
+object implicits extends TypeSetImplicits {
 ```
 
 Means "is not subtype of". If this doesn't hold, an error about ambiguous implicits will 

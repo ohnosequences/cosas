@@ -9,6 +9,8 @@ Here we define type-level sets. The main idea behind this construction is that i
 
 package ohnosequences.typesets
 
+import ohnosequences.typesets.implicits._
+
 /* ### The main type representing set */
 trait TypeSet { set =>
   type Bound <: TypeUnion

@@ -7,6 +7,8 @@ Credits: Lars Hupel
 
 package ohnosequences.typesets
 
+import ohnosequences.typesets.implicits._
+
 trait TypeUnion {
   type or[S] <: TypeUnion
   type get
