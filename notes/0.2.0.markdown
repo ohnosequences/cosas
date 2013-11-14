@@ -1,0 +1,2 @@
+* Changed cons symbol to `:~:`
+* Made some restructurization which shouldn't affect usage
