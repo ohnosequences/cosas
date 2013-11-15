@@ -13,6 +13,7 @@ import ohnosequences.typesets._
 // is provided. In this case, FieldType? FieldOf?
 object experiment {
 
+  // probably GADT here will be substituted by 
   trait AnyCarrier {
 
     type GADT
@@ -41,21 +42,23 @@ object experiment {
     trait LowPrioritySelector {
     type Aux[S <: carrier.GADT, K, Out0] = Selector[S, K] { type Out = Out0 }
 
-    implicit def setSelect[H, T <:  carrier.GADT, K]
-      (implicit st : Selector[T, K]): Aux[ carrier.Cons[H,T], K, st.Out] =
+    // here require implicits for tail
+    implicit def setSelect[H, T <: carrier.GADT, K]
+      (implicit st : Selector[T, K]): Aux[carrier.Cons[H,T], K, st.Out] =
         new Selector[ carrier.Cons[H,T], K] {
           type Out = st.Out
-          def apply(l :  carrier.Cons[H,T]): Out = st(l.tail)
+          def apply(l : carrier.Cons[H,T]): Out = st(l.tail)
         }
     }
 
     object Selector extends LowPrioritySelector {
       def apply[S <:  carrier.GADT, K](implicit selector: Selector[S, K]): Aux[S, K, selector.Out] = selector
 
-      implicit def setSelect1[K, V, T <:  carrier.GADT]: Aux[ carrier.Cons[FieldType[K,V],T], K, V] =
-        new Selector[ carrier.Cons[FieldType[K, V], T], K] {
+      // here require implicits for head
+      implicit def setSelect1[K, V, T <: carrier.GADT]: Aux[carrier.Cons[FieldType[K,V],T], K, V] =
+        new Selector[carrier.Cons[FieldType[K, V], T], K] {
           type Out = V
-          def apply(l:  carrier.Cons[FieldType[K, V],T]): Out = l.head
+          def apply(l: carrier.Cons[FieldType[K, V],T]): Out = l.head
         }
     }
   }
