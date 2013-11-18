@@ -12,12 +12,9 @@ import ohnosequences.typesets._
 
 package ohnosequences
 
-package object typesets {
+import shapeless._
 
-  // for the `<:!<` operator:
-  implicit def nsub[A, B]: A <:!< B = new (A <:!< B) {}
-  implicit def AisSubtypeOfB_1[A, B >: A]: A <:!< B = sys.error("Unexpected invocation")
-  implicit def AisSubtypeOfB_2[A, B >: A]: A <:!< B = sys.error("Unexpected invocation")
+package object typesets {
 
   /* ### Type union */
   type not[T] = T => Nothing
