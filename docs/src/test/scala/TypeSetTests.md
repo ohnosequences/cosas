@@ -20,12 +20,14 @@
 ```scala
 package ohnosequences.typesets.tests
 
+import shapeless.test.illTyped
 import ohnosequences.typesets._
 
 class TypeSetTests extends org.scalatest.FunSuite {
 
   test("empty set") {
     implicitly[in[∅]#isnot[Any]]
+    // or with nicer syntax:
     implicitly[Any ∉ ∅]
 
     assert(set('a') === ('a' :~: ∅))
