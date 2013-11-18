@@ -1,0 +1,1 @@
+Migrated to [shapless-2.0](https://github.com/milessabin/shapeless#shapeless-200-m1)
