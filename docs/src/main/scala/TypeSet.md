@@ -78,14 +78,8 @@ object :~: {
 
 See implicits for these operators in the [package object](package.md)
 
-This operator means "is not subtype of". If this doesn't hold, an error about ambiguous implicits
-will arise. Taken from shapeless-2.0.  
-Credits: Miles Sabin.
-
 
 ```scala
-trait <:!<[A, B]
-
 sealed class ∈[E : in[S]#is, S <: TypeSet]
 sealed class ∉[E : in[S]#isnot, S <: TypeSet]
 

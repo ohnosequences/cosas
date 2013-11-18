@@ -1,0 +1,1 @@
+* Removed `<:!<` operator, because it's defined in shapeless-2.0
