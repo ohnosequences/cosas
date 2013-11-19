@@ -96,7 +96,7 @@ package object typesets {
     type    is[S <: TypeSet] = S#Bound#get =:= Q#Bound#get
     // type isnot[S <: TypeSet] = S#Bound#get =:!= Q#Bound#get
   }
-  implicit def ~[S <: TypeSet : sameAs[S]#is, Q <: TypeSet] = new (S ~ Q)
+  implicit def ~[S <: TypeSet : sameAs[Q]#is, Q <: TypeSet] = new (S ~ Q)
 ```
 
 - All elements of the set are bounded by the given type
