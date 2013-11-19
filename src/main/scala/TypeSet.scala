@@ -52,12 +52,19 @@ object :~: {
 
 See implicits for these operators in the [package object](package.md)
 */
+@annotation.implicitNotFound(msg = "Can't prove that ${E} ∈ ${S}")
 sealed class ∈[E : in[S]#is, S <: TypeSet]
+
+@annotation.implicitNotFound(msg = "Can't prove that ${E} ∉ ${S}")
 sealed class ∉[E : in[S]#isnot, S <: TypeSet]
 
+@annotation.implicitNotFound(msg = "Can't prove that ${S} ⊃ ${Q}")
 sealed class ⊃[S <: TypeSet : supersetOf[Q]#is, Q <: TypeSet]
+
+@annotation.implicitNotFound(msg = "Can't prove that ${S} ⊂ ${Q}")
 sealed class ⊂[S <: TypeSet : subsetOf[Q]#is, Q <: TypeSet]
 
+@annotation.implicitNotFound(msg = "Can't prove that ${S} ~ ${Q} (i.e. that sets are type-equivalent)")
 sealed class ~[S <: TypeSet : sameAs[S]#is, Q <: TypeSet]
 
 /* ### Adding methods to TypeSet */
