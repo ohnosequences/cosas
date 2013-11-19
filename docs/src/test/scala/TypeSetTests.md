@@ -59,6 +59,8 @@ class TypeSetTests extends org.scalatest.FunSuite {
     implicitly[a.type ⊂ b.type]
 
     implicitly[(Int :~: Char :~: ∅) ⊂ (Char :~: Int :~: ∅)]
+    implicitly[(Int :~: Char :~: ∅) ⊃ (Char :~: Int :~: ∅)]
+    implicitly[(Int :~: Char :~: ∅) ~ (Char :~: Int :~: ∅)]
   }
 
   test("contains/lookup") {
@@ -74,8 +76,10 @@ class TypeSetTests extends org.scalatest.FunSuite {
     implicitly[String ∈ st]
     assert(s.lookup[String] === "foo")
 
-    trait happiness; implicitly[happiness ∉ st]
-    trait     truth; implicitly[    truth ∉ st]
+    trait truth;
+    trait happiness;
+    implicitly[    truth ∉ st]
+    implicitly[happiness ∉ st]
 
     // Neither of these two things work:
     // implicitly[Nothing ∈ st]
