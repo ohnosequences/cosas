@@ -76,6 +76,10 @@ class TypeSetOps[S <: TypeSet](set: S) {
   def \[Q <: TypeSet](q: Q)(implicit sub: S \ Q) = sub(set, q)
   def U[Q <: TypeSet](q: Q)(implicit uni: S U Q) = uni(set, q)
 
+  import shapeless._
+  import poly._
+  def map(f: Poly)(implicit m: SetMapper[f.type, S]): m.Out = m(set)
+
   def mapFold[R, F](z: R)(f: F)(op: (R, R) => R)
     (implicit smf: SetMapFolder[S, R, F]): R = smf(set, z, op)
 

@@ -11,7 +11,7 @@ import shapeless._
 trait ToHList[S <: TypeSet] extends DepFn1[S] { type Out <: HList }
 
 object ToHList {
-  def apply[S <: TypeSet](s: S)(implicit toHList: ToHList[S]): Aux[S, toHList.Out] = toHList
+  def apply[S <: TypeSet](implicit toHList: ToHList[S]): Aux[S, toHList.Out] = toHList
 
   type Aux[S <: TypeSet, L <: HList] = ToHList[S] { type Out = L }
 

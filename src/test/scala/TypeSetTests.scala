@@ -104,4 +104,22 @@ class TypeSetTests extends org.scalatest.FunSuite {
     assert((1 :~: 'a' :~: "foo").toHList === (1 :: 'a' :: "foo" :: HNil))
   }
 
+  test("mapper") {
+    import poly._
+
+    object id_ extends Poly1 { implicit def default[T] = at[T](t => t) }
+    object toStr extends (Any -> String)(_.toString)
+
+    assert(∅.map(toStr) === ∅)
+
+    val s = 1 :~: 'a' :~: "foo"
+    assert(s.map(id_) === s)
+
+    // This case should fail, because toStr in not "type-injective"
+    illTyped("implicitly[SetMapper[toStr.type, s.type]]")
+    // illTyped("s.map(toStr): TypeSet")
+    // FIXME: this should fail, but it doesn't (but in repl it fails)
+    println(s.map(toStr))
+  }
+
 }
