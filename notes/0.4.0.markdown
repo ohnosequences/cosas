@@ -1,0 +1,3 @@
+* Migrated to the stable release of shapless-2.0
+* Cross-compiling and publishing for scala 2.10/2.11
+* Added simple conversion to `HList`

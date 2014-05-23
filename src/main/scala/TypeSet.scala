@@ -78,4 +78,6 @@ class TypeSetOps[S <: TypeSet](set: S) {
 
   def mapFold[R, F](z: R)(f: F)(op: (R, R) => R)
     (implicit smf: SetMapFolder[S, R, F]): R = smf(set, z, op)
+
+  def toHList(implicit toHList: ToHList[S]): toHList.Out = toHList(set)
 }

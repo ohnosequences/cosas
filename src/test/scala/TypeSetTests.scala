@@ -1,5 +1,6 @@
 package ohnosequences.typesets.tests
 
+import shapeless._
 import shapeless.test.illTyped
 import ohnosequences.typesets._
 
@@ -96,6 +97,11 @@ class TypeSetTests extends org.scalatest.FunSuite {
     implicitly[sq.type ~ qs.type]
     assert(sq === 'a' :~: bar :~: true :~: 2 :~: "bar")
     assert(qs === bar :~: 'a' :~: true :~: 2 :~: "bar")
+  }
+
+  test("hlist ops") {
+    assert(∅.toHList === HNil)
+    assert((1 :~: 'a' :~: "foo").toHList === (1 :: 'a' :: "foo" :: HNil))
   }
 
 }
