@@ -1,7 +1,6 @@
 package ohnosequences.typesets
 
-import shapeless._
-import poly._
+import shapeless._, poly._
   
 trait SetMapper[F, In <: TypeSet] extends DepFn1[In] { type Out <: TypeSet }
 
@@ -16,11 +15,13 @@ object SetMapper {
       def apply(s : ∅): Out = ∅
     }
   
-  implicit def consMapper[F <: Poly, H, T <: TypeSet, OutH, OutT <: TypeSet]
-    (implicit hc: Case1.Aux[F, H, OutH], mt: Aux[F, T, OutT]): 
-    // TODO: add this constraint: `OutH ∉ OutT` (or control in some other way, that the output is a TypeSet as well)
-      Aux[F, H :~: T, hc.Result :~: mt.Out] =
-        new SetMapper[F, H :~: T] { type Out = hc.Result :~: mt.Out
-          def apply(s : H :~: T): Out = hc(s.head) :~: mt(s.tail)
-        }
+  implicit def consMapper[F <: Poly, H, OutH, T <: TypeSet, OutT <: TypeSet]
+    (implicit
+      h: Case1.Aux[F, H, OutH], 
+      t: Aux[F, T, OutT],
+      e: OutH ∉ OutT
+    ): Aux[F, H :~: T, OutH :~: OutT] =
+      new SetMapper[F, H :~: T] { type Out = OutH :~: OutT
+        def apply(s : H :~: T): Out = h(s.head) :~: t(s.tail)
+      }
 }
