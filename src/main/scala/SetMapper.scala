@@ -17,7 +17,8 @@ object SetMapper {
     }
   
   implicit def consMapper[F <: Poly, H, T <: TypeSet, OutH, OutT <: TypeSet]
-    (implicit hc: Case1.Aux[F, H, OutH], mt: Aux[F, T, OutT], e: OutH ∉ OutT): 
+    (implicit hc: Case1.Aux[F, H, OutH], mt: Aux[F, T, OutT]): 
+    // TODO: add this constraint: `OutH ∉ OutT` (or control in some other way, that the output is a TypeSet as well)
       Aux[F, H :~: T, hc.Result :~: mt.Out] =
         new SetMapper[F, H :~: T] { type Out = hc.Result :~: mt.Out
           def apply(s : H :~: T): Out = hc(s.head) :~: mt(s.tail)

@@ -17,7 +17,7 @@ object Bar extends Foo
 package ohnosequences.typesets
 
 
-trait Lookup[S <: TypeSet, E] { type Out
+trait Lookup[S <: TypeSet, E] { type Out <: E
   def apply(s: S): Out
 }
 
