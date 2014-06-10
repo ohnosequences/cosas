@@ -106,7 +106,7 @@ class TypeSetTests extends org.scalatest.FunSuite {
 
   test("to list") {
     assert(∅.toList === Nil)
-    assert((1 :~: 'a' :~: "foo").toListWith[Any] === (1 :: 'a' :: "foo" :: Nil))
+    assert((1 :~: 'a' :~: "foo").toListWith[Any] === List[Any](1, 'a', "foo"))
 
     trait foo
     case object boo extends foo

@@ -34,6 +34,29 @@ trait ToList[S <: TypeSet] extends DepFn1[S] {
   type Out = List[O]
 }
 
+// object ToList {
+//   def apply[S <: TypeSet](implicit toList: ToList[S]): ToList[S] = toList
+
+//   type Aux[S <: TypeSet, O <: List[_]] = ToList[S] { type Out = O }
+
+//   implicit def emptyToList[O]: Aux[∅, List[O]] = 
+//     new ToList[∅] {
+//       type Out = List[O]
+//       def apply(s: ∅): Out = Nil
+//     }
+  
+//   implicit def consToList[H, T <: TypeSet]
+//     (implicit lt: Aux[T, List[T#Bound#get]]): Aux[H :~: T, List[T#Bound#or[H]#get]] =
+//       new ToList[H :~: T] {
+//         type O = T#Bound#or[H]#get
+//         type Out = List[O]
+//         def apply(s: H :~: T): Out = 
+//           // List[O](s.head) ++ lt(s.tail)
+//           // s.head :: lt(s.tail)
+//           s.head.asInstanceOf[O] :: lt(s.tail).asInstanceOf[Out]
+//       }
+// }
+
 object ToList {
   def apply[S <: TypeSet](implicit toList: ToList[S]): Aux[S, toList.O] = toList
 
