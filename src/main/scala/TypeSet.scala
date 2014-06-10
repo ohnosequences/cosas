@@ -79,9 +79,13 @@ class TypeSetOps[S <: TypeSet](set: S) {
   import shapeless._
   import poly._
   def map(f: Poly)(implicit m: SetMapper[f.type, S]): m.Out = m(set)
+  def mapHList(f: Poly)(implicit m: HListMapper[f.type, S]): m.Out = m(set)
+  def mapList(f: Poly)(implicit m: ListMapper[f.type, S]): m.Out = m(set)
 
   def mapFold[R, F](z: R)(f: F)(op: (R, R) => R)
     (implicit smf: SetMapFolder[S, R, F]): R = smf(set, z, op)
 
   def toHList(implicit toHList: ToHList[S]): toHList.Out = toHList(set)
+  def toList(implicit toList: ToList[S]): toList.Out = toList(set)
+  def toListWith[O](implicit toList: ToList.Aux[S, O]): toList.Out = toList(set)
 }

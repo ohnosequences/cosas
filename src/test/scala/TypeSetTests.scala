@@ -104,6 +104,18 @@ class TypeSetTests extends org.scalatest.FunSuite {
     assert((1 :~: 'a' :~: "foo").toHList === (1 :: 'a' :: "foo" :: HNil))
   }
 
+  test("to list") {
+    assert(∅.toList === Nil)
+    assert((1 :~: 'a' :~: "foo").toListWith[Any] === (1 :: 'a' :: "foo" :: Nil))
+
+    trait foo
+    case object boo extends foo
+    case object buh extends foo
+
+    val s = boo :~: buh :~: ∅
+    assert(s.toList === List[foo](boo, buh))
+  }
+
   test("mapper") {
     import poly._
 
@@ -124,6 +136,10 @@ class TypeSetTests extends org.scalatest.FunSuite {
     // This case should fail, because toStr in not "type-injective"
     illTyped("implicitly[SetMapper[toStr.type, s.type]]")
     illTyped("s.map(toStr)")
+
+    assert(s.mapHList(toStr) === "1" :: "a" :: "foo" :: "List(1, 2, 3)" :: HNil)
+    assert(s.mapList(toStr) === List("1", "a", "foo", "List(1, 2, 3)"))
+    // assert(s.mapHList(toStr).toList === s.mapList(toStr))
   }
 
 }

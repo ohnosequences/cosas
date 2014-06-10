@@ -28,3 +28,32 @@ object ToHList {
 }
 
 // TODO: FromHList
+
+trait ToList[S <: TypeSet] extends DepFn1[S] {
+  type O
+  type Out = List[O]
+}
+
+object ToList {
+  def apply[S <: TypeSet](implicit toList: ToList[S]): Aux[S, toList.O] = toList
+
+  type Aux[S <: TypeSet, O_] = ToList[S] { type O = O_ }
+
+  implicit def emptyToList[O_]: Aux[∅, O_] = 
+    new ToList[∅] { type O = O_
+      def apply(s: ∅): Out = Nil
+    }
+  
+  implicit def oneToList[H]: Aux[H :~: ∅, H] =
+    new ToList[H :~: ∅] { type O = H
+      def apply(s: H :~: ∅): Out = List(s.head)
+    }
+
+  implicit def cons2ToList[OH, OT, H1 <: OT, H2 <: OT, T <: TypeSet]
+      (implicit 
+        u: Lub[H1, H2, OH],
+        lt: Aux[OH :~: T, OT]): Aux[H1 :~: H2 :~: T, OT] = 
+    new ToList[H1 :~: H2 :~: T] { type O = OT
+      def apply(s: H1 :~: H2 :~: T): Out = s.head :: lt(u.right(s.tail.head) :~: s.tail.tail)
+    }
+}
