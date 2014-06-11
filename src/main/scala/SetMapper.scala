@@ -2,6 +2,8 @@ package ohnosequences.typesets
 
 import shapeless._, poly._
   
+/* Mapping a set to another set, i.e. the results of mapping should have distinct types */  
+@annotation.implicitNotFound(msg = "Can't map ${F} over ${In} (maybe the resulting types are not distinct)")
 trait SetMapper[F, In <: TypeSet] extends DepFn1[In] { type Out <: TypeSet }
 
 object SetMapper {
@@ -19,13 +21,16 @@ object SetMapper {
     (implicit
       h: Case1.Aux[F, H, OutH], 
       t: Aux[F, T, OutT],
-      e: OutH ∉ OutT
+      e: OutH ∉ OutT  // the key check here
     ): Aux[F, H :~: T, OutH :~: OutT] =
       new SetMapper[F, H :~: T] { type Out = OutH :~: OutT
         def apply(s: H :~: T): Out = h(s.head) :~: t(s.tail)
       }
 }
 
+
+/* Mapping a set to an HList: when you want to preserve precise types, but they are not distinct */
+@annotation.implicitNotFound(msg = "Can't map ${F} over ${In} to an HList")
 trait HListMapper[F, In <: TypeSet] extends DepFn1[In] { type Out <: HList }
 
 object HListMapper {
@@ -49,6 +54,8 @@ object HListMapper {
       }
 }
 
+/* Mapping a set to a List: normally, when you are mapping everything to one type */
+@annotation.implicitNotFound(msg = "Can't map ${F} over ${In} to a List")
 trait ListMapper[F, In <: TypeSet] extends DepFn1[In] { 
   type O
   type Out = List[O]
@@ -64,12 +71,18 @@ object ListMapper {
       def apply(s: ∅): Out = Nil
     }
   
-  implicit def consListMapper[F <: Poly, H, OutH, T <: TypeSet]
+  implicit def oneListMapper[F <: Poly, OH, H]
+    (implicit h: Case1.Aux[F, H, OH]): Aux[F, H :~: ∅, OH] =
+      new ListMapper[F, H :~: ∅] { type O = OH
+        def apply(s: H :~: ∅): Out = List[OH](h(s.head))
+      }
+
+  implicit def consListMapper[F <: Poly, O_, H1, H2, T <: TypeSet]
     (implicit
-     h: Case1.Aux[F, H, OutH], 
-     t: Aux[F, T, OutH]
-    ): Aux[F, H :~: T, OutH] =
-      new ListMapper[F, H :~: T] { type O = OutH
-        def apply(s: H :~: T): Out = h(s.head) :: t(s.tail)
+      h: Case1.Aux[F, H1, O_], 
+      t: Aux[F, H2 :~: T, O_]
+    ): Aux[F, H1 :~: H2 :~: T, O_] =
+      new ListMapper[F, H1 :~: H2 :~: T] { type O = O_
+        def apply(s: H1 :~: H2 :~: T): Out = h(s.head) :: t(s.tail)
       }
 }

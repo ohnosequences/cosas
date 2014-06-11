@@ -1,7 +1,5 @@
 /*
-## Map-folder for sets 
-    
-Just a copy of MapFolder for `TypeSet`s from shapeless.
+## Conversions to HList and List
 */
 
 package ohnosequences.typesets

@@ -12,7 +12,6 @@ class TypeSetTests extends org.scalatest.FunSuite {
     implicitly[Any ∉ ∅]
 
     assert(set('a') === ('a' :~: ∅))
-    assert(1 :~: 'a' === 1 :~: 'a' :~: ∅)
   }
 
   test("bounding") {
@@ -22,10 +21,10 @@ class TypeSetTests extends org.scalatest.FunSuite {
     case object boo extends foo
     case object buh extends foo
 
-    val foos = boo :~: buh
+    val foos = boo :~: buh :~: ∅
     implicitly[boundedBy[foo]#is[foos.type]]
 
-    val vals = 1 :~: 'a' :~: true
+    val vals = 1 :~: 'a' :~: true :~: ∅
     implicitly[boundedBy[AnyVal]#is[vals.type]]
   }
 
@@ -35,8 +34,8 @@ class TypeSetTests extends org.scalatest.FunSuite {
     implicitly[∅ ⊂ s.type]
     implicitly[s.type ⊂ s.type]
 
-    val a = 100500 :~: 'a'
-    val b = 'b' :~: 1 :~: true
+    val a = 100500 :~: 'a' :~: ∅
+    val b = 'b' :~: 1 :~: true :~: ∅
     implicitly[a.type ⊂ b.type]
 
     implicitly[(Int :~: Char :~: ∅) ⊂ (Char :~: Int :~: ∅)]
@@ -45,7 +44,7 @@ class TypeSetTests extends org.scalatest.FunSuite {
   }
 
   test("contains/lookup") {
-    val s = 1 :~: 'a' :~: "foo"
+    val s = 1 :~: 'a' :~: "foo" :~: ∅
     type st = s.type
 
     implicitly[Int ∈ st]
@@ -68,7 +67,7 @@ class TypeSetTests extends org.scalatest.FunSuite {
   }
 
   test("subtraction") {
-    val s = 1 :~: 'a' :~: "foo"
+    val s = 1 :~: 'a' :~: "foo" :~: ∅
 
     assert(∅ \ ∅ === ∅)
     assert(∅ \ s === ∅)
@@ -76,17 +75,17 @@ class TypeSetTests extends org.scalatest.FunSuite {
     assert(s \ s === ∅)
 
     case object bar
-    val q = bar :~: true :~: 2 :~: bar.toString
+    val q = bar :~: true :~: 2 :~: bar.toString :~: ∅
 
     assert(s \ q === set('a'))
-    assert(q \ s === bar :~: true)
+    assert(q \ s === bar :~: true :~: ∅)
   }
 
   test("union") {
-    val s = 1 :~: 'a' :~: "foo"
+    val s = 1 :~: 'a' :~: "foo" :~: ∅
 
     case object bar
-    val q = bar :~: true :~: 2 :~: bar.toString
+    val q = bar :~: true :~: 2 :~: bar.toString :~: ∅
 
     assert((∅ U ∅) === ∅)
     assert((∅ U q) === q)
@@ -95,18 +94,18 @@ class TypeSetTests extends org.scalatest.FunSuite {
     val sq = s U q
     val qs = q U s
     implicitly[sq.type ~ qs.type]
-    assert(sq === 'a' :~: bar :~: true :~: 2 :~: "bar")
-    assert(qs === bar :~: 'a' :~: true :~: 2 :~: "bar")
+    assert(sq === 'a' :~: bar :~: true :~: 2 :~: "bar" :~: ∅)
+    assert(qs === bar :~: 'a' :~: true :~: 2 :~: "bar" :~: ∅)
   }
 
   test("hlist ops") {
     assert(∅.toHList === HNil)
-    assert((1 :~: 'a' :~: "foo").toHList === (1 :: 'a' :: "foo" :: HNil))
+    assert((1 :~: 'a' :~: "foo" :~: ∅).toHList === (1 :: 'a' :: "foo" :: HNil))
   }
 
   test("to list") {
     assert(∅.toList === Nil)
-    assert((1 :~: 'a' :~: "foo").toListWith[Any] === List[Any](1, 'a', "foo"))
+    assert((1 :~: 'a' :~: "foo" :~: ∅).toListWith[Any] === List[Any](1, 'a', "foo"))
 
     trait foo
     case object boo extends foo
