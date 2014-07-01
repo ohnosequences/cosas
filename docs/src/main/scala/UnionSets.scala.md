@@ -1,21 +1,3 @@
-### Index
-
-+ src
-  + main
-    + scala
-      + [LookupInSet.scala](LookupInSet.md)
-      + [MapFoldSets.scala](MapFoldSets.md)
-      + [package.scala](package.md)
-      + [SubtractSets.scala](SubtractSets.md)
-      + [TypeSet.scala](TypeSet.md)
-      + [TypeUnion.scala](TypeUnion.md)
-      + [UnionSets.scala](UnionSets.md)
-  + test
-    + scala
-      + [TypeSetTests.scala](../../test/scala/TypeSetTests.md)
-
-------
-
 ## Sum/union of two type sets
 
 ```scala
@@ -33,7 +15,7 @@ trait UnionSets[S <: TypeSet, Q <: TypeSet] {
 ```scala
 object UnionSets extends UnionSets_2 {
   implicit def sInQ[S <: TypeSet, Q <: TypeSet]
-    (implicit e: S ⊂ Q) =
+    (implicit e: S ? Q) =
       new UnionSets[S, Q] { type Out = Q
         def apply(s: S, q: Q) = q
       }
@@ -45,7 +27,7 @@ object UnionSets extends UnionSets_2 {
 ```scala
 trait UnionSets_2 extends UnionSets_3 {
   implicit def qInS[S <: TypeSet, Q <: TypeSet]
-    (implicit e: Q ⊂ S) =
+    (implicit e: Q ? S) =
       new UnionSets[S, Q] { type Out = S
         def apply(s: S, q: Q) = s
       }
@@ -57,7 +39,7 @@ trait UnionSets_2 extends UnionSets_3 {
 ```scala
 trait UnionSets_3 extends UnionSets_4 {
   implicit def sConsWithoutHead[SH, ST <: TypeSet,  Q <: TypeSet]
-    (implicit sh: SH ∈ Q, rest: ST U Q) =
+    (implicit sh: SH ? Q, rest: ST U Q) =
       new UnionSets[ SH :~: ST,    Q] { type Out = rest.Out
         def apply(s: SH :~: ST, q: Q) = rest(s.tail, q)
       }
@@ -69,7 +51,7 @@ trait UnionSets_3 extends UnionSets_4 {
 ```scala
 trait UnionSets_4 extends UnionSets_5 {
   implicit def qConsWithoutHead[S <: TypeSet,  QH, QT <: TypeSet]
-    (implicit qh: QH ∈ S, rest: S U QT) =
+    (implicit qh: QH ? S, rest: S U QT) =
       new UnionSets[ S,    QH :~: QT] { type Out = rest.Out
         def apply(s: S, q: QH :~: QT) = rest(s, q.tail)
       }
@@ -89,3 +71,34 @@ trait UnionSets_5 {
 
 ```
 
+
+------
+
+### Index
+
++ src
+  + main
+    + scala
+      + [HListOps.scala][main/scala/HListOps.scala]
+      + [LookupInSet.scala][main/scala/LookupInSet.scala]
+      + [MapFoldSets.scala][main/scala/MapFoldSets.scala]
+      + [package.scala][main/scala/package.scala]
+      + [SetMapper.scala][main/scala/SetMapper.scala]
+      + [SubtractSets.scala][main/scala/SubtractSets.scala]
+      + [TypeSet.scala][main/scala/TypeSet.scala]
+      + [TypeUnion.scala][main/scala/TypeUnion.scala]
+      + [UnionSets.scala][main/scala/UnionSets.scala]
+  + test
+    + scala
+      + [TypeSetTests.scala][test/scala/TypeSetTests.scala]
+
+[main/scala/HListOps.scala]: HListOps.scala.md
+[main/scala/LookupInSet.scala]: LookupInSet.scala.md
+[main/scala/MapFoldSets.scala]: MapFoldSets.scala.md
+[main/scala/package.scala]: package.scala.md
+[main/scala/SetMapper.scala]: SetMapper.scala.md
+[main/scala/SubtractSets.scala]: SubtractSets.scala.md
+[main/scala/TypeSet.scala]: TypeSet.scala.md
+[main/scala/TypeUnion.scala]: TypeUnion.scala.md
+[main/scala/UnionSets.scala]: UnionSets.scala.md
+[test/scala/TypeSetTests.scala]: ../../test/scala/TypeSetTests.scala.md
