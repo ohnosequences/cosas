@@ -8,7 +8,18 @@ organization := "ohnosequences"
 
 bucketSuffix := "era7.com"
 
+scalaVersion := "2.11.1"
+
+crossScalaVersions := Seq("2.10.4", "2.11.1")
+
+libraryDependencies += {
+  CrossVersion.partialVersion(scalaVersion.value) match {
+    case Some((2, scalaMajor)) if scalaMajor >= 11 =>
+              "com.chuusai" %% "shapeless" % "2.0.0"
+    case _ => "com.chuusai"  % "shapeless" % "2.0.0" cross CrossVersion.full
+  }
+}
+
 libraryDependencies ++= Seq (
-    "com.chuusai" % "shapeless_2.10.2" % "2.0.0-M1"
-  , "org.scalatest" %% "scalatest" % "2.0" % "test"
-  )
+  "org.scalatest" %% "scalatest" % "2.2.0" % "test"
+)

@@ -1,0 +1,7 @@
+* Migrated to the stable release of shapless-2.0;
+* Cross-compiling and publishing for scala 2.10/2.11;
+* Added simple conversion to `HList` and to the usual `List`;
+* Added set mapper (it requires that the return type is also a type-set);
+* Added mappers to `HList` and to the usual `List`;
+* Added constrant on the Lookup type;
+* **Breaking change**: removed implicit conversion for an one-element set;
