@@ -66,6 +66,45 @@ class TypeSetTests extends org.scalatest.FunSuite {
     // implicitly[Nothing ∉ st]
   }
 
+  test("pop") {
+    val s = 1 :~: 'a' :~: "foo" :~: ∅
+
+    assert(s.pop[Int] === (1, 'a' :~: "foo" :~: ∅))
+    assert(s.pop[Char] === ('a', 1 :~: "foo" :~: ∅))
+    assert(s.pop[String] === ("foo", 1 :~: 'a' :~: ∅))
+  }
+
+  test("projection") {
+    val s = 1 :~: 'a' :~: "foo" :~: ∅
+
+    type pt = Char :~: Int :~: ∅
+
+    implicitly[Choose[∅, ∅]]
+    implicitly[Choose[Int :~: ∅, Int :~: ∅]]
+    implicitly[Choose[Int :~: Char :~: String :~: ∅, Char :~: Int :~: ∅]]
+    implicitly[Choose[Int :~: Char :~: String :~: ∅, pt]]
+    assert(s.project[pt] === 'a' :~: 1 :~: ∅)
+    assert(s.project[Int :~: Char :~: String :~: ∅] === s)
+  }
+
+  test("reordering") {
+    val s = 1 :~: 'a' :~: "foo" :~: ∅
+
+    assert(∅.reorder[∅] === ∅)
+    assert(s.reorder[Char :~: Int :~: String :~: ∅] === 'a' :~: 1 :~: "foo" :~: ∅)
+
+    val p = "bar" :~: 2 :~: 'b' :~: ∅
+    assert(s ~> p === "foo" :~: 1 :~: 'a' :~: ∅)
+  }
+
+  test("replace") {
+    val s = 1 :~: 'a' :~: "foo" :~: ∅
+
+    assert(∅.replace(∅) === ∅)
+    assert(s.replace(2 :~: ∅) === 2 :~: 'a' :~: "foo" :~: ∅)
+    assert(s.replace("bar" :~: ∅) === 1 :~: 'a' :~: "bar" :~: ∅)
+  }
+
   test("subtraction") {
     val s = 1 :~: 'a' :~: "foo" :~: ∅
 
@@ -87,12 +126,12 @@ class TypeSetTests extends org.scalatest.FunSuite {
     case object bar
     val q = bar :~: true :~: 2 :~: bar.toString :~: ∅
 
-    assert((∅ U ∅) === ∅)
-    assert((∅ U q) === q)
-    assert((s U ∅) === s)
+    assert((∅ ∪ ∅) === ∅)
+    assert((∅ ∪ q) === q)
+    assert((s ∪ ∅) === s)
 
-    val sq = s U q
-    val qs = q U s
+    val sq = s ∪ q
+    val qs = q ∪ s
     implicitly[sq.type ~ qs.type]
     assert(sq === 'a' :~: bar :~: true :~: 2 :~: "bar" :~: ∅)
     assert(qs === bar :~: 'a' :~: true :~: 2 :~: "bar" :~: ∅)
