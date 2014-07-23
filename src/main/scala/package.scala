@@ -73,6 +73,13 @@ package object typesets {
   implicit def <<[S <: TypeSet : boundedBy[B]#is, B] = new (S << B)
   implicit def <<![S <: TypeSet : boundedBy[B]#isnot, B] = new (S <<! B)
 
+  implicit def setIsBoundedByUnion[S <: TypeSet, U <: TypeUnion]
+    (implicit ev: S#Bound#get <:< U#get) = new SetIsBoundedByUnion[S, U]
+
+  type everyElementOf[S <: TypeSet] = { 
+    type isOneOf[U <: TypeUnion] = SetIsBoundedByUnion[S, U]
+  }
+
   type \[S <: TypeSet, Q <: TypeSet] = Subtract[S, Q]
 
   type ∪[S <: TypeSet, Q <: TypeSet] = Union[S, Q]

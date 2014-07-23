@@ -58,6 +58,9 @@ sealed class  <<[S <: TypeSet : boundedBy[B]#is, B]
 @annotation.implicitNotFound(msg = "Can't prove that ${S} is not bounded by ${B}")
 sealed class <<![S <: TypeSet : boundedBy[B]#isnot, B]
 
+@annotation.implicitNotFound(msg = "Can't prove that every element of ${S} is one of ${U}")
+sealed class SetIsBoundedByUnion[S <: TypeSet, U <: TypeUnion]
+
 @annotation.implicitNotFound(msg = "Can't prove that ${E} ∈ ${S}")
 sealed class ∈[E : in[S]#is, S <: TypeSet]
 
