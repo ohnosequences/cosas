@@ -52,6 +52,15 @@ object :~: {
 
 See implicits for these operators in the [package object](package.md)
 */
+@annotation.implicitNotFound(msg = "Can't prove that ${S} is bounded by ${B}")
+sealed class  <<[S <: TypeSet : boundedBy[B]#is, B]
+
+@annotation.implicitNotFound(msg = "Can't prove that ${S} is not bounded by ${B}")
+sealed class <<![S <: TypeSet : boundedBy[B]#isnot, B]
+
+@annotation.implicitNotFound(msg = "Can't prove that every element of ${S} is one of ${U}")
+sealed class SetIsBoundedByUnion[S <: TypeSet, U <: TypeUnion]
+
 @annotation.implicitNotFound(msg = "Can't prove that ${E} ∈ ${S}")
 sealed class ∈[E : in[S]#is, S <: TypeSet]
 
@@ -65,16 +74,25 @@ sealed class ⊃[S <: TypeSet : supersetOf[Q]#is, Q <: TypeSet]
 sealed class ⊂[S <: TypeSet : subsetOf[Q]#is, Q <: TypeSet]
 
 @annotation.implicitNotFound(msg = "Can't prove that ${S} ~ ${Q} (i.e. that sets are type-equivalent)")
-sealed class ~[S <: TypeSet : sameAs[S]#is, Q <: TypeSet]
+sealed class ~[S <: TypeSet : sameAs[Q]#is, Q <: TypeSet]
+
 
 /* ### Adding methods to TypeSet */
 class TypeSetOps[S <: TypeSet](set: S) {
   def :~:[E](e: E)(implicit n: E ∉ S) = ohnosequences.typesets.:~:.cons(e, set)
 
-  def lookup[E](implicit l: Lookup[S, E]): l.Out = l(set)
+  def lookup[E](implicit e: E ∈ S, l: Lookup[S, E]): l.Out = l(set)
+  def pop[E](implicit e: E ∈ S, p: Pop[S, E]): p.Out = p(set)
 
-  def \[Q <: TypeSet](q: Q)(implicit sub: S \ Q) = sub(set, q)
-  def U[Q <: TypeSet](q: Q)(implicit uni: S U Q) = uni(set, q)
+  def project[P <: TypeSet](implicit e: P ⊂ S, p: Choose[S, P]): P = p(set)
+
+  def replace[P <: TypeSet](p: P)(implicit e: P ⊂ S, r: Replace[S, P]): S = r(set, p)
+
+  def reorder[P <: TypeSet](implicit e: S ~ P, t: Reorder[S, P]): P = t(set)
+  def ~>[P <: TypeSet](p: P)(implicit e: S ~ P, t: Reorder[S, P]): P = t(set)
+
+  def \[Q <: TypeSet](q: Q)(implicit sub: S \ Q): sub.Out = sub(set, q)
+  def ∪[Q <: TypeSet](q: Q)(implicit uni: S ∪ Q): uni.Out = uni(set, q)
 
   import shapeless._
   import poly._
