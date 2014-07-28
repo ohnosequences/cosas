@@ -20,6 +20,8 @@ object AnyProperty {
   /* This implicit is a bridge from `HasProperties` to `HasProperty` */ 
   implicit def FromSetToAProperty[T, P <: AnyProperty, Ps <: TypeSet]
     (implicit ps: T HasProperties Ps, ep: P ∈ Ps): HasProperty[T, P] = new HasProperty[T, P]
+
+  type ofType[R] = AnyProperty { type Raw = R }
 }
 
 /* Properties sould be defined as case objects: `case object Name extends Property[String]` */
