@@ -31,7 +31,7 @@ package object typesets {
   val ∅ : ∅ = empty
 
   // Shortcut for a one element set 
-  def set[E](e: E): E :~: ∅ = e :~: ∅
+  def set[E](e: E): E :~: ∅ =  :~:.cons(e,∅)
 
   // Any type can be converted to a one element set
   implicit def typeSetOps[S <: TypeSet](s: S) = new TypeSetOps(s)
@@ -85,4 +85,12 @@ package object typesets {
   type ∪[S <: TypeSet, Q <: TypeSet] = Union[S, Q]
 
   type ~>[S <: TypeSet, Q <: TypeSet] = Reorder[S, Q]
+
+  // record-related aliases
+  // id.type :~: name.type :~: ∅, TaggedWith[id.type] :~: TaggedWith[name.type] :~: ∅
+  type entryOf[Ps <: TypeSet] = {
+    type is[VT <: TypeSet] = Represented.By[Ps,VT]
+  }
+
+  type isEntryOf[VT <: TypeSet, Ps <: TypeSet] = Represented.By[Ps,VT]
 }
