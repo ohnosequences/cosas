@@ -35,7 +35,7 @@ package object typesets {
 
   // Any type can be converted to a one element set
   implicit def typeSetOps[S <: TypeSet](s: S) = new TypeSetOps(s)
-  implicit def oneElemSet[E](e: E) = new TypeSetOps(set(e))
+  // implicit def oneElemSet[E](e: E) = new TypeSetOps(set(e))
 
   type in[S <: TypeSet] = { 
     type    is[E] = E :<:  S#Bound
