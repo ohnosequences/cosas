@@ -12,7 +12,7 @@ To add a dependency on this library to your sbt project, add these lines to your
 ```scala
 resolvers += "Era7 maven releases" at "http://releases.era7.com.s3.amazonaws.com"
 
-libraryDependencies += "ohnosequences" %% "type-sets" % "0.1.0"
+libraryDependencies += "ohnosequences" %% "type-sets" % "0.3.2"
 ```
 
 ### Documentation

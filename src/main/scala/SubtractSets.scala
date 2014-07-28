@@ -2,6 +2,7 @@
 
 package ohnosequences.typesets
 
+
 trait SubtractSets[S <: TypeSet, Q <: TypeSet] {
   type Out <: TypeSet
   def apply(s: S, q: Q): Out

@@ -28,9 +28,12 @@ object Bar extends Foo
 (1 :~: "abc" :~: 'a' :~: Bar :~: 42).lookup[Foo] == Bar
 ```
 
+------
+
 
 ```scala
 package ohnosequences.typesets
+
 
 trait Lookup[S <: TypeSet, E] { type Out
   def apply(s: S): Out

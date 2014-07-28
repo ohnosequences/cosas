@@ -1,0 +1,2 @@
+* Bugfix in the sets "type-equivalence" `~` — it was comparing first argumant with itself
+* Added `annotations.implicitNotFound`, where it may be useful — better error messages

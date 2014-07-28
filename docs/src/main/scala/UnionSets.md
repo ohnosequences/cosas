@@ -21,6 +21,7 @@
 ```scala
 package ohnosequences.typesets
 
+
 trait UnionSets[S <: TypeSet, Q <: TypeSet] {
   type Out <: TypeSet
   def apply(s: S, q: Q): Out
