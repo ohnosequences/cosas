@@ -43,7 +43,7 @@ case class :~:[E, S <: TypeSet] private[:~:](head: E, tail: S) extends TypeSet {
 
 /* This `cons` method covers the `:~:` constructor to check that you are not adding a duplicate */
 object :~: { 
-  def cons[E : in[S]#isnot, S <: TypeSet](e: E, set: S) = :~:(e, set) 
+  def cons[E : in[S]#isnot, S <: TypeSet](e: E, set: S): ohnosequences.typesets.:~:[E,S] = :~:(e, set) 
 }
 
 

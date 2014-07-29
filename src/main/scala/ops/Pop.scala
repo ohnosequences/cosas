@@ -34,7 +34,7 @@ object Pop extends Pop_2 {
     new Pop[H :~: T, E] { 
       type SOut = T
       type EOut = H
-      def apply(s: H :~: T) = (s.head, s.tail)
+      def apply(s: H :~: T): Out = (s.head, s.tail)
     }
 }
 
@@ -44,9 +44,13 @@ trait Pop_2 {
     new Pop[H :~: T, E] { 
       type SOut = H :~: l.SOut
       type EOut = l.EOut
-      def apply(s: H :~: T) = {
-        val (e, t) = l(s.tail)
-        (e, s.head :~: t)
+      def apply(s: H :~: T): Out = {
+
+        // val (e, t) = l(s.tail)
+        // (e, s.head :~: t)
+
+        val tpl = l(s.tail)
+        (tpl._1, s.head :~: tpl._2)
       }
     }
 }

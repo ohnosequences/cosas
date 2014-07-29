@@ -87,10 +87,12 @@ package object typesets {
   type ~>[S <: TypeSet, Q <: TypeSet] = Reorder[S, Q]
 
   // record-related aliases
+
   // id.type :~: name.type :~: ∅, TaggedWith[id.type] :~: TaggedWith[name.type] :~: ∅
-  type entryOf[Ps <: TypeSet] = {
+  type valuesOf[Ps <: TypeSet] = {
+
     type is[VT <: TypeSet] = Represented.By[Ps,VT]
   }
 
-  type isEntryOf[VT <: TypeSet, Ps <: TypeSet] = Represented.By[Ps,VT]
+  type isValuesOf[VT <: TypeSet, Ps <: TypeSet] = Represented.By[Ps,VT]
 }

@@ -28,9 +28,12 @@ object Replace extends Replace_2 {
       rest: Replace[T, QOut]
     ):  Replace[H :~: T, Q] =
     new Replace[H :~: T, Q] {
-      def apply(s: H :~: T, q: Q) = {
-        val (h, qout) = pop(q)
-        h :~: rest(s.tail, qout)
+      def apply(s: H :~: T, q: Q): H :~: T = {
+        
+        // val (h, qout) = pop(q)
+        // h :~: rest(s.tail, qout)
+        val tpl = pop(q)
+        tpl._1 :~: rest(s.tail, tpl._2)
       }
     }
 }

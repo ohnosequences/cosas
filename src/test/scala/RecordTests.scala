@@ -22,15 +22,26 @@ object RecordTestsContext {
 
   case object normalUser extends Record(id :~: name :~: email :~: color :~: ∅)
 
+  // nothing works with this
+  val volatileUser = new Record(email :~: color :~: ∅)
+
+  val volatileUserEntry = volatileUser fields (
+
+    (color is "orange") :~:
+    (email is "foo@bar.qux") :~:
+    ∅
+  )
+
+
   // creating a record instance is easy and neat:
-  val user1 = simpleUser ->> (
+  val simpleUserEntry = simpleUser ->> (
     (id ->> 123) :~: 
     (name ->> "foo") :~: 
     ∅
   )
 
   // this way the order of properties does not matter
-  val user2 = normalUser fields (
+  val normalUserEntry = normalUser fields (
     (name is "foo") :~: 
     (color is "orange") :~:
     (id is 123) :~: 
@@ -61,23 +72,23 @@ class RecordTests extends org.scalatest.FunSuite {
     assert(y(x) == name)
   }
 
-  test("recognizing record entry types") {
+  test("recognizing record value types") {
 
     implicitly [
 
-      ∅ isEntryOf ∅
+      ∅ isValuesOf ∅
     ]
 
     implicitly [
 
       // using external bounds
-      (TaggedWith[id.type] :~: TaggedWith[name.type] :~: ∅) isEntryOf (id.type :~: name.type :~: ∅)
+      (TaggedWith[id.type] :~: TaggedWith[name.type] :~: ∅) isValuesOf (id.type :~: name.type :~: ∅)
     ]
 
     implicitly [
 
       // using the local Rep of each property
-      (id.Rep :~: name.Rep :~: ∅) isEntryOf (id.type :~: name.type :~: ∅)
+      (id.Rep :~: name.Rep :~: ∅) isValuesOf (id.type :~: name.type :~: ∅)
     ] 
 
     implicitly [ 
@@ -87,8 +98,8 @@ class RecordTests extends org.scalatest.FunSuite {
 
     implicitly [ 
 
-      // check the Entry alias
-      simpleUser.Entry =:= (id.Rep :~: name.Rep :~: ∅)
+      // check the Values alias
+      simpleUser.Values =:= (id.Rep :~: name.Rep :~: ∅)
     ]
 
     implicitly [
@@ -102,7 +113,7 @@ class RecordTests extends org.scalatest.FunSuite {
     implicitly [ 
 
       // the declared property order
-      simpleUser.Entry =:= (id.Rep :~: name.Rep :~: ∅)
+      simpleUser.Values =:= (id.Rep :~: name.Rep :~: ∅)
     ]
 
     // they get reordered
@@ -146,12 +157,20 @@ class RecordTests extends org.scalatest.FunSuite {
 
     assert {
 
-      (user1 get id) === 123
+      (simpleUserEntry get id) === 123
     }
 
     assert {
 
-      (user1 get name) === "foo"
+      (simpleUserEntry get name) === "foo"
+    }
+  }
+
+  test("can access property values from vals and volatile vals") {
+
+    assert {
+
+      true === false
     }
   }
 

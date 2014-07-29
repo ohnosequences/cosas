@@ -15,8 +15,11 @@ object Choose {
     ):  Choose[In, H :~: T] =
     new Choose[In, H :~: T] { 
       def apply(s: In) = {
-        val (h, s_) = pop(s)
-        h :~: rest(s_)
+        // val (h, s_) = pop(s)
+        // h :~: rest(s_)
+
+        val tpl = pop(s)
+        tpl._1 :~: rest(tpl._2)
       }
     }
 }
