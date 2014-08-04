@@ -8,10 +8,11 @@ trait AnyProperty extends Representable {
   // TODO make this optional?
   val classTag: ClassTag[Raw]
 
+  // WARNING it does not work; compiler bug
   final type Entry = Rep
   final type Value = Raw
 
-  final def is(r: Value): Entry = this ->> r
+  final def is(r: Raw): Rep = this ->> r
 }
 
 /* Evidence that an arbitrary type `Smth` has property `P` */
@@ -24,7 +25,8 @@ object AnyProperty {
   implicit def FromSetToAProperty[T, P <: AnyProperty, Ps <: TypeSet]
     (implicit ps: T HasProperties Ps, ep: P ∈ Ps): HasProperty[T, P] = new HasProperty[T, P]
 
-  type ofValue[R] = AnyProperty { type Value = R }
+  type ofValue[R] = AnyProperty { type Raw = R }
+  type Of[S] = { type is[P <: AnyProperty] = S HasProperty P }
 }
 
 /* Properties sould be defined as case objects: `case object Name extends Property[String]` */

@@ -76,11 +76,11 @@ object AnyTag {
   sealed trait AnyTag {}
   sealed trait Tag[D <: Representable] extends AnyTag with KeyTag[D, D#Raw] {}
 
-  type RawOf[D <: Singleton with Representable] = {
-
-    type is[X] = X =:= D#Raw 
-  }
+  type RawOf[D <: Singleton with Representable] = D#Raw
 
   type AsRepOf[X, D <: Singleton with Representable] = X with D#Raw with Tag[D]
+
+  type SingletonOf[X <: AnyRef] = Singleton with X
+  type Type[X <: AnyRef] = Singleton with X
 
 }

@@ -2,6 +2,8 @@ package ohnosequences.typesets
 
 import shapeless._, poly._
 
+import AnyTag._
+
 /*
   - `Properties`: `(id :~: name :~: ∅)
   - `Values`: `(id.Rep :~: name.Rep :~: ∅)`
@@ -19,11 +21,14 @@ trait AnyRecord extends Representable { record =>
      in which the keys set is exactly the `Properties` type,
      i.e. it's a set of properties representations */
   type Raw <: TypeSet
+
+  // WARNING!! it does not work
   final type Values = Raw
   // a record entry
   final type Entry = Rep
+
   // should be provided implicitly:
-  val  representedProperties: Values isValuesOf Properties
+  val  representedProperties: Raw isValuesOf Properties
 
   /*
     ### Ops
@@ -31,33 +36,33 @@ trait AnyRecord extends Representable { record =>
     This extends representation type by a getter method 
   */
   // TODO is it possible to move this out of the Record type?
-  implicit def propertyOps(entry: record.Entry): PropertyOps = PropertyOps(entry)
+  implicit def propertyOps(entry: record.Rep): PropertyOps = PropertyOps(entry)
 
-  case class   PropertyOps(recordEntry: record.Entry) {
+  case class   PropertyOps(recordEntry: record.Rep) {
 
     def get[P <: Singleton with AnyProperty](p: P)
       (implicit 
         isThere: P ∈ record.Properties,
-        lookup: Lookup[record.Values, p.Entry]
-      ): p.Entry = lookup(recordEntry)
+        lookup: Lookup[record.Values, p.Rep]
+      ): p.Rep = lookup(recordEntry)
 
 
-    def update[P <: Singleton with AnyProperty, S <: TypeSet](pEntry: P#Entry)
+    def update[P <: Singleton with AnyProperty, S <: TypeSet](pEntry: P#Rep)
       (implicit 
         isThere: P ∈ record.Properties,
-        replace: Replace[record.Values, (P#Entry :~: ∅)]
-      ): record.Entry = record ->> replace(recordEntry, pEntry :~: ∅)
+        replace: Replace[record.Values, (P#Rep :~: ∅)]
+      ): record.Rep = record ->> replace(recordEntry, pEntry :~: ∅)
 
     def update[Ps <: TypeSet, S <: TypeSet](pEntries: Ps)
       (implicit 
         check: Ps ⊂ record.Values,
         replace: Replace[record.Values, Ps]
-      ): record.Entry = record ->> replace(recordEntry, pEntries)
+      ): record.Rep = record ->> replace(recordEntry, pEntries)
 
 
     def as[Other <: AnyRecord](other: Other)(implicit
       project: Choose[record.Values, other.Values]
-    ): other.Entry = other ->> project(recordEntry)
+    ): other.Rep = other ->> project(recordEntry)
 
     def as[Other <: AnyRecord, Rest <: TypeSet, Uni <: TypeSet, Missing <: TypeSet](other: Other, rest: Rest)
       (implicit
@@ -65,14 +70,74 @@ trait AnyRecord extends Representable { record =>
         allMissing: Rest ~ Missing,
         uni: (record.Values ∪ Rest) { type Out = Uni },
         project: Choose[Uni, other.Values]
-      ): other.Entry = other ->> project(uni(recordEntry, rest))
+      ): other.Rep = other ->> project(uni(recordEntry, rest))
 
   }
 
   /* Same as just tagging with `->>`, but you can pass fields in any order */
     def fields[Vs <: TypeSet](values: Vs)(implicit 
-      p: Vs ~> record.Values
-    ): record.Entry = record ->> p(values)
+      p: Vs ~> record.Raw
+    ): record.Rep = record ->> p(values)
+}
+
+object AnyRecord {
+
+    type withProperties[Ps <: SingletonOf[TypeSet]] = AnyRecord { type Properties = Ps }
+
+    implicit def propertyOps[R <: SingletonOf[AnyRecord]](entry: TaggedWith[R]): OtherPropertyOps[R] = 
+      OtherPropertyOps(entry)
+
+    case class OtherPropertyOps[R <: Singleton with AnyRecord](recordEntry: TaggedWith[R]) {
+
+    def getIt[P <: Singleton with AnyProperty](p: P)
+      (implicit 
+        isThere: P ∈ R#Properties,
+        lookup: Lookup[R#Raw, P#Rep]
+      ): P#Rep = lookup(recordEntry)
+
+    def get[P <: Singleton with AnyProperty](p: P)
+      (implicit 
+        isThere: P ∈ R#Properties,
+        lookup: Lookup[R#Raw, P#Rep]
+      ): P#Rep = lookup(recordEntry)
+
+
+    def update[P <: SingletonOf[AnyProperty], S <: TypeSet](pEntry: P#Rep)
+      (implicit 
+        isThere: P ∈ R#Properties,
+        replace: Replace[R#Raw, (P#Rep :~: ∅)],
+        getRecord: TaggedWith[R] => R
+      ): R#Rep = {
+
+        val uh = getRecord(recordEntry)
+        (uh:R) ->> replace(recordEntry, pEntry :~: ∅)
+      }
+
+    def update[Ps <: TypeSet, S <: TypeSet](pEntries: Ps)
+      (implicit 
+        check: Ps ⊂ R#Raw,
+        replace: Replace[R#Raw, Ps],
+        getRecord: TaggedWith[R] => R
+      ): R#Rep = {
+
+        val uh = getRecord(recordEntry)
+        (uh:R) ->> replace(recordEntry, pEntries)
+      }
+
+
+    def as[Other <: Singleton with AnyRecord](other: Other)(implicit
+      project: Choose[R#Raw, Other#Raw]
+    ): Other#Rep = (other:Other) ->> project(recordEntry)
+
+    def as[Other <: Singleton with AnyRecord, Rest <: TypeSet, Uni <: TypeSet, Missing <: TypeSet](other: Other, rest: Rest)
+      (implicit
+        missing: (Other#Raw \ R#Raw) { type Out = Missing },
+        allMissing: Rest ~ Missing,
+        uni: (R#Raw ∪ Rest) { type Out = Uni },
+        project: Choose[Uni, Other#Raw]
+      ): Other#Rep = (other:Other) ->> project(uni(recordEntry, rest))
+
+  }
 }
 
 
@@ -115,8 +180,8 @@ object Represented {
   implicit val empty: ∅ By ∅ = new Represented[∅] { type Out = ∅ }
 
   implicit def cons[H <: Singleton with Representable, T <: TypeSet]
-    (implicit t: Represented[T]): (H :~: T) By (H#Rep :~: t.Out) =
-          new Represented[H :~: T] { type Out = H#Rep :~: t.Out }
+    (implicit t: Represented[T]): (H :~: T) By (TaggedWith[H] :~: t.Out) =
+          new Represented[H :~: T] { type Out = TaggedWith[H] :~: t.Out }
 }
 
 
@@ -126,6 +191,7 @@ import shapeless._, poly._
 trait TagsOf[S <: TypeSet] extends DepFn1[S] { type Out <: TypeSet }
 
 object TagsOf {
+
   def apply[S <: TypeSet](implicit keys: TagsOf[S]): Aux[S, keys.Out] = keys
 
   type Aux[S <: TypeSet, O <: TypeSet] = TagsOf[S] { type Out = O }
@@ -137,10 +203,14 @@ object TagsOf {
     }
 
   implicit def cons[H <: Singleton with Representable, T <: TypeSet]
-    (implicit fromRep: H#Rep => H, t: TagsOf[T]): Aux[H#Rep :~: T, H :~: t.Out] =
-      new TagsOf[H#Rep :~: T] {
+    (implicit fromRep: TaggedWith[H] => H, t: TagsOf[T]): Aux[TaggedWith[H] :~: T, H :~: t.Out] =
+      new TagsOf[TaggedWith[H] :~: T] {
         type Out = H :~: t.Out
-        def apply(s: H#Rep :~: T): Out = fromRep(s.head) :~: t(s.tail)
+        def apply(s: TaggedWith[H] :~: T): Out = {
+
+          val uh: H = fromRep(s.head)
+          uh :~: t(s.tail)
+        }
       }
 }
 
@@ -173,6 +243,7 @@ trait FromProperties[
 }
 
 object FromProperties {
+  
   def apply[A <: TypeSet, Reps <: TypeSet, F <: Singleton with Poly, Out](implicit tr: FromProperties.Aux[A, Reps, F, Out]):
     FromProperties.Aux[A, Reps, F, Out] = tr
 
@@ -200,15 +271,15 @@ object FromProperties {
     RT <: TypeSet,
     E, Out
   ](implicit
-    tagOf: AH#Rep => AH,
+    tagOf: TaggedWith[AH] => AH,
     listLike: ListLike.Of[Out, E], 
-    transform: Case1.Aux[F, (AH, AH#Rep), E], 
+    transform: Case1.Aux[F, (AH, TaggedWith[AH]), E], 
     recOnTail: FromProperties.Aux[AT, RT, F, Out]
-  ): FromProperties.Aux[AH :~: AT, AH#Rep :~: RT, F, Out] =
+  ): FromProperties.Aux[AH :~: AT, TaggedWith[AH] :~: RT, F, Out] =
     new FromProperties[AH :~: AT, Out] {
-      type Reps = AH#Rep :~: RT
+      type Reps = TaggedWith[AH] :~: RT
       type Fun = F
-      def apply(r: AH#Rep :~: RT): Out = {
+      def apply(r: TaggedWith[AH] :~: RT): Out = {
         listLike.cons(
           transform((tagOf(r.head), r.head)),
           recOnTail(r.tail)
@@ -246,7 +317,7 @@ object ToProperties {
   implicit def cons[
     In,
     AH <: Singleton with AnyProperty, AT <: TypeSet,
-    RH <: AH#Rep, RT <: TypeSet,
+    RH <: TaggedWith[AH], RT <: TypeSet,
     F <: Singleton with Poly
   ](implicit
     f: Case1.Aux[F, (In, AH), RH], 

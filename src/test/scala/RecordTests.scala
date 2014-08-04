@@ -174,4 +174,12 @@ class RecordTests extends org.scalatest.FunSuite {
     }
   }
 
+  test("generic ops outside record work") {
+
+
+    // import AnyRecord._
+
+    val uhoh = simpleUserEntry getIt id
+  }
+
 }

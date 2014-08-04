@@ -19,12 +19,12 @@ trait TypeSet { set =>
 
 
 /* ### Empty set */
-sealed trait ∅ extends TypeSet {
+sealed trait Empty extends TypeSet {
   type Bound = either[Nothing]
   def toStr = ""
 }
 
-private object empty extends ∅
+protected object empty extends Empty
 
 
 /* ### Cons constructor */

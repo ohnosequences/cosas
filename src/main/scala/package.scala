@@ -29,6 +29,7 @@ package object typesets {
 
   /* ### Type sets */
   val ∅ : ∅ = empty
+  type ∅ = Empty with empty.type
 
   // Shortcut for a one element set 
   def set[E](e: E): E :~: ∅ =  :~:.cons(e,∅)
