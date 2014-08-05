@@ -23,14 +23,16 @@ trait Representable { self =>
   /*
     `Raw` enters, `Rep` leaves
   */
-  final def ->>(r: Raw): self.Rep = AnyTag.TagWith[self.type](self)(r)
+  final def ->>(r: Raw): AnyTag.TaggedWith[self.type] = AnyTag.TagWith[self.type](self)(r)
 
   /*
     This lets you get the instance of the singleton type from a tagged `Rep` value.
   */
-  implicit def fromRep(x: self.Rep): self.type = self
+  // implicit def fromRep(x: self.Rep): self.type = self
+  implicit def fromRep(x: AnyTag.TaggedWith[self.type]): self.type = self
 
-  implicit def otherFromRep[X <: Me](rep: X#Rep) = {
+  // I don't know why this works
+  implicit def yetAnotherFromRep[X <: Me](rep: X#Rep): Me = {
 
     self
   }
@@ -64,23 +66,22 @@ object AnyTag {
 
   case class TagWith[D <: Singleton with Representable](val d: D) {
 
-    def apply(dr : d.Raw): TaggedWith[D] = {
+    def apply(dr : RawOf[D]): TaggedWith[D] = {
 
       dr.asInstanceOf[TaggedWith[D]]
     }
   }
 
-  type TaggedWith[D <: Representable] = D#Raw with Tag[D]
-
   // Has to be empty! See http://www.scala-lang.org/old/node/11165.html#comment-49097
   sealed trait AnyTag {}
   sealed trait Tag[D <: Representable] extends AnyTag with KeyTag[D, D#Raw] {}
 
-  type RawOf[D <: Singleton with Representable] = D#Raw
+  // compiler bug; do not use type aliases in type aliases
+  // type TaggedWith[D <: Representable] = RawOf[D] with Tag[D]
+  type TaggedWith[D <: Representable] = D#Raw with Tag[D]
+  type RawOf[D <: Representable] = D#Raw
 
-  type AsRepOf[X, D <: Singleton with Representable] = X with D#Raw with Tag[D]
-
+  type AsRepOf[X, D <: Representable] = X with RawOf[D] with Tag[D]
   type SingletonOf[X <: AnyRef] = Singleton with X
-  type Type[X <: AnyRef] = Singleton with X
 
 }

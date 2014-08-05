@@ -22,19 +22,11 @@ object RecordTestsContext {
 
   case object normalUser extends Record(id :~: name :~: email :~: color :~: ∅)
 
+  val vProps = email :~: color :~: ∅
   // nothing works with this
-  val volatileUser = new Record(email :~: color :~: ∅)
-
-  val volatileUserEntry = volatileUser fields (
-
-    (color is "orange") :~:
-    (email is "foo@bar.qux") :~:
-    ∅
-  )
-
 
   // creating a record instance is easy and neat:
-  val simpleUserEntry = simpleUser ->> (
+  val simpleUserEntry = simpleUser fields (
     (id ->> 123) :~: 
     (name ->> "foo") :~: 
     ∅
@@ -99,7 +91,7 @@ class RecordTests extends org.scalatest.FunSuite {
     implicitly [ 
 
       // check the Values alias
-      simpleUser.Values =:= (id.Rep :~: name.Rep :~: ∅)
+      simpleUser.Raw =:= (id.Rep :~: name.Rep :~: ∅)
     ]
 
     implicitly [
@@ -113,17 +105,17 @@ class RecordTests extends org.scalatest.FunSuite {
     implicitly [ 
 
       // the declared property order
-      simpleUser.Values =:= (id.Rep :~: name.Rep :~: ∅)
+      simpleUser.Raw =:= (id.Rep :~: name.Rep :~: ∅)
     ]
 
     // they get reordered
-    val simpleUserV: simpleUser.Entry = simpleUser fields {
+    val simpleUserV: simpleUser.Rep = simpleUser fields {
 
       (name is "Antonio") :~:
       (id is 29681) :~: ∅
     }
 
-    val sameSimpleUserV: simpleUser.Entry = simpleUser fields {
+    val sameSimpleUserV: simpleUser.Rep = simpleUser fields {
 
       (id is 29681) :~:
       (name is "Antonio") :~: ∅

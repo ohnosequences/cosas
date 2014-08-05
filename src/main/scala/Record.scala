@@ -11,6 +11,7 @@ import AnyTag._
 */
 trait AnyRecord extends Representable { record =>
   
+  type Record = record.type
   /* Any item has a fixed set of properties */
   type Properties <: TypeSet
   val  properties: Properties
@@ -22,72 +23,37 @@ trait AnyRecord extends Representable { record =>
      i.e. it's a set of properties representations */
   type Raw <: TypeSet
 
-  // WARNING!! it does not work
-  final type Values = Raw
-  // a record entry
-  final type Entry = Rep
-
   // should be provided implicitly:
   val  representedProperties: Raw isValuesOf Properties
 
-  /*
-    ### Ops
-
-    This extends representation type by a getter method 
-  */
-  // TODO is it possible to move this out of the Record type?
-  implicit def propertyOps(entry: record.Rep): PropertyOps = PropertyOps(entry)
-
-  case class   PropertyOps(recordEntry: record.Rep) {
-
-    def get[P <: Singleton with AnyProperty](p: P)
-      (implicit 
-        isThere: P ∈ record.Properties,
-        lookup: Lookup[record.Values, p.Rep]
-      ): p.Rep = lookup(recordEntry)
-
-
-    def update[P <: Singleton with AnyProperty, S <: TypeSet](pEntry: P#Rep)
-      (implicit 
-        isThere: P ∈ record.Properties,
-        replace: Replace[record.Values, (P#Rep :~: ∅)]
-      ): record.Rep = record ->> replace(recordEntry, pEntry :~: ∅)
-
-    def update[Ps <: TypeSet, S <: TypeSet](pEntries: Ps)
-      (implicit 
-        check: Ps ⊂ record.Values,
-        replace: Replace[record.Values, Ps]
-      ): record.Rep = record ->> replace(recordEntry, pEntries)
-
-
-    def as[Other <: AnyRecord](other: Other)(implicit
-      project: Choose[record.Values, other.Values]
-    ): other.Rep = other ->> project(recordEntry)
-
-    def as[Other <: AnyRecord, Rest <: TypeSet, Uni <: TypeSet, Missing <: TypeSet](other: Other, rest: Rest)
-      (implicit
-        missing: (other.Values \ record.Values) { type Out = Missing },
-        allMissing: Rest ~ Missing,
-        uni: (record.Values ∪ Rest) { type Out = Uni },
-        project: Choose[Uni, other.Values]
-      ): other.Rep = other ->> project(uni(recordEntry, rest))
-
-  }
-
   /* Same as just tagging with `->>`, but you can pass fields in any order */
-    def fields[Vs <: TypeSet](values: Vs)(implicit 
-      p: Vs ~> record.Raw
-    ): record.Rep = record ->> p(values)
+  def fields[Vs <: TypeSet](values: Vs)(implicit 
+    p: Vs ~> RawOf[Record]
+  ): TaggedWith[Record] = record ->> p(values)
 }
 
 object AnyRecord {
 
-    type withProperties[Ps <: SingletonOf[TypeSet]] = AnyRecord { type Properties = Ps }
+    type withProperties[Ps <: TypeSet] = AnyRecord { type Properties = Ps }
 
-    implicit def propertyOps[R <: SingletonOf[AnyRecord]](entry: TaggedWith[R]): OtherPropertyOps[R] = 
-      OtherPropertyOps(entry)
+    implicit def propertyOps[R <: SingletonOf[AnyRecord]](
+      entry: R#Rep
+    )
+    (implicit
+      getR: R#Rep => R
+    )
+    : PropertyOps[R] = PropertyOps(entry)//PropertyOps(entry, getR(entry))
 
-    case class OtherPropertyOps[R <: Singleton with AnyRecord](recordEntry: TaggedWith[R]) {
+    implicit def otherPropertyOps[R <: AnyRecord](
+      entry: TaggedWith[R]
+    )
+    (implicit
+      getR: TaggedWith[R] => R
+    )
+    : PropertyOps[R] = PropertyOps(entry)//PropertyOps(entry, getR(entry))
+    
+
+    case class PropertyOps[R <: AnyRecord](val recordEntry: TaggedWith[R]) {
 
     def getIt[P <: Singleton with AnyProperty](p: P)
       (implicit 
@@ -105,23 +71,19 @@ object AnyRecord {
     def update[P <: SingletonOf[AnyProperty], S <: TypeSet](pEntry: P#Rep)
       (implicit 
         isThere: P ∈ R#Properties,
-        replace: Replace[R#Raw, (P#Rep :~: ∅)],
-        getRecord: TaggedWith[R] => R
-      ): R#Rep = {
+        replace: Replace[TaggedWith[R], (P#Rep :~: ∅)]
+      ): TaggedWith[R] = {
 
-        val uh = getRecord(recordEntry)
-        (uh:R) ->> replace(recordEntry, pEntry :~: ∅)
+        replace(recordEntry, pEntry :~: ∅)
       }
 
     def update[Ps <: TypeSet, S <: TypeSet](pEntries: Ps)
       (implicit 
-        check: Ps ⊂ R#Raw,
-        replace: Replace[R#Raw, Ps],
-        getRecord: TaggedWith[R] => R
-      ): R#Rep = {
-
-        val uh = getRecord(recordEntry)
-        (uh:R) ->> replace(recordEntry, pEntries)
+        check: Ps ⊂ TaggedWith[R],
+        replace: Replace[TaggedWith[R], Ps]
+      ): TaggedWith[R] = {
+        
+        replace( recordEntry , pEntries )
       }
 
 
@@ -153,6 +115,12 @@ class Record[Ps <: TypeSet, Vs <: TypeSet](val properties: Ps)(implicit
   type Properties = Ps
   type Raw = Vs
 }
+
+
+
+
+
+
 
 
 

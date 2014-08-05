@@ -78,7 +78,10 @@ sealed class ~[S <: TypeSet : sameAs[Q]#is, Q <: TypeSet]
 
 
 /* ### Adding methods to TypeSet */
-class TypeSetOps[S <: TypeSet](set: S) {
+case class TypeSetOps[TS <: TypeSet](val set: TS) extends syntax.AnyTypeSetSyntax {
+
+  type S = TS
+  
   def :~:[E](e: E)(implicit n: E ∉ S) = ohnosequences.typesets.:~:.cons(e, set)
 
   def lookup[E](implicit e: E ∈ S, l: Lookup[S, E]): l.Out = l(set)

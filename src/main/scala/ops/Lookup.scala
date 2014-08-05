@@ -20,23 +20,36 @@ package ohnosequences.typesets
 trait Lookup[S <: TypeSet, E] { 
   type SetOut <: TypeSet // type of S without E
   type Out <: E
+  // not really, why not put this in ops?
   def apply(s: S): Out
 }
 
 object Lookup extends Lookup_2 {
-  implicit def foundInHead[E, H <: E , T <: TypeSet] = 
-    new Lookup[H :~: T, E] {
-      type SetOut = T
-      type Out = H
-      def apply(s: H :~: T) = s.head
-    }
+
+  implicit def foundInHead[
+    E, 
+    H <: E ,
+    T <: TypeSet
+  ]: Lookup[H :~: T, E] = new Lookup[H :~: T, E] {
+      
+    type SetOut = T
+    type Out = H
+    def apply(s: H :~: T): Out = s.head
+  }
 }
 
 trait Lookup_2 {
-  implicit def foundInTail[H, T <: TypeSet, E](implicit e: E ∈ T, l: Lookup[T, E]) =
-    new Lookup[H :~: T, E] {
+
+  implicit def foundInTail[
+    H,
+    T <: TypeSet,
+    E
+  ](implicit 
+    e: E ∈ T, 
+    l: Lookup[T, E]
+  ): Lookup[H :~: T, E] = new Lookup[H :~: T, E] {
       type SetOut = H :~: l.SetOut
       type Out = l.Out
-      def apply(s: H :~: T) = l(s.tail)
+      def apply(s: H :~: T): Out = l(s.tail)
     }
 }
