@@ -2,7 +2,7 @@
 
 ## tagging
 
-- if `R <: Singleton with Representable` use `R#Rep, R#Raw`
+- if `R <: Singleton with Representable` use `R#Rep, R#Raw`. In general, don't use `Singleton` abstractly, only for providing ops
 - if `R <: Representable` use `TaggedWith[R], RawOf[R]`
 
 ## syntax, ops and friends

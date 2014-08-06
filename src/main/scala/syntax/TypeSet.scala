@@ -7,9 +7,11 @@ trait AnyTypeSetSyntax {
   type S <: TypeSet
   val set: S
 
+  type FirstOf[X <: TypeSet, E] <: Fn2[X,E] with Out[E]
+
   def :~:[E](e: E)(implicit n: E ∉ S): ohnosequences.typesets.:~:[E,S]
 
-  def lookup[E](implicit ev: E ∈ S, l: S Lookup E): l.Out
+  def lookup[E](implicit ev: E ∈ S, l: (S FirstOf E)): l.Out
 
   def pop[E](implicit e: E ∈ S, p: Pop[S, E]): p.Out
 
@@ -41,4 +43,9 @@ trait AnyTypeSetSyntax {
 object AnyTypeSetSyntax {
 
   type For[Set <: TypeSet] = AnyTypeSetSyntax { type S = Set }
+}
+
+trait Lookup[S <: TypeSet, E] {
+
+  type Out <: E
 }

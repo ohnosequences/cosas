@@ -81,10 +81,13 @@ sealed class ~[S <: TypeSet : sameAs[Q]#is, Q <: TypeSet]
 case class TypeSetOps[TS <: TypeSet](val set: TS) extends syntax.AnyTypeSetSyntax {
 
   type S = TS
+
+  type FirstOf[S <: TypeSet, E] = Lookup[S,E]
   
   def :~:[E](e: E)(implicit n: E ∉ S) = ohnosequences.typesets.:~:.cons(e, set)
 
-  def lookup[E](implicit e: E ∈ S, l: Lookup[S, E]): l.Out = l(set)
+  def lookup[E](implicit ev: E ∈ S, l: (S FirstOf E)): l.Out= l(set)
+
   def pop[E](implicit e: E ∈ S, p: Pop[S, E]): p.Out = p(set)
 
   def project[P <: TypeSet](implicit e: P ⊂ S, p: Choose[S, P]): P = p(set)
