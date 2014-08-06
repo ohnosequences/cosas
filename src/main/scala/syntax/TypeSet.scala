@@ -3,11 +3,15 @@ package ohnosequences.typesets.syntax
 import ohnosequences.typesets._
 
 trait AnyTypeSetSyntax {
+
+  import AnyTypeSetSyntax._
   
   type S <: TypeSet
   val set: S
 
-  type FirstOf[X <: TypeSet, E] <: Fn2[X,E] with Out[E]
+  type MySyntax <: Syntax
+  val syntax: MySyntax
+  import syntax._
 
   def :~:[E](e: E)(implicit n: E ∉ S): ohnosequences.typesets.:~:[E,S]
 
@@ -43,6 +47,12 @@ trait AnyTypeSetSyntax {
 object AnyTypeSetSyntax {
 
   type For[Set <: TypeSet] = AnyTypeSetSyntax { type S = Set }
+
+  trait Syntax {
+
+    type FirstOf[X <: TypeSet, E] <: Fn2[X,E] with Out[E]
+  }
+  
 }
 
 trait Lookup[S <: TypeSet, E] {
