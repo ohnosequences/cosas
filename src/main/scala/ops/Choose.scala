@@ -1,12 +1,12 @@
 package ohnosequences.typesets
 
-@annotation.implicitNotFound(msg = "Cannot choose from ${In} subset of type ${Out}")
-trait Choose[In <: TypeSet, Out <: TypeSet] { def apply(s: In): Out }
+@annotation.implicitNotFound(msg = "Cannot choose from ${In} subset of type ${P}")
+trait Choose[In <: TypeSet, P <: TypeSet] extends Fn2[In,P] { type Out = P; def apply(s: In): Out }
 
 object Choose {
   implicit def empty[In <: TypeSet]: 
         Choose[In, ∅] = 
-    new Choose[In, ∅] { def apply(s: In) = ∅ }
+    new Choose[In, ∅] { def apply(s: In): ∅ = ∅ }
 
   implicit def cons[In <: TypeSet, In_ <: TypeSet, H, T <: TypeSet]
     (implicit 

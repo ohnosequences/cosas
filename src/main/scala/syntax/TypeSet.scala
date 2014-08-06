@@ -1,33 +1,31 @@
 package ohnosequences.typesets.syntax
 
-import ohnosequences.typesets._
-
 trait AnyTypeSetSyntax {
 
-  import AnyTypeSetSyntax._
-  
-  type S <: TypeSet
-  val set: S
+  // import AnyTypeSetSyntax._
 
-  type MySyntax <: Syntax
-  val syntax: MySyntax
-  import syntax._
+  type MyTypes <: AnyTypeSetSyntax.Types
+  val types: MyTypes
+  import types._
+  
+  type S <: Carrier
+  val set: S
 
   def :~:[E](e: E)(implicit n: E ∉ S): ohnosequences.typesets.:~:[E,S]
 
-  def lookup[E](implicit ev: E ∈ S, l: (S FirstOf E)): l.Out
+  def lookup[E](implicit ev: E ∈ S, l: (S FirstOf E)): E
 
   def pop[E](implicit e: E ∈ S, p: Pop[S, E]): p.Out
 
-  def project[P <: TypeSet](implicit e: P ⊂ S, p: Choose[S, P]): P
+  def project[P <: Carrier](implicit e: P ⊂ S, p: Choose[S, P]): P
 
-  def replace[P <: TypeSet](p: P)(implicit e: P ⊂ S, r: Replace[S, P]): S
+  def replace[P <: Carrier](p: P)(implicit e: P ⊂ S, r: Replace[S, P]): S
 
-  def reorder[P <: TypeSet](implicit e: S ~ P, t: Reorder[S, P]): P
-  def ~>[P <: TypeSet](p: P)(implicit e: S ~ P, t: Reorder[S, P]): P
+  def reorder[P <: Carrier](implicit e: S ~ P, t: Reorder[S, P]): P
+  def ~>[P <: Carrier](p: P)(implicit e: S ~ P, t: Reorder[S, P]): P
 
-  def \[Q <: TypeSet](q: Q)(implicit sub: S \ Q): sub.Out
-  def ∪[Q <: TypeSet](q: Q)(implicit uni: S ∪ Q): uni.Out
+  def \[Q <: Carrier](q: Q)(implicit sub: S \ Q): sub.Out
+  def ∪[Q <: Carrier](q: Q)(implicit uni: S ∪ Q): uni.Out
 
   import shapeless._
   import poly._
@@ -46,16 +44,26 @@ trait AnyTypeSetSyntax {
 
 object AnyTypeSetSyntax {
 
+  import ohnosequences.typesets._
+
   type For[Set <: TypeSet] = AnyTypeSetSyntax { type S = Set }
 
-  trait Syntax {
+  trait Types {
 
-    type FirstOf[X <: TypeSet, E] <: Fn2[X,E] with Out[E]
+    // the carrier
+    type Carrier
+
+    type FirstOf[X <: Carrier, E] <: Fn2[X,E] with AnyFn.constant[E]
+
+    type ∉[E, X <: Carrier]
+
+    type Pop[S <: Carrier, E] <: Fn1[S] with AnyFn.withCodomain[(E,Carrier)]
+
+    type Choose[S <: Carrier, P <: Carrier] <: Fn2[S,P] with AnyFn.constant[P]
+
+    type ∪[S,Q] <: Fn2[S,Q] with AnyFn.withCodomain[Carrier]
+
+
   }
   
-}
-
-trait Lookup[S <: TypeSet, E] {
-
-  type Out <: E
 }

@@ -1,6 +1,34 @@
 package ohnosequences.typesets
 
-trait AnyFn2 {
+trait AnyFn {
+
+  type Out
+}
+
+object AnyFn {
+
+  type withCodomain[Z] = AnyFn { type Out <: Z }
+  type constant[Z] = AnyFn { type Out = Z }
+}
+
+trait AnyFn1 extends AnyFn {
+
+  type I1
+
+  type Out
+}
+
+trait Fn1[X] extends AnyFn1 {
+
+  type I1 = X
+}
+
+object AnyFn1 {
+
+  type withOutBoundedBy[Z] = AnyFn1 with Out[Z]
+}
+
+trait AnyFn2 extends AnyFn {
 
   type I1
   type I2

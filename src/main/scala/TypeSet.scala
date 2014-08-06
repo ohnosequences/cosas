@@ -76,18 +76,19 @@ sealed class ⊂[S <: TypeSet : subsetOf[Q]#is, Q <: TypeSet]
 @annotation.implicitNotFound(msg = "Can't prove that ${S} ~ ${Q} (i.e. that sets are type-equivalent)")
 sealed class ~[S <: TypeSet : sameAs[Q]#is, Q <: TypeSet]
 
-object TypeSetSyntax extends syntax.AnyTypeSetSyntax.Syntax {
+object TypeSetTypes extends syntax.AnyTypeSetSyntax.Types {
 
+  type Carrier = ohnosequences.typesets.TypeSet
   type FirstOf[S <: TypeSet, E] = Lookup[S,E]
+
 }
 
 /* ### Adding methods to TypeSet */
-case class TypeSetOps[TS <: TypeSet](val set: TS) extends syntax.AnyTypeSetSyntax {
+case class TypeSetOps[TS <: TypeSet](val set: TS) {
 
   type S = TS
-  type MySyntax = TypeSetSyntax.type
-  val syntax = TypeSetSyntax
-  import syntax._
+
+  import TypeSetTypes.FirstOf
 
   def :~:[E](e: E)(implicit n: E ∉ S) = ohnosequences.typesets.:~:.cons(e, set)
 

@@ -4,7 +4,7 @@ package ohnosequences.typesets
 
 
 @annotation.implicitNotFound(msg = "Can't union ${S} with ${Q}")
-trait Union[S <: TypeSet, Q <: TypeSet] {
+trait Union[S <: TypeSet, Q <: TypeSet] extends Fn2[S,Q] {
   type Out <: TypeSet
   def apply(s: S, q: Q): Out
 }

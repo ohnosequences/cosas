@@ -8,7 +8,7 @@ It's like `Lookup`, but it removes the element
 package ohnosequences.typesets
 
 
-trait Pop[S <: TypeSet, E] {
+trait Pop[S <: TypeSet, E] extends Fn1[S] {
   type SOut <: TypeSet
   type EOut <: E
   type Out = (EOut, SOut)
