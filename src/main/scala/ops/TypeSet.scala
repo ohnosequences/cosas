@@ -5,7 +5,8 @@ import ohnosequences.typesets.syntax._
 object DefaultTypes extends AnyTypeSetSyntax.Types {
 
   type Carrier = ohnosequences.typesets.TypeSet
-
+  type ∉[E, X <: Carrier] = ohnosequences.typesets.∉[E, X] 
+  type ∈[E, X <: Carrier] = ohnosequences.typesets.∈[E, X]
   type ∪[S,Q] = ohnosequences.typesets.Union[S,Q]
   type FirstOf[S <: Carrier, E] = ohnosequences.typesets.Lookup[S,E]
   type Pop[S <: Carrier, E] = ohnosequences.typesets.Pop[S,E]

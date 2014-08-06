@@ -1,5 +1,7 @@
 package ohnosequences.typesets
 
+trait Predicate
+
 trait AnyFn {
 
   type Out

@@ -53,17 +53,24 @@ object AnyTypeSetSyntax {
     // the carrier
     type Carrier
 
-    type FirstOf[X <: Carrier, E] <: Fn2[X,E] with AnyFn.constant[E]
+    
 
-    type ∉[E, X <: Carrier]
+    // predicates
+    type ∉[E, X <: Carrier] <: Predicate
+    type ∈[E, X <: Carrier] <: Predicate
+    type ⊂[S <: Carrier, Q <: Carrier] <: Predicate
+    type ~[S <: Carrier, Q <: Carrier] <: Predicate
+    type <<[S <: Carrier, Q <: Carrier] <: Predicate
 
-    type Pop[S <: Carrier, E] <: Fn1[S] with AnyFn.withCodomain[(E,Carrier)]
-
-    type Choose[S <: Carrier, P <: Carrier] <: Fn2[S,P] with AnyFn.constant[P]
-
+    // functions
+    type \[S <: Carrier, Q <: Carrier] <: Fn2[S,Q] with AnyFn.withCodomain[Carrier]
     type ∪[S,Q] <: Fn2[S,Q] with AnyFn.withCodomain[Carrier]
 
-
+    type FirstOf[X <: Carrier, E] <: Fn2[X,E] with AnyFn.constant[E]
+    type Pop[S <: Carrier, E] <: Fn1[S] with AnyFn.withCodomain[(E,Carrier)]
+    type Choose[S <: Carrier, P <: Carrier] <: Fn2[S,P] with AnyFn.constant[P]
+    type Replace[S <: Carrier, Q <: Carrier] <: Fn2[S,Q] with AnyFn.constant[S]
+    type Reorder[S <: Carrier, Q <: Carrier] <: Fn2[S,Q] with AnyFn.constant[Q]
   }
   
 }
