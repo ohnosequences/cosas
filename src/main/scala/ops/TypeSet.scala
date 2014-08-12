@@ -15,9 +15,10 @@ object defaultTypeSet {
     val ∅ : ∅                                     = ohnosequences.typesets.∅
 
     type in[S <: Carrier]                         = ohnosequences.typesets.in[S]
+    type subsetOf[S <: Carrier]                   = ohnosequences.typesets.subsetOf[S]
 
     type notIn[E, X <: Carrier]                   = ohnosequences.typesets.∉[E, X] 
-    type ∈[E, X <: Carrier]                       = ohnosequences.typesets.∈[E, X]
+    
     type ∪[S <: Carrier, Q <: Carrier]            = ohnosequences.typesets.Union[S,Q]
     type \[S <: Carrier, Q <: Carrier]            = ohnosequences.typesets.\[S,Q]
     type FirstOf[X <: Carrier, Z]                 = ohnosequences.typesets.Lookup[X,Z]

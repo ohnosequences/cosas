@@ -169,7 +169,7 @@ class TypeSetTests extends org.scalatest.FunSuite {
     assert(∅.map(toStr) === ∅)
 
     val s = 1 :~: 'a' :~: "foo" :~: List(1,2,3) :~: ∅
-    implicitly[SetMapper[id.type, s.type]]
+    implicitly[SetMapper[id.type, Int :~: Char :~: String :~: List[Int] :~: ∅]]
     assert(s.map(id) === s)
     assert(s.map(rev) === 1 :~: 'a' :~: "oof" :~: List(3,2,1) :~: ∅)
 

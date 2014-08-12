@@ -24,7 +24,7 @@ sealed trait ∅ extends TypeSet {
   def toStr = ""
 }
 
-protected object empty extends ∅
+private object empty extends ∅
 
 
 /* ### Cons constructor */

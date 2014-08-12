@@ -31,43 +31,47 @@ class FancyTypeSetTests extends org.scalatest.FunSuite {
   //   implicitly[boundedBy[AnyVal]#is[vals.type]]
   // }
 
-  // test("subset") {
-  //   val s = set(1)
-  //   implicitly[∅ ⊂ ∅]
-  //   implicitly[∅ ⊂ s.type]
-  //   implicitly[s.type ⊂ s.type]
+  test("subset") {
 
-  //   val a = 100500 :~: 'a' :~: ∅
-  //   val b = 'b' :~: 1 :~: true :~: ∅
-  //   implicitly[a.type ⊂ b.type]
+    // val s = 1 :~: ∅
+    // implicitly[∅ ⊂ ∅]
+    // implicitly[∅ ⊂ s.type]
+    // implicitly[s.type ⊂ s.type]
 
-  //   implicitly[(Int :~: Char :~: ∅) ⊂ (Char :~: Int :~: ∅)]
-  //   implicitly[(Int :~: Char :~: ∅) ⊃ (Char :~: Int :~: ∅)]
-  //   implicitly[(Int :~: Char :~: ∅) ~ (Char :~: Int :~: ∅)]
-  // }
+    // val a = 100500 :~: 'a' :~: ∅
+    // val b = 'b' :~: 1 :~: true :~: ∅
+    // implicitly[a.type ⊂ b.type]
 
-  // test("contains/lookup") {
-  //   val s = 1 :~: 'a' :~: "foo" :~: ∅
-  //   type st = s.type
+    // implicitly[(Int :~: Char :~: ∅) ⊂ (Char :~: Int :~: ∅)]
+    // implicitly[(Int :~: Char :~: ∅) ⊃ (Char :~: Int :~: ∅)]
+    // implicitly[(Int :~: Char :~: ∅) ~ (Char :~: Int :~: ∅)]
+  }
 
-  //   implicitly[Int ∈ st]
-  //   assert(s.lookup[Int] === 1)
+  test("contains/lookup") {
 
-  //   implicitly[Char ∈ st]
-  //   assert(s.lookup[Char] === 'a')
+    val s = 1 :~: 'a' :~: "foo" :~: ∅
+    type st = s.type
 
-  //   implicitly[String ∈ st]
-  //   assert(s.lookup[String] === "foo")
+    implicitly[Int ∈ st]
+    illTyped("Boolean ∈ st")
+    
+    // assert(s.lookup[Int] === 1)
 
-  //   trait truth;
-  //   trait happiness;
-  //   implicitly[    truth ∉ st]
-  //   implicitly[happiness ∉ st]
+    // implicitly[Char ∈ st]
+    // assert(s.lookup[Char] === 'a')
 
-  //   // Neither of these two things work:
-  //   // implicitly[Nothing ∈ st]
-  //   // implicitly[Nothing ∉ st]
-  // }
+    // implicitly[String ∈ st]
+    // assert(s.lookup[String] === "foo")
+
+    // trait truth;
+    // trait happiness;
+    // implicitly[    truth ∉ st]
+    // implicitly[happiness ∉ st]
+
+    // Neither of these two things work:
+    // implicitly[Nothing ∈ st]
+    // implicitly[Nothing ∉ st]
+  }
 
   // test("pop") {
   //   val s = 1 :~: 'a' :~: "foo" :~: ∅

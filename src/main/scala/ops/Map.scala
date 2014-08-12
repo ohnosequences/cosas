@@ -4,7 +4,7 @@ import shapeless._, poly._
   
 /* Mapping a set to another set, i.e. the results of mapping should have distinct types */  
 @annotation.implicitNotFound(msg = "Can't map ${F} over ${In} (maybe the resulting types are not distinct)")
-trait SetMapper[F <: Poly, In <: TypeSet] extends DepFn1[In] with Fn2[F,In] {
+trait SetMapper[F <: Poly, In <: TypeSet] extends Fn2[F,In] {
 
   type Out <: TypeSet
 
@@ -25,7 +25,7 @@ object SetMapper {
   
   implicit def consMapper [
     F <: Poly,
-    H <: TypeSet, OutH <: TypeSet,
+    H, OutH,
     T <: TypeSet, OutT <: TypeSet
   ](implicit
     h: Case1.Aux[F, H, OutH], 

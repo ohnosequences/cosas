@@ -4,50 +4,58 @@ import ohnosequences.typesets.{ AnyFn, Fn1, Fn2, Fn3, Predicate }
 
 trait Types {
 
-    // the ADT
-    type Carrier
-    type :~:[E,S <: Carrier] <: Carrier
-    type ∅ <: Carrier
-    // the parser fails if I don't put a space before :
-    val ∅ : ∅
+  // the ADT
+  type Carrier
+  type :~:[E,S <: Carrier] <: Carrier
+  type ∅ <: Carrier
+  // the parser fails if I don't put a space before :
+  val ∅ : ∅
     
-    // bounds
-    type in[S <: Carrier] <: { 
-        type    is[E]
-        type isnot[E]
-      }
-
-    // predicates
-    type notIn[E, X <: Carrier]         <: Predicate
-    type ∈[E, X <: Carrier]             <: Predicate
-    type ⊂[S <: Carrier, Q <: Carrier]  <: Predicate
-    type ~[S <: Carrier, Q <: Carrier]  <: Predicate
-    type <<[S <: Carrier, Q <: Carrier] <: Predicate
-
-    // functions
-    type \[S <: Carrier, Q <: Carrier]          <: Fn2[S,Q] with AnyFn.withCodomain[Carrier]
-    type ∪[S <: Carrier, Q <: Carrier]          <: Fn2[S,Q] with AnyFn.withCodomain[Carrier]
-
-    type FirstOf[X <: Carrier, Z] <: Fn2[X,Z]
-    type Pop[S <: Carrier, E] <: Fn1[S] with AnyFn.withCodomain[(E,Carrier)]
-    type Choose[S <: Carrier, P <: Carrier] <: Fn2[S,P] with AnyFn.constant[P]
-    type Replace[S <: Carrier, Q <: Carrier] <: Fn2[S,Q] with AnyFn.constant[S]
-    type Reorder[S <: Carrier, Q <: Carrier] <: Fn2[S,Q] with AnyFn.constant[Q]
-
-    import shapeless.{ HList, Poly }
-
-    type SetMapper[F <: Poly, S <: Carrier] <: Fn2[F,S] with AnyFn.withCodomain[Carrier]
-
-    // TODO review this one
-    type SetMapFolder[S <: Carrier, F <: Poly, R] <: Fn3[S,F,R] with AnyFn.constant[R]
-
-    type HListMapper[S <: Carrier, F <: Poly] <: Fn2[S,F] with AnyFn.withCodomain[HList]
-    type ListMapper[S <: Carrier, F <: Poly] <: Fn2[S,F] { type Out <: List[_] }
-
-    type ToHList[S <: Carrier] <: Fn1[S] with AnyFn.withCodomain[HList]
-    type ToList[S <: Carrier] <: Fn1[S] { type Out <: List[_] }
-    type ToListOf[S <: Carrier, O0] = ToList[S] { type Out <: List[O0] } 
+  // bounds
+  type in[S <: Carrier] <: { 
+    type    is[E]
+    type isnot[E]
   }
+
+  type subsetOf[Q <: Carrier] <: { 
+    type    is[S <: Carrier]
+    type isnot[S <: Carrier]
+  }
+
+  // predicates
+  type notIn[E, X <: Carrier]         <: Predicate
+
+  implicit def getIn[E : in[S]#is, S <: Carrier] = new (E ∈ S)
+  class ∈[E: in[S]#is, S <: Carrier]
+
+  type ⊂[S <: Carrier, Q <: Carrier]  <: Predicate
+  type ~[S <: Carrier, Q <: Carrier]  <: Predicate
+  type <<[S <: Carrier, Q <: Carrier] <: Predicate
+
+  // functions
+  type \[S <: Carrier, Q <: Carrier]          <: Fn2[S,Q] with AnyFn.withCodomain[Carrier]
+  type ∪[S <: Carrier, Q <: Carrier]          <: Fn2[S,Q] with AnyFn.withCodomain[Carrier]
+
+  type FirstOf[X <: Carrier, Z] <: Fn2[X,Z]
+  type Pop[S <: Carrier, E] <: Fn1[S] with AnyFn.withCodomain[(E,Carrier)]
+  type Choose[S <: Carrier, P <: Carrier] <: Fn2[S,P] with AnyFn.constant[P]
+  type Replace[S <: Carrier, Q <: Carrier] <: Fn2[S,Q] with AnyFn.constant[S]
+  type Reorder[S <: Carrier, Q <: Carrier] <: Fn2[S,Q] with AnyFn.constant[Q]
+
+  import shapeless.{ HList, Poly }
+
+  type SetMapper[F <: Poly, S <: Carrier] <: Fn2[F,S] with AnyFn.withCodomain[Carrier]
+
+  // TODO review this one
+  type SetMapFolder[S <: Carrier, F <: Poly, R] <: Fn3[S,F,R] with AnyFn.constant[R]
+
+  type HListMapper[S <: Carrier, F <: Poly] <: Fn2[S,F] with AnyFn.withCodomain[HList]
+  type ListMapper[S <: Carrier, F <: Poly] <: Fn2[S,F] { type Out <: List[_] }
+
+  type ToHList[S <: Carrier] <: Fn1[S] with AnyFn.withCodomain[HList]
+  type ToList[S <: Carrier] <: Fn1[S] { type Out <: List[_] }
+  type ToListOf[S <: Carrier, O0] = ToList[S] { type Out <: List[O0] } 
+}
 
   trait Syntax {
 
