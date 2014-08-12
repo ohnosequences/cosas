@@ -22,7 +22,7 @@ object defaultTypeSet {
     type ∪[S <: TypeSet, Q <: TypeSet]            = ohnosequences.typesets.Union[S,Q]
     type \[S <: TypeSet, Q <: TypeSet]            = ohnosequences.typesets.\[S,Q]
     type FirstOf[X <: TypeSet, Z]                 = ohnosequences.typesets.Lookup[X,Z]
-    type Pop[S <: TypeSet, E]                     = ohnosequences.typesets.Pop[S,E]
+    override type Pop[S <: TypeSet, E]            = ohnosequences.typesets.Pop[S,E]
     type Choose[S <: TypeSet, P <: TypeSet]       = ohnosequences.typesets.Choose[S,P]
     type Replace[S <: TypeSet, Q <: TypeSet]      = ohnosequences.typesets.Replace[S,Q]
     type Reorder[S <: TypeSet, Q <: TypeSet]      = ohnosequences.typesets.Reorder[S,Q]
@@ -46,16 +46,13 @@ object defaultTypeSet {
     type S = TS
     type MyTypes = Types.type
     val types: Types.type = Types
-    import Types._
+    import types._
 
-    // for convenience
-    type TypeSet = types.TypeSet
+    override def :~:[E](e: E)(implicit n: notIn[E,S]) = ohnosequences.typesets.:~:.cons(e, set)
 
-    def :~:[E](e: E)(implicit n: notIn[E,S]) = ohnosequences.typesets.:~:.cons(e, set)
+    override def lookup[E](implicit ev: notIn[E,S], firstOf: FirstOf[S,E]): firstOf.Out = firstOf(set)
 
-    override def lookup[E](implicit ev: notIn[E,S], firstOf: types.FirstOf[S,E]): firstOf.Out = firstOf(set)
-
-    def pop[E](implicit e: types.∈[E,S], p: Pop[S, E]): p.Out = p(set)
+    override def pop[E](implicit e: (E ∈ S), p: types.Pop[S, E]): p.Out = p(set)
 
     def project[P <: TypeSet](implicit e: ⊂[P,S], p: types.Choose[S, P]): P = p(set)
 

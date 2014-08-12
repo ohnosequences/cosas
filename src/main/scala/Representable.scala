@@ -40,6 +40,11 @@ trait Representable { self =>
 
 object Representable {
 
+  import AnyTag.Tag
+  
+  type RepOf[D <: Representable] = D#Raw with Tag[D]
+  type RawOf[D <: Representable] = D#Raw
+
   implicit def ops[D <: Representable](d: D): Ops[D] = Ops[D](d)
 
   case class Ops[D <: Representable](d: D) {

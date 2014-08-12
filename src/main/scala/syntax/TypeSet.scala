@@ -24,7 +24,7 @@ trait Types { impl =>
   }
   implicit def getIsIn[E: in[S]#is, S <: TypeSet] = new (E IsIn S)
   sealed class IsIn[E: in[S]#is, S <: TypeSet]
-  type ∈[E, S <: TypeSet] = IsIn[E,S]
+  final type ∈[E, S <: TypeSet] = IsIn[E,S]
 
   type subsetOf[Q <: TypeSet] <: { 
     type    is[S <: TypeSet]
@@ -51,7 +51,7 @@ trait Types { impl =>
   type ∪[S <: TypeSet, Q <: TypeSet]          <: Fn2[S,Q] with AnyFn.withCodomain[TypeSet]
 
   type FirstOf[X <: TypeSet, Z] <: Fn2[X,Z]
-  type Pop[S <: TypeSet, E] <: Fn1[S] with AnyFn.withCodomain[(E,TypeSet)]
+  type Pop[S <: TypeSet, E] <: Fn1[S] with AnyFn.WithCodomain[(E,TypeSet)]
   type Choose[S <: TypeSet, P <: TypeSet] <: Fn2[S,P] with AnyFn.constant[P]
   type Replace[S <: TypeSet, Q <: TypeSet] <: Fn2[S,Q] with AnyFn.constant[S]
   type Reorder[S <: TypeSet, Q <: TypeSet] <: Fn2[S,Q] with AnyFn.constant[Q]
@@ -79,44 +79,44 @@ trait Types { impl =>
   : Impl = getImpl(x)
 }
 
-  trait Syntax {
+trait Syntax {
 
-    type MyTypes <: Types
-    val types: MyTypes
-    import types._
-    
-    type S <: types.TypeSet
-    val set: S
+  type MyTypes <: Types
+  val types: MyTypes
+  import types._
+  
+  type S <: TypeSet
+  val set: S
 
-    def :~:[E](e: E)(implicit n: types.notIn[E,S]): types.:~:[E,S]
+  def :~:[E](e: E)(implicit n: notIn[E,S]): :~:[E,S]
 
-    def lookup[U](implicit 
-      ev: notIn[U,S],
-      firstOf: FirstOf[S,U]
-    ): firstOf.Out
+  def lookup[U](implicit 
+    ev: notIn[U,S],
+    firstOf: FirstOf[S,U]
+  ): firstOf.Out
 
-    // def pop[E](implicit e: E ∈ S, p: Pop[S, E]): p.Out
+  def pop[V](implicit ev: (V ∈ S), p: Pop[S, V]): p.Out
 
-    // def project[P <: TypeSet](implicit e: P ⊂ S, p: Choose[S, P]): p.Out
+  // def project[P <: TypeSet](implicit e: P ⊂ S, p: Choose[S, P]): p.Out
 
-    // def replace[P <: TypeSet](p: P)(implicit e: P ⊂ S, r: Replace[S, P]): r.Out
+  // def replace[P <: TypeSet](p: P)(implicit e: P ⊂ S, r: Replace[S, P]): r.Out
 
-    // def reorder[P <: TypeSet](implicit e: S ~ P, t: Reorder[S, P]): t.Out
-    // def ~>[P <: TypeSet](p: P)(implicit e: S ~ P, t: Reorder[S, P]): t.Out
+  // def reorder[P <: TypeSet](implicit e: S ~ P, t: Reorder[S, P]): t.Out
+  // def ~>[P <: TypeSet](p: P)(implicit e: S ~ P, t: Reorder[S, P]): t.Out
 
-    // def \[Q <: TypeSet](q: Q)(implicit sub: S \ Q): sub.Out
-    // def ∪[Q <: TypeSet](q: Q)(implicit uni: S ∪ Q): uni.Out
+  // def \[Q <: TypeSet](q: Q)(implicit sub: S \ Q): sub.Out
+  // def ∪[Q <: TypeSet](q: Q)(implicit uni: S ∪ Q): uni.Out
 
-    // import shapeless.Poly
+  // import shapeless.Poly
 
-    // def map[F <: Poly](f: F)(implicit mapper: SetMapper[S, F]): mapper.Out
+  // def map[F <: Poly](f: F)(implicit mapper: SetMapper[S, F]): mapper.Out
 
-    // def mapHList[F <: Poly](f: F)(implicit mapper: HListMapper[S, F]): mapper.Out
-    // def mapList[F <: Poly](f: F)(implicit mapper: ListMapper[S, F]): mapper.Out
+  // def mapHList[F <: Poly](f: F)(implicit mapper: HListMapper[S, F]): mapper.Out
+  // def mapList[F <: Poly](f: F)(implicit mapper: ListMapper[S, F]): mapper.Out
 
-    // def mapFold[F <: Poly, R](f: F)(r: R)(op: (R, R) => R)(implicit mapFolder: SetMapFolder[S,F,R]): mapFolder.Out
+  // def mapFold[F <: Poly, R](f: F)(r: R)(op: (R, R) => R)(implicit mapFolder: SetMapFolder[S,F,R]): mapFolder.Out
 
-    // def toHList(implicit toHList: ToHList[S]): toHList.Out
-    // def toList(implicit toList: ToList[S]): toList.Out
-    // def toListOf[O](implicit toListOf: (S ToListOf O)): toListOf.Out
-  }
+  // def toHList(implicit toHList: ToHList[S]): toHList.Out
+  // def toList(implicit toList: ToList[S]): toList.Out
+  // def toListOf[O](implicit toListOf: (S ToListOf O)): toListOf.Out
+}

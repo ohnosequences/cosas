@@ -7,10 +7,17 @@ trait AnyFn {
   type Out
 }
 
+
+
 object AnyFn {
 
   type withCodomain[Z] = AnyFn { type Out <: Z }
   type constant[Z] = AnyFn { type Out = Z }
+
+  trait WithCodomain[Z] extends AnyFn {
+
+    type Out <: Z
+  }
 }
 
 trait Out[Z] {

@@ -5,7 +5,7 @@ package ohnosequences.typesets.syntax
 */
 trait Module {
 
-  trait Syntax {
+  trait Types {
 
     /*
       the underlying type
@@ -13,11 +13,11 @@ trait Module {
     type Carrier
   }
 
-  trait Ops {
+  trait Syntax {
 
-    type MySyntax <: Syntax
-    val syntax: MySyntax
-    import syntax._
+    type MyTypes <: Types
+    val types: MyTypes
+    import types._
 
     type C <: Carrier
     val c: C
