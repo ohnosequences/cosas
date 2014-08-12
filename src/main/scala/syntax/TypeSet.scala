@@ -10,8 +10,12 @@ trait Types {
   type ∅ <: Carrier
   // the parser fails if I don't put a space before :
   val ∅ : ∅
+
+  /*
+  The basic predicates that you need for implementing the others are
+  */
     
-  // bounds
+  // predicates
   type in[S <: Carrier] <: { 
     type    is[E]
     type isnot[E]

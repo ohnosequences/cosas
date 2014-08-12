@@ -174,4 +174,9 @@ class RecordTests extends org.scalatest.FunSuite {
     val uhoh = simpleUserEntry getIt id
   }
 
+  test("can see a record entry as another") {
+
+    val hey: simpleUser.Rep = normalUserEntry as simpleUser
+  }
+
 }

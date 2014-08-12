@@ -33,44 +33,36 @@ trait AnyRecord extends Representable { record =>
 
 object AnyRecord {
 
-    type withProperties[Ps <: TypeSet] = AnyRecord { type Properties = Ps }
+  // extractors
+  type withProperties[Ps <: TypeSet] = AnyRecord { type Properties = Ps }
 
-    implicit def propertyOps[R <: SingletonOf[AnyRecord]](
-      entry: R#Rep
-    )
-    (implicit
-      getR: R#Rep => R
-    )
-    : PropertyOps[R] = PropertyOps(entry)//PropertyOps(entry, getR(entry))
+  // accessors
+  type PropertiesOf[R <: AnyRecord] = R#Properties
 
     implicit def otherPropertyOps[R <: AnyRecord](
       entry: TaggedWith[R]
-    )
-    (implicit
-      getR: TaggedWith[R] => R
-    )
-    : PropertyOps[R] = PropertyOps(entry)//PropertyOps(entry, getR(entry))
+    ): PropertyOps[R] = PropertyOps(entry)//PropertyOps(entry, getR(entry))
     
 
     case class PropertyOps[R <: AnyRecord](val recordEntry: TaggedWith[R]) {
 
-    def getIt[P <: Singleton with AnyProperty](p: P)
+    def getIt[P <: AnyProperty](p: P)
       (implicit 
-        isThere: P ∈ R#Properties,
-        lookup: Lookup[R#Raw, P#Rep]
-      ): P#Rep = lookup(recordEntry)
+        isThere: P ∈ PropertiesOf[R],
+        lookup: Lookup[RawOf[R], TaggedWith[P]]
+      ): TaggedWith[P] = lookup(recordEntry)
 
-    def get[P <: Singleton with AnyProperty](p: P)
+    def get[P <: AnyProperty](p: P)
       (implicit 
-        isThere: P ∈ R#Properties,
-        lookup: Lookup[R#Raw, P#Rep]
-      ): P#Rep = lookup(recordEntry)
+        isThere: P ∈ PropertiesOf[R],
+        lookup: Lookup[RawOf[R], TaggedWith[P]]
+      ): TaggedWith[P] = lookup(recordEntry)
 
 
-    def update[P <: SingletonOf[AnyProperty], S <: TypeSet](pEntry: P#Rep)
+    def update[P <: AnyProperty, S <: TypeSet](pEntry: TaggedWith[P])
       (implicit 
-        isThere: P ∈ R#Properties,
-        replace: Replace[TaggedWith[R], (P#Rep :~: ∅)]
+        isThere: P ∈ PropertiesOf[R],
+        replace: Replace[TaggedWith[R], (TaggedWith[P] :~: ∅)]
       ): TaggedWith[R] = {
 
         replace(recordEntry, pEntry :~: ∅)
@@ -86,9 +78,9 @@ object AnyRecord {
       }
 
 
-    def as[Other <: Singleton with AnyRecord](other: Other)(implicit
-      project: Choose[R#Raw, Other#Raw]
-    ): Other#Rep = (other:Other) ->> project(recordEntry)
+    def as[Other <: AnyRecord](other: Other)(implicit
+      project: Choose[RawOf[R], RawOf[Other]]
+    ): TaggedWith[Other] = AnyTag.->>(other, project(recordEntry))
 
     def as[Other <: Singleton with AnyRecord, Rest <: TypeSet, Uni <: TypeSet, Missing <: TypeSet](other: Other, rest: Rest)
       (implicit

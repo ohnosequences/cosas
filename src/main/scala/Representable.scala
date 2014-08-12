@@ -23,7 +23,7 @@ trait Representable { self =>
   /*
     `Raw` enters, `Rep` leaves
   */
-  final def ->>(r: AnyTag.RawOf[this.type]): AnyTag.TaggedWith[self.type] = AnyTag.TagWith[self.type](self)(r)
+  final def ->>(r: AnyTag.RawOf[Me]): AnyTag.TaggedWith[Me] = AnyTag.TagWith[Me](self)(r)
 
   /*
     This lets you get the instance of the singleton type from a tagged `Rep` value.
@@ -64,7 +64,7 @@ trait Denotation[T] extends AnyDenotation { type TYPE = T }
 */
 object AnyTag {
 
-  case class TagWith[D <: Singleton with Representable](val d: D) {
+  case class TagWith[D <: Representable](val d: D) {
 
     def apply(dr : RawOf[D]): TaggedWith[D] = {
 
@@ -83,5 +83,7 @@ object AnyTag {
 
   type AsRepOf[X, D <: Representable] = X with RawOf[D] with Tag[D]
   type SingletonOf[X <: AnyRef] = Singleton with X
+
+  def ->>[D <: Representable, R <: D#Raw](d: D, r: R): AnyTag.TaggedWith[D] = AnyTag.TagWith[D](d)(r)
 
 }
