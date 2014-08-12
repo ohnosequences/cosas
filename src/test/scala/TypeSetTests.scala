@@ -155,9 +155,10 @@ class TypeSetTests extends org.scalatest.FunSuite {
   }
 
   test("mapper") {
+
     import poly._
 
-    object id extends Poly1 { implicit def default[T] = at[T](t => t) }
+    object id extends Poly1 { implicit def default[T] = at[T]((t:T) => t) }
     object toStr extends (Any -> String)(_.toString)
     object rev extends Poly1 { 
       implicit val str = at[String](t => t.reverse)
@@ -168,6 +169,7 @@ class TypeSetTests extends org.scalatest.FunSuite {
     assert(∅.map(toStr) === ∅)
 
     val s = 1 :~: 'a' :~: "foo" :~: List(1,2,3) :~: ∅
+    implicitly[SetMapper[id.type, s.type]]
     assert(s.map(id) === s)
     assert(s.map(rev) === 1 :~: 'a' :~: "oof" :~: List(3,2,1) :~: ∅)
 

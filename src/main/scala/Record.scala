@@ -11,7 +11,6 @@ import AnyTag._
 */
 trait AnyRecord extends Representable { record =>
   
-  type Record = record.type
   /* Any item has a fixed set of properties */
   type Properties <: TypeSet
   val  properties: Properties
@@ -28,8 +27,8 @@ trait AnyRecord extends Representable { record =>
 
   /* Same as just tagging with `->>`, but you can pass fields in any order */
   def fields[Vs <: TypeSet](values: Vs)(implicit 
-    p: Vs ~> RawOf[Record]
-  ): TaggedWith[Record] = record ->> p(values)
+    p: Vs ~> RawOf[record.type]
+  ): TaggedWith[record.type] = record ->> p(values)
 }
 
 object AnyRecord {
@@ -292,6 +291,7 @@ object ToProperties {
     t: ToProperties.Aux[In, AT, RT, F]
   ): ToProperties.Aux[In, AH :~: AT, RH :~: RT, F] =
     new  ToProperties[In, AH :~: AT] {
+      
       type Out = RH :~: RT
       type Fun = F
       def apply(in: In, a: AH :~: AT): Out = f((in, a.head)) :~: t(in, a.tail)

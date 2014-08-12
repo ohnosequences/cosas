@@ -4,7 +4,7 @@ package ohnosequences.typesets
 
 
 @annotation.implicitNotFound(msg = "Can't subtract ${Q} from ${S}")
-trait Subtract[S <: TypeSet, Q <: TypeSet] {
+trait Subtract[S <: TypeSet, Q <: TypeSet] extends Fn2[S, Q] {
   type Out <: TypeSet
   def apply(s: S, q: Q): Out
 }

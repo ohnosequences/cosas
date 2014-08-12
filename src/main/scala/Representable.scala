@@ -23,7 +23,7 @@ trait Representable { self =>
   /*
     `Raw` enters, `Rep` leaves
   */
-  final def ->>(r: Raw): AnyTag.TaggedWith[self.type] = AnyTag.TagWith[self.type](self)(r)
+  final def ->>(r: AnyTag.RawOf[this.type]): AnyTag.TaggedWith[self.type] = AnyTag.TagWith[self.type](self)(r)
 
   /*
     This lets you get the instance of the singleton type from a tagged `Rep` value.

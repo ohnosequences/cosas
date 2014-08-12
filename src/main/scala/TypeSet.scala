@@ -19,12 +19,12 @@ trait TypeSet { set =>
 
 
 /* ### Empty set */
-sealed trait Empty extends TypeSet {
+sealed trait ∅ extends TypeSet {
   type Bound = either[Nothing]
   def toStr = ""
 }
 
-protected object empty extends Empty
+protected object empty extends ∅
 
 
 /* ### Cons constructor */
@@ -62,10 +62,10 @@ sealed class <<![S <: TypeSet : boundedBy[B]#isnot, B]
 sealed class SetIsBoundedByUnion[S <: TypeSet, U <: TypeUnion]
 
 @annotation.implicitNotFound(msg = "Can't prove that ${E} ∈ ${S}")
-sealed class ∈[E : in[S]#is, S <: TypeSet]
+sealed class ∈[E : in[S]#is, S <: TypeSet] extends Predicate
 
 @annotation.implicitNotFound(msg = "Can't prove that ${E} ∉ ${S}")
-sealed class ∉[E : in[S]#isnot, S <: TypeSet]
+sealed class ∉[E : in[S]#isnot, S <: TypeSet] extends Predicate
 
 @annotation.implicitNotFound(msg = "Can't prove that ${S} ⊃ ${Q}")
 sealed class ⊃[S <: TypeSet : supersetOf[Q]#is, Q <: TypeSet]
@@ -76,23 +76,19 @@ sealed class ⊂[S <: TypeSet : subsetOf[Q]#is, Q <: TypeSet]
 @annotation.implicitNotFound(msg = "Can't prove that ${S} ~ ${Q} (i.e. that sets are type-equivalent)")
 sealed class ~[S <: TypeSet : sameAs[Q]#is, Q <: TypeSet]
 
-object TypeSetTypes extends syntax.AnyTypeSetSyntax.Types {
+// object TypeSetTypes extends syntax.Types {
 
-  type Carrier = ohnosequences.typesets.TypeSet
-  type FirstOf[S <: TypeSet, E] = Lookup[S,E]
+//   type Carrier = ohnosequences.typesets.TypeSet
+//   type FirstOf[S <: TypeSet, E] = Lookup[S,E]
 
-}
+// }
 
 /* ### Adding methods to TypeSet */
-case class TypeSetOps[TS <: TypeSet](val set: TS) {
-
-  type S = TS
-
-  import TypeSetTypes.FirstOf
+case class TypeSetOps[S <: TypeSet](val set: S) {
 
   def :~:[E](e: E)(implicit n: E ∉ S) = ohnosequences.typesets.:~:.cons(e, set)
 
-  def lookup[E](implicit ev: E ∈ S, l: (S FirstOf E)): l.Out= l(set)
+  def lookup[E](implicit ev: E ∈ S, l: (S Lookup E)): l.Out= l(set)
 
   def pop[E](implicit e: E ∈ S, p: Pop[S, E]): p.Out = p(set)
 
@@ -108,12 +104,13 @@ case class TypeSetOps[TS <: TypeSet](val set: TS) {
 
   import shapeless._
   import poly._
-  def map(f: Poly)(implicit m: SetMapper[f.type, S]): m.Out = m(set)
-  def mapHList(f: Poly)(implicit m: HListMapper[f.type, S]): m.Out = m(set)
-  def mapList(f: Poly)(implicit m: ListMapper[f.type, S]): m.Out = m(set)
 
-  def mapFold[R, F](z: R)(f: F)(op: (R, R) => R)
-    (implicit smf: SetMapFolder[S, R, F]): R = smf(set, z, op)
+  def map(f: Poly)(implicit m: SetMapper[f.type, S]): m.Out = m(set)
+  def mapHList(f: Poly)(implicit m: HListMapper[S, f.type]): m.Out = m(set)
+  def mapList(f: Poly)(implicit m: ListMapper[S, f.type]): m.Out = m(set)
+
+  def mapFold[R](z: R)(f: Poly)(op: (R, R) => R)
+    (implicit smf: SetMapFolder[S, f.type, R]): R = smf(set, z, op)
 
   def toHList(implicit toHList: ToHList[S]): toHList.Out = toHList(set)
   def toList(implicit toList: ToList[S]): toList.Out = toList(set)

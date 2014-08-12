@@ -1,8 +1,8 @@
 package ohnosequences.typesets
 
 /* Just a combination of ~ and Choose (reordering set) */
-@annotation.implicitNotFound(msg = "Can't reorder ${In} to ${Out}")
-trait Reorder[In <: TypeSet, Out <: TypeSet] { def apply(s: In): Out }
+@annotation.implicitNotFound(msg = "Can't reorder ${In} to ${O}")
+trait Reorder[In <: TypeSet, O <: TypeSet] extends Fn2[In,O] {  type Out = O; def apply(s: In): Out }
 
 object Reorder {
   implicit def any[In <: TypeSet, Out <: TypeSet]

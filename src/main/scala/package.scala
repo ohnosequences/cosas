@@ -29,7 +29,6 @@ package object typesets {
 
   /* ### Type sets */
   val ∅ : ∅ = empty
-  type ∅ = Empty with empty.type
 
   // Shortcut for a one element set 
   def set[E](e: E): E :~: ∅ =  :~:.cons(e,∅)
@@ -57,7 +56,7 @@ package object typesets {
     type    is[S <: TypeSet] = S#Bound#get <:<  Q#Bound#get
     type isnot[S <: TypeSet] = S#Bound#get <:!< Q#Bound#get
   }
-  implicit def ⊂[S <: TypeSet : subsetOf[Q]#is, Q <: TypeSet] = new (S ⊂ Q)
+  implicit def getSubsetOf[S <: TypeSet : subsetOf[Q]#is, Q <: TypeSet] = new (S ⊂ Q)
 
   /* - The union types of two sets are the same */
   type sameAs[Q <: TypeSet] = { 

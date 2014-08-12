@@ -6,30 +6,42 @@ package ohnosequences.typesets
 
 import shapeless._
 
-trait ToHList[S <: TypeSet] extends DepFn1[S] { type Out <: HList }
+trait ToHList[S <: TypeSet] extends Fn1[S] { 
+
+  type Out <: HList 
+
+  def apply(s: S): Out
+}
 
 object ToHList {
+
   def apply[S <: TypeSet](implicit toHList: ToHList[S]): Aux[S, toHList.Out] = toHList
 
   type Aux[S <: TypeSet, L <: HList] = ToHList[S] { type Out = L }
 
-  implicit def emptyToHList: Aux[∅, HNil] = 
-    new ToHList[∅] { type Out = HNil
-      def apply(s: ∅): Out = HNil
-    }
+  implicit def emptyToHList: Aux[∅, HNil] = new ToHList[∅] { 
+
+    type Out = HNil
+    def apply(s: ∅): Out = HNil
+  }
   
-  implicit def consToHList[H, T <: TypeSet, LT <: HList]
-      (implicit lt : Aux[T, LT]): Aux[H :~: T, H :: LT] = 
-    new ToHList[H :~: T] { type Out = H :: LT
-      def apply(s: H :~: T): Out = s.head :: lt(s.tail)
-    }
+  implicit def consToHList[H, T <: TypeSet, LT <: HList](implicit 
+    lt : Aux[T, LT]
+  ): Aux[H :~: T, H :: LT] = new ToHList[H :~: T] { 
+
+    type Out = H :: LT
+    def apply(s: H :~: T): Out = s.head :: lt(s.tail)
+  }
 }
 
 // TODO: FromHList
 
-trait ToList[S <: TypeSet] extends DepFn1[S] {
+trait ToList[S <: TypeSet] extends Fn1[S] {
+
   type O
   type Out = List[O]
+
+  def apply(s: S): Out
 }
 
 // object ToList {
@@ -56,6 +68,7 @@ trait ToList[S <: TypeSet] extends DepFn1[S] {
 // }
 
 object ToList {
+
   def apply[S <: TypeSet](implicit toList: ToList[S]): Aux[S, toList.O] = toList
 
   type Aux[S <: TypeSet, O_] = ToList[S] { type O = O_ }

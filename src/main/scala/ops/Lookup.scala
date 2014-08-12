@@ -17,7 +17,8 @@ object Bar extends Foo
 package ohnosequences.typesets
 
 
-trait Lookup[S <: TypeSet, E] extends Fn2[S,E] with Out[E] { 
+trait Lookup[S <: TypeSet, E] extends Fn2[S,E] { 
+
   type SetOut <: TypeSet // type of S without E
   type Out <: E
   // not really, why not put this in ops?
@@ -30,10 +31,10 @@ object Lookup extends Lookup_2 {
     E, 
     H <: E ,
     T <: TypeSet
-  ]: Lookup[H :~: T, E] = new Lookup[H :~: T, E] {
+  ]: Lookup[  H :~: T, E] = new Lookup[H :~: T, E] {
       
     type SetOut = T
-    type Out = H
+    type Out = E
     def apply(s: H :~: T): Out = s.head
   }
 }

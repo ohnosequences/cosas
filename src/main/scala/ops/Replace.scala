@@ -12,7 +12,9 @@ package ohnosequences.typesets
 
 
 @annotation.implicitNotFound(msg = "Can't replace elements in ${S} with ${Q}")
-trait Replace[S <: TypeSet, Q <: TypeSet] {
+trait Replace[S <: TypeSet, Q <: TypeSet] extends Fn2[S,Q] {
+
+  type Out = S
   def apply(s: S, q: Q): S
 }
 
