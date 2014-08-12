@@ -7,7 +7,7 @@
 // object RecordDefault {
   
 
-//   case class PropertyOps[R <: AnyRecord](val entry: TaggedWith[R], val record: R)
+//   case class PropertyOps[R <: AnyRecord](val entry: RepOf[R], val record: R)
 //   extends AnyRecordSyntax {
 
 //     type Record = R
@@ -33,17 +33,17 @@
 //     def update[P <: SingletonOf[AnyProperty], S <: TypeSet](pEntry: P#Rep)
 //       (implicit 
 //         isThere: P ∈ R#Properties,
-//         replace: Replace[TaggedWith[R], (P#Rep :~: ∅)]
-//       ): TaggedWith[R] = {
+//         replace: Replace[RepOf[R], (P#Rep :~: ∅)]
+//       ): RepOf[R] = {
 
 //         replace(entry, pEntry :~: ∅)
 //       }
 
 //     def update[Ps <: TypeSet, S <: TypeSet](pEntries: Ps)
 //       (implicit 
-//         check: Ps ⊂ TaggedWith[R],
-//         replace: Replace[TaggedWith[R], Ps]
-//       ): TaggedWith[R] = {
+//         check: Ps ⊂ RepOf[R],
+//         replace: Replace[RepOf[R], Ps]
+//       ): RepOf[R] = {
         
 //         replace( entry , pEntries )
 //       }

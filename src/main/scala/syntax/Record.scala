@@ -1,61 +1,41 @@
-// package ohnosequences.typesets.syntax
+package ohnosequences.typesets.syntax
 
-// import ohnosequences.typesets._, AnyTag._
+import ohnosequences.typesets.{ Representable, AnyTag, AnyProperty } 
+import AnyTag._
 
-// trait AnyRecordSyntax {
+trait RecordSyntax {
 
-//   type Record <: AnyRecord
-//   val entry: TaggedWith[Record]
-//   val record: Record
+  // dependencies
+  type TypeSetSyntax <: Types
+  val typeSetSyntax: TypeSetSyntax
+  import typeSetSyntax._
 
-//   // TODO remove this
-//   def getIt[P <: Singleton with AnyProperty](p: P)
-//   (implicit 
-//     isThere: P ∈ Record#Properties
-//   )
-//   : P#Rep
+  type Record <: Representable { 
 
-//   def get[P <: Singleton with AnyProperty](p: P)
-//   (implicit 
-//     isThere: P ∈ Record#Properties
-//   )
-//   : P#Rep
+    type Properties <: typeSetSyntax.TypeSet
+    type Raw <: typeSetSyntax.TypeSet
+  }
 
-//   def update[P <: SingletonOf[AnyProperty], S <: TypeSet](pEntry: P#Rep)
-//   (implicit 
-//     isThere: P ∈ Record#Properties
-//   )
-//   : TaggedWith[Record]
+  type PropertiesOf[R <: Record] <: TypeSet
 
-//   def update[Ps <: TypeSet, S <: TypeSet](pEntries: Ps)
-//   (implicit 
-//     check: Ps ⊂ TaggedWith[Record]
-//   )
-//   : TaggedWith[Record]
+  // implicit def to
+}
 
+trait RecordOps {
 
-//   def as[Other <: Singleton with AnyRecord](other: Other)
-//   (implicit
-//     project: Choose[Record#Raw, Other#Raw]
-//   )
-//   : Other#Rep
+  type MySyntax <: RecordSyntax
+  val syntax: MySyntax
 
-//   def as [
-//     Other <: Singleton with AnyRecord,
-//     Rest <: TypeSet,
-//     Uni <: TypeSet,
-//     Missing <: TypeSet
-//   ]
-//   (
-//     other: Other, 
-//     rest: Rest
-//   )
-//   (implicit
-//     missing: (Other#Raw \ Record#Raw) { type Out = Missing },
-//     allMissing: Rest ~ Missing,
-//     uni: (Record#Raw ∪ Rest) { type Out = Uni },
-//     project: Choose[Uni, Other#Raw]
-//   )
-//   : Other#Rep
+  import syntax._
+  import syntax.typeSetSyntax._
 
-// }
+  type R <: Record
+  val entry: RepOf[R]
+
+  def get[P <: AnyProperty](p: P)
+    (implicit 
+      isThere: P ∈ PropertiesOf[R],
+      lookup: FirstOf[RawOf[R], RepOf[P]]
+    )
+    : lookup.Out
+}

@@ -88,7 +88,7 @@ package object typesets {
 
   // record-related aliases
 
-  // id.type :~: name.type :~: ∅, TaggedWith[id.type] :~: TaggedWith[name.type] :~: ∅
+  // id.type :~: name.type :~: ∅, RepOf[id.type] :~: RepOf[name.type] :~: ∅
   type valuesOf[Ps <: TypeSet] = {
 
     type is[VT <: TypeSet] = Represented.By[Ps,VT]

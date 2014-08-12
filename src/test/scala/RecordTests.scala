@@ -22,8 +22,34 @@ object RecordTestsContext {
 
   case object normalUser extends Record(id :~: name :~: email :~: color :~: ∅)
 
+  case class HasRecordWithId[
+    Id <: AnyProperty, 
+    R <: AnyRecord
+  ](
+    val id: Id,
+    val r: R
+  )(implicit
+    val idIsThere: Id ∈ AnyRecord.PropertiesOf[R],
+    val getId: Lookup[RawOf[R], RepOf[Id]]
+  )
+  {
+
+    def getId(entry: RepOf[R]): RepOf[Id] = entry get id
+  }
+
   val vProps = email :~: color :~: ∅
   // nothing works with this
+  val vRecord = new Record(email :~: color :~: ∅)
+
+  val vEmail = "oh@buh.com"
+
+  val vRecordEntry = vRecord =>> (
+    (email is vEmail) :~:
+    (color is "blue") :~:
+    ∅
+  )
+
+  val hasRecordWithId = new HasRecordWithId(id, normalUser)
 
   // creating a record instance is easy and neat:
   val simpleUserEntry = simpleUser fields (
@@ -74,7 +100,7 @@ class RecordTests extends org.scalatest.FunSuite {
     implicitly [
 
       // using external bounds
-      (TaggedWith[id.type] :~: TaggedWith[name.type] :~: ∅) isValuesOf (id.type :~: name.type :~: ∅)
+      (RepOf[id.type] :~: RepOf[name.type] :~: ∅) isValuesOf (id.type :~: name.type :~: ∅)
     ]
 
     implicitly [
@@ -162,16 +188,21 @@ class RecordTests extends org.scalatest.FunSuite {
 
     assert {
 
-      true === false
+      (vRecordEntry get email) === "oh@buh.com"
     }
   }
 
   test("generic ops outside record work") {
 
-
-    // import AnyRecord._
-
     val uhoh = simpleUserEntry getIt id
+  }
+
+  test("recognize entries coming from different paths") {
+
+    assert {
+
+      (hasRecordWithId getId normalUserEntry) == ( normalUserEntry get id)
+    }
   }
 
   test("can see a record entry as another") {

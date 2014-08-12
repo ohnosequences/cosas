@@ -50,9 +50,12 @@ class FancyTypeSetTests extends org.scalatest.FunSuite {
   test("contains/lookup") {
 
     val s = 1 :~: 'a' :~: "foo" :~: ∅
+    val s0: (Int :~: Char :~: String :~: ∅) = 1 :~: 'a' :~: "foo" :~: ∅
     type st = s.type
 
     implicitly[Int ∈ st]
+    implicitly[String ∈ (Int :~: Char :~: String :~: ∅)]
+    implicitly[Int ∈ (String :~: Int :~: AnyRef :~: HList :~: ∅)]    
     illTyped("Boolean ∈ st")
     
     // assert(s.lookup[Int] === 1)

@@ -18,23 +18,33 @@ trait Representable { self =>
   /*
     `Raw` tagged with `self.type`; this lets you recognize a denotation while being able to operate on it as `Raw`.
   */
-  final type Rep = AnyTag.TaggedWith[self.type]
+  final type Rep = AnyTag.RepOf[self.type]
 
   /*
     `Raw` enters, `Rep` leaves
   */
-  final def ->>(r: AnyTag.RawOf[Me]): AnyTag.TaggedWith[Me] = AnyTag.TagWith[Me](self)(r)
+  final def ->>(r: AnyTag.RawOf[Me]): AnyTag.RepOf[Me] = AnyTag.TagWith[Me](self)(r)
 
   /*
     This lets you get the instance of the singleton type from a tagged `Rep` value.
   */
   // implicit def fromRep(x: self.Rep): self.type = self
-  implicit def fromRep(x: AnyTag.TaggedWith[self.type]): self.type = self
+  implicit def fromRep(x: AnyTag.RepOf[self.type]): self.type = self
 
   // I don't know why this works
   implicit def yetAnotherFromRep[X <: Me](rep: X#Rep): Me = {
 
     self
+  }
+}
+
+object Representable {
+
+  implicit def ops[D <: Representable](d: D): Ops[D] = Ops[D](d)
+
+  case class Ops[D <: Representable](d: D) {
+
+    def =>>[R <: AnyTag.RawOf[D]](raw: R): AnyTag.RepOf[D] = AnyTag.=>>(d,raw)
   }
 }
 
@@ -66,9 +76,9 @@ object AnyTag {
 
   case class TagWith[D <: Representable](val d: D) {
 
-    def apply(dr : RawOf[D]): TaggedWith[D] = {
+    def apply(dr : RawOf[D]): RepOf[D] = {
 
-      dr.asInstanceOf[TaggedWith[D]]
+      dr.asInstanceOf[RepOf[D]]
     }
   }
 
@@ -77,13 +87,12 @@ object AnyTag {
   sealed trait Tag[D <: Representable] extends AnyTag with KeyTag[D, D#Raw] {}
 
   // compiler bug; do not use type aliases in type aliases
-  // type TaggedWith[D <: Representable] = RawOf[D] with Tag[D]
-  type TaggedWith[D <: Representable] = D#Raw with Tag[D]
+  // type RepOf[D <: Representable] = RawOf[D] with Tag[D]
+  type RepOf[D <: Representable] = D#Raw with Tag[D]
   type RawOf[D <: Representable] = D#Raw
 
   type AsRepOf[X, D <: Representable] = X with RawOf[D] with Tag[D]
   type SingletonOf[X <: AnyRef] = Singleton with X
 
-  def ->>[D <: Representable, R <: D#Raw](d: D, r: R): AnyTag.TaggedWith[D] = AnyTag.TagWith[D](d)(r)
-
+  def =>>[D <: Representable, R <: D#Raw](d: D, r: R): AnyTag.RepOf[D] = AnyTag.TagWith[D](d)(r)
 }

@@ -40,9 +40,9 @@ object Property {
   type Of[S] = { type is[P <: AnyProperty] = S HasProperty P }
 
   /* Common ops for getting properties */
-  implicit def propertyGetterOps[T <: Singleton with AnyDenotation with CanGetProperties](rep: AnyTag.TaggedWith[T]): 
+  implicit def propertyGetterOps[T <: Singleton with AnyDenotation with CanGetProperties](rep: AnyTag.RepOf[T]): 
                PropertyGetterOps[T] = PropertyGetterOps[T](rep)
-  case class   PropertyGetterOps[T <: Singleton with AnyDenotation with CanGetProperties](rep: AnyTag.TaggedWith[T]) {
+  case class   PropertyGetterOps[T <: Singleton with AnyDenotation with CanGetProperties](rep: AnyTag.RepOf[T]) {
 
     def get[P <: Singleton with AnyProperty: Property.Of[T#Tpe]#is](p: P)
       (implicit mkGetter: p.type => T#PropertyGetter[p.type]): p.Raw = 

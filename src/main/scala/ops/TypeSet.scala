@@ -9,38 +9,38 @@ object defaultTypeSet {
     import shapeless.{ HList, Poly }
 
     // the ADT
-    type Carrier                                  = ohnosequences.typesets.TypeSet
-    type :~:[E, X <: Carrier]                     = ohnosequences.typesets.:~:[E,X]
+    type TypeSet                                  = ohnosequences.typesets.TypeSet
+    type :~:[E, X <: TypeSet]                     = ohnosequences.typesets.:~:[E,X]
     type ∅                                        = ohnosequences.typesets.∅
     val ∅ : ∅                                     = ohnosequences.typesets.∅
 
-    type in[S <: Carrier]                         = ohnosequences.typesets.in[S]
-    type subsetOf[S <: Carrier]                   = ohnosequences.typesets.subsetOf[S]
+    type in[S <: TypeSet]                         = ohnosequences.typesets.in[S]
+    type subsetOf[S <: TypeSet]                   = ohnosequences.typesets.subsetOf[S]
 
-    type notIn[E, X <: Carrier]                   = ohnosequences.typesets.∉[E, X] 
+    type notIn[E, X <: TypeSet]                   = ohnosequences.typesets.∉[E, X] 
     
-    type ∪[S <: Carrier, Q <: Carrier]            = ohnosequences.typesets.Union[S,Q]
-    type \[S <: Carrier, Q <: Carrier]            = ohnosequences.typesets.\[S,Q]
-    type FirstOf[X <: Carrier, Z]                 = ohnosequences.typesets.Lookup[X,Z]
-    type Pop[S <: Carrier, E]                     = ohnosequences.typesets.Pop[S,E]
-    type Choose[S <: Carrier, P <: Carrier]       = ohnosequences.typesets.Choose[S,P]
-    type Replace[S <: Carrier, Q <: Carrier]      = ohnosequences.typesets.Replace[S,Q]
-    type Reorder[S <: Carrier, Q <: Carrier]      = ohnosequences.typesets.Reorder[S,Q]
+    type ∪[S <: TypeSet, Q <: TypeSet]            = ohnosequences.typesets.Union[S,Q]
+    type \[S <: TypeSet, Q <: TypeSet]            = ohnosequences.typesets.\[S,Q]
+    type FirstOf[X <: TypeSet, Z]                 = ohnosequences.typesets.Lookup[X,Z]
+    type Pop[S <: TypeSet, E]                     = ohnosequences.typesets.Pop[S,E]
+    type Choose[S <: TypeSet, P <: TypeSet]       = ohnosequences.typesets.Choose[S,P]
+    type Replace[S <: TypeSet, Q <: TypeSet]      = ohnosequences.typesets.Replace[S,Q]
+    type Reorder[S <: TypeSet, Q <: TypeSet]      = ohnosequences.typesets.Reorder[S,Q]
 
-    type SetMapper[F <: Poly, S <: Carrier]       = ohnosequences.typesets.SetMapper[F, S] 
+    type SetMapper[F <: Poly, S <: TypeSet]       = ohnosequences.typesets.SetMapper[F, S] 
     // TODO review this one
-    type SetMapFolder[S <: Carrier, F <: Poly, R] = ohnosequences.typesets.SetMapFolder[S,F,R]
+    type SetMapFolder[S <: TypeSet, F <: Poly, R] = ohnosequences.typesets.SetMapFolder[S,F,R]
 
-    type HListMapper[S <: Carrier, F <: Poly]     = ohnosequences.typesets.HListMapper[S,F]
-    type ListMapper[S <: Carrier, F <: Poly]      = ohnosequences.typesets.ListMapper[S,F]
+    type HListMapper[S <: TypeSet, F <: Poly]     = ohnosequences.typesets.HListMapper[S,F]
+    type ListMapper[S <: TypeSet, F <: Poly]      = ohnosequences.typesets.ListMapper[S,F]
 
-    type ToHList[S <: Carrier]                    = ohnosequences.typesets.ToHList[S]
-    type ToList[S <: Carrier]            = ohnosequences.typesets.ToList[S]
+    type ToHList[S <: TypeSet]                    = ohnosequences.typesets.ToHList[S]
+    type ToList[S <: TypeSet]            = ohnosequences.typesets.ToList[S]
 
-    implicit def defaultOps[TS <: Carrier](set: TS): TypeSetOps[TS] = TypeSetOps(set)
+    implicit def defaultOps[TS <: TypeSet](set: TS): TypeSetOps[TS] = TypeSetOps(set)
   }
 
-  case class TypeSetOps[TS <: Types.Carrier](val set: TS) 
+  case class TypeSetOps[TS <: Types.TypeSet](val set: TS) 
   extends ohnosequences.typesets.syntax.Syntax { me =>
 
     type S = TS
@@ -49,7 +49,7 @@ object defaultTypeSet {
     import Types._
 
     // for convenience
-    type TypeSet = types.Carrier
+    type TypeSet = types.TypeSet
 
     def :~:[E](e: E)(implicit n: notIn[E,S]) = ohnosequences.typesets.:~:.cons(e, set)
 
