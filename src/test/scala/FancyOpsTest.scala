@@ -198,7 +198,7 @@ class FancyTypeSetTests extends org.scalatest.FunSuite {
 
     assert(s.mapHList(toStr) === "1" :: "a" :: "foo" :: "List(1, 2, 3)" :: HNil)
     assert(s.mapList(toStr) === List("1", "a", "foo", "List(1, 2, 3)"))
-    // assert(s.mapHList(toStr).toList === s.mapList(toStr))
+    assert(s.mapHList(toStr).toList === s.mapList(toStr))
   }
 
 }
