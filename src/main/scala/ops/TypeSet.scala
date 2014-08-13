@@ -65,9 +65,8 @@ object defaultTypeSet {
     def \[Q <: TypeSet](q: Q)(implicit sub: S \ Q): sub.Out = sub(set, q)
     def ∪[Q <: TypeSet](q: Q)(implicit uni: S ∪ Q): uni.Out = uni(set, q)
 
-    import shapeless._
-    import poly._
-    def map(f: Poly)(implicit mapper: SetMapper[f.type, S]): mapper.Out = mapper(set)
+    import shapeless.Poly
+    def map[F <: Poly](f: F)(implicit mapper: SetMapper[F, S]): mapper.Out = mapper(set)
     def mapHList[F <: Poly](f: F)(implicit mapper: HListMapper[S, F]): mapper.Out = mapper(set)
     def mapList[F <: Poly](f: F)(implicit mapper: ListMapper[S, F]): mapper.Out = mapper(set)
 

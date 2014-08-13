@@ -84,15 +84,20 @@ trait Types { impl =>
     ### abstract Ops
 
   */ 
-  implicit def toOps[
-    Impl <: Syntax { type MyTypes = impl.type },
-    X <: TypeSet
-  ](x: X)(implicit 
-    getImpl: X => Impl { type S = X }
-  )
-  : Impl = getImpl(x)
+  // implicit def toOps[
+  //   X <: TypeSet,
+  //   Ops <: Syntax.withMyTypesAndS[impl.type, X]
+  // ](x: X)(implicit
+  //   getImpl: X => Ops
+  // )
+  // : Ops = getImpl(x)
 }
 
+object Syntax {
+
+  type withMyTypes[X <: Types] = Syntax { type MyTypes = X }
+  type withMyTypesAndS[X <: Types, S0 <: X#TypeSet] = Syntax { type MyTypes = X; type S = S0 }
+}
 trait Syntax {
 
   type MyTypes <: Types
@@ -123,7 +128,7 @@ trait Syntax {
 
   import shapeless.Poly
 
-  def map(f: Poly)(implicit mapper: SetMapper[f.type,S]): mapper.Out
+  def map[F <: Poly](f: F)(implicit mapper: SetMapper[F,S]): mapper.Out
 
   def mapHList[F <: Poly](f: F)(implicit mapper: HListMapper[S, F]): mapper.Out
   def mapList[F <: Poly](f: F)(implicit mapper: ListMapper[S, F]): mapper.Out

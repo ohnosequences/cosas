@@ -189,10 +189,7 @@ class FancyTypeSetTests extends org.scalatest.FunSuite {
 
     val s = 1 :~: 'a' :~: "foo" :~: List(1,2,3) :~: ∅
 
-    val ops = ohnosequences.typesets.ops.defaultTypeSet.FancyTypeSetOps(s)
-
-    implicitly[ SetMapper[id.type, Int :~: Char :~: String :~: List[Int]] ]
-    assert(ops.map(id:id.type) === s)
+    assert(s.map(id) === s)
     assert(s.map(rev) === 1 :~: 'a' :~: "oof" :~: List(3,2,1) :~: ∅)
 
     // This case should fail, because toStr in not "type-injective"
