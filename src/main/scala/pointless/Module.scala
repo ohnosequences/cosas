@@ -1,8 +1,5 @@
-package ohnosequences.typesets.syntax
+package ohnosequences.pointless
 
-/*
-  You'd normally use objects in the end
-*/
 trait Module {
 
   trait Types {

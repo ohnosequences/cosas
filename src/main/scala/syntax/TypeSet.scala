@@ -19,12 +19,14 @@ trait Types { impl =>
   /*
     an instance of 
   */
-  type in[S <: TypeSet] <: {
+  protected type in[S <: TypeSet] <: {
+
     type    is[E]
     type isnot[E]
   }
 
-  type subsetOf[Q <: TypeSet] <: { 
+  type subsetOf[Q <: TypeSet] <: {
+    
     type    is[S <: TypeSet]
     type isnot[S <: TypeSet]
   }
@@ -84,13 +86,49 @@ trait Types { impl =>
     ### abstract Ops
 
   */ 
-  // implicit def toOps[
-  //   X <: TypeSet,
-  //   Ops <: Syntax.withMyTypesAndS[impl.type, X]
-  // ](x: X)(implicit
-  //   getImpl: X => Ops
-  // )
-  // : Ops = getImpl(x)
+  implicit def toOps[
+    X <: TypeSet
+  ](x: X)(implicit
+    getImpl: X => impl.syntax[X]
+  )
+  : syntax[X] = getImpl(x)
+
+  abstract class syntax[S <: TypeSet](val set: S) {
+
+    def :~:[E](e: E)(implicit ev: (E ∉ S)): (E :~: S)
+
+    def lookup[E](implicit 
+      ev: E ∈ S,
+      firstOf: S FirstOf E
+    ): firstOf.Out
+
+    def pop[V](implicit ev: (V ∈ S), p: Pop[S, V]): p.Out
+
+    def project[P <: TypeSet](implicit e: P ⊂ S, p: (S Choose P)): p.Out
+
+    def replace[P <: TypeSet](p: P)(implicit e: P ⊂ S, r: Replace[S, P]): r.Out
+
+    def reorder[P <: TypeSet](implicit e: S ~ P, t: Reorder[S, P]): t.Out
+    def ~>[P <: TypeSet](p: P)(implicit e: S ~ P, t: Reorder[S, P]): t.Out
+
+    def \[Q <: TypeSet](q: Q)(implicit sub: S \ Q): sub.Out
+    def ∪[Q <: TypeSet](q: Q)(implicit uni: S ∪ Q): uni.Out
+
+    import shapeless.Poly
+
+    def map[F <: Poly](f: F)(implicit mapper: SetMapper[F,S]): mapper.Out
+
+    def mapHList[F <: Poly](f: F)(implicit mapper: HListMapper[S, F]): mapper.Out
+    def mapList[F <: Poly](f: F)(implicit mapper: ListMapper[S, F]): mapper.Out
+
+    def mapFold[F <: Poly, R](f: F)(r: R)(op: (R, R) => R)(implicit mapFolder: SetMapFolder[S,F,R]): mapFolder.Out
+
+    def toHList(implicit toHList: ToHList[S]): toHList.Out
+    def toList(implicit toList: ToList[S]): toList.Out
+    def toListOf[O](implicit toListOf: (S ToListOf O)): toListOf.Out
+  }
+
+
 }
 
 object Syntax {
@@ -98,11 +136,13 @@ object Syntax {
   type withMyTypes[X <: Types] = Syntax { type MyTypes = X }
   type withMyTypesAndS[X <: Types, S0 <: X#TypeSet] = Syntax { type MyTypes = X; type S = S0 }
 }
+
 trait Syntax {
 
   type MyTypes <: Types
   val types: MyTypes
   import types._
+
   
   type S <: TypeSet
   val set: S
@@ -138,4 +178,5 @@ trait Syntax {
   def toHList(implicit toHList: ToHList[S]): toHList.Out
   def toList(implicit toList: ToList[S]): toList.Out
   def toListOf[O](implicit toListOf: (S ToListOf O)): toListOf.Out
+
 }

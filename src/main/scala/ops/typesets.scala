@@ -1,11 +1,11 @@
-package ohnosequences.typesets.ops
+package ohnosequences.typesets.impl
 
-object defaultTypeSet {
 
-  object Types extends ohnosequences.typesets.syntax.Types {
 
-    import ohnosequences.typesets.{ AnyFn, Fn1, Fn2, Fn3, Predicate }
+object defaultTypeSets extends ohnosequences.typesets.syntax.typesets {
 
+  object defaultTypes extends types {
+  
     import shapeless.{ HList, Poly }
 
     // the ADT
@@ -38,24 +38,22 @@ object defaultTypeSet {
     type ToList[S <: TypeSet]                     = ohnosequences.typesets.ToList[S]
     // type ToListOf[S <: TypeSet, O]                = ohnosequences.typesets.ToList.Aux[S,O]
 
-    implicit def defaultOps[TS <: TypeSet](set: TS): FancyTypeSetOps[TS] = FancyTypeSetOps(set)
+    implicit def defaultOps[TS <: TypeSet](set: TS): defaultOps[TS] = defaultOps(set)
   }
 
-  case class FancyTypeSetOps[TS <: Types.TypeSet](val set: TS) 
-  extends ohnosequences.typesets.syntax.Syntax { me =>
+  
 
-    type S = TS
-    type MyTypes = Types.type
-    val types: Types.type = Types
-    import types._
+  case class defaultOps[S <: defaultTypes.TypeSet](val s: S) extends defaultTypes.ops[S](s) {
+
+    import defaultTypes._
 
     def :~:[E](e: E)(implicit n: (E ∉ S)) = ohnosequences.typesets.:~:(e, set)
 
     def lookup[E](implicit ev: (E ∈ S), firstOf: FirstOf[S,E]): firstOf.Out = firstOf(set)
 
-    def pop[E](implicit e: (E ∈ S), p: types.Pop[S, E]): p.Out = p(set)
+    def pop[E](implicit e: (E ∈ S), p: Pop[S, E]): p.Out = p(set)
 
-    def project[P <: TypeSet](implicit e: ⊂[P,S], p: types.Choose[S, P]): P = p(set)
+    def project[P <: TypeSet](implicit e: ⊂[P,S], p: Choose[S, P]): P = p(set)
 
     def replace[P <: TypeSet](p: P)(implicit e: P ⊂ S, r: Replace[S, P]): S = r(set, p)
 
@@ -76,3 +74,4 @@ object defaultTypeSet {
     def toListOf[O](implicit toList: ToListOf[S, O]): toList.Out = toList(set)
   }
 }
+

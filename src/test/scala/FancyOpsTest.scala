@@ -8,6 +8,7 @@ class FancyTypeSetTests extends org.scalatest.FunSuite {
   import ohnosequences.typesets.ops.defaultTypeSet.Types._
 
   test("empty set") {
+    
     implicitly[in[∅]#isnot[Any]]
     
     // or with nicer syntax:
