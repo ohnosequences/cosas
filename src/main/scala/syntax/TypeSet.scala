@@ -61,7 +61,7 @@ trait Types { impl =>
 
   type ToHList[S <: TypeSet]                    <: Fn1[S] with WithCodomain[HList]
   type ToList[S <: TypeSet]                     <: Fn1[S] with WrappedIn[List]
-  final type ToListOf[S <: TypeSet, O0]               =  ToList[S] { type O = O0 }
+  final type ToListOf[S <: TypeSet, O0]         =  ToList[S] { type O = O0 }
 
 
   /*
@@ -123,7 +123,7 @@ trait Syntax {
 
   import shapeless.Poly
 
-  def map[F <: Poly](f: F)(implicit mapper: SetMapper[F,S]): mapper.Out
+  def map(f: Poly)(implicit mapper: SetMapper[f.type,S]): mapper.Out
 
   def mapHList[F <: Poly](f: F)(implicit mapper: HListMapper[S, F]): mapper.Out
   def mapList[F <: Poly](f: F)(implicit mapper: ListMapper[S, F]): mapper.Out

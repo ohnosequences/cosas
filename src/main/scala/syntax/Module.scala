@@ -21,6 +21,8 @@ trait Module {
 
     type C <: Carrier
     val c: C
+
+    // here you do 
   }
 
 

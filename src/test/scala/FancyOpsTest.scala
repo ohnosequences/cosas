@@ -2,7 +2,6 @@ package ohnosequences.typesets.tests
 
 import shapeless._
 import shapeless.test.illTyped
-import ohnosequences.typesets.syntax._  
 
 class FancyTypeSetTests extends org.scalatest.FunSuite {
 
@@ -12,7 +11,7 @@ class FancyTypeSetTests extends org.scalatest.FunSuite {
     implicitly[in[∅]#isnot[Any]]
     
     // or with nicer syntax:
-    // implicitly[Any ∉ ∅]
+    implicitly[Any ∉ ∅]
 
     // assert(set('a') === ('a' :~: ∅))
   }
@@ -42,7 +41,7 @@ class FancyTypeSetTests extends org.scalatest.FunSuite {
     // val b = 'b' :~: 1 :~: true :~: ∅
     // implicitly[a.type ⊂ b.type]
 
-    // implicitly[(Int :~: Char :~: ∅) ⊂ (Char :~: Int :~: ∅)]
+    implicitly[(Int :~: Char :~: ∅) ⊂ (Char :~: Int :~: ∅)]
     // implicitly[(Int :~: Char :~: ∅) ⊃ (Char :~: Int :~: ∅)]
     // implicitly[(Int :~: Char :~: ∅) ~ (Char :~: Int :~: ∅)]
   }
@@ -115,11 +114,11 @@ class FancyTypeSetTests extends org.scalatest.FunSuite {
 
   test("replace") {
 
-    // val s = 1 :~: 'a' :~: "foo" :~: ∅
+    val s = 1 :~: 'a' :~: "foo" :~: ∅
 
-    // assert( (∅ replace ∅) === ∅ )
-    // assert( (s replace (2 :~: ∅)) === 2 :~: 'a' :~: "foo" :~: ∅ )
-    // assert( (s replace ("bar" :~: ∅)) === 1 :~: 'a' :~: "bar" :~: ∅ )
+    assert( (∅ replace ∅) === ∅ )
+    assert( (s replace (2 :~: ∅)) === 2 :~: 'a' :~: "foo" :~: ∅ )
+    assert( (s replace ("bar" :~: ∅)) === 1 :~: 'a' :~: "bar" :~: ∅ )
   }
 
   // test("subtraction") {
@@ -137,67 +136,72 @@ class FancyTypeSetTests extends org.scalatest.FunSuite {
   //   assert(q \ s === bar :~: true :~: ∅)
   // }
 
-  // test("union") {
+  test("union") {
 
-  //   val s = 1 :~: 'a' :~: "foo" :~: ∅
+    val s = 1 :~: 'a' :~: "foo" :~: ∅
 
-  //   case object bar
-  //   val q = bar :~: true :~: 2 :~: bar.toString :~: ∅
+    case object bar
+    val q = bar :~: true :~: 2 :~: bar.toString :~: ∅
 
-  //   assert((∅ ∪ ∅) === ∅)
-  //   assert((∅ ∪ q) === q)
-  //   assert((s ∪ ∅) === s)
+    assert((∅ ∪ ∅) === ∅)
+    assert((∅ ∪ q) === q)
+    assert((s ∪ ∅) === s)
 
-  //   val sq = s ∪ q
-  //   val qs = q ∪ s
-  //   // implicitly[sq.type ~ qs.type]
-  //   assert(sq === 'a' :~: bar :~: true :~: 2 :~: "bar" :~: ∅)
-  //   assert(qs === bar :~: 'a' :~: true :~: 2 :~: "bar" :~: ∅)
-  // }
+    val sq = s ∪ q
+    val qs = q ∪ s
+    // implicitly[sq.type ~ qs.type]
+    assert(sq === 'a' :~: bar :~: true :~: 2 :~: "bar" :~: ∅)
+    assert(qs === bar :~: 'a' :~: true :~: 2 :~: "bar" :~: ∅)
+  }
 
-  // test("hlist ops") {
+  test("hlist ops") {
 
-  //   assert(∅.toHList === HNil)
-  //   assert((1 :~: 'a' :~: "foo" :~: ∅).toHList === (1 :: 'a' :: "foo" :: HNil))
-  // }
+    assert(∅.toHList === HNil)
+    assert((1 :~: 'a' :~: "foo" :~: ∅).toHList === (1 :: 'a' :: "foo" :: HNil))
+  }
 
-  // test("to list") {
+  test("to list") {
 
-  //   assert(∅.toList === Nil)
-  //   assert((1 :~: 'a' :~: "foo" :~: ∅).toListOf[Any] === List[Any](1, 'a', "foo"))
+    assert(∅.toList === Nil)
+    assert((1 :~: 'a' :~: "foo" :~: ∅).toListOf[Any] === List[Any](1, 'a', "foo"))
 
-  //   trait foo
-  //   case object boo extends foo
-  //   case object buh extends foo
+    trait foo
+    case object boo extends foo
+    case object buh extends foo
 
-  //   val s = boo :~: buh :~: ∅
-  //   assert(s.toList === List[foo](boo, buh))
-  // }
+    val s = boo :~: buh :~: ∅
+    assert(s.toList === List[foo](boo, buh))
+  }
 
-  // test("mapper") {
-  //   import poly._
+  test("mapper") {
 
-  //   object id extends Poly1 { implicit def default[T] = at[T](t => t) }
-  //   object toStr extends (Any -> String)(_.toString)
-  //   object rev extends Poly1 { 
-  //     implicit val str = at[String](t => t.reverse)
-  //     implicit def list[T] = at[List[T]](t => t.reverse)
-  //     implicit def default[T] = at[T](t => t)
-  //   }
+    import poly._
 
-  //   assert(∅.map(toStr) === ∅)
+    object id extends Poly1 { implicit def default[T] = at[T](t => t) }
+    object toStr extends (Any -> String)(_.toString)
+    object rev extends Poly1 { 
+      implicit val str = at[String](t => t.reverse)
+      implicit def list[T] = at[List[T]](t => t.reverse)
+      implicit def default[T] = at[T](t => t)
+    }
 
-  //   val s = 1 :~: 'a' :~: "foo" :~: List(1,2,3) :~: ∅
-  //   assert(s.map(id) === s)
-  //   assert(s.map(rev) === 1 :~: 'a' :~: "oof" :~: List(3,2,1) :~: ∅)
+    assert(∅.map(toStr) === ∅)
 
-  //   // This case should fail, because toStr in not "type-injective"
-  //   illTyped("implicitly[SetMapper[toStr.type, s.type]]")
-  //   illTyped("s.map(toStr)")
+    val s = 1 :~: 'a' :~: "foo" :~: List(1,2,3) :~: ∅
 
-  //   assert(s.mapHList(toStr) === "1" :: "a" :: "foo" :: "List(1, 2, 3)" :: HNil)
-  //   assert(s.mapList(toStr) === List("1", "a", "foo", "List(1, 2, 3)"))
-  //   // assert(s.mapHList(toStr).toList === s.mapList(toStr))
-  // }
+    val ops = ohnosequences.typesets.ops.defaultTypeSet.FancyTypeSetOps(s)
+
+    implicitly[ SetMapper[id.type, Int :~: Char :~: String :~: List[Int]] ]
+    assert(ops.map(id:id.type) === s)
+    assert(s.map(rev) === 1 :~: 'a' :~: "oof" :~: List(3,2,1) :~: ∅)
+
+    // This case should fail, because toStr in not "type-injective"
+    illTyped("implicitly[SetMapper[toStr.type, s.type]]")
+    illTyped("s.map(toStr)")
+
+    assert(s.mapHList(toStr) === "1" :: "a" :: "foo" :: "List(1, 2, 3)" :: HNil)
+    assert(s.mapList(toStr) === List("1", "a", "foo", "List(1, 2, 3)"))
+    // assert(s.mapHList(toStr).toList === s.mapList(toStr))
+  }
 
 }

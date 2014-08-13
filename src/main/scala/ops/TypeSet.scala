@@ -67,7 +67,7 @@ object defaultTypeSet {
 
     import shapeless._
     import poly._
-    def map[F <: Poly](f: F)(implicit mapper: SetMapper[F, S]): mapper.Out = mapper(set)
+    def map(f: Poly)(implicit mapper: SetMapper[f.type, S]): mapper.Out = mapper(set)
     def mapHList[F <: Poly](f: F)(implicit mapper: HListMapper[S, F]): mapper.Out = mapper(set)
     def mapList[F <: Poly](f: F)(implicit mapper: ListMapper[S, F]): mapper.Out = mapper(set)
 

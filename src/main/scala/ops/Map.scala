@@ -13,11 +13,11 @@ trait SetMapper[F <: Poly, In <: TypeSet] extends Fn2[F,In] with AnyFn.WithCodom
 
 object SetMapper {
 
-  def apply[F <: Poly, S <: TypeSet](implicit mapper: SetMapper[F,S]): Aux[F, S, mapper.Out] = mapper
+  def apply[F <: Poly, S <: TypeSet](implicit mapper: SetMapper[F,S]): SetMapper[F,S] with Aux[F, S, mapper.Out] = mapper
 
   type Aux[F <: Poly, In <: TypeSet, O <: TypeSet] = SetMapper[F, In] { type Out = O }
   
-  implicit def emptyMapper[F <: Poly]: Aux[F, ∅, ∅] = new SetMapper[F, ∅] {
+  implicit def emptyMapper[F <: Poly]: SetMapper[F,∅] with Aux[F, ∅, ∅] = new SetMapper[F, ∅] {
       
       type Out = ∅
       def apply(s: ∅): Out = ∅
@@ -25,14 +25,14 @@ object SetMapper {
   
   implicit def consMapper [
     F <: Poly,
-    H, OutH,
-    T <: TypeSet, OutT <: TypeSet
+    H, T <: TypeSet,
+    OutH, OutT <: TypeSet
   ](implicit
     h: Case1.Aux[F, H, OutH], 
     t: Aux[F, T, OutT],
     e: OutH ∉ OutT  // the key check here
   )
-  : Aux[F, H :~: T, OutH :~: OutT] = new SetMapper[F, H :~: T] { 
+  : SetMapper[F, H :~: T] with Aux[F, H :~: T, OutH :~: OutT] = new SetMapper[F, H :~: T] { 
 
         type Out = OutH :~: OutT
         def apply(s: H :~: T): Out = h(s.head) :~: t(s.tail)
