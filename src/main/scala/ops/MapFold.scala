@@ -8,9 +8,7 @@ package ohnosequences.typesets
 import shapeless.Poly
 import shapeless.poly.Case
 
-trait SetMapFolder[S <: TypeSet, F <: Poly, R] extends Fn3[S,F,R] {
-
-  type Out = R
+trait SetMapFolder[S <: TypeSet, F <: Poly, R] extends Fn3[S,F,R] with AnyFn.Constant[R] {
 
   def apply(s: S, in: R, op: (R, R) => R): Out
 }

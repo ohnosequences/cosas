@@ -6,7 +6,7 @@ package ohnosequences.typesets
 
 import shapeless._
 
-trait ToHList[S <: TypeSet] extends Fn1[S] { 
+trait ToHList[S <: TypeSet] extends Fn1[S] with AnyFn.WithCodomain[HList] { 
 
   type Out <: HList 
 
@@ -36,10 +36,7 @@ object ToHList {
 
 // TODO: FromHList
 
-trait ToList[S <: TypeSet] extends Fn1[S] {
-
-  type O
-  type Out = List[O]
+trait ToList[S <: TypeSet] extends Fn1[S] with AnyFn.WrappedIn[List] {
 
   def apply(s: S): Out
 }

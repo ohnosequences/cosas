@@ -31,10 +31,14 @@ package object typesets {
   val ∅ : ∅ = empty
 
   // Shortcut for a one element set 
-  def set[E](e: E): E :~: ∅ =  :~:.cons(e,∅)
+  def set[E](e: E): E cons ∅ =  :~:(e,∅)
+
+  def :~:[E: in[S]#isnot, S <: TypeSet](e: E, set: S): ohnosequences.typesets.cons[E,S] = cons(e, set)
+  type :~:[E,S <: TypeSet] = ohnosequences.typesets.cons[E,S]
+  implicit def consOps[S <: TypeSet](s: S) = new ConsOps(s)
 
   // Any type can be converted to a one element set
-  implicit def typeSetOps[S <: TypeSet](s: S) = new TypeSetOps(s)
+  
   // implicit def oneElemSet[E](e: E) = new TypeSetOps(set(e))
 
   type in[S <: TypeSet] = { 

@@ -22,7 +22,7 @@ object defaultTypeSet {
     type ∪[S <: TypeSet, Q <: TypeSet]            = ohnosequences.typesets.Union[S,Q]
     type \[S <: TypeSet, Q <: TypeSet]            = ohnosequences.typesets.\[S,Q]
     type FirstOf[X <: TypeSet, Z]                 = ohnosequences.typesets.Lookup[X,Z]
-    override type Pop[S <: TypeSet, E]            = ohnosequences.typesets.Pop[S,E]
+    type Pop[S <: TypeSet, E]                     = ohnosequences.typesets.Pop[S,E]
     type Choose[S <: TypeSet, P <: TypeSet]       = ohnosequences.typesets.Choose[S,P]
     type Replace[S <: TypeSet, Q <: TypeSet]      = ohnosequences.typesets.Replace[S,Q]
     type Reorder[S <: TypeSet, Q <: TypeSet]      = ohnosequences.typesets.Reorder[S,Q]
@@ -35,12 +35,13 @@ object defaultTypeSet {
     type ListMapper[S <: TypeSet, F <: Poly]      = ohnosequences.typesets.ListMapper[S,F]
 
     type ToHList[S <: TypeSet]                    = ohnosequences.typesets.ToHList[S]
-    type ToList[S <: TypeSet]            = ohnosequences.typesets.ToList[S]
+    type ToList[S <: TypeSet]                     = ohnosequences.typesets.ToList[S]
+    // type ToListOf[S <: TypeSet, O]                = ohnosequences.typesets.ToList.Aux[S,O]
 
-    implicit def defaultOps[TS <: TypeSet](set: TS): TypeSetOps[TS] = TypeSetOps(set)
+    implicit def defaultOps[TS <: TypeSet](set: TS): defaultTypeSet.FancyTypeSetOps[TS] = FancyTypeSetOps(set)
   }
 
-  case class TypeSetOps[TS <: Types.TypeSet](val set: TS) 
+  case class FancyTypeSetOps[TS <: Types.TypeSet](val set: TS) 
   extends ohnosequences.typesets.syntax.Syntax { me =>
 
     type S = TS
@@ -48,11 +49,11 @@ object defaultTypeSet {
     val types: Types.type = Types
     import types._
 
-    override def :~:[E](e: E)(implicit n: notIn[E,S]) = ohnosequences.typesets.:~:.cons(e, set)
+    def :~:[E](e: E)(implicit n: (E ∉ S)) = ohnosequences.typesets.:~:(e, set)
 
-    override def lookup[E](implicit ev: notIn[E,S], firstOf: FirstOf[S,E]): firstOf.Out = firstOf(set)
+    def lookup[E](implicit ev: (E ∈ S), firstOf: FirstOf[S,E]): firstOf.Out = firstOf(set)
 
-    override def pop[E](implicit e: (E ∈ S), p: types.Pop[S, E]): p.Out = p(set)
+    def pop[E](implicit e: (E ∈ S), p: types.Pop[S, E]): p.Out = p(set)
 
     def project[P <: TypeSet](implicit e: ⊂[P,S], p: types.Choose[S, P]): P = p(set)
 
@@ -66,13 +67,13 @@ object defaultTypeSet {
 
     import shapeless._
     import poly._
-    def map(f: Poly)(implicit mapper: SetMapper[f.type, S]): mapper.Out = mapper(set)
-    def mapHList(f: Poly)(implicit mapper: HListMapper[S, f.type]): mapper.Out = mapper(set)
+    def map[F <: Poly](f: F)(implicit mapper: SetMapper[F, S]): mapper.Out = mapper(set)
+    def mapHList[F <: Poly](f: F)(implicit mapper: HListMapper[S, F]): mapper.Out = mapper(set)
     def mapList[F <: Poly](f: F)(implicit mapper: ListMapper[S, F]): mapper.Out = mapper(set)
 
     def mapFold[F <: Poly, R](f: F)(r: R)(op: (R, R) => R)(implicit smf: SetMapFolder[S,F,R]): R = smf(set, r, op)
     def toHList(implicit toHList: ToHList[S]): toHList.Out = toHList(set)
     def toList(implicit toList: ToList[S]): toList.Out = toList(set)
-    def toListWith[O](implicit toList: ToListOf[S, O]): toList.Out = toList(set)
+    def toListOf[O](implicit toList: ToListOf[S, O]): toList.Out = toList(set)
   }
 }

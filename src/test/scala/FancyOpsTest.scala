@@ -33,10 +33,10 @@ class FancyTypeSetTests extends org.scalatest.FunSuite {
 
   test("subset") {
 
-    // val s = 1 :~: ∅
-    // implicitly[∅ ⊂ ∅]
-    // implicitly[∅ ⊂ s.type]
-    // implicitly[s.type ⊂ s.type]
+    val s = 1 :~: ∅
+    implicitly[∅ ⊂ ∅]
+    implicitly[∅ ⊂ s.type]
+    implicitly[s.type ⊂ s.type]
 
     // val a = 100500 :~: 'a' :~: ∅
     // val b = 'b' :~: 1 :~: true :~: ∅
@@ -58,44 +58,50 @@ class FancyTypeSetTests extends org.scalatest.FunSuite {
     implicitly[Int ∈ (String :~: Int :~: AnyRef :~: HList :~: ∅)]    
     illTyped("Boolean ∈ st")
     
-    // assert(s.lookup[Int] === 1)
+    assert(s.lookup[Int] === 1)
+    // with explicit ops, just in case
+    val ops = ohnosequences.typesets.ops.defaultTypeSet.FancyTypeSetOps(s)
+    val z = ops.lookup[Int]
+    assert( z === 1)
 
-    // implicitly[Char ∈ st]
-    // assert(s.lookup[Char] === 'a')
+    implicitly[Char ∈ st]
+    assert(s.lookup[Char] === 'a')
 
-    // implicitly[String ∈ st]
-    // assert(s.lookup[String] === "foo")
+    implicitly[String ∈ st]
+    assert(s.lookup[String] === "foo")
 
-    // trait truth;
-    // trait happiness;
-    // implicitly[    truth ∉ st]
-    // implicitly[happiness ∉ st]
+    trait truth;
+    trait happiness;
+    implicitly[    truth ∉ st]
+    implicitly[happiness ∉ st]
 
     // Neither of these two things work:
     // implicitly[Nothing ∈ st]
     // implicitly[Nothing ∉ st]
   }
 
-  // test("pop") {
-  //   val s = 1 :~: 'a' :~: "foo" :~: ∅
+  test("pop") {
 
-  //   assert(s.pop[Int] === (1, 'a' :~: "foo" :~: ∅))
-  //   assert(s.pop[Char] === ('a', 1 :~: "foo" :~: ∅))
-  //   assert(s.pop[String] === ("foo", 1 :~: 'a' :~: ∅))
-  // }
+    val s = 1 :~: 'a' :~: "foo" :~: ∅
 
-  // test("projection") {
-  //   val s = 1 :~: 'a' :~: "foo" :~: ∅
+    assert(s.pop[Int] === (1, 'a' :~: "foo" :~: ∅))
+    assert(s.pop[Char] === ('a', 1 :~: "foo" :~: ∅))
+    assert(s.pop[String] === ("foo", 1 :~: 'a' :~: ∅))
+  }
 
-  //   type pt = Char :~: Int :~: ∅
+  test("projection") {
 
-  //   implicitly[Choose[∅, ∅]]
-  //   implicitly[Choose[Int :~: ∅, Int :~: ∅]]
-  //   implicitly[Choose[Int :~: Char :~: String :~: ∅, Char :~: Int :~: ∅]]
-  //   implicitly[Choose[Int :~: Char :~: String :~: ∅, pt]]
-  //   assert(s.project[pt] === 'a' :~: 1 :~: ∅)
-  //   assert(s.project[Int :~: Char :~: String :~: ∅] === s)
-  // }
+    val s = 1 :~: 'a' :~: "foo" :~: ∅
+
+    type pt = Char :~: Int :~: ∅
+
+    implicitly[Choose[∅, ∅]]
+    implicitly[Choose[Int :~: ∅, Int :~: ∅]]
+    implicitly[Choose[Int :~: Char :~: String :~: ∅, Char :~: Int :~: ∅]]
+    implicitly[Choose[Int :~: Char :~: String :~: ∅, pt]]
+    assert(s.project[pt] === 'a' :~: 1 :~: ∅)
+    assert(s.project[Int :~: Char :~: String :~: ∅] === s)
+  }
 
   // test("reordering") {
   //   val s = 1 :~: 'a' :~: "foo" :~: ∅
@@ -107,13 +113,14 @@ class FancyTypeSetTests extends org.scalatest.FunSuite {
   //   assert(s ~> p === "foo" :~: 1 :~: 'a' :~: ∅)
   // }
 
-  // test("replace") {
-  //   val s = 1 :~: 'a' :~: "foo" :~: ∅
+  test("replace") {
 
-  //   assert(∅.replace(∅) === ∅)
-  //   assert(s.replace(2 :~: ∅) === 2 :~: 'a' :~: "foo" :~: ∅)
-  //   assert(s.replace("bar" :~: ∅) === 1 :~: 'a' :~: "bar" :~: ∅)
-  // }
+    // val s = 1 :~: 'a' :~: "foo" :~: ∅
+
+    // assert( (∅ replace ∅) === ∅ )
+    // assert( (s replace (2 :~: ∅)) === 2 :~: 'a' :~: "foo" :~: ∅ )
+    // assert( (s replace ("bar" :~: ∅)) === 1 :~: 'a' :~: "bar" :~: ∅ )
+  }
 
   // test("subtraction") {
   //   val s = 1 :~: 'a' :~: "foo" :~: ∅
@@ -131,6 +138,7 @@ class FancyTypeSetTests extends org.scalatest.FunSuite {
   // }
 
   // test("union") {
+
   //   val s = 1 :~: 'a' :~: "foo" :~: ∅
 
   //   case object bar
@@ -142,19 +150,21 @@ class FancyTypeSetTests extends org.scalatest.FunSuite {
 
   //   val sq = s ∪ q
   //   val qs = q ∪ s
-  //   implicitly[sq.type ~ qs.type]
+  //   // implicitly[sq.type ~ qs.type]
   //   assert(sq === 'a' :~: bar :~: true :~: 2 :~: "bar" :~: ∅)
   //   assert(qs === bar :~: 'a' :~: true :~: 2 :~: "bar" :~: ∅)
   // }
 
   // test("hlist ops") {
+
   //   assert(∅.toHList === HNil)
   //   assert((1 :~: 'a' :~: "foo" :~: ∅).toHList === (1 :: 'a' :: "foo" :: HNil))
   // }
 
   // test("to list") {
+
   //   assert(∅.toList === Nil)
-  //   assert((1 :~: 'a' :~: "foo" :~: ∅).toListWith[Any] === List[Any](1, 'a', "foo"))
+  //   assert((1 :~: 'a' :~: "foo" :~: ∅).toListOf[Any] === List[Any](1, 'a', "foo"))
 
   //   trait foo
   //   case object boo extends foo

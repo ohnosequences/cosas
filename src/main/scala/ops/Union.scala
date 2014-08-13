@@ -4,7 +4,7 @@ package ohnosequences.typesets
 
 
 @annotation.implicitNotFound(msg = "Can't union ${S} with ${Q}")
-trait Union[S <: TypeSet, Q <: TypeSet] extends Fn2[S,Q] {
+trait Union[S <: TypeSet, Q <: TypeSet] extends Fn2[S,Q] with AnyFn.WithCodomain[TypeSet] {
 
   type Out <: TypeSet
   

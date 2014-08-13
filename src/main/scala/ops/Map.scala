@@ -4,7 +4,7 @@ import shapeless._, poly._
   
 /* Mapping a set to another set, i.e. the results of mapping should have distinct types */  
 @annotation.implicitNotFound(msg = "Can't map ${F} over ${In} (maybe the resulting types are not distinct)")
-trait SetMapper[F <: Poly, In <: TypeSet] extends Fn2[F,In] {
+trait SetMapper[F <: Poly, In <: TypeSet] extends Fn2[F,In] with AnyFn.WithCodomain[TypeSet] {
 
   type Out <: TypeSet
 
@@ -42,7 +42,7 @@ object SetMapper {
 
 /* Mapping a set to an HList: when you want to preserve precise types, but they are not distinct */
 @annotation.implicitNotFound(msg = "Can't map ${F} over ${In} to an HList")
-trait HListMapper[In <: TypeSet, F <: Poly] extends Fn2[In,F] { 
+trait HListMapper[In <: TypeSet, F <: Poly] extends Fn2[In,F] with AnyFn.WithCodomain[HList] { 
 
   type Out <: HList
   def apply(s: In): Out 
@@ -76,10 +76,7 @@ object HListMapper {
 
 /* Mapping a set to a List: normally, when you are mapping everything to one type */
 @annotation.implicitNotFound(msg = "Can't map ${F} over ${In} to a List")
-trait ListMapper[In <: TypeSet, F <: Poly] extends Fn2[In, F] { 
-
-  type O
-  type Out = List[O]
+trait ListMapper[In <: TypeSet, F <: Poly] extends Fn2[In, F] with AnyFn.WrappedIn[List] { 
 
   def apply(s: In): Out
 }

@@ -12,11 +12,26 @@ trait AnyFn {
 object AnyFn {
 
   type withCodomain[Z] = AnyFn { type Out <: Z }
-  type constant[Z] = AnyFn { type Out = Z }
+  
+  trait Constant[Z] extends AnyFn { 
+
+    type Out = Z 
+  }
 
   trait WithCodomain[Z] extends AnyFn {
 
     type Out <: Z
+  }
+
+  trait WrappedIn[F[_]] {
+
+    type O
+    type Out = F[O]
+  }
+  
+  trait ConstantWrappedIn[O0,F[_]] extends WrappedIn[F] {
+
+    type O = O0
   }
 }
 

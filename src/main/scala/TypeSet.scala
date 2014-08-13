@@ -28,7 +28,7 @@ private object empty extends ∅
 
 
 /* ### Cons constructor */
-case class :~:[E, S <: TypeSet] private[:~:](head: E, tail: S) extends TypeSet {
+case class cons[E: in[S]#isnot, S <: TypeSet](head: E, tail: S) extends TypeSet {
   type Bound = tail.Bound#or[E]
   def toStr = {
     val h = head match {
@@ -42,8 +42,9 @@ case class :~:[E, S <: TypeSet] private[:~:](head: E, tail: S) extends TypeSet {
 }
 
 /* This `cons` method covers the `:~:` constructor to check that you are not adding a duplicate */
-object :~: { 
-  def cons[E : in[S]#isnot, S <: TypeSet](e: E, set: S): ohnosequences.typesets.:~:[E,S] = :~:(e, set) 
+object  cons {
+
+  def cons[E : in[S]#isnot, S <: TypeSet](e: E, set: S): ohnosequences.typesets.cons[E,S] = :~:(e, set) 
 }
 
 
@@ -84,35 +85,40 @@ sealed class ~[S <: TypeSet : sameAs[Q]#is, Q <: TypeSet]
 // }
 
 /* ### Adding methods to TypeSet */
-case class TypeSetOps[S <: TypeSet](val set: S) {
 
-  def :~:[E](e: E)(implicit n: E ∉ S) = ohnosequences.typesets.:~:.cons(e, set)
+case class ConsOps[S <: TypeSet](val set: S) {
 
-  def lookup[E](implicit ev: E ∈ S, l: (S Lookup E)): l.Out= l(set)
-
-  def pop[E](implicit e: E ∈ S, p: Pop[S, E]): p.Out = p(set)
-
-  def project[P <: TypeSet](implicit e: P ⊂ S, p: Choose[S, P]): P = p(set)
-
-  def replace[P <: TypeSet](p: P)(implicit e: P ⊂ S, r: Replace[S, P]): S = r(set, p)
-
-  def reorder[P <: TypeSet](implicit e: S ~ P, t: Reorder[S, P]): P = t(set)
-  def ~>[P <: TypeSet](p: P)(implicit e: S ~ P, t: Reorder[S, P]): P = t(set)
-
-  def \[Q <: TypeSet](q: Q)(implicit sub: S \ Q): sub.Out = sub(set, q)
-  def ∪[Q <: TypeSet](q: Q)(implicit uni: S ∪ Q): uni.Out = uni(set, q)
-
-  import shapeless._
-  import poly._
-
-  def map(f: Poly)(implicit m: SetMapper[f.type, S]): m.Out = m(set)
-  def mapHList(f: Poly)(implicit m: HListMapper[S, f.type]): m.Out = m(set)
-  def mapList(f: Poly)(implicit m: ListMapper[S, f.type]): m.Out = m(set)
-
-  def mapFold[R](z: R)(f: Poly)(op: (R, R) => R)
-    (implicit smf: SetMapFolder[S, f.type, R]): R = smf(set, z, op)
-
-  def toHList(implicit toHList: ToHList[S]): toHList.Out = toHList(set)
-  def toList(implicit toList: ToList[S]): toList.Out = toList(set)
-  def toListWith[O](implicit toList: ToList.Aux[S, O]): toList.Out = toList(set)
+  def :~:[E](e: E)(implicit n: E ∉ S) = ohnosequences.typesets.cons(e, set)
 }
+// case class TypeSetOps[S <: TypeSet](val set: S) {
+
+//   def :~:[E](e: E)(implicit n: E ∉ S) = ohnosequences.typesets.cons(e, set)
+
+//   def lookup[E](implicit ev: E ∈ S, l: (S Lookup E)): l.Out= l(set)
+
+//   def pop[E](implicit e: E ∈ S, p: Pop[S, E]): p.Out = p(set)
+
+//   def project[P <: TypeSet](implicit e: P ⊂ S, p: Choose[S, P]): P = p(set)
+
+//   def replace[P <: TypeSet](p: P)(implicit e: P ⊂ S, r: Replace[S, P]): S = r(set, p)
+
+//   def reorder[P <: TypeSet](implicit e: S ~ P, t: Reorder[S, P]): P = t(set)
+//   def ~>[P <: TypeSet](p: P)(implicit e: S ~ P, t: Reorder[S, P]): P = t(set)
+
+//   def \[Q <: TypeSet](q: Q)(implicit sub: S \ Q): sub.Out = sub(set, q)
+//   def ∪[Q <: TypeSet](q: Q)(implicit uni: S ∪ Q): uni.Out = uni(set, q)
+
+//   import shapeless._
+//   import poly._
+
+//   def map(f: Poly)(implicit m: SetMapper[f.type, S]): m.Out = m(set)
+//   def mapHList(f: Poly)(implicit m: HListMapper[S, f.type]): m.Out = m(set)
+//   def mapList(f: Poly)(implicit m: ListMapper[S, f.type]): m.Out = m(set)
+
+//   def mapFold[R](z: R)(f: Poly)(op: (R, R) => R)
+//     (implicit smf: SetMapFolder[S, f.type, R]): R = smf(set, z, op)
+
+//   def toHList(implicit toHList: ToHList[S]): toHList.Out = toHList(set)
+//   def toList(implicit toList: ToList[S]): toList.Out = toList(set)
+//   def toListWith[O](implicit toList: ToList.Aux[S, O]): toList.Out = toList(set)
+// }
