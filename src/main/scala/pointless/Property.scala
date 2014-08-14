@@ -4,13 +4,13 @@ trait property {
 
   // abstract dep
   type representable <: ohnosequences.pointless.representable
-  val representable: representable
-  import representable._
 
-  type Property <: Representable
+  type Property <: representable#Representable
 
-  case class ops[P <: Property](property: P)(implicit getOpsRep: P => representable.ops[P]) {
+  abstract class PropertyOps[P <: Property](val property: P)(implicit getOpsRep: P => representable#RepresentableOps[P]) {
 
-    def is(value: P#Raw): P#Rep = getOpsRep(property) =>> value
+    val ops: representable#RepresentableOps[P] = getOpsRep(property)
+
+    def is(value: P#Raw): P#Rep = (ops) =>> value
   }
 }

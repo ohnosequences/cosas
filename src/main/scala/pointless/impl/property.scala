@@ -6,18 +6,20 @@ object property extends ohnosequences.pointless.property {
 
   // wire deps
   type representable = ohnosequences.pointless.impl.representable.type
-  val representable = ohnosequences.pointless.impl.representable
-  import representable._
+  import ohnosequences.pointless.impl.representable._
 
   type Property = AnyProperty
 
   implicit def getOps[P <: Property](p: P)
   (implicit 
-    repOps: P => representable.ops[P]
+    repOps: P => RepresentableOpsImpl[P]
   )
-  : ops[P] = ops(p)
+  : PropertyOpsImpl[P] = PropertyOpsImpl(p)
 
-  trait AnyProperty extends representable.Representable {
+  case class PropertyOpsImpl[P <: Property](p: P)(implicit getOpsRep: P => RepresentableOpsImpl[P])
+  extends PropertyOps[P](p)
+
+  trait AnyProperty extends Representable {
 
     val label: String
     val classTag: ClassTag[Raw]

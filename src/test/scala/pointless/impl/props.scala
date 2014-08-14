@@ -21,12 +21,18 @@ class uhoh extends org.scalatest.FunSuite {
     val n = name is "Rigoberto Smith"
 
     val a = age is 13123
+    val a0 = age =>> (13123:  Integer)
 
-    illTyped ("""
+    illTyped (
+    """
       val z = key is 34343
-    """)
-    illTyped ("""
+    """
+    )
+
+    illTyped (
+    """
       val uhoh = age is true
-    """)
+    """
+    )
   }
 }

@@ -4,12 +4,13 @@ object representable extends ohnosequences.pointless.representable {
   
   type Representable = RepresentableImpl
 
-  case class Ops[R <: Representable](r: R) extends ops[R](r) {
+  case class RepresentableOpsImpl[R <: RepresentableImpl](override val r: R) extends RepresentableOps[R](r) {
 
-    def =>>[U <: R#Raw](raw: U): R#Rep = RepresentableImpl.tagWith[R,U](raw, r)
+    def =>>[U <: RepresentableImpl.RawOf[R]](raw: U): RepresentableImpl.RepOf[R] = 
+      RepresentableImpl.tagWith[R,U](raw, r:R)
   }
 
-  implicit def ops[R <: Representable](d: R): Ops[R] = Ops[R](d)
+  implicit def representableOps[R <: Representable](d: R): RepresentableOpsImpl[R] = RepresentableOpsImpl[R](d)
 
   // impl
 
@@ -18,7 +19,7 @@ object representable extends ohnosequences.pointless.representable {
     type Me = me.type
 
     type Raw
-    type Rep = Me#Raw with RepresentableImpl.Tag[Me]
+    type Rep = RepresentableImpl.RawOf[Me] with RepresentableImpl.Tag[Me]
   }
 
   object RepresentableImpl {
@@ -28,16 +29,16 @@ object representable extends ohnosequences.pointless.representable {
 
     case class TagWith[D <: Representable](val d: D) {
 
-      def apply(dr : D#Raw): D#Rep = {
+      def apply(dr : RawOf[D]): RepOf[D] = {
 
-        dr.asInstanceOf[D#Rep]
+        dr.asInstanceOf[RepOf[D]]
       }
     }
 
     // Has to be empty! See http://www.scala-lang.org/old/node/11165.html#comment-49097
     sealed trait AnyTag
-    sealed trait Tag[D <: Representable] extends AnyTag with shapeless.record.KeyTag[D, D#Raw]
+    sealed trait Tag[D <: Representable] extends AnyTag with shapeless.record.KeyTag[D, RawOf[D]]
 
-    def tagWith[R <: Representable, U <: RawOf[R]](raw: U, r: R): R#Rep = TagWith[R](r)(raw)
+    def tagWith[R <: Representable, U <: RawOf[R]](raw: U, r: R): RepOf[R] = TagWith[R](r)(raw)
   }
 }

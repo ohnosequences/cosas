@@ -14,10 +14,12 @@ trait representable {
     type Raw
     type Rep <: Raw
   }
+  type RawOf[D <: Representable] = D#Raw
+  type RepOf[D <: Representable] = D#Rep
 
-  abstract class ops[R <: Representable](r: Representable) {
+  abstract class RepresentableOps[R <: Representable](val r: Representable) {
 
-     def =>>[U <: R#Raw](raw: U): R#Rep 
+     def =>>[U <: RawOf[R]](raw: U): RepOf[R] 
   }
 }
 
