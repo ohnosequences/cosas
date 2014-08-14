@@ -9,8 +9,8 @@ trait property {
 
   type Property <: Representable
 
-  case class ops[P <: Property](property: P)(implicit rep: representable.ops[P]) {
+  case class ops[P <: Property](property: P)(implicit getOpsRep: P => representable.ops[P]) {
 
-    def is(value: P#Raw): P#Rep = rep =>> value
+    def is(value: P#Raw): P#Rep = getOpsRep(property) =>> value
   }
 }
