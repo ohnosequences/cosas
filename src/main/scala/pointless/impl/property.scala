@@ -16,8 +16,12 @@ object property extends ohnosequences.pointless.property {
   )
   : PropertyOpsImpl[P] = PropertyOpsImpl(p)
 
-  case class PropertyOpsImpl[P <: Property](p: P)(implicit getOpsRep: P => RepresentableOpsImpl[P])
-  extends PropertyOps[P](p)
+  case class PropertyOpsImpl[P <: Property](val p: P)(implicit getOpsRep: P => RepresentableOpsImpl[P])
+  extends PropertyOps[P](p) {
+
+    def label = property.label
+    def classTag: ClassTag[_ <: P#Raw] = property.classTag
+  }
 
   trait AnyProperty extends Representable {
 

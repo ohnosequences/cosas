@@ -1,5 +1,7 @@
 package ohnosequences.pointless
 
+import scala.reflect.ClassTag
+
 trait property {
 
   // abstract dep
@@ -12,5 +14,8 @@ trait property {
     val ops: representable#RepresentableOps[P] = getOpsRep(property)
 
     def is(value: P#Raw): P#Rep = (ops) =>> value
+
+    def label: String
+    def classTag: ClassTag[_ <: P#Raw]
   }
 }
