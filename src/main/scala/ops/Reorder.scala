@@ -8,6 +8,8 @@ trait Reorder[In <: TypeSet, O <: TypeSet] extends Fn2[In,O] with AnyFn.Constant
 }
 
 object Reorder {
+
+  // TODO why not one in the other direction??
   implicit def any[In <: TypeSet, Out <: TypeSet]
     (implicit eq: In ~ Out, project: Choose[In, Out]): 
         Reorder[In, Out] = 
