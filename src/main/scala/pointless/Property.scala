@@ -1,11 +1,16 @@
 package ohnosequences.pointless
 
-import scala.reflect.ClassTag
+trait property {
 
-/* Properties */
-trait AnyProperty extends Representable {
+  // abstract dep
+  type representable <: ohnosequences.pointless.representable
+  val representable: representable
+  import representable._
 
-  val label: String
-  // TODO make this optional?
-  val classTag: ClassTag[Raw]
+  type Property <: Representable
+
+  case class ops[P <: Property](property: P)(implicit rep: representable.ops[P]) {
+
+    def is(value: P#Raw): P#Rep = rep =>> value
+  }
 }

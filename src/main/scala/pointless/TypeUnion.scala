@@ -1,6 +1,6 @@
 package ohnosequences.pointless
 
-trait TypeUnion {
+trait typeUnion {
  
   /*
     The two type-level constructors of a type union. A generic term looks like either[A]#or[B]#or[C]
