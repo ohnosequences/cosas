@@ -8,7 +8,7 @@ object property extends ohnosequences.pointless.property {
   type representable = ohnosequences.pointless.impl.representable.type
   import ohnosequences.pointless.impl.representable._
 
-  type Property = AnyProperty
+  type Property = ohnosequences.pointless.AnyProperty
 
   implicit def getOps[P <: Property](p: P)
   (implicit 
@@ -23,13 +23,7 @@ object property extends ohnosequences.pointless.property {
     def classTag: ClassTag[_ <: P#Raw] = property.classTag
   }
 
-  trait AnyProperty extends Representable {
-
-    val label: String
-    val classTag: ClassTag[Raw]
-  }
-
-  class property[V](val label: String)(implicit val classTag: ClassTag[V]) extends AnyProperty {
+  class property[V](val label: String)(implicit val classTag: ClassTag[V]) extends ohnosequences.pointless.AnyProperty {
 
     type Raw = V
   }
