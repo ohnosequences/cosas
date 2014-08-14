@@ -14,9 +14,11 @@ object representable extends ohnosequences.pointless.representable {
 
   // impl
 
-  trait RepresentableImpl extends ohnosequences.pointless.AnyRepresentable { me =>
+  trait RepresentableImpl { me =>
 
     type Me = me.type
+
+    type Raw
     type Rep = RepresentableImpl.RawOf[Me] with RepresentableImpl.Tag[Me]
   }
 

@@ -7,15 +7,13 @@ package ohnosequences.pointless
   - `Rep <: Raw` is just `Raw` tagged with `this.type`; the `Rep`resentation
 */
 
-trait AnyRepresentable {
-  type Raw
-  type Rep <: Raw
-}
-
 trait representable { 
 
-  type Representable <: AnyRepresentable 
+  type Representable <: {
 
+    type Raw
+    type Rep <: Raw
+  }
   type RawOf[D <: Representable] = D#Raw
   type RepOf[D <: Representable] = D#Rep
 
