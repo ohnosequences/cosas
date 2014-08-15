@@ -8,7 +8,7 @@ object typeSet extends anyTypeSet {
   type typeUnion = impl.typeUnion.type
   import typeUnion._
 
-  type AnyTypeSet = TypeSetImpl
+  type AnyTypeSet = AnyTypeSetImpl
 
   type ∅ = EmptySetImpl
   val  ∅ : ∅ = emptySet
@@ -19,7 +19,7 @@ object typeSet extends anyTypeSet {
   /*
     Implementations
   */
-  trait TypeSetImpl {
+  trait AnyTypeSetImpl {
 
     type Types <: AnyTypeUnionImpl
 
@@ -28,7 +28,7 @@ object typeSet extends anyTypeSet {
   }
 
 
-  sealed trait EmptySetImpl extends TypeSetImpl {
+  sealed trait EmptySetImpl extends AnyTypeSetImpl {
 
     type Types = either[Nothing]
     def toStr = ""
@@ -37,7 +37,7 @@ object typeSet extends anyTypeSet {
   private object emptySet extends EmptySetImpl
 
 
-  case class ConsImpl[E, S <: TypeSetImpl](head: E, tail: S)(implicit check: E ∉ S) extends TypeSetImpl {
+  case class ConsImpl[E, S <: AnyTypeSetImpl](head: E, tail: S)(implicit check: E ∉ S) extends AnyTypeSetImpl {
     type Types = tail.Types#or[E]
     def toStr = {
       val h = head match {
@@ -52,7 +52,7 @@ object typeSet extends anyTypeSet {
 
   /* This method covers constructor to check that you are not adding a duplicate */
   object  ConsImpl {
-    def cons[E, S <: TypeSetImpl](e: E, set: S)(implicit check: E ∉ S): ConsImpl[E,S] = ConsImpl(e, set) 
+    def cons[E, S <: AnyTypeSetImpl](e: E, set: S)(implicit check: E ∉ S): ConsImpl[E,S] = ConsImpl(e, set) 
   }
 
 
@@ -73,5 +73,15 @@ object typeSet extends anyTypeSet {
 
   type    isBoundedByUnion[S <: AnyTypeSet, U <: AnyTypeUnion] = S#Types#get <:<  U#get
   type isNotBoundedByUnion[S <: AnyTypeSet, U <: AnyTypeUnion] = S#Types#get <:!< U#get
+
+
+  /*
+    Ops
+  */
+  implicit def typeSetOps[S <: AnyTypeSet](s: S): TypeSetOps[S] = TypeSetOps[S](s)
+  case class   TypeSetOps[S <: AnyTypeSet](s: S) extends AnyTypeSetOps[S](s) {
+
+    def :~:[E](e: E)(implicit ev: E ∉ S): (E :~: S) = ConsImpl.cons(e, s)
+  }
 
 }

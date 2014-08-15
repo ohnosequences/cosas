@@ -120,102 +120,102 @@ trait anyTypeSet {
   type  ToList[S <: AnyTypeSet] <: Fn1[S] with WrappedIn[List]
   final type ToListOf[S <: AnyTypeSet, O0] = ToList[S] { type O = O0 }
 
-  implicit def defaultOps[S <: AnyTypeSet](set: S)(getOps: S => ops[S]): ops[S] = getOps(set)
-  
-  abstract class ops[S <: AnyTypeSet](val set: S) {
 
-    def :~:[E](e: E)(implicit ev: E ∉ S): (E :~: S)
+  abstract class AnyTypeSetOps[S <: AnyTypeSet](val set: S) {
 
-    def takeFirst[E]
-    (implicit 
-      ev: E ∈ S,
-      takeFirstFrom: E TakeFirstFrom S
-    )
-    : takeFirstFrom.Out
+    def :~:[E](e: E)(implicit check: E ∉ S): (E :~: S)
 
-    def pop[E]
-    (implicit 
-      ev: E ∈ S, 
-      popFrom: E PopFrom S
-    )
-    : popFrom.Out
+  //   def takeFirst[E]
+  //   (implicit 
+  //     ev: E ∈ S,
+  //     takeFirstFrom: E TakeFirstFrom S
+  //   )
+  //   : takeFirstFrom.Out
 
-    def take[Q <: AnyTypeSet]
-    (implicit 
-      ev: Q ⊂ S,
-      takeFrom: Q TakeFrom S
-    )
-    : takeFrom.Out
+  //   def pop[E]
+  //   (implicit 
+  //     ev: E ∈ S, 
+  //     popFrom: E PopFrom S
+  //   )
+  //   : popFrom.Out
 
-    def replace[Q <: AnyTypeSet](q: Q)
-    (implicit 
-      ev: Q ⊂ S, 
-      replaceIn: Q ReplaceIn S
-    )
-    : replaceIn.Out
+  //   def take[Q <: AnyTypeSet]
+  //   (implicit 
+  //     ev: Q ⊂ S,
+  //     takeFrom: Q TakeFrom S
+  //   )
+  //   : takeFrom.Out
 
-    // = modulo order of types
-    def as[Q <: AnyTypeSet]
-    (implicit 
-      ev: S ~:~ Q,
-      as: S As Q
-    )
-    : as.Out
+  //   def replace[Q <: AnyTypeSet](q: Q)
+  //   (implicit 
+  //     ev: Q ⊂ S, 
+  //     replaceIn: Q ReplaceIn S
+  //   )
+  //   : replaceIn.Out
 
-    def as[Q <: AnyTypeSet](q: Q)
-    (implicit
-      ev: S ~:~ Q,
-      as: S As Q
-    )
-    : as.Out
+  //   // = modulo order of types
+  //   def as[Q <: AnyTypeSet]
+  //   (implicit 
+  //     ev: S ~:~ Q,
+  //     as: S As Q
+  //   )
+  //   : as.Out
 
-    def \[Q <: AnyTypeSet](q: Q)(implicit sub: S \ Q): sub.Out
-    def ∪[Q <: AnyTypeSet](q: Q)(implicit uni: S ∪ Q): uni.Out
+  //   def as[Q <: AnyTypeSet](q: Q)
+  //   (implicit
+  //     ev: S ~:~ Q,
+  //     as: S As Q
+  //   )
+  //   : as.Out
 
-    import shapeless.Poly
+  //   def \[Q <: AnyTypeSet](q: Q)(implicit sub: S \ Q): sub.Out
+  //   def ∪[Q <: AnyTypeSet](q: Q)(implicit uni: S ∪ Q): uni.Out
 
-    def map[F <: Poly](f: F)
-    (implicit 
-      setMapper: SetMapper[F,S]
-    )
-    : setMapper.Out
+  //   import shapeless.Poly
 
-    def mapFold[F <: Poly, R](f: F)(r: R)(op: (R, R) => R)
-    (implicit 
-      setMapFolder: SetMapFolder[F,S,R]
-    )
-    : setMapFolder.Out
+  //   def map[F <: Poly](f: F)
+  //   (implicit 
+  //     setMapper: SetMapper[F,S]
+  //   )
+  //   : setMapper.Out
 
-    def mapToHList[F <: Poly](f: F)
-    (implicit 
-      mapperToHList: MapperToHList[F,S]
-    )
-    : mapperToHList.Out
+  //   def mapFold[F <: Poly, R](f: F)(r: R)(op: (R, R) => R)
+  //   (implicit 
+  //     setMapFolder: SetMapFolder[F,S,R]
+  //   )
+  //   : setMapFolder.Out
 
-    def mapToList[F <: Poly](f: F)
-    (implicit 
-      mapperToList: MapperToList[F,S]
-    )
-    : mapperToList.Out
+  //   def mapToHList[F <: Poly](f: F)
+  //   (implicit 
+  //     mapperToHList: MapperToHList[F,S]
+  //   )
+  //   : mapperToHList.Out
 
-    // conversions
-    def toHList
-    (implicit 
-      toHList: ToHList[S]
-    )
-    : toHList.Out
+  //   def mapToList[F <: Poly](f: F)
+  //   (implicit 
+  //     mapperToList: MapperToList[F,S]
+  //   )
+  //   : mapperToList.Out
 
-    def toList
-    (implicit 
-      toList: ToList[S]
-    )
-    : toList.Out
+  //   // conversions
+  //   def toHList
+  //   (implicit 
+  //     toHList: ToHList[S]
+  //   )
+  //   : toHList.Out
 
-    def toListOf[O]
-    (implicit 
-      toListOf: S ToListOf O
-    )
-    : toListOf.Out
+  //   def toList
+  //   (implicit 
+  //     toList: ToList[S]
+  //   )
+  //   : toList.Out
+
+  //   def toListOf[O]
+  //   (implicit 
+  //     toListOf: S ToListOf O
+  //   )
+  //   : toListOf.Out
+
   }
 
 }
