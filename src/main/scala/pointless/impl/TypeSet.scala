@@ -15,12 +15,8 @@ object typeSet extends anyTypeSet {
   /*
     Predicates
   */
-  type in[S <: AnyTypeSet] = PredicateOn[Any] {
-    type    is[E] = E    isOneOf S#Bound
-    type isnot[E] = E isNotOneOf S#Bound
-  }
-  // type subsetOf[Q <: AnyTypeSet] <: PredicateOn[AnyTypeSet]
-  // type sameAs[Q <: AnyTypeSet] <: PredicateOn[AnyTypeSet]
+  type    isIn[E, S <: AnyTypeSet] = E    isOneOf S#Bound
+  type isNotIn[E, S <: AnyTypeSet] = E isNotOneOf S#Bound
 
 
 
@@ -45,7 +41,7 @@ object typeSet extends anyTypeSet {
   private object emptySet extends EmptySetImpl
 
 
-  case class ConsImpl[E: in[S]#isNot, S <: TypeSetImpl](head: E, tail: S) extends TypeSetImpl {
+  case class ConsImpl[E, S <: TypeSetImpl](head: E, tail: S)(implicit check: E ∉ S) extends TypeSetImpl {
     type Bound = tail.Bound#or[E]
     def toStr = {
       val h = head match {
@@ -60,7 +56,7 @@ object typeSet extends anyTypeSet {
 
   /* This method covers constructor to check that you are not adding a duplicate */
   object  ConsImpl {
-    def cons[E : in[S]#isNot, S <: TypeSetImpl](e: E, set: S): ConsImpl[E,S] = ConsImpl(e, set) 
+    def cons[E, S <: TypeSetImpl](e: E, set: S)(implicit check: E ∉ S): ConsImpl[E,S] = ConsImpl(e, set) 
   }
 
 }

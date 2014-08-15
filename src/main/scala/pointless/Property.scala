@@ -5,7 +5,7 @@ import scala.reflect.ClassTag
 trait anyProperty {
 
   // abstract dep
-  type representable <: ohnosequences.pointless.anyRepresentable
+  type representable <: anyRepresentable
 
   type AnyProperty <: representable#AnyRepresentable
 

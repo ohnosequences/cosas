@@ -21,19 +21,21 @@ trait anyTypeSet {
   */
 
   /* An element is in the set */
-  type in[S <: AnyTypeSet] <: PredicateOn[Any]
+  final type in[S <: AnyTypeSet] = {
+    type    is[E] = E    isIn S
+    type isNot[E] = E isNotIn S
+  }
 
+  type isIn[E, S <: AnyTypeSet]
   @annotation.implicitNotFound(msg = "Can't prove that ${E} is an element of ${S}")
-  sealed class isIn[E : in[S]#is, S <: AnyTypeSet]
-  implicit def isIn[E : in[S]#is, S <: AnyTypeSet]: (E isIn S) = new (E isIn S)
-  final type ∈[E, S <: AnyTypeSet] = E isIn S
+  sealed class ∈[E, S <: AnyTypeSet](implicit prove: E isIn S)
+  implicit def ∈[E, S <: AnyTypeSet](implicit prove: E isIn S): (E ∈ S) = new (E ∈ S)
 
+  type isNotIn[E, S <: AnyTypeSet]
   @annotation.implicitNotFound(msg = "Can't prove that ${E} is not an element of ${S}")
-  sealed class isNotIn[E : in[S]#isNot, S <: AnyTypeSet]
-  implicit def isNotIn[E : in[S]#isNot, S <: AnyTypeSet]: (E isNotIn S) = new (E isNotIn S)
-  final type ∉[E, S <: AnyTypeSet] = E isNotIn S
+  sealed class ∉[E, S <: AnyTypeSet](implicit prove: E isNotIn S)
+  implicit def ∉[E, S <: AnyTypeSet](implicit prove: E isNotIn S): (E ∉ S) = new (E ∉ S)
 
-  
   /* One set is a subset of another */
   type subsetOf[Q <: AnyTypeSet] <: PredicateOn[AnyTypeSet]
 

@@ -9,8 +9,6 @@ object typeUnion extends anyTypeUnion {
 
   type either[T] = TypeUnionImpl[not[T]]
 
-  type oneOf[U <: AnyTypeUnion] = oneOfImpl[U]
-
 
   /*
     Implementations
@@ -27,9 +25,7 @@ object typeUnion extends anyTypeUnion {
     type get = not[T]
   }
 
-  trait oneOfImpl[U <: AnyTypeUnion] extends PredicateOn[Any] { 
-    type    is[T] = either[T]#get <:<  U#get
-    type isNot[T] = either[T]#get <:!< U#get
-  }
+  type    isOneOf[X, U <: AnyTypeUnion] = either[X]#get <:<  U#get
+  type isNotOneOf[X, U <: AnyTypeUnion] = either[X]#get <:!< U#get
 
 }
