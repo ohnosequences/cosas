@@ -1,9 +1,12 @@
 package ohnosequences.pointless.impl
 
-import ohnosequences.pointless._, impl.typeUnion._
-import shapeless.{ HList, Poly }
+import ohnosequences.pointless._
+import shapeless.{ HList, Poly, <:!<, =:!= }
 
 object typeSet extends anyTypeSet {
+
+  type typeUnion = impl.typeUnion.type
+  import typeUnion._
 
   type AnyTypeSet = TypeSetImpl
 
@@ -12,20 +15,13 @@ object typeSet extends anyTypeSet {
 
   type :~:[E, S <: AnyTypeSet] = ConsImpl[E, S]
 
-  /*
-    Predicates
-  */
-  type    isIn[E, S <: AnyTypeSet] = E    isOneOf S#Bound
-  type isNotIn[E, S <: AnyTypeSet] = E isNotOneOf S#Bound
-
-
 
   /*
     Implementations
   */
   trait TypeSetImpl {
 
-    type Bound <: AnyTypeUnion
+    type Types <: AnyTypeUnionImpl
 
     def toStr: String
     override def toString = "{" + toStr + "}"
@@ -34,7 +30,7 @@ object typeSet extends anyTypeSet {
 
   sealed trait EmptySetImpl extends TypeSetImpl {
 
-    type Bound = either[Nothing]
+    type Types = either[Nothing]
     def toStr = ""
   }
 
@@ -42,7 +38,7 @@ object typeSet extends anyTypeSet {
 
 
   case class ConsImpl[E, S <: TypeSetImpl](head: E, tail: S)(implicit check: E ∉ S) extends TypeSetImpl {
-    type Bound = tail.Bound#or[E]
+    type Types = tail.Types#or[E]
     def toStr = {
       val h = head match {
         case _: String => "\""+head+"\""
@@ -58,5 +54,24 @@ object typeSet extends anyTypeSet {
   object  ConsImpl {
     def cons[E, S <: TypeSetImpl](e: E, set: S)(implicit check: E ∉ S): ConsImpl[E,S] = ConsImpl(e, set) 
   }
+
+
+  /*
+    Predicates
+  */
+  type    isIn[E, S <: AnyTypeSet] = E    isOneOf S#Types
+  type isNotIn[E, S <: AnyTypeSet] = E isNotOneOf S#Types
+
+  type    isSubsetOf[S <: AnyTypeSet, Q <: AnyTypeSet] = S#Types#get <:<  Q#Types#get 
+  type isNotSubsetOf[S <: AnyTypeSet, Q <: AnyTypeSet] = S#Types#get <:!< Q#Types#get
+
+  type    isSameAs[S <: AnyTypeSet, Q <: AnyTypeSet] = S#Types#get =:=  Q#Types#get
+  type isNotSameAs[S <: AnyTypeSet, Q <: AnyTypeSet] = S#Types#get =:!= Q#Types#get
+
+  type    isBoundedBy[S <: AnyTypeSet, B] = S#Types#get <:<  either[B]#get
+  type isNotBoundedBy[S <: AnyTypeSet, B] = S#Types#get <:!< either[B]#get
+
+  type    isBoundedByUnion[S <: AnyTypeSet, U <: AnyTypeUnion] = S#Types#get <:<  U#get
+  type isNotBoundedByUnion[S <: AnyTypeSet, U <: AnyTypeUnion] = S#Types#get <:!< U#get
 
 }
