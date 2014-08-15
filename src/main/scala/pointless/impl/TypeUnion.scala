@@ -1,9 +1,9 @@
 package ohnosequences.pointless.impl
 
-import ohnosequences.pointless.PredicateOn
+import ohnosequences.pointless._
 import shapeless.{ <:!< }
 
-object typeUnion extends ohnosequences.pointless.anyTypeUnion {
+object typeUnion extends anyTypeUnion {
 
   type AnyTypeUnion = AnyTypeUnionImpl
 
@@ -13,7 +13,7 @@ object typeUnion extends ohnosequences.pointless.anyTypeUnion {
 
 
   /*
-    impls
+    Implementations
   */
   type not[T] = T => Nothing
 

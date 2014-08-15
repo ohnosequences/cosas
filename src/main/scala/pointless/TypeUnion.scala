@@ -16,4 +16,6 @@ trait anyTypeUnion {
     Type-level operations
   */
   type oneOf[U <: AnyTypeUnion] <: PredicateOn[Any]
+  final type    isOneOf[X, U <: AnyTypeUnion] = oneOf[U]#is[X]
+  final type isNotOneOf[X, U <: AnyTypeUnion] = oneOf[U]#isNot[X]
 }

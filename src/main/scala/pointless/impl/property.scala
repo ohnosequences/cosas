@@ -1,8 +1,9 @@
 package ohnosequences.pointless.impl
 
+import ohnosequences.pointless._
 import scala.reflect.ClassTag
 
-object property extends ohnosequences.pointless.anyProperty {
+object property extends anyProperty {
 
   // wire deps
   type representable = ohnosequences.pointless.impl.representable.type

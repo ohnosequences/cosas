@@ -1,6 +1,8 @@
 package ohnosequences.pointless.impl
 
-object representable extends ohnosequences.pointless.anyRepresentable {
+import ohnosequences.pointless._
+
+object representable extends anyRepresentable {
   
   type AnyRepresentable = RepresentableImpl
 
