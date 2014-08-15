@@ -6,7 +6,6 @@ object property extends ohnosequences.pointless.anyProperty {
 
   // wire deps
   type representable = ohnosequences.pointless.impl.representable.type
-  // import ohnosequences.pointless.impl.representable._
 
   type AnyProperty = PropertyImpl
 

@@ -1,5 +1,11 @@
 package ohnosequences.pointless
 
+trait PredicateOn[B] {
+
+  type    is[X <: B]
+  type isNot[X <: B]
+}
+
 trait AnyFn {
 
   type Out
@@ -27,45 +33,40 @@ object AnyFn {
 
     type O = O0
   }
-}
 
-trait Out[Z] {
+  trait Out[Z] {
 
-  type Out <: Z
-}
+    type Out <: Z
+  }
 
-trait AnyFn1 extends AnyFn {
+  trait AnyFn1 extends AnyFn {
 
-  type I1
+    type I1
+  }
 
-  type Out
-}
+  trait Fn1[A] extends AnyFn1 {
 
-trait Fn1[X] extends AnyFn1 {
+    type I1 = A
+  }
 
-  type I1 = X
-}
+  trait AnyFn2 extends AnyFn {
 
-trait AnyFn2 extends AnyFn {
+    type I1; type I2
+  }
 
-  type I1; type I2
+  trait Fn2[A, B] extends AnyFn2 {
 
-  type Out
-}
+    type I1 = A; type I2 = B
+  }
 
-trait Fn2[X,Y] extends AnyFn2 {
+  trait AnyFn3 extends AnyFn {
 
-  type I1 = X; type I2 = Y
-}
+    type I1; type I2; type I3
+  }
 
-trait AnyFn3 extends AnyFn {
+  trait Fn3[A, B, C] extends AnyFn3 {
 
-  type I1; type I2; type I3
+    type I1 = A; type I2 = B; type I3 = C
+  }
 
-  type Out
-}
-
-trait Fn3[A,B,C] extends AnyFn3 {
-
-  type I1 = A; type I2 = B; type I3 = C
 }
