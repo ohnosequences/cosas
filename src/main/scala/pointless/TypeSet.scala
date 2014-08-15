@@ -1,6 +1,7 @@
 package ohnosequences.pointless
 
 import AnyFn._
+import shapeless.{ HList, Poly }
 
 trait anyTypeSet {
 
@@ -93,19 +94,21 @@ trait anyTypeSet {
   /*
     ### Functions
   */
+  @annotation.implicitNotFound(msg = "Can't subtract ${Q} from ${S}")
   type \[S <: AnyTypeSet, Q <: AnyTypeSet] <: Fn2[S,Q] with WithCodomain[AnyTypeSet]
+
+  @annotation.implicitNotFound(msg = "Can't union ${S} with ${Q}")
   type ∪[S <: AnyTypeSet, Q <: AnyTypeSet] <: Fn2[S,Q] with WithCodomain[AnyTypeSet]
 
-  type TakeFirstFrom[E, S <: AnyTypeSet] <: Fn2[E,S] with WithCodomain[E]
+  type TakeFirst[E, S <: AnyTypeSet] <: Fn2[E,S] with WithCodomain[E]
 
-  type PopFrom[E, S <: AnyTypeSet] <: Fn1[S] with WithCodomain[(E,AnyTypeSet)]
+  type Pop[S <: AnyTypeSet, E] <: Fn1[S] with WithCodomain[(E,AnyTypeSet)]
 
-  type TakeFrom[Q <: AnyTypeSet, S <: AnyTypeSet] <: Fn2[Q,S] with Constant[Q]
+  type Take[Q <: AnyTypeSet, S <: AnyTypeSet] <: Fn2[Q,S] with Constant[Q]
 
-  type ReplaceIn[Q <: AnyTypeSet, S <: AnyTypeSet] <: Fn2[S,Q] with Constant[S]
-  type        As[S <: AnyTypeSet, Q <: AnyTypeSet] <: Fn2[S,Q] with Constant[Q]
+  type Replace[Q <: AnyTypeSet, S <: AnyTypeSet] <: Fn2[S,Q] with Constant[S]
 
-  import shapeless.{ HList, Poly }
+  type As[S <: AnyTypeSet, Q <: AnyTypeSet] <: Fn2[S,Q] with Constant[Q]
 
   type SetMapper[F <: Poly, S <: AnyTypeSet] <: Fn2[F,S] with WithCodomain[AnyTypeSet]
 
@@ -121,23 +124,22 @@ trait anyTypeSet {
   final type ToListOf[S <: AnyTypeSet, O0] = ToList[S] { type O = O0 }
 
 
-  abstract class AnyTypeSetOps[S <: AnyTypeSet](val set: S) {
+  abstract class AnyTypeSetOps[S <: AnyTypeSet](s: S) {
 
     def :~:[E](e: E)(implicit check: E ∉ S): (E :~: S)
+
+    def \[Q <: AnyTypeSet](q: Q)(implicit sub: S \ Q): sub.Out = sub(s, q)
+
+    def ∪[Q <: AnyTypeSet](q: Q)(implicit uni: S ∪ Q): uni.Out = uni(s, q)
 
   //   def takeFirst[E]
   //   (implicit 
   //     ev: E ∈ S,
-  //     takeFirstFrom: E TakeFirstFrom S
+  //     takeFirstFrom: E TakeFirst S
   //   )
   //   : takeFirstFrom.Out
 
-  //   def pop[E]
-  //   (implicit 
-  //     ev: E ∈ S, 
-  //     popFrom: E PopFrom S
-  //   )
-  //   : popFrom.Out
+    def pop[E](implicit check: E ∈ S, pop: Pop[S, E]): pop.Out = pop(s)
 
   //   def take[Q <: AnyTypeSet]
   //   (implicit 
@@ -167,9 +169,6 @@ trait anyTypeSet {
   //     as: S As Q
   //   )
   //   : as.Out
-
-  //   def \[Q <: AnyTypeSet](q: Q)(implicit sub: S \ Q): sub.Out
-  //   def ∪[Q <: AnyTypeSet](q: Q)(implicit uni: S ∪ Q): uni.Out
 
   //   import shapeless.Poly
 

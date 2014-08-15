@@ -14,18 +14,19 @@ object typeUnion extends anyTypeUnion {
     Implementations
   */
   type not[T] = T => Nothing
+  final type just[T] = not[not[T]]
 
-  trait AnyTypeUnionImpl {
+  protected trait AnyTypeUnionImpl {
     type or[Y] <: AnyTypeUnionImpl
-    type get
+    type union
   }
 
-  trait TypeUnionImpl[T] extends AnyTypeUnionImpl {
+  protected trait TypeUnionImpl[T] extends AnyTypeUnionImpl {
     type or[S] = TypeUnionImpl[T with not[S]]  
-    type get = not[T]
+    type union = not[T]
   }
 
-  type    isOneOf[X, U <: AnyTypeUnion] = either[X]#get <:<  U#get
-  type isNotOneOf[X, U <: AnyTypeUnion] = either[X]#get <:!< U#get
+  type    isOneOf[X, U <: AnyTypeUnion] = just[X] <:<  U#union
+  type isNotOneOf[X, U <: AnyTypeUnion] = just[X] <:!< U#union
 
 }
