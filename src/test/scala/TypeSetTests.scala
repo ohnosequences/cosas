@@ -51,29 +51,6 @@ class TypeSetTests extends org.scalatest.FunSuite {
 
   }
 
-  // test("contains/lookup") {
-  //   val s = 1 :~: 'a' :~: "foo" :~: ∅
-  //   type st = s.type
-
-  //   implicitly[Int ∈ st]
-  //   assert(s.lookup[Int] == 1)
-
-  //   implicitly[Char ∈ st]
-  //   assert(s.lookup[Char] == 'a')
-
-  //   implicitly[String ∈ st]
-  //   assert(s.lookup[String] == "foo")
-
-  //   trait truth;
-  //   trait happiness;
-  //   implicitly[    truth ∉ st]
-  //   implicitly[happiness ∉ st]
-
-  //   // Neither of these two things work:
-  //   // implicitly[Nothing ∈ st]
-  //   // implicitly[Nothing ∉ st]
-  // }
-
   test("pop") {
     val s = 1 :~: 'a' :~: "foo" :~: ∅
 
@@ -82,36 +59,57 @@ class TypeSetTests extends org.scalatest.FunSuite {
     assert(s.pop[String] == ("foo", 1 :~: 'a' :~: ∅))
   }
 
-  // test("projection") {
-  //   val s = 1 :~: 'a' :~: "foo" :~: ∅
+  test("contains/lookup") {
+    val s = 1 :~: 'a' :~: "foo" :~: ∅
+    type st = s.type
 
-  //   type pt = Char :~: Int :~: ∅
+    implicitly[Int ∈ st]
+    assert(s.lookup[Int] == 1)
 
-  //   implicitly[Choose[∅, ∅]]
-  //   implicitly[Choose[Int :~: ∅, Int :~: ∅]]
-  //   implicitly[Choose[Int :~: Char :~: String :~: ∅, Char :~: Int :~: ∅]]
-  //   implicitly[Choose[Int :~: Char :~: String :~: ∅, pt]]
-  //   assert(s.project[pt] == 'a' :~: 1 :~: ∅)
-  //   assert(s.project[Int :~: Char :~: String :~: ∅] == s)
-  // }
+    implicitly[Char ∈ st]
+    assert(s.lookup[Char] == 'a')
 
-  // test("reordering") {
-  //   val s = 1 :~: 'a' :~: "foo" :~: ∅
+    implicitly[String ∈ st]
+    assert(s.lookup[String] == "foo")
 
-  //   assert(∅.reorder[∅] == ∅)
-  //   assert(s.reorder[Char :~: Int :~: String :~: ∅] == 'a' :~: 1 :~: "foo" :~: ∅)
+    trait truth;
+    trait happiness;
+    implicitly[    truth ∉ st]
+    implicitly[happiness ∉ st]
 
-  //   val p = "bar" :~: 2 :~: 'b' :~: ∅
-  //   assert(s ~> p == "foo" :~: 1 :~: 'a' :~: ∅)
-  // }
+    implicitly[Nothing ∈ st]
+  }
 
-  // test("replace") {
-  //   val s = 1 :~: 'a' :~: "foo" :~: ∅
+  test("projection (take)") {
+    val s = 1 :~: 'a' :~: "foo" :~: ∅
 
-  //   assert(∅.replace(∅) == ∅)
-  //   assert(s.replace(2 :~: ∅) == 2 :~: 'a' :~: "foo" :~: ∅)
-  //   assert(s.replace("bar" :~: ∅) == 1 :~: 'a' :~: "bar" :~: ∅)
-  // }
+    type pt = Char :~: Int :~: ∅
+
+    implicitly[Take[∅, ∅]]
+    implicitly[Take[Int :~: ∅, Int :~: ∅]]
+    implicitly[Take[Int :~: Char :~: String :~: ∅, Char :~: Int :~: ∅]]
+    implicitly[Take[Int :~: Char :~: String :~: ∅, pt]]
+    assert(s.take[pt] == 'a' :~: 1 :~: ∅)
+    assert(s.take[Int :~: Char :~: String :~: ∅] == s)
+  }
+
+  test("replace") {
+    val s = 1 :~: 'a' :~: "foo" :~: ∅
+
+    assert(∅.replace(∅) == ∅)
+    assert(s.replace(2 :~: ∅) == 2 :~: 'a' :~: "foo" :~: ∅)
+    assert(s.replace("bar" :~: ∅) == 1 :~: 'a' :~: "bar" :~: ∅)
+  }
+
+  test("reordering") {
+    val s = 1 :~: 'a' :~: "foo" :~: ∅
+
+    assert(∅.as[∅] == ∅)
+    assert(s.as[Char :~: Int :~: String :~: ∅] == 'a' :~: 1 :~: "foo" :~: ∅)
+
+    val p = "bar" :~: 2 :~: 'b' :~: ∅
+    assert((s as p) == "foo" :~: 1 :~: 'a' :~: ∅)
+  }
 
   test("subtraction") {
     val s = 1 :~: 'a' :~: "foo" :~: ∅
@@ -145,49 +143,45 @@ class TypeSetTests extends org.scalatest.FunSuite {
     assert(qs == bar :~: 'a' :~: true :~: 2 :~: "bar" :~: ∅)
   }
 
-  // test("hlist ops") {
-  //   assert(∅.toHList == HNil)
-  //   assert((1 :~: 'a' :~: "foo" :~: ∅).toHList == (1 :: 'a' :: "foo" :: HNil))
-  // }
+  test("mapper") {
 
-  // test("to list") {
-  //   assert(∅.toList == Nil)
-  //   assert((1 :~: 'a' :~: "foo" :~: ∅).toListWith[Any] == List[Any](1, 'a', "foo"))
+    import poly._
 
-  //   trait foo
-  //   case object boo extends foo
-  //   case object buh extends foo
+    object id extends Poly1 { implicit def default[T] = at[T]((t:T) => t) }
+    object toStr extends (Any -> String)(_.toString)
+    object rev extends Poly1 { 
+      implicit val str = at[String](t => t.reverse)
+      implicit def list[T] = at[List[T]](t => t.reverse)
+      implicit def default[T] = at[T](t => t)
+    }
 
-  //   val s = boo :~: buh :~: ∅
-  //   assert(s.toList == List[foo](boo, buh))
-  // }
+    // assert(∅.map(toStr) == ∅)
 
-  // test("mapper") {
+    val s = 1 :~: 'a' :~: "foo" :~: List(1,2,3) :~: ∅
+    // implicitly[SetMapper[id.type, Int :~: Char :~: String :~: List[Int] :~: ∅]]
+    // assert(s.map(id) == s)
+    // assert(s.map(rev) == 1 :~: 'a' :~: "oof" :~: List(3,2,1) :~: ∅)
 
-  //   import poly._
+    // // This case should fail, because toStr in not "type-injective"
+    // illTyped("implicitly[SetMapper[toStr.type, s.type]]")
+    // illTyped("s.map(toStr)")
 
-  //   object id extends Poly1 { implicit def default[T] = at[T]((t:T) => t) }
-  //   object toStr extends (Any -> String)(_.toString)
-  //   object rev extends Poly1 { 
-  //     implicit val str = at[String](t => t.reverse)
-  //     implicit def list[T] = at[List[T]](t => t.reverse)
-  //     implicit def default[T] = at[T](t => t)
-  //   }
+    assert(s.mapToHList(toStr) == "1" :: "a" :: "foo" :: "List(1, 2, 3)" :: HNil)
+    assert(s.mapToList(toStr) == List("1", "a", "foo", "List(1, 2, 3)"))
+    assert(s.mapToHList(toStr).toList == s.mapToList(toStr))
+  }
 
-  //   assert(∅.map(toStr) == ∅)
+  test("conversions to HList/List") {
+    assert(∅.toHList == HNil)
+    assert((1 :~: 'a' :~: "foo" :~: ∅).toHList == (1 :: 'a' :: "foo" :: HNil))
 
-  //   val s = 1 :~: 'a' :~: "foo" :~: List(1,2,3) :~: ∅
-  //   implicitly[SetMapper[id.type, Int :~: Char :~: String :~: List[Int] :~: ∅]]
-  //   assert(s.map(id) == s)
-  //   assert(s.map(rev) == 1 :~: 'a' :~: "oof" :~: List(3,2,1) :~: ∅)
+    assert(∅.toList == Nil)
+    assert((1 :~: 'a' :~: "foo" :~: ∅).toListOf[Any] == List[Any](1, 'a', "foo"))
 
-  //   // This case should fail, because toStr in not "type-injective"
-  //   illTyped("implicitly[SetMapper[toStr.type, s.type]]")
-  //   illTyped("s.map(toStr)")
-
-  //   assert(s.mapHList(toStr) == "1" :: "a" :: "foo" :: "List(1, 2, 3)" :: HNil)
-  //   assert(s.mapList(toStr) == List("1", "a", "foo", "List(1, 2, 3)"))
-  //   // assert(s.mapHList(toStr).toList == s.mapList(toStr))
-  // }
+    trait foo
+    object boo extends foo
+    object buh extends foo
+    assert((boo :~: buh :~: ∅).toList == List[foo](boo, buh))
+  }
 
 }

@@ -1,7 +1,7 @@
 package ohnosequences.pointless
 
 import AnyFn._
-import shapeless.{ HList, Poly }
+import shapeless.{ HList, Poly1 }
 
 trait anyTypeSet {
 
@@ -94,126 +94,93 @@ trait anyTypeSet {
   /*
     ### Functions
   */
-  @annotation.implicitNotFound(msg = "Can't subtract ${Q} from ${S}")
-  type \[S <: AnyTypeSet, Q <: AnyTypeSet] <: Fn2[S,Q] with WithCodomain[AnyTypeSet]
-
-  @annotation.implicitNotFound(msg = "Can't union ${S} with ${Q}")
-  type ∪[S <: AnyTypeSet, Q <: AnyTypeSet] <: Fn2[S,Q] with WithCodomain[AnyTypeSet]
-
-  type TakeFirst[E, S <: AnyTypeSet] <: Fn2[E,S] with WithCodomain[E]
-
+  @annotation.implicitNotFound(msg = "Popping is not implemented")
   type Pop[S <: AnyTypeSet, E] <: Fn1[S] with WithCodomain[(E,AnyTypeSet)]
 
-  type Take[Q <: AnyTypeSet, S <: AnyTypeSet] <: Fn2[Q,S] with Constant[Q]
+  @annotation.implicitNotFound(msg = "Lookup is not implemented")
+  type Lookup[S <: AnyTypeSet, E] <: Fn1[S] with WithCodomain[E]
 
-  type Replace[Q <: AnyTypeSet, S <: AnyTypeSet] <: Fn2[S,Q] with Constant[S]
+  @annotation.implicitNotFound(msg = "Subtraction is not implemented")
+  type \[S <: AnyTypeSet, Q <: AnyTypeSet] <: Fn2[S,Q] with WithCodomain[AnyTypeSet]
 
-  type As[S <: AnyTypeSet, Q <: AnyTypeSet] <: Fn2[S,Q] with Constant[Q]
+  @annotation.implicitNotFound(msg = "Union is not implemented")
+  type ∪[S <: AnyTypeSet, Q <: AnyTypeSet] <: Fn2[S,Q] with WithCodomain[AnyTypeSet]
 
-  type SetMapper[F <: Poly, S <: AnyTypeSet] <: Fn2[F,S] with WithCodomain[AnyTypeSet]
+  @annotation.implicitNotFound(msg = "Projection (Take) is not implemented")
+  type Take[S <: AnyTypeSet, Q <: AnyTypeSet] <: Fn1[S] with Constant[Q]
 
-  // TODO review this one
-  type SetMapFolder[F <: Poly, S <: AnyTypeSet, R] <: Fn3[F,S,R] with Constant[R]
+  @annotation.implicitNotFound(msg = "Replacing is not implemented")
+  type Replace[S <: AnyTypeSet, Q <: AnyTypeSet] <: Fn2[S, Q] with Constant[S]
 
-  type MapperToHList[F <: Poly, S <: AnyTypeSet] <: Fn2[F,S] with WithCodomain[HList]
+  @annotation.implicitNotFound(msg = "Reordering is not implemented")
+  type As[S <: AnyTypeSet, Q <: AnyTypeSet] <: Fn1[S] with Constant[Q]
 
-  type MapperToList[F <: Poly, S <: AnyTypeSet] <: Fn2[F,S] with WrappedIn[List]
-
+  @annotation.implicitNotFound(msg = "Conversion to HList is not implemented")
   type ToHList[S <: AnyTypeSet] <: Fn1[S] with WithCodomain[HList]
+
+  @annotation.implicitNotFound(msg = "Conversion to List is not implemented")
   type  ToList[S <: AnyTypeSet] <: Fn1[S] with WrappedIn[List]
-  final type ToListOf[S <: AnyTypeSet, O0] = ToList[S] { type O = O0 }
+
+  @annotation.implicitNotFound(msg = "Conversion to List is not implemented")
+  final type ToListOf[S <: AnyTypeSet, T] = ToList[S] with o[T]
+
+  // type SetMapper[F <: Poly, S <: AnyTypeSet] <: Fn2[F,S] with WithCodomain[AnyTypeSet]
+
+  // // TODO review this one
+  // type SetMapFolder[F <: Poly, S <: AnyTypeSet, R] <: Fn3[F,S,R] with Constant[R]
+
+  @annotation.implicitNotFound(msg = "Mapping to HList is not implemented")
+  type MapToHList[F <: Poly1, S <: AnyTypeSet] <: Fn1[S] with WithCodomain[HList]
+
+  @annotation.implicitNotFound(msg = "Mapping to List is not implemented")
+  type MapToList[F <: Poly1, S <: AnyTypeSet] <: Fn1[S] with WrappedIn[List]
 
 
   abstract class AnyTypeSetOps[S <: AnyTypeSet](s: S) {
 
+    /* Element-related */
+
     def :~:[E](e: E)(implicit check: E ∉ S): (E :~: S)
+
+    def pop[E](implicit check: E ∈ S, pop: S Pop E): pop.Out = pop(s)
+
+    def lookup[E](implicit check: E ∈ S, lookup: S Lookup E): lookup.Out = lookup(s)
+
+
+    /* Set-related */
 
     def \[Q <: AnyTypeSet](q: Q)(implicit sub: S \ Q): sub.Out = sub(s, q)
 
     def ∪[Q <: AnyTypeSet](q: Q)(implicit uni: S ∪ Q): uni.Out = uni(s, q)
 
-  //   def takeFirst[E]
-  //   (implicit 
-  //     ev: E ∈ S,
-  //     takeFirstFrom: E TakeFirst S
-  //   )
-  //   : takeFirstFrom.Out
+    def take[Q <: AnyTypeSet](implicit check: Q ⊂ S, take: S Take Q): take.Out = take(s)
 
-    def pop[E](implicit check: E ∈ S, pop: Pop[S, E]): pop.Out = pop(s)
+    def replace[Q <: AnyTypeSet](q: Q)(implicit check: Q ⊂ S, replace: S Replace Q): replace.Out = replace(s, q)
 
-  //   def take[Q <: AnyTypeSet]
-  //   (implicit 
-  //     ev: Q ⊂ S,
-  //     takeFrom: Q TakeFrom S
-  //   )
-  //   : takeFrom.Out
 
-  //   def replace[Q <: AnyTypeSet](q: Q)
-  //   (implicit 
-  //     ev: Q ⊂ S, 
-  //     replaceIn: Q ReplaceIn S
-  //   )
-  //   : replaceIn.Out
+    /* Conversions */
 
-  //   // = modulo order of types
-  //   def as[Q <: AnyTypeSet]
-  //   (implicit 
-  //     ev: S ~:~ Q,
-  //     as: S As Q
-  //   )
-  //   : as.Out
+    def as[Q <: AnyTypeSet]      (implicit check: S ~:~ Q, reorder: S As Q): reorder.Out = reorder(s)
+    def as[Q <: AnyTypeSet](q: Q)(implicit check: S ~:~ Q, reorder: S As Q): reorder.Out = reorder(s)
 
-  //   def as[Q <: AnyTypeSet](q: Q)
-  //   (implicit
-  //     ev: S ~:~ Q,
-  //     as: S As Q
-  //   )
-  //   : as.Out
+    def toHList(implicit toHList: ToHList[S]): toHList.Out = toHList(s)
 
-  //   import shapeless.Poly
+    def  toList(implicit  toList:  ToList[S]):  toList.Out =  toList(s)
 
-  //   def map[F <: Poly](f: F)
-  //   (implicit 
-  //     setMapper: SetMapper[F,S]
-  //   )
-  //   : setMapper.Out
+    def toListOf[T](implicit toListOf: S ToListOf T): List[T] = toListOf(s)
 
-  //   def mapFold[F <: Poly, R](f: F)(r: R)(op: (R, R) => R)
-  //   (implicit 
-  //     setMapFolder: SetMapFolder[F,S,R]
-  //   )
-  //   : setMapFolder.Out
+    // TODO
 
-  //   def mapToHList[F <: Poly](f: F)
-  //   (implicit 
-  //     mapperToHList: MapperToHList[F,S]
-  //   )
-  //   : mapperToHList.Out
+    /* Mappers */
 
-  //   def mapToList[F <: Poly](f: F)
-  //   (implicit 
-  //     mapperToList: MapperToList[F,S]
-  //   )
-  //   : mapperToList.Out
+    // def map[F <: Poly](f: F)(implicit setMapper: SetMapper[F,S]): setMapper.Out = setMap(s, f)
 
-  //   // conversions
-  //   def toHList
-  //   (implicit 
-  //     toHList: ToHList[S]
-  //   )
-  //   : toHList.Out
+    // def mapFold[F <: Poly, R](f: F)(r: R)(op: (R, R) => R)(implicit setMapFolder: SetMapFolder[F,S,R]): setMapFolder.Out = setMapFolder(s, f, r)
 
-  //   def toList
-  //   (implicit 
-  //     toList: ToList[S]
-  //   )
-  //   : toList.Out
+    def mapToHList[F <: Poly1](f: F)(implicit mapF: F MapToHList S): mapF.Out = mapF(s)
 
-  //   def toListOf[O]
-  //   (implicit 
-  //     toListOf: S ToListOf O
-  //   )
-  //   : toListOf.Out
+    def  mapToList[F <: Poly1](f: F)(implicit mapF: F  MapToList S): mapF.Out = mapF(s)
+
 
   }
 

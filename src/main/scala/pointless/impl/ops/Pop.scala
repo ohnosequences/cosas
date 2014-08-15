@@ -9,11 +9,11 @@ package ohnosequences.pointless.impl.ops
 
 import ohnosequences.pointless._, AnyFn._, impl._, typeSet._
 
-trait Pop[S <: AnyTypeSet, E] extends Fn1[S] with AnyFn.WithCodomain[ (E, AnyTypeSet) ] {
+@annotation.implicitNotFound(msg = "Can't pop an element of type ${E} from the set ${S}")
+trait Pop[S <: AnyTypeSet, E] extends Fn1[S] with WithCodomain[(E, AnyTypeSet)] {
   type SOut <: AnyTypeSet
   type EOut <: E
   type Out = (EOut, SOut)
-  def apply(s: S): Out
 }
 
 object Pop extends Pop_2 {

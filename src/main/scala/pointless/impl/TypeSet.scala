@@ -1,7 +1,7 @@
 package ohnosequences.pointless.impl
 
 import ohnosequences.pointless._, AnyFn._
-import shapeless.{ HList, Poly, <:!<, =:!= }
+import shapeless.{ HList, Poly1, <:!<, =:!= }
 
 object typeSet extends anyTypeSet {
 
@@ -84,28 +84,28 @@ object typeSet extends anyTypeSet {
 
   type ∪[S <: AnyTypeSet, Q <: AnyTypeSet] = ops.Union[S, Q]
 
-  // type TakeFirst[E, S <: AnyTypeSet] = ops.TakeFisrt[E, S]
-
   type Pop[S <: AnyTypeSet, E] = ops.Pop[S, E]
 
-  // type Take[Q <: AnyTypeSet, S <: AnyTypeSet] <: Fn2[Q,S] with Constant[Q]
+  type Lookup[S <: AnyTypeSet, E] = ops.Lookup[S, E]
 
-  // type Replace[Q <: AnyTypeSet, S <: AnyTypeSet] <: Fn2[S,Q] with Constant[S]
+  type Take[S <: AnyTypeSet, Q <: AnyTypeSet] = ops.Take[S, Q]
 
-  // type As[S <: AnyTypeSet, Q <: AnyTypeSet] <: Fn2[S,Q] with Constant[Q]
+  type Replace[S <: AnyTypeSet, Q <: AnyTypeSet] = ops.Replace[S, Q]
 
-  // type SetMapper[F <: Poly, S <: AnyTypeSet] <: Fn2[F,S] with WithCodomain[AnyTypeSet]
+  type As[S <: AnyTypeSet, Q <: AnyTypeSet] = ops.As[S, Q]
+
+  type ToHList[S <: AnyTypeSet] = ops.ToHList[S]
+
+  type  ToList[S <: AnyTypeSet] = ops.ToList[S]
+
+  // type SetMapper[F <: Poly1, S <: AnyTypeSet] <: Fn2[F,S] with WithCodomain[AnyTypeSet]
 
   // // TODO review this one
-  // type SetMapFolder[F <: Poly, S <: AnyTypeSet, R] <: Fn3[F,S,R] with Constant[R]
+  // type SetMapFolder[F <: Poly1, S <: AnyTypeSet, R] <: Fn3[F,S,R] with Constant[R]
 
-  // type MapperToHList[F <: Poly, S <: AnyTypeSet] <: Fn2[F,S] with WithCodomain[HList]
+  type MapToHList[F <: Poly1, S <: AnyTypeSet] = ops.MapToHList[F, S]
 
-  // type MapperToList[F <: Poly, S <: AnyTypeSet] <: Fn2[F,S] with WrappedIn[List]
-
-  // type ToHList[S <: AnyTypeSet] <: Fn1[S] with WithCodomain[HList]
-  // type  ToList[S <: AnyTypeSet] <: Fn1[S] with WrappedIn[List]
-  // final type ToListOf[S <: AnyTypeSet, O0] = ToList[S] { type O = O0 }
+  type  MapToList[F <: Poly1, S <: AnyTypeSet] = ops.MapToList[F, S]
 
   /*
     Ops

@@ -8,6 +8,8 @@ trait AnyFn {
 
 object AnyFn {
   
+  type out[T] = AnyFn { type Out = T }
+
   trait Constant[Z] extends AnyFn { 
 
     type Out = Z 
@@ -18,9 +20,15 @@ object AnyFn {
     type Out <: Z
   }
 
-  trait WrappedIn[F[_]] {
+  trait Wrapped extends AnyFn {
 
     type O
+  }
+
+  type o[T] = Wrapped { type O = T }
+
+  trait WrappedIn[F[_]] extends Wrapped{
+
     type Out = F[O]
   }
   
@@ -36,38 +44,38 @@ object AnyFn {
 
   trait AnyFn1 extends AnyFn {
 
-    type I1
+    type In1
 
-    def apply(i1: I1): Out
+    def apply(in1: In1): Out
   }
 
   trait Fn1[A] extends AnyFn1 {
 
-    type I1 = A
+    type In1 = A
   }
 
   trait AnyFn2 extends AnyFn {
 
-    type I1; type I2
+    type In1; type In2
 
-    def apply(i1: I1, i2: I2): Out
+    def apply(in1: In1, in2: In2): Out
   }
 
   trait Fn2[A, B] extends AnyFn2 {
 
-    type I1 = A; type I2 = B
+    type In1 = A; type In2 = B
   }
 
   trait AnyFn3 extends AnyFn {
 
-    type I1; type I2; type I3
+    type In1; type In2; type In3
 
-    def apply(i1: I1, i2: I2, i3: I3): Out
+    def apply(in1: In1, in2: In2, in3: In3): Out
   }
 
   trait Fn3[A, B, C] extends AnyFn3 {
 
-    type I1 = A; type I2 = B; type I3 = C
+    type In1 = A; type In2 = B; type In3 = C
   }
 
 }
