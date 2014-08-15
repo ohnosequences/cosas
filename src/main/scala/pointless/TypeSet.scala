@@ -4,48 +4,92 @@ import AnyFn._
 
 trait anyTypeSet {
 
+  type typeUnion <: anyTypeUnion
+
   /*
     ### ADT
   */
   type AnyTypeSet
 
   type ∅ <: AnyTypeSet
-  val  ∅ : ∅  // the parser fails if without the space before :
+  val  ∅ : ∅  // the space before : is needed
 
   type :~:[E,S <: AnyTypeSet] <: AnyTypeSet
 
   /*
-    ### Predicates
-
-    The basic predicates that you need for implementing the others are
+    ### Predicates and aliases
   */
+
+  /* An element is in the set */
   type in[S <: AnyTypeSet] <: PredicateOn[Any]
+
+  @annotation.implicitNotFound(msg = "Can't prove that ${E} is an element of ${S}")
+  sealed class isIn[E : in[S]#is, S <: AnyTypeSet]
+  implicit def isIn[E : in[S]#is, S <: AnyTypeSet]: (E isIn S) = new (E isIn S)
+  final type ∈[E, S <: AnyTypeSet] = E isIn S
+
+  @annotation.implicitNotFound(msg = "Can't prove that ${E} is not an element of ${S}")
+  sealed class isNotIn[E : in[S]#isNot, S <: AnyTypeSet]
+  implicit def isNotIn[E : in[S]#isNot, S <: AnyTypeSet]: (E isNotIn S) = new (E isNotIn S)
+  final type ∉[E, S <: AnyTypeSet] = E isNotIn S
+
+  
+  /* One set is a subset of another */
   type subsetOf[Q <: AnyTypeSet] <: PredicateOn[AnyTypeSet]
+
+  @annotation.implicitNotFound(msg = "Can't prove that ${S} is a subset of ${Q}")
+  sealed class isSubsetOf[S <: AnyTypeSet : subsetOf[Q]#is, Q <: AnyTypeSet]
+  implicit def isSubsetOf[S <: AnyTypeSet : subsetOf[Q]#is, Q <: AnyTypeSet]: (S isSubsetOf Q) = new (S isSubsetOf Q)
+  final type ⊂[S <: AnyTypeSet, Q <: AnyTypeSet] = S isSubsetOf Q
+
+  @annotation.implicitNotFound(msg = "Can't prove that ${S} is not a subset of ${Q}")
+  sealed class isNotSubsetOf[S <: AnyTypeSet : subsetOf[Q]#isNot, Q <: AnyTypeSet]
+  implicit def isNotSubsetOf[S <: AnyTypeSet : subsetOf[Q]#isNot, Q <: AnyTypeSet]: (S isNotSubsetOf Q) = new (S isNotSubsetOf Q)
+  final type ⊄[S <: AnyTypeSet, Q <: AnyTypeSet] = S isNotSubsetOf Q
+
+
+  /* Two sets have the same type union bound */
   type sameAs[Q <: AnyTypeSet] <: PredicateOn[AnyTypeSet]
 
+  @annotation.implicitNotFound(msg = "Can't prove that ${S} is the same as ${Q}")
+  sealed class isSameAs[S <: AnyTypeSet : sameAs[Q]#is, Q <: AnyTypeSet]
+  implicit def isSameAs[S <: AnyTypeSet : sameAs[Q]#is, Q <: AnyTypeSet]: (S isSameAs Q) = new (S isSameAs Q)
+  final type ~:~[S <: AnyTypeSet, Q <: AnyTypeSet] = S isSameAs Q
+
+  @annotation.implicitNotFound(msg = "Can't prove that ${S} is not the same as ${Q}")
+  sealed class isNotSameAs[S <: AnyTypeSet : sameAs[Q]#isNot, Q <: AnyTypeSet]
+  implicit def isNotSameAs[S <: AnyTypeSet : sameAs[Q]#isNot, Q <: AnyTypeSet]: (S isNotSameAs Q) = new (S isNotSameAs Q)
+  final type ~!~[S <: AnyTypeSet, Q <: AnyTypeSet] = S isNotSameAs Q
+
+
+  /* Elements of the set are bounded by the type */
+  type boundedBy[B] <: PredicateOn[AnyTypeSet]
+
+  @annotation.implicitNotFound(msg = "Can't prove that elements of ${S} are bounded by ${B}")
+  sealed class isBoundedBy[S <: AnyTypeSet : boundedBy[B]#is, B]
+  implicit def isBoundedBy[S <: AnyTypeSet : boundedBy[B]#is, B]: (S isBoundedBy B) = new (S isBoundedBy B)
+
+  @annotation.implicitNotFound(msg = "Can't prove that elements of ${S} are not bounded by ${B}")
+  sealed class isNotBoundedBy[S <: AnyTypeSet : boundedBy[B]#isNot, B]
+  implicit def isNotBoundedBy[S <: AnyTypeSet : boundedBy[B]#isNot, B]: (S isNotBoundedBy B) = new (S isNotBoundedBy B)
+
+
+  /* Elements of the set are from the type union */
+  type boundedByUnion[U <: typeUnion#AnyTypeUnion] <: PredicateOn[AnyTypeSet]
+
+  @annotation.implicitNotFound(msg = "Can't prove that elements of ${S} are from the type union ${U}")
+  sealed class isBoundedByUnion[S <: AnyTypeSet : boundedByUnion[U]#is, U <: typeUnion#AnyTypeUnion]
+  implicit def isBoundedByUnion[S <: AnyTypeSet : boundedByUnion[U]#is, U <: typeUnion#AnyTypeUnion]: (S isBoundedByUnion U) = new (S isBoundedByUnion U)
+
+  @annotation.implicitNotFound(msg = "Can't prove that elements of ${S} are not from the type union ${U}")
+  sealed class isNotBoundedByUnion[S <: AnyTypeSet : boundedByUnion[U]#isNot, U <: typeUnion#AnyTypeUnion]
+  implicit def isNotBoundedByUnion[S <: AnyTypeSet : boundedByUnion[U]#isNot, U <: typeUnion#AnyTypeUnion]: (S isNotBoundedByUnion U) = new (S isNotBoundedByUnion U)
+
+
+
   /*
-    ### Proof witnesses
+    ### Functions
   */
-  final type ∈[E, S <: AnyTypeSet] = IsIn[E,S]
-  // what's the point of this IsIn anyway? why not just `sealed class ∈[...]`?
-  protected sealed class IsIn[E: in[S]#is, S <: AnyTypeSet]
-  implicit def      proveIsIn[E: in[S]#is, S <: AnyTypeSet]: (E ∈ S) = new (E IsIn S)
-
-  final type ∉[E, S <: AnyTypeSet] = IsNotIn[E,S]
-  protected sealed class IsNotIn[E: in[S]#isNot, S <: AnyTypeSet]
-  implicit def      proveIsNotIn[E: in[S]#isNot, S <: AnyTypeSet]: (E ∉ S) = new (E IsNotIn S)
-  
-  final type ⊂[S <: AnyTypeSet, Q <: AnyTypeSet] = (S SubsetOf Q)
-  protected sealed class SubsetOf[S <: AnyTypeSet: subsetOf[Q]#is, Q <: AnyTypeSet]
-  implicit def      proveSubsetOf[S <: AnyTypeSet: subsetOf[Q]#is, Q <: AnyTypeSet]: (S ⊂ Q) = new (S SubsetOf Q)
-
-  final type ~[S <: AnyTypeSet, Q <: AnyTypeSet] = S SameAs Q
-  protected sealed class SameAs[S <: AnyTypeSet: sameAs[Q]#is, Q <: AnyTypeSet]
-  implicit def      proveSameAs[S <: AnyTypeSet: sameAs[Q]#is, Q <: AnyTypeSet]: (S ~ Q) = new (S SameAs Q)
-
-  type <<[S <: AnyTypeSet, Q <: AnyTypeSet]
-
-  // functions
   type \[S <: AnyTypeSet, Q <: AnyTypeSet] <: Fn2[S,Q] with WithCodomain[AnyTypeSet]
   type ∪[S <: AnyTypeSet, Q <: AnyTypeSet] <: Fn2[S,Q] with WithCodomain[AnyTypeSet]
 
@@ -110,14 +154,14 @@ trait anyTypeSet {
     // = modulo order of types
     def as[Q <: AnyTypeSet]
     (implicit 
-      ev: S ~ Q,
+      ev: S ~:~ Q,
       as: S As Q
     )
     : as.Out
 
     def as[Q <: AnyTypeSet](q: Q)
     (implicit
-      ev: S ~ Q,
+      ev: S ~:~ Q,
       as: S As Q
     )
     : as.Out
