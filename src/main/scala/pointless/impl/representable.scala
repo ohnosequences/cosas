@@ -1,18 +1,8 @@
 package ohnosequences.pointless.impl
 
-object representable extends ohnosequences.pointless.representable {
+object representable extends ohnosequences.pointless.anyRepresentable {
   
-  type Representable = RepresentableImpl
-
-  case class RepresentableOpsImpl[R <: RepresentableImpl](override val r: R) extends RepresentableOps[R](r) {
-
-    def =>>[U <: RepresentableImpl.RawOf[R]](raw: U): RepresentableImpl.RepOf[R] = 
-      RepresentableImpl.tagWith[R,U](raw, r:R)
-  }
-
-  implicit def representableOps[R <: Representable](d: R): RepresentableOpsImpl[R] = RepresentableOpsImpl[R](d)
-
-  // impl
+  type AnyRepresentable = RepresentableImpl
 
   trait RepresentableImpl { me =>
 
@@ -24,10 +14,10 @@ object representable extends ohnosequences.pointless.representable {
 
   object RepresentableImpl {
   
-    type RepOf[D <: Representable] = D#Rep
-    type RawOf[D <: Representable] = D#Raw
+    type RepOf[D <: AnyRepresentable] = D#Rep
+    type RawOf[D <: AnyRepresentable] = D#Raw
 
-    case class TagWith[D <: Representable](val d: D) {
+    case class TagWith[D <: AnyRepresentable](val d: D) {
 
       def apply(dr : RawOf[D]): RepOf[D] = {
 
@@ -37,8 +27,18 @@ object representable extends ohnosequences.pointless.representable {
 
     // Has to be empty! See http://www.scala-lang.org/old/node/11165.html#comment-49097
     sealed trait AnyTag
-    sealed trait Tag[D <: Representable] extends AnyTag with shapeless.record.KeyTag[D, RawOf[D]]
+    sealed trait Tag[D <: AnyRepresentable] extends AnyTag with shapeless.record.KeyTag[D, RawOf[D]]
 
-    def tagWith[R <: Representable, U <: RawOf[R]](raw: U, r: R): RepOf[R] = TagWith[R](r)(raw)
+    def tagWith[R <: AnyRepresentable, U <: RawOf[R]](raw: U, r: R): RepOf[R] = TagWith[R](r)(raw)
   }
+
+
+  implicit def representableOps[R <: AnyRepresentable](r: R): RepresentableOps[R] = RepresentableOps[R](r)
+  case class   RepresentableOps[R <: AnyRepresentable](r: R) extends AnyRepresentableOps[R](r) {
+
+    def =>>[U <: RepresentableImpl.RawOf[R]](raw: U): RepresentableImpl.RepOf[R] = 
+      RepresentableImpl.tagWith[R,U](raw, r:R)
+  }
+
+
 }

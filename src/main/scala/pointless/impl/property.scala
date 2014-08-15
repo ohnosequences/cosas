@@ -2,35 +2,31 @@ package ohnosequences.pointless.impl
 
 import scala.reflect.ClassTag
 
-object property extends ohnosequences.pointless.property {
+object property extends ohnosequences.pointless.anyProperty {
 
   // wire deps
   type representable = ohnosequences.pointless.impl.representable.type
-  import ohnosequences.pointless.impl.representable._
+  // import ohnosequences.pointless.impl.representable._
 
-  type Property = AnyProperty
+  type AnyProperty = PropertyImpl
 
-  implicit def getOps[P <: Property](p: P)
-  (implicit 
-    repOps: P => RepresentableOpsImpl[P]
-  )
-  : PropertyOpsImpl[P] = PropertyOpsImpl(p)
-
-  case class PropertyOpsImpl[P <: Property](val p: P)(implicit getOpsRep: P => RepresentableOpsImpl[P])
-  extends PropertyOps[P](p) {
-
-    def label = property.label
-    def classTag: ClassTag[_ <: P#Raw] = property.classTag
-  }
-
-  trait AnyProperty extends Representable {
+  trait PropertyImpl extends representable.RepresentableImpl {
 
     val label: String
     val classTag: ClassTag[Raw]
   }
 
-  class property[V](val label: String)(implicit val classTag: ClassTag[V]) extends AnyProperty {
+  class Property[V](val label: String)(implicit val classTag: ClassTag[V]) extends PropertyImpl {
 
     type Raw = V
   }
+
+  implicit def propertyOps[P <: AnyProperty](p: P): PropertyOps[P] = PropertyOps[P](p)
+  case class   PropertyOps[P <: AnyProperty](p: P)
+    extends AnyPropertyOps[P](p)(representable.representableOps) {
+
+    def label = property.label
+    def classTag: ClassTag[_ <: P#Raw] = property.classTag
+  }
+
 }

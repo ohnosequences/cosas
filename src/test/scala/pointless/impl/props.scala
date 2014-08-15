@@ -4,9 +4,9 @@ import ohnosequences.pointless.impl.property._
 
 object exampleProperties {
   
-  object key extends property[String]("key")
-  object name extends property[String]("name")
-  object age extends property[Integer]("age")
+  object key extends Property[String]("key")
+  object name extends Property[String]("name")
+  object age extends Property[Integer]("age")
 }
 
 class uhoh extends org.scalatest.FunSuite {
@@ -21,7 +21,7 @@ class uhoh extends org.scalatest.FunSuite {
     val n = name is "Rigoberto Smith"
 
     val a = age is 13123
-    val a0: age.Rep = age =>> (13123:  Integer)
+    // val a0: age.Rep = age =>> (13123: Integer)
 
     illTyped (
     """

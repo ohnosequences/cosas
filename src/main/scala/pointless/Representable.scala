@@ -7,19 +7,19 @@ package ohnosequences.pointless
   - `Rep <: Raw` is just `Raw` tagged with `this.type`; the `Rep`resentation
 */
 
-trait representable { 
+trait anyRepresentable { 
 
-  type Representable <: {
-
+  type AnyRepresentable <: {
     type Raw
     type Rep <: Raw
   }
-  type RawOf[D <: Representable] = D#Raw
-  type RepOf[D <: Representable] = D#Rep
 
-  abstract class RepresentableOps[R <: Representable](val r: Representable) {
+  type RawOf[D <: AnyRepresentable] = D#Raw
+  type RepOf[D <: AnyRepresentable] = D#Rep
 
-     def =>>[U <: RawOf[R]](raw: U): RepOf[R] 
+  abstract class AnyRepresentableOps[R <: AnyRepresentable](val representable: AnyRepresentable) {
+
+    def =>>[U <: RawOf[R]](raw: U): RepOf[R] 
   }
 }
 
