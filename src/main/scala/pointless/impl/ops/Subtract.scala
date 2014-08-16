@@ -9,7 +9,9 @@ trait Subtract[S <: AnyTypeSet, Q <: AnyTypeSet] extends Fn2[S, Q] with WithCodo
 
 /* * Case when S is inside Q => result is ∅: */
 object Subtract extends SubtractSets_2 {
-  type Aux[S <: AnyTypeSet, Q <: AnyTypeSet, O <: AnyTypeSet] = Subtract[S, Q] { type Out = O }
+
+  def apply[S <: AnyTypeSet, Q <: AnyTypeSet]
+    (implicit sub: Subtract[S, Q]): Subtract[S, Q] with out[sub.Out] = sub
 
   implicit def sInQ[S <: AnyTypeSet, Q <: AnyTypeSet]
     (implicit e: S ⊂ Q): Subtract[S, Q] with out[∅] = 

@@ -79,7 +79,6 @@ object typeSet extends anyTypeSet {
   /*
     Function types
   */
-
   type \[S <: AnyTypeSet, Q <: AnyTypeSet] = ops.Subtract[S, Q]
 
   type ∪[S <: AnyTypeSet, Q <: AnyTypeSet] = ops.Union[S, Q]
@@ -98,14 +97,13 @@ object typeSet extends anyTypeSet {
 
   type  ToList[S <: AnyTypeSet] = ops.ToList[S]
 
-  // type SetMapper[F <: Poly1, S <: AnyTypeSet] <: Fn2[F,S] with WithCodomain[AnyTypeSet]
-
-  // // TODO review this one
-  // type SetMapFolder[F <: Poly1, S <: AnyTypeSet, R] <: Fn3[F,S,R] with Constant[R]
-
   type MapToHList[F <: Poly1, S <: AnyTypeSet] = ops.MapToHList[F, S]
 
   type  MapToList[F <: Poly1, S <: AnyTypeSet] = ops.MapToList[F, S]
+
+  type     MapSet[F <: Poly1, S <: AnyTypeSet] = ops.MapSet[F, S]
+
+  type MapFoldSet[F <: Poly1, S <: AnyTypeSet, R] = ops.MapFoldSet[F, S, R]
 
   /*
     Ops

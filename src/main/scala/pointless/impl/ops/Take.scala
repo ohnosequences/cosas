@@ -8,6 +8,10 @@ import ohnosequences.pointless._, AnyFn._, impl._, typeSet._
 trait Take[S <: AnyTypeSet, Q <: AnyTypeSet] extends Fn1[S] with Constant[Q]
 
 object Take {
+
+  def apply[S <: AnyTypeSet, Q <: AnyTypeSet]
+    (implicit take: Take[S, Q]): Take[S, Q] with out[take.Out] = take
+
   implicit def empty[S <: AnyTypeSet]: 
         Take[S, ∅] = 
     new Take[S, ∅] { def apply(s: S): ∅ = ∅ }

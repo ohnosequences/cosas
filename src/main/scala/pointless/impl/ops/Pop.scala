@@ -17,19 +17,12 @@ trait Pop[S <: AnyTypeSet, E] extends Fn1[S] with WithCodomain[(E, AnyTypeSet)] 
 }
 
 object Pop extends Pop_2 {
+  def apply[S <: AnyTypeSet, E](implicit pop: Pop[S, E]): Pop[S, E] with out[pop.Out] = pop
+
   type Aux[S <: AnyTypeSet, E, SO <: AnyTypeSet, EO <: E] = Pop[S, E] {
     type SOut = SO
     type EOut = EO
   } 
-
-  type SAux[S <: AnyTypeSet, E, SO <: AnyTypeSet] = Pop[S, E] {
-    type SOut = SO
-  } 
-
-  type EAux[S <: AnyTypeSet, E, EO <: E] = Pop[S, E] {
-    type EOut = EO
-  } 
-
 
   implicit def foundInHead[E, H <: E , T <: AnyTypeSet]: Pop.Aux[H :~: T, E, T, H] =
     new Pop[H :~: T, E] { 

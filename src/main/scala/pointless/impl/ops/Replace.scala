@@ -17,6 +17,9 @@ trait Replace[S <: AnyTypeSet, Q <: AnyTypeSet] extends Fn2[S, Q] with Constant[
 
 object Replace extends Replace_2 {
 
+  def apply[S <: AnyTypeSet, Q <: AnyTypeSet]
+    (implicit replace: Replace[S, Q]): Replace[S, Q] with out[replace.Out] = replace
+
   implicit def empty[S <: AnyTypeSet]:
         Replace[S, ∅] = 
     new Replace[S, ∅] { def apply(s: S, q: ∅) = s }

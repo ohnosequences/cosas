@@ -14,10 +14,10 @@ trait anyTypeUnion {
   /*
     Type-level operations
   */
-  @annotation.implicitNotFound(msg = "Can't prove that ${X} is one of ${U}")
+  @annotation.implicitNotFound(msg = "isOneOf check is not implemented")
   type    isOneOf[X, U <: AnyTypeUnion]
 
-  @annotation.implicitNotFound(msg = "Can't prove that ${X} is not one of ${U}")
+  @annotation.implicitNotFound(msg = "isNotOneOf check is not implemented")
   type isNotOneOf[X, U <: AnyTypeUnion]
 
   final type oneOf[U <: AnyTypeUnion] = {

@@ -9,10 +9,12 @@ class TypeSetTests extends org.scalatest.FunSuite {
   test("empty set") {
 
     implicitly[Any isNotIn ∅]
-    // Yoda style:
-    // implicitly[in[∅]#isNot[Any]]
+
     // or with nicer syntax:
     implicitly[Any ∉ ∅]
+
+    // FIXME: Yoda style doesn't work
+    // implicitly[in[∅]#isNot[Any]]
 
   }
 
@@ -143,7 +145,7 @@ class TypeSetTests extends org.scalatest.FunSuite {
     assert(qs == bar :~: 'a' :~: true :~: 2 :~: "bar" :~: ∅)
   }
 
-  test("mapper") {
+  test("mappers") {
 
     import poly._
 
@@ -155,23 +157,30 @@ class TypeSetTests extends org.scalatest.FunSuite {
       implicit def default[T] = at[T](t => t)
     }
 
-    // assert(∅.map(toStr) == ∅)
+    assert(∅.map(toStr) == ∅)
 
     val s = 1 :~: 'a' :~: "foo" :~: List(1,2,3) :~: ∅
-    // implicitly[SetMapper[id.type, Int :~: Char :~: String :~: List[Int] :~: ∅]]
-    // assert(s.map(id) == s)
-    // assert(s.map(rev) == 1 :~: 'a' :~: "oof" :~: List(3,2,1) :~: ∅)
+    implicitly[MapSet[id.type, Int :~: Char :~: String :~: List[Int] :~: ∅]]
+    assert(s.map(id) == s)
+    assert(s.map(rev) == 1 :~: 'a' :~: "oof" :~: List(3,2,1) :~: ∅)
 
-    // // This case should fail, because toStr in not "type-injective"
-    // illTyped("implicitly[SetMapper[toStr.type, s.type]]")
-    // illTyped("s.map(toStr)")
+    // This case should fail, because toStr in not "type-injective"
+    illTyped("implicitly[MapSet[toStr.type, s.type]]")
+    illTyped("s.map(toStr)")
 
     assert(s.mapToHList(toStr) == "1" :: "a" :: "foo" :: "List(1, 2, 3)" :: HNil)
     assert(s.mapToList(toStr) == List("1", "a", "foo", "List(1, 2, 3)"))
     assert(s.mapToHList(toStr).toList == s.mapToList(toStr))
+
+    assert(∅.mapFold(rev)(0)(_ + _) == 0)
+    assertResult("1 :~: a :~: foo :~: List(1, 2, 3) :~: ∅") {
+      s.mapFold(toStr)("∅"){ _ + " :~: " + _ }
+    }
+    // TODO: more tests for map-folding
   }
 
   test("conversions to HList/List") {
+
     assert(∅.toHList == HNil)
     assert((1 :~: 'a' :~: "foo" :~: ∅).toHList == (1 :: 'a' :: "foo" :: HNil))
 
@@ -182,6 +191,7 @@ class TypeSetTests extends org.scalatest.FunSuite {
     object boo extends foo
     object buh extends foo
     assert((boo :~: buh :~: ∅).toList == List[foo](boo, buh))
+
   }
 
 }

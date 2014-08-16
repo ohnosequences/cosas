@@ -9,7 +9,9 @@ trait Union[S <: AnyTypeSet, Q <: AnyTypeSet] extends Fn2[S, Q] with WithCodomai
 
 /* * Case when S is a subset of Q => just Q: */
 object Union extends UnionSets_2 {
-  type Aux[S <: AnyTypeSet, Q <: AnyTypeSet, O <: AnyTypeSet] = Union[S, Q] { type Out = O }
+
+  def apply[S <: AnyTypeSet, Q <: AnyTypeSet]
+    (implicit uni: Union[S, Q]): Union[S, Q] with out[uni.Out] = uni
 
   implicit def sInQ[S <: AnyTypeSet, Q <: AnyTypeSet]
     (implicit e: S ⊂ Q): Union[S, Q] with out[Q] =

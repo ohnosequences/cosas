@@ -124,16 +124,17 @@ trait anyTypeSet {
   @annotation.implicitNotFound(msg = "Conversion to List is not implemented")
   final type ToListOf[S <: AnyTypeSet, T] = ToList[S] with o[T]
 
-  // type SetMapper[F <: Poly, S <: AnyTypeSet] <: Fn2[F,S] with WithCodomain[AnyTypeSet]
-
-  // // TODO review this one
-  // type SetMapFolder[F <: Poly, S <: AnyTypeSet, R] <: Fn3[F,S,R] with Constant[R]
-
   @annotation.implicitNotFound(msg = "Mapping to HList is not implemented")
   type MapToHList[F <: Poly1, S <: AnyTypeSet] <: Fn1[S] with WithCodomain[HList]
 
   @annotation.implicitNotFound(msg = "Mapping to List is not implemented")
   type MapToList[F <: Poly1, S <: AnyTypeSet] <: Fn1[S] with WrappedIn[List]
+
+  @annotation.implicitNotFound(msg = "Mapping is not implemented")
+  type MapSet[F <: Poly1, S <: AnyTypeSet] <: Fn1[S] with WithCodomain[AnyTypeSet]
+
+  @annotation.implicitNotFound(msg = "Map-folding is not implemented")
+  type MapFoldSet[F <: Poly1, S <: AnyTypeSet, R] <: Fn3[S, R, (R, R) => R] with Constant[R]
 
 
   abstract class AnyTypeSetOps[S <: AnyTypeSet](s: S) {
@@ -169,18 +170,16 @@ trait anyTypeSet {
 
     def toListOf[T](implicit toListOf: S ToListOf T): List[T] = toListOf(s)
 
-    // TODO
 
     /* Mappers */
-
-    // def map[F <: Poly](f: F)(implicit setMapper: SetMapper[F,S]): setMapper.Out = setMap(s, f)
-
-    // def mapFold[F <: Poly, R](f: F)(r: R)(op: (R, R) => R)(implicit setMapFolder: SetMapFolder[F,S,R]): setMapFolder.Out = setMapFolder(s, f, r)
 
     def mapToHList[F <: Poly1](f: F)(implicit mapF: F MapToHList S): mapF.Out = mapF(s)
 
     def  mapToList[F <: Poly1](f: F)(implicit mapF: F  MapToList S): mapF.Out = mapF(s)
 
+    def        map[F <: Poly1](f: F)(implicit mapF: F     MapSet S): mapF.Out = mapF(s)
+
+    def mapFold[F <: Poly1, R](f: F)(r: R)(op: (R, R) => R)(implicit mapFold: MapFoldSet[F, S, R]): mapFold.Out = mapFold(s, r, op)
 
   }
 
