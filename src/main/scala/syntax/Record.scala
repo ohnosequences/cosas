@@ -1,41 +1,41 @@
-package ohnosequences.typesets.syntax
+// package ohnosequences.typesets.syntax
 
-import ohnosequences.typesets.{ Representable, AnyTag, AnyProperty } 
-import AnyTag._
+// import ohnosequences.typesets.{ Representable, AnyTag, AnyProperty } 
+// import AnyTag._
 
-trait RecordSyntax {
+// trait RecordSyntax {
 
-  // dependencies
-  type TypeSetSyntax <: Types
-  val typeSetSyntax: TypeSetSyntax
-  import typeSetSyntax._
+//   // dependencies
+//   type TypeSetSyntax <: Types
+//   val typeSetSyntax: TypeSetSyntax
+//   import typeSetSyntax._
 
-  type Record <: Representable { 
+//   type Record <: Representable { 
 
-    type Properties <: typeSetSyntax.TypeSet
-    type Raw <: typeSetSyntax.TypeSet
-  }
+//     type Properties <: typeSetSyntax.TypeSet
+//     type Raw <: typeSetSyntax.TypeSet
+//   }
 
-  type PropertiesOf[R <: Record] <: TypeSet
+//   type PropertiesOf[R <: Record] <: TypeSet
 
-  // implicit def to
-}
+//   // implicit def to
+// }
 
-trait RecordOps {
+// trait RecordOps {
 
-  type MySyntax <: RecordSyntax
-  val syntax: MySyntax
+//   type MySyntax <: RecordSyntax
+//   val syntax: MySyntax
 
-  import syntax._
-  import syntax.typeSetSyntax._
+//   import syntax._
+//   import syntax.typeSetSyntax._
 
-  type R <: Record
-  val entry: RepOf[R]
+//   type R <: Record
+//   val entry: RepOf[R]
 
-  def get[P <: AnyProperty](p: P)
-    (implicit 
-      isThere: P ∈ PropertiesOf[R],
-      lookup: FirstOf[RawOf[R], RepOf[P]]
-    )
-    : lookup.Out
-}
+//   def get[P <: AnyProperty](p: P)
+//     (implicit 
+//       isThere: P ∈ PropertiesOf[R],
+//       lookup: FirstOf[RawOf[R], RepOf[P]]
+//     )
+//     : lookup.Out
+// }

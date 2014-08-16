@@ -140,6 +140,9 @@ trait anyTypeSet {
   type MapFoldSet[F <: Poly1, S <: AnyTypeSet, R] <: Fn3[S, R, (R, R) => R] with Constant[R]
 
 
+  /*
+    Ops
+  */
   abstract class AnyTypeSetOps[S <: AnyTypeSet](s: S) {
 
     /* Element-related */
