@@ -93,6 +93,8 @@ object typeSet extends anyTypeSet {
 
   type As[S <: AnyTypeSet, Q <: AnyTypeSet] = ops.As[S, Q]
 
+  type FromHList[L <: HList] = ops.FromHList[L]
+
   type ToHList[S <: AnyTypeSet] = ops.ToHList[S]
 
   type  ToList[S <: AnyTypeSet] = ops.ToList[S]

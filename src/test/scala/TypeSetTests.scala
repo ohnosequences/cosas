@@ -194,4 +194,16 @@ class TypeSetTests extends org.scalatest.FunSuite {
 
   }
 
+  test("conversion from HList") {
+
+    assert(HNil.toTypeSet == ∅)
+    assert(fromHList(HNil) == ∅)
+
+    val l = 1 :: 'a' :: "foo" :: HNil
+    assert(l.toTypeSet == 1 :~: 'a' :~: "foo" :~: ∅)
+
+    illTyped("""(1 :: 'x' :: 2 :: "foo" :: HNil).toTypeSet""")
+
+  }
+
 }

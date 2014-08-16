@@ -25,7 +25,31 @@ object ToHList {
 
 }
 
-// TODO: FromHList
+
+@annotation.implicitNotFound(msg = "Can't convert ${L} to a TypeSet (maybe element types are not distinct)")
+trait FromHList[L <: HList] extends Fn1[L] with WithCodomain[AnyTypeSet]
+
+object FromHList {
+
+  def apply[L <: HList](implicit fromHList: FromHList[L]): FromHList[L] with out[fromHList.Out] = fromHList
+
+  implicit def hnil[N <: HNil]: FromHList[N] with out[∅] = 
+    new FromHList[N] {
+      type Out = ∅
+      def apply(l: N): Out = ∅
+    }
+  
+  implicit def cons[H, T <: HList, OutT <: AnyTypeSet]
+    (implicit 
+      rest: FromHList[T] with out[OutT],
+      check: H ∉ OutT
+    ):  FromHList[H :: T] with out[H :~: OutT] = 
+    new FromHList[H :: T] {
+      type Out = H :~: OutT
+      def apply(l: H :: T): Out = l.head :~: rest(l.tail)
+    }
+
+}
 
 
 @annotation.implicitNotFound(msg = "Can't convert ${S} to a List")
@@ -47,19 +71,19 @@ object ToList {
   //     def apply(s: S): Out = mapper(s)
   //   }
 
-  implicit def emptyToList[X]: ToList[∅] with o[X] = 
+  implicit def empty[X]: ToList[∅] with o[X] = 
     new ToList[∅] {
       type O = X
       def apply(s: ∅): Out = Nil
     }
   
-  implicit def oneToList[X, H <: X]: ToList[H :~: ∅] with o[X] =
+  implicit def one[X, H <: X]: ToList[H :~: ∅] with o[X] =
     new ToList[H :~: ∅] {
       type O = X
       def apply(s: H :~: ∅): Out = List[X](s.head)
     }
 
-  implicit def cons2ToList[X, H1 <: X, H2 <: X, T <: AnyTypeSet]
+  implicit def cons2[X, H1 <: X, H2 <: X, T <: AnyTypeSet]
     (implicit 
       lt: ToList[H2 :~: T] with o[X]
     ):  ToList[H1 :~: H2 :~: T] with o[X] = 

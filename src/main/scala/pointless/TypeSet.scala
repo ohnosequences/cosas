@@ -115,6 +115,9 @@ trait anyTypeSet {
   @annotation.implicitNotFound(msg = "Reordering is not implemented")
   type As[S <: AnyTypeSet, Q <: AnyTypeSet] <: Fn1[S] with Constant[Q]
 
+  @annotation.implicitNotFound(msg = "Conversion from HList is not implemented")
+  type FromHList[L <: HList] <: Fn1[L] with WithCodomain[AnyTypeSet]
+
   @annotation.implicitNotFound(msg = "Conversion to HList is not implemented")
   type ToHList[S <: AnyTypeSet] <: Fn1[S] with WithCodomain[HList]
 
@@ -182,5 +185,14 @@ trait anyTypeSet {
     def mapFold[F <: Poly1, R](f: F)(r: R)(op: (R, R) => R)(implicit mapFold: MapFoldSet[F, S, R]): mapFold.Out = mapFold(s, r, op)
 
   }
+
+  implicit def hListOps[L <: HList](l: L): HListOps[L] = HListOps[L](l)
+  case class   HListOps[L <: HList](l: L) {
+
+    def toTypeSet(implicit fromHList: FromHList[L]): fromHList.Out = fromHList(l)
+
+  }
+
+  def fromHList[L <: HList](l: L)(implicit fromHList: FromHList[L]): fromHList.Out = fromHList(l)
 
 }
