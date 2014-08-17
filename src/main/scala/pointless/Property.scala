@@ -7,7 +7,13 @@ trait anyProperty {
   // abstract dep
   type representable <: anyRepresentable
 
-  type AnyProperty <: representable#AnyRepresentable
+  type AnyProperty <: AnyPropertyImpl with representable#AnyRepresentableImpl
+
+  trait AnyPropertyImpl { self: representable#AnyRepresentableImpl =>
+
+    val label: String
+    val classTag: ClassTag[_ <: Raw]
+  }
 
   abstract class AnyPropertyOps[P <: AnyProperty](val property: P)
     (implicit getOpsRep: P => representable#AnyRepresentableOps[P]) {
@@ -15,8 +21,5 @@ trait anyProperty {
     val ops: representable#AnyRepresentableOps[P] = getOpsRep(property)
 
     def is(value: P#Raw): P#Rep = (ops) =>> value
-
-    def label: String
-    def classTag: ClassTag[_ <: P#Raw]
   }
 }

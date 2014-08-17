@@ -6,7 +6,7 @@ object representable extends anyRepresentable {
   
   type AnyRepresentable = RepresentableImpl
 
-  trait RepresentableImpl { me =>
+  trait RepresentableImpl extends AnyRepresentableImpl { me =>
 
     type Me = me.type
 

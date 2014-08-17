@@ -9,15 +9,17 @@ package ohnosequences.pointless
 
 trait anyRepresentable { 
 
-  type AnyRepresentable <: {
+  type AnyRepresentable <: AnyRepresentableImpl
+
+  trait AnyRepresentableImpl {
     type Raw
     type Rep <: Raw
   }
 
-  type RawOf[D <: AnyRepresentable] = D#Raw
-  type RepOf[D <: AnyRepresentable] = D#Rep
+  type RawOf[D <: AnyRepresentableImpl] = D#Raw
+  type RepOf[D <: AnyRepresentableImpl] = D#Rep
 
-  abstract class AnyRepresentableOps[R <: AnyRepresentable](val representable: AnyRepresentable) {
+  abstract class AnyRepresentableOps[R <: AnyRepresentableImpl](val representable: AnyRepresentableImpl) {
 
     def =>>[U <: RawOf[R]](raw: U): RepOf[R] 
   }

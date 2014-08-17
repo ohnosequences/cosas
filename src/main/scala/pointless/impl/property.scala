@@ -7,10 +7,11 @@ object property extends anyProperty {
 
   // wire deps
   type representable = ohnosequences.pointless.impl.representable.type
+  import representable._
 
   type AnyProperty = PropertyImpl
 
-  trait PropertyImpl extends representable.RepresentableImpl {
+  trait PropertyImpl extends AnyPropertyImpl with RepresentableImpl {
 
     val label: String
     val classTag: ClassTag[Raw]
