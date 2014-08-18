@@ -1,0 +1,10 @@
+This is a release for the Dynamograph project. Some of the major changes:
+
+* Moved ops to a separate folder and added new ones:
+    * Added Pop which is the same as Lookup, but removes the element from the set
+    * Added Choose which chooses (projects) a subset of a given type
+    * Added Reorder which is same as Choose, but for equivalent sets
+    * Renamed Union and Subtract
+    * Union unicode symbol (\cup)
+* Added construction for bounding type-set by a type-union (every element is one of ...)
+* Migrated records and props from scarph and tabula
