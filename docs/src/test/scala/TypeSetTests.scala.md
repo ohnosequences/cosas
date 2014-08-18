@@ -68,6 +68,45 @@ class TypeSetTests extends org.scalatest.FunSuite {
     // implicitly[Nothing ? st]
   }
 
+  test("pop") {
+    val s = 1 :~: 'a' :~: "foo" :~: ?
+
+    assert(s.pop[Int] === (1, 'a' :~: "foo" :~: ?))
+    assert(s.pop[Char] === ('a', 1 :~: "foo" :~: ?))
+    assert(s.pop[String] === ("foo", 1 :~: 'a' :~: ?))
+  }
+
+  test("projection") {
+    val s = 1 :~: 'a' :~: "foo" :~: ?
+
+    type pt = Char :~: Int :~: ?
+
+    implicitly[Choose[?, ?]]
+    implicitly[Choose[Int :~: ?, Int :~: ?]]
+    implicitly[Choose[Int :~: Char :~: String :~: ?, Char :~: Int :~: ?]]
+    implicitly[Choose[Int :~: Char :~: String :~: ?, pt]]
+    assert(s.project[pt] === 'a' :~: 1 :~: ?)
+    assert(s.project[Int :~: Char :~: String :~: ?] === s)
+  }
+
+  test("reordering") {
+    val s = 1 :~: 'a' :~: "foo" :~: ?
+
+    assert(?.reorder[?] === ?)
+    assert(s.reorder[Char :~: Int :~: String :~: ?] === 'a' :~: 1 :~: "foo" :~: ?)
+
+    val p = "bar" :~: 2 :~: 'b' :~: ?
+    assert(s ~> p === "foo" :~: 1 :~: 'a' :~: ?)
+  }
+
+  test("replace") {
+    val s = 1 :~: 'a' :~: "foo" :~: ?
+
+    assert(?.replace(?) === ?)
+    assert(s.replace(2 :~: ?) === 2 :~: 'a' :~: "foo" :~: ?)
+    assert(s.replace("bar" :~: ?) === 1 :~: 'a' :~: "bar" :~: ?)
+  }
+
   test("subtraction") {
     val s = 1 :~: 'a' :~: "foo" :~: ?
 
@@ -89,12 +128,12 @@ class TypeSetTests extends org.scalatest.FunSuite {
     case object bar
     val q = bar :~: true :~: 2 :~: bar.toString :~: ?
 
-    assert((? U ?) === ?)
-    assert((? U q) === q)
-    assert((s U ?) === s)
+    assert((? ? ?) === ?)
+    assert((? ? q) === q)
+    assert((s ? ?) === s)
 
-    val sq = s U q
-    val qs = q U s
+    val sq = s ? q
+    val qs = q ? s
     implicitly[sq.type ~ qs.type]
     assert(sq === 'a' :~: bar :~: true :~: 2 :~: "bar" :~: ?)
     assert(qs === bar :~: 'a' :~: true :~: 2 :~: "bar" :~: ?)
@@ -155,26 +194,51 @@ class TypeSetTests extends org.scalatest.FunSuite {
 + src
   + main
     + scala
-      + [HListOps.scala][main/scala/HListOps.scala]
-      + [LookupInSet.scala][main/scala/LookupInSet.scala]
-      + [MapFoldSets.scala][main/scala/MapFoldSets.scala]
+      + items
+        + [items.scala][main/scala/items/items.scala]
+      + ops
+        + [Choose.scala][main/scala/ops/Choose.scala]
+        + [Lookup.scala][main/scala/ops/Lookup.scala]
+        + [Map.scala][main/scala/ops/Map.scala]
+        + [MapFold.scala][main/scala/ops/MapFold.scala]
+        + [Pop.scala][main/scala/ops/Pop.scala]
+        + [Reorder.scala][main/scala/ops/Reorder.scala]
+        + [Replace.scala][main/scala/ops/Replace.scala]
+        + [Subtract.scala][main/scala/ops/Subtract.scala]
+        + [ToList.scala][main/scala/ops/ToList.scala]
+        + [Union.scala][main/scala/ops/Union.scala]
       + [package.scala][main/scala/package.scala]
-      + [SetMapper.scala][main/scala/SetMapper.scala]
-      + [SubtractSets.scala][main/scala/SubtractSets.scala]
+      + pointless
+        + impl
+      + [Property.scala][main/scala/Property.scala]
+      + [Record.scala][main/scala/Record.scala]
+      + [Representable.scala][main/scala/Representable.scala]
       + [TypeSet.scala][main/scala/TypeSet.scala]
       + [TypeUnion.scala][main/scala/TypeUnion.scala]
-      + [UnionSets.scala][main/scala/UnionSets.scala]
   + test
     + scala
+      + items
+        + [itemsTests.scala][test/scala/items/itemsTests.scala]
+      + [RecordTests.scala][test/scala/RecordTests.scala]
       + [TypeSetTests.scala][test/scala/TypeSetTests.scala]
 
-[main/scala/HListOps.scala]: ../../main/scala/HListOps.scala.md
-[main/scala/LookupInSet.scala]: ../../main/scala/LookupInSet.scala.md
-[main/scala/MapFoldSets.scala]: ../../main/scala/MapFoldSets.scala.md
+[main/scala/items/items.scala]: ../../main/scala/items/items.scala.md
+[main/scala/ops/Choose.scala]: ../../main/scala/ops/Choose.scala.md
+[main/scala/ops/Lookup.scala]: ../../main/scala/ops/Lookup.scala.md
+[main/scala/ops/Map.scala]: ../../main/scala/ops/Map.scala.md
+[main/scala/ops/MapFold.scala]: ../../main/scala/ops/MapFold.scala.md
+[main/scala/ops/Pop.scala]: ../../main/scala/ops/Pop.scala.md
+[main/scala/ops/Reorder.scala]: ../../main/scala/ops/Reorder.scala.md
+[main/scala/ops/Replace.scala]: ../../main/scala/ops/Replace.scala.md
+[main/scala/ops/Subtract.scala]: ../../main/scala/ops/Subtract.scala.md
+[main/scala/ops/ToList.scala]: ../../main/scala/ops/ToList.scala.md
+[main/scala/ops/Union.scala]: ../../main/scala/ops/Union.scala.md
 [main/scala/package.scala]: ../../main/scala/package.scala.md
-[main/scala/SetMapper.scala]: ../../main/scala/SetMapper.scala.md
-[main/scala/SubtractSets.scala]: ../../main/scala/SubtractSets.scala.md
+[main/scala/Property.scala]: ../../main/scala/Property.scala.md
+[main/scala/Record.scala]: ../../main/scala/Record.scala.md
+[main/scala/Representable.scala]: ../../main/scala/Representable.scala.md
 [main/scala/TypeSet.scala]: ../../main/scala/TypeSet.scala.md
 [main/scala/TypeUnion.scala]: ../../main/scala/TypeUnion.scala.md
-[main/scala/UnionSets.scala]: ../../main/scala/UnionSets.scala.md
+[test/scala/items/itemsTests.scala]: items/itemsTests.scala.md
+[test/scala/RecordTests.scala]: RecordTests.scala.md
 [test/scala/TypeSetTests.scala]: TypeSetTests.scala.md
