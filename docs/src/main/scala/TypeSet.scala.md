@@ -29,7 +29,7 @@ sealed trait ? extends TypeSet {
   def toStr = ""
 }
 
-private object empty extends ?
+object empty extends ?
 ```
 
 ### Cons constructor
@@ -53,7 +53,7 @@ This `cons` method covers the `:~:` constructor to check that you are not adding
 
 ```scala
 object :~: { 
-  def cons[E : in[S]#isnot, S <: TypeSet](e: E, set: S) = :~:(e, set) 
+  def cons[E : in[S]#isnot, S <: TypeSet](e: E, set: S): ohnosequences.typesets.:~:[E,S] = :~:(e, set) 
 }
 ```
 
@@ -64,6 +64,15 @@ See implicits for these operators in the [package object](package.md)
 
 
 ```scala
+@annotation.implicitNotFound(msg = "Can't prove that ${S} is bounded by ${B}")
+sealed class  <<[S <: TypeSet : boundedBy[B]#is, B]
+
+@annotation.implicitNotFound(msg = "Can't prove that ${S} is not bounded by ${B}")
+sealed class <<![S <: TypeSet : boundedBy[B]#isnot, B]
+
+@annotation.implicitNotFound(msg = "Can't prove that every element of ${S} is one of ${U}")
+sealed class SetIsBoundedByUnion[S <: TypeSet, U <: TypeUnion]
+
 @annotation.implicitNotFound(msg = "Can't prove that ${E} ? ${S}")
 sealed class ?[E : in[S]#is, S <: TypeSet]
 
@@ -77,7 +86,7 @@ sealed class ?[S <: TypeSet : supersetOf[Q]#is, Q <: TypeSet]
 sealed class ?[S <: TypeSet : subsetOf[Q]#is, Q <: TypeSet]
 
 @annotation.implicitNotFound(msg = "Can't prove that ${S} ~ ${Q} (i.e. that sets are type-equivalent)")
-sealed class ~[S <: TypeSet : sameAs[S]#is, Q <: TypeSet]
+sealed class ~[S <: TypeSet : sameAs[Q]#is, Q <: TypeSet]
 ```
 
 ### Adding methods to TypeSet
@@ -86,10 +95,18 @@ sealed class ~[S <: TypeSet : sameAs[S]#is, Q <: TypeSet]
 class TypeSetOps[S <: TypeSet](set: S) {
   def :~:[E](e: E)(implicit n: E ? S) = ohnosequences.typesets.:~:.cons(e, set)
 
-  def lookup[E](implicit l: Lookup[S, E]): l.Out = l(set)
+  def lookup[E](implicit e: E ? S, l: Lookup[S, E]): l.Out = l(set)
+  def pop[E](implicit e: E ? S, p: Pop[S, E]): p.Out = p(set)
 
-  def \[Q <: TypeSet](q: Q)(implicit sub: S \ Q) = sub(set, q)
-  def U[Q <: TypeSet](q: Q)(implicit uni: S U Q) = uni(set, q)
+  def project[P <: TypeSet](implicit e: P ? S, p: Choose[S, P]): P = p(set)
+
+  def replace[P <: TypeSet](p: P)(implicit e: P ? S, r: Replace[S, P]): S = r(set, p)
+
+  def reorder[P <: TypeSet](implicit e: S ~ P, t: Reorder[S, P]): P = t(set)
+  def ~>[P <: TypeSet](p: P)(implicit e: S ~ P, t: Reorder[S, P]): P = t(set)
+
+  def \[Q <: TypeSet](q: Q)(implicit sub: S \ Q): sub.Out = sub(set, q)
+  def ?[Q <: TypeSet](q: Q)(implicit uni: S ? Q): uni.Out = uni(set, q)
 
   import shapeless._
   import poly._
@@ -115,26 +132,51 @@ class TypeSetOps[S <: TypeSet](set: S) {
 + src
   + main
     + scala
-      + [HListOps.scala][main/scala/HListOps.scala]
-      + [LookupInSet.scala][main/scala/LookupInSet.scala]
-      + [MapFoldSets.scala][main/scala/MapFoldSets.scala]
+      + items
+        + [items.scala][main/scala/items/items.scala]
+      + ops
+        + [Choose.scala][main/scala/ops/Choose.scala]
+        + [Lookup.scala][main/scala/ops/Lookup.scala]
+        + [Map.scala][main/scala/ops/Map.scala]
+        + [MapFold.scala][main/scala/ops/MapFold.scala]
+        + [Pop.scala][main/scala/ops/Pop.scala]
+        + [Reorder.scala][main/scala/ops/Reorder.scala]
+        + [Replace.scala][main/scala/ops/Replace.scala]
+        + [Subtract.scala][main/scala/ops/Subtract.scala]
+        + [ToList.scala][main/scala/ops/ToList.scala]
+        + [Union.scala][main/scala/ops/Union.scala]
       + [package.scala][main/scala/package.scala]
-      + [SetMapper.scala][main/scala/SetMapper.scala]
-      + [SubtractSets.scala][main/scala/SubtractSets.scala]
+      + pointless
+        + impl
+      + [Property.scala][main/scala/Property.scala]
+      + [Record.scala][main/scala/Record.scala]
+      + [Representable.scala][main/scala/Representable.scala]
       + [TypeSet.scala][main/scala/TypeSet.scala]
       + [TypeUnion.scala][main/scala/TypeUnion.scala]
-      + [UnionSets.scala][main/scala/UnionSets.scala]
   + test
     + scala
+      + items
+        + [itemsTests.scala][test/scala/items/itemsTests.scala]
+      + [RecordTests.scala][test/scala/RecordTests.scala]
       + [TypeSetTests.scala][test/scala/TypeSetTests.scala]
 
-[main/scala/HListOps.scala]: HListOps.scala.md
-[main/scala/LookupInSet.scala]: LookupInSet.scala.md
-[main/scala/MapFoldSets.scala]: MapFoldSets.scala.md
+[main/scala/items/items.scala]: items/items.scala.md
+[main/scala/ops/Choose.scala]: ops/Choose.scala.md
+[main/scala/ops/Lookup.scala]: ops/Lookup.scala.md
+[main/scala/ops/Map.scala]: ops/Map.scala.md
+[main/scala/ops/MapFold.scala]: ops/MapFold.scala.md
+[main/scala/ops/Pop.scala]: ops/Pop.scala.md
+[main/scala/ops/Reorder.scala]: ops/Reorder.scala.md
+[main/scala/ops/Replace.scala]: ops/Replace.scala.md
+[main/scala/ops/Subtract.scala]: ops/Subtract.scala.md
+[main/scala/ops/ToList.scala]: ops/ToList.scala.md
+[main/scala/ops/Union.scala]: ops/Union.scala.md
 [main/scala/package.scala]: package.scala.md
-[main/scala/SetMapper.scala]: SetMapper.scala.md
-[main/scala/SubtractSets.scala]: SubtractSets.scala.md
+[main/scala/Property.scala]: Property.scala.md
+[main/scala/Record.scala]: Record.scala.md
+[main/scala/Representable.scala]: Representable.scala.md
 [main/scala/TypeSet.scala]: TypeSet.scala.md
 [main/scala/TypeUnion.scala]: TypeUnion.scala.md
-[main/scala/UnionSets.scala]: UnionSets.scala.md
+[test/scala/items/itemsTests.scala]: ../../test/scala/items/itemsTests.scala.md
+[test/scala/RecordTests.scala]: ../../test/scala/RecordTests.scala.md
 [test/scala/TypeSetTests.scala]: ../../test/scala/TypeSetTests.scala.md

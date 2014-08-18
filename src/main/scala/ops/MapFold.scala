@@ -6,6 +6,8 @@ Just a copy of MapFolder for `HList`s from shapeless.
 
 package ohnosequences.typesets
 
+import shapeless.poly.Case
+
 trait SetMapFolder[S <: TypeSet, R, F] {
   def apply(s: S, in: R, op: (R, R) => R): R 
 }

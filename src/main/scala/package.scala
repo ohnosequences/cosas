@@ -29,9 +29,10 @@ package object typesets {
 
   /* ### Type sets */
   val ∅ : ∅ = empty
+  // type ∅ = Empty // with empty.type
 
   // Shortcut for a one element set 
-  def set[E](e: E): E :~: ∅ = e :~: ∅
+  def set[E](e: E): E :~: ∅ =  :~:.cons(e,∅)
 
   // Any type can be converted to a one element set
   implicit def typeSetOps[S <: TypeSet](s: S) = new TypeSetOps(s)
@@ -61,7 +62,7 @@ package object typesets {
   /* - The union types of two sets are the same */
   type sameAs[Q <: TypeSet] = { 
     type    is[S <: TypeSet] = S#Bound#get =:= Q#Bound#get
-    // type isnot[S <: TypeSet] = S#Bound#get =:!= Q#Bound#get
+    type isnot[S <: TypeSet] = S#Bound#get =:!= Q#Bound#get
   }
   implicit def ~[S <: TypeSet : sameAs[Q]#is, Q <: TypeSet] = new (S ~ Q)
 
@@ -70,11 +71,29 @@ package object typesets {
     type    is[S <: TypeSet] = S#Bound#get <:<  not[not[B]]
     type isnot[S <: TypeSet] = S#Bound#get <:!< not[not[B]]
   }
+  implicit def <<[S <: TypeSet : boundedBy[B]#is, B] = new (S << B)
+  implicit def <<![S <: TypeSet : boundedBy[B]#isnot, B] = new (S <<! B)
 
-  /* - Subtraction of sets */
-  type \[S <: TypeSet, Q <: TypeSet] = SubtractSets[S, Q]
+  implicit def setIsBoundedByUnion[S <: TypeSet, U <: TypeUnion]
+    (implicit ev: S#Bound#get <:< U#get) = new SetIsBoundedByUnion[S, U]
 
-  /* - Union of sets */
-  type U[S <: TypeSet, Q <: TypeSet] = UnionSets[S, Q]
+  type everyElementOf[S <: TypeSet] = { 
+    type isOneOf[U <: TypeUnion] = SetIsBoundedByUnion[S, U]
+  }
 
+  type \[S <: TypeSet, Q <: TypeSet] = Subtract[S, Q]
+
+  type ∪[S <: TypeSet, Q <: TypeSet] = Union[S, Q]
+
+  type ~>[S <: TypeSet, Q <: TypeSet] = Reorder[S, Q]
+
+  // record-related aliases
+
+  // id.type :~: name.type :~: ∅, TaggedWith[id.type] :~: TaggedWith[name.type] :~: ∅
+  type valuesOf[Ps <: TypeSet] = {
+
+    type is[VT <: TypeSet] = Represented.By[Ps,VT]
+  }
+
+  type isValuesOf[VT <: TypeSet, Ps <: TypeSet] = Represented.By[Ps,VT]
 }
