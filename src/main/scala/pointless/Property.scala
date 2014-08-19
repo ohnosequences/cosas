@@ -3,6 +3,8 @@ package ohnosequences.pointless
 import ohnosequences.pointless._, representable._
 import scala.reflect.ClassTag
 
+import AnyRepresentable._
+
 object property {
 
   trait AnyProperty extends AnyRepresentable {
@@ -18,12 +20,10 @@ object property {
 
   object AnyProperty {
 
-    import AnyRepresentable._
+    implicit def ops[P <: AnyProperty](p: P): Ops[P] = new Ops[P](p)
+    class   Ops[P <: AnyProperty](p: P) extends AnyRepresentable.Ops(p) { self =>
 
-    implicit def ops[P <: AnyProperty](p: P): Ops[P] = Ops[P](p)
-    case class   Ops[P <: AnyProperty](p: P) {
-
-      def is(value: RawOf[P]): RepOf[P] = p =>> value
+      def is(value: RawOf[P]): RepOf[P] = self =>> value
     }
   }
 

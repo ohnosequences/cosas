@@ -18,31 +18,34 @@ object representable {
     /*
       `Raw` tagged with `self.type`; this lets you recognize a denotation while being able to operate on it as `Raw`.
     */
-    final type Rep = Raw with Tag[Me]
+    final type Rep = TaggedWith[Me]
   }
-
-  case class TagWith[R <: AnyRepresentable](val d: R) {
-
-    def apply(r: R#Raw): R#Rep = r.asInstanceOf[R#Rep]
-  }
-
-  // Has to be empty! See http://www.scala-lang.org/old/node/11165.html#comment-49097
-  sealed trait AnyTag
-  sealed trait Tag[R <: AnyRepresentable] extends AnyTag with shapeless.record.KeyTag[R, R#Raw]
-
-  def tagWith[R <: AnyRepresentable, U <: R#Raw](raw: U, r: R): R#Rep = TagWith[R](r)(raw)
 
   object AnyRepresentable {
 
-    type RepOf[R <: AnyRepresentable] = R#Rep
+    type RepOf[R <: AnyRepresentable] = TaggedWith[R]
     type RawOf[R <: AnyRepresentable] = R#Raw
 
-    implicit def ops[R <: AnyRepresentable](r: R): Ops[R] = Ops[R](r)
-    case class   Ops[R <: AnyRepresentable](r: R) {
+    implicit def ops[R <: AnyRepresentable](r: R): Ops[R] = new Ops[R](r)
+    class   Ops[R <: AnyRepresentable](r: R) {
 
-      def =>>[U <: RawOf[R]](raw: U): RepOf[R] = tagWith[R,U](raw, r:R)
+      def =>>[U <: RawOf[R]](raw: U): RepOf[R] = tagWith[R,U](r: R, raw)
     }
   }
+
+  import AnyRepresentable._
+  case class TagWith[R <: AnyRepresentable](val d: R) {
+
+    def apply(r: RawOf[R]): RepOf[R] = r.asInstanceOf[RepOf[R]]
+  }
+
+  type TaggedWith[R <: AnyRepresentable] = R#Raw with Tag[R]
+
+  // Has to be empty! See http://www.scala-lang.org/old/node/11165.html#comment-49097
+  sealed trait AnyTag {}
+  sealed trait Tag[R <: AnyRepresentable] extends AnyTag with shapeless.record.KeyTag[R, RawOf[R]]
+
+  def tagWith[R <: AnyRepresentable, U <: RawOf[R]](r: R, raw: U): RepOf[R] = TagWith[R](r)(raw)
 
 }
 

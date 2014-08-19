@@ -21,7 +21,7 @@ class uhoh extends org.scalatest.FunSuite {
     val n = name is "Rigoberto Smith"
 
     val a = age is 13123
-    // val a0: age.Rep = age =>> (13123: Integer)
+    val a0: age.Rep = age =>> (13123: Integer)
 
     illTyped (
     """
