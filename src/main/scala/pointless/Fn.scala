@@ -37,9 +37,9 @@ object AnyFn {
     type O = O0
   }
 
-  trait Out[Z] {
+  trait AnyFn0 extends AnyFn {
 
-    type Out <: Z
+    def apply(): Out
   }
 
   trait AnyFn1 extends AnyFn {

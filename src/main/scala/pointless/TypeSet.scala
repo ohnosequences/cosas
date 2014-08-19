@@ -1,6 +1,6 @@
 package ohnosequences.pointless
 
-import AnyFn._, typeUnion._
+import AnyFn._, typeUnion._, representable._
 import shapeless.{ HList, Poly1, <:!<, =:!= }
 
 object typeSet {
@@ -126,6 +126,12 @@ object typeSet {
     type isNot[S <: AnyTypeSet] = S isNotBoundedByUnion U
   }
 
+  /* One set consists of representations of the types in another */
+  @annotation.implicitNotFound(msg = "Can't prove that ${S} is represented by ${R}")
+  type isRepresentedBy[S <: AnyTypeSet, R <: AnyTypeSet] = ops.typeSet.Represented[S] with out[R]
+
+  // type tagsOf[S <: AnyTypeSet, R <: AnyTypeSet] = ops.typeSet.TagsOf[S] with out[R]
+
 
   // object AnyTypeSet {
   /*
@@ -161,10 +167,9 @@ object typeSet {
 
   type MapFoldSet[F <: Poly1, S <: AnyTypeSet, R] = ops.typeSet.MapFoldSet[F, S, R]
 
-
-    /*
-      Ops
-    */
+  /*
+    Ops
+  */
   implicit def typeSetOps[S <: AnyTypeSet](s: S): Ops[S] = Ops[S](s)
   case class   Ops[S <: AnyTypeSet](s: S) {
 
