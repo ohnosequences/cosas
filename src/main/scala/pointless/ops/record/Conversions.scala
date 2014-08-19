@@ -9,19 +9,18 @@ package ohnosequences.pointless.ops.record
 
 import ohnosequences.pointless._, AnyFn._, representable._, property._, typeSet._, record._
 
-@annotation.implicitNotFound(msg = "Can't update record ${R} with property values ${Rest}")
+@annotation.implicitNotFound(msg = "Can't transform ${R} to ${Other} with values ${Rest}")
 trait Transform[R <: AnyRecord, Other <: AnyRecord, Rest <: AnyTypeSet] extends Fn3[RepOf[R], Other, Rest] with Constant[RepOf[Other]]
 
 object Transform {
 
-  implicit def to[
+  implicit def transform[
       R <: AnyRecord,
       Other <: AnyRecord,
       Rest <: AnyTypeSet, 
       Uni <: AnyTypeSet,
       Missing <: AnyTypeSet
-    ]
-    (implicit 
+    ](implicit
       missing: (RawOf[Other] \ RawOf[R]) with out[Missing],
       allMissing: Rest ~:~ Missing,
       uni: (RawOf[R] ∪ Rest) with out[Uni],
