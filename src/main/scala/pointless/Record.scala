@@ -33,9 +33,12 @@ object record {
     type Raw = Vals
   }
 
+
   /*
     Ops 
   */
+  import ops.record._
+
   implicit def recordOps[R <: AnyRecord](rec: R): RecordOps[R] = new RecordOps(rec)
   class RecordOps[R <: AnyRecord](val rec: R) extends RepresentableOps(rec) {
 
@@ -50,42 +53,21 @@ object record {
   class RepOps[R <: AnyRecord](val recEntry: RepOf[R]) {
 
     def get[P <: AnyProperty](p: P)
-      (implicit 
-        isThere: P ∈ PropertiesOf[R],
-        lookup: Lookup[RawOf[R], RepOf[P]]
-      ): RepOf[P] = lookup(recEntry)
+      (implicit get: R Get P): RepOf[P] = get(recEntry)
 
 
-    def update[P <: AnyProperty, S <: AnyTypeSet](propRep: RepOf[P])
-      (implicit 
-        isThere: P ∈ PropertiesOf[R],
-        replace: Replace[RepOf[R], RepOf[P] :~: ∅]
-      ): RepOf[R] = replace(recEntry, propRep :~: ∅)
+    def update[P <: AnyProperty](propRep: RepOf[P])
+      (implicit upd: R Update (RepOf[P] :~: ∅)): RepOf[R] = upd(recEntry, propRep :~: ∅)
 
-    def update[Ps <: AnyTypeSet, S <: AnyTypeSet](propReps: Ps)
-      (implicit 
-        check: Ps ⊂ RepOf[R],
-        replace: Replace[RepOf[R], Ps]
-      ): RepOf[R] = replace(recEntry, propReps)
+    def update[Ps <: AnyTypeSet](propReps: Ps)
+      (implicit upd: R Update Ps): RepOf[R] = upd(recEntry, propReps)
 
 
     def as[Other <: AnyRecord](other: Other)
-      (implicit
-        project: Take[RawOf[R], RawOf[Other]]
-      ): RepOf[Other] = other =>> project(recEntry)
+      (implicit project: Take[RawOf[R], RawOf[Other]]): RepOf[Other] = other =>> project(recEntry)
 
-    def as[
-        Other <: AnyRecord,
-        Rest <: AnyTypeSet, 
-        Uni <: AnyTypeSet,
-        Missing <: AnyTypeSet
-      ](other: Other, rest: Rest)
-      (implicit
-        missing: (RawOf[Other] \ RawOf[R]) { type Out = Missing },
-        allMissing: Rest ~:~ Missing,
-        uni: (RawOf[R] ∪ Rest) { type Out = Uni },
-        project: Take[Uni, RawOf[Other]]
-      ): RepOf[Other] = other =>> project(uni(recEntry, rest))
+    def as[Other <: AnyRecord, Rest <: AnyTypeSet](other: Other, rest: Rest)
+      (implicit transform: Transform[R, Other, Rest]): RepOf[Other] = transform(recEntry, other, rest)
 
   }
 
