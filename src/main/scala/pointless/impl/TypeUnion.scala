@@ -1,30 +1,27 @@
 package ohnosequences.pointless.impl
 
-import ohnosequences.pointless._
 import shapeless.{ <:!< }
 
-object typeUnion extends anyTypeUnion {
+trait AnyTypeUnion extends ohnosequences.pointless.AnyTypeUnion {
 
-  type AnyTypeUnion = AnyTypeUnionImpl
+  type or[Y] <: AnyTypeUnion
+  type union
+}
 
-  type either[T] = TypeUnionImpl[not[T]]
+trait TypeUnion[T] extends AnyTypeUnion {
+
+  type or[S] = TypeUnion[T with typeUnion.not[S]]  
+  type union = typeUnion.not[T]
+}
 
 
-  /*
-    Implementations
-  */
+trait either[T] extends ohnosequences.pointless.either[T] with TypeUnion[typeUnion.not[T]]
+
+
+object typeUnion extends ohnosequences.pointless.typeUnion {
+
   type not[T] = T => Nothing
   final type just[T] = not[not[T]]
-
-  protected trait AnyTypeUnionImpl {
-    type or[Y] <: AnyTypeUnionImpl
-    type union
-  }
-
-  protected trait TypeUnionImpl[T] extends AnyTypeUnionImpl {
-    type or[S] = TypeUnionImpl[T with not[S]]  
-    type union = not[T]
-  }
 
   type    isOneOf[X, U <: AnyTypeUnion] = just[X] <:<  U#union
   type isNotOneOf[X, U <: AnyTypeUnion] = just[X] <:!< U#union

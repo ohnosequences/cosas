@@ -1,120 +1,120 @@
-package ohnosequences.pointless.impl
+// package ohnosequences.pointless.impl
 
-import ohnosequences.pointless._, AnyFn._
-import shapeless.{ HList, Poly1, <:!<, =:!= }
+// import ohnosequences.pointless._, AnyFn._
+// import shapeless.{ HList, Poly1, <:!<, =:!= }
 
-object typeSet extends anyTypeSet {
+// object typeSet extends anyTypeSet {
 
-  type typeUnion = impl.typeUnion.type
-  import typeUnion._
+//   type typeUnion = impl.typeUnion.type
+//   import typeUnion._
 
-  type AnyTypeSet = TypeSetImpl
+//   type AnyTypeSet = TypeSetImpl
 
-  type ∅ = EmptySetImpl
-  val  ∅ : ∅ = EmptySet
-  val  emptySet : ∅ = EmptySet
+//   type ∅ = EmptySetImpl
+//   val  ∅ : ∅ = EmptySet
+//   val  emptySet : ∅ = EmptySet
 
-  type :~:[E, S <: AnyTypeSet] = ConsImpl[E, S]
-
-
-  /*
-    Implementations
-  */
-  trait TypeSetImpl {
-
-    type Types <: AnyTypeUnion
-
-    def toStr: String
-    override def toString = "{" + toStr + "}"
-  }
+//   type :~:[E, S <: AnyTypeSet] = ConsImpl[E, S]
 
 
-  sealed trait EmptySetImpl extends TypeSetImpl {
+//   /*
+//     Implementations
+//   */
+//   trait TypeSetImpl {
 
-    type Types = either[Nothing]
-    def toStr = ""
-  }
+//     type Types <: AnyTypeUnion
 
-  private object EmptySet extends EmptySetImpl
-
-
-  case class ConsImpl[E, S <: TypeSetImpl](head: E, tail: S)(implicit check: E ∉ S) extends TypeSetImpl {
-    type Types = tail.Types#or[E]
-    def toStr = {
-      val h = head match {
-        case _: String => "\""+head+"\""
-        case _: Char   => "\'"+head+"\'"
-        case _         => head.toString
-      }
-      val t = tail.toStr
-      if (t.isEmpty) h else h+", "+t
-    }
-  }
-
-  /* This method covers constructor to check that you are not adding a duplicate */
-  private object  ConsImpl {
-    def cons[E, S <: TypeSetImpl](e: E, set: S)(implicit check: E ∉ S): ConsImpl[E,S] = ConsImpl(e, set) 
-  }
+//     def toStr: String
+//     override def toString = "{" + toStr + "}"
+//   }
 
 
-  /*
-    Predicates
-  */
-  type    isIn[E, S <: AnyTypeSet] = E    isOneOf S#Types
-  type isNotIn[E, S <: AnyTypeSet] = E isNotOneOf S#Types
+//   sealed trait EmptySetImpl extends TypeSetImpl {
 
-  type    isSubsetOf[S <: AnyTypeSet, Q <: AnyTypeSet] = S#Types#union <:<  Q#Types#union 
-  type isNotSubsetOf[S <: AnyTypeSet, Q <: AnyTypeSet] = S#Types#union <:!< Q#Types#union
+//     type Types = either[Nothing]
+//     def toStr = ""
+//   }
 
-  type    isSameAs[S <: AnyTypeSet, Q <: AnyTypeSet] = S#Types#union =:=  Q#Types#union
-  type isNotSameAs[S <: AnyTypeSet, Q <: AnyTypeSet] = S#Types#union =:!= Q#Types#union
-
-  type    isBoundedBy[S <: AnyTypeSet, B] = S#Types#union <:<  either[B]#union
-  type isNotBoundedBy[S <: AnyTypeSet, B] = S#Types#union <:!< either[B]#union
-
-  type    isBoundedByUnion[S <: AnyTypeSet, U <: AnyTypeUnion] = S#Types#union <:<  U#union
-  type isNotBoundedByUnion[S <: AnyTypeSet, U <: AnyTypeUnion] = S#Types#union <:!< U#union
+//   private object EmptySet extends EmptySetImpl
 
 
-  /*
-    Function types
-  */
-  type \[S <: AnyTypeSet, Q <: AnyTypeSet] = ops.Subtract[S, Q]
+//   case class ConsImpl[E, S <: TypeSetImpl](head: E, tail: S)(implicit check: E ∉ S) extends TypeSetImpl {
+//     type Types = tail.Types#or[E]
+//     def toStr = {
+//       val h = head match {
+//         case _: String => "\""+head+"\""
+//         case _: Char   => "\'"+head+"\'"
+//         case _         => head.toString
+//       }
+//       val t = tail.toStr
+//       if (t.isEmpty) h else h+", "+t
+//     }
+//   }
 
-  type ∪[S <: AnyTypeSet, Q <: AnyTypeSet] = ops.Union[S, Q]
+//   /* This method covers constructor to check that you are not adding a duplicate */
+//   private object  ConsImpl {
+//     def cons[E, S <: TypeSetImpl](e: E, set: S)(implicit check: E ∉ S): ConsImpl[E,S] = ConsImpl(e, set) 
+//   }
 
-  type Pop[S <: AnyTypeSet, E] = ops.Pop[S, E]
 
-  type Lookup[S <: AnyTypeSet, E] = ops.Lookup[S, E]
+//   /*
+//     Predicates
+//   */
+//   type    isIn[E, S <: AnyTypeSet] = E    isOneOf S#Types
+//   type isNotIn[E, S <: AnyTypeSet] = E isNotOneOf S#Types
 
-  type Take[S <: AnyTypeSet, Q <: AnyTypeSet] = ops.Take[S, Q]
+//   type    isSubsetOf[S <: AnyTypeSet, Q <: AnyTypeSet] = S#Types#union <:<  Q#Types#union 
+//   type isNotSubsetOf[S <: AnyTypeSet, Q <: AnyTypeSet] = S#Types#union <:!< Q#Types#union
 
-  type Replace[S <: AnyTypeSet, Q <: AnyTypeSet] = ops.Replace[S, Q]
+//   type    isSameAs[S <: AnyTypeSet, Q <: AnyTypeSet] = S#Types#union =:=  Q#Types#union
+//   type isNotSameAs[S <: AnyTypeSet, Q <: AnyTypeSet] = S#Types#union =:!= Q#Types#union
 
-  type As[S <: AnyTypeSet, Q <: AnyTypeSet] = ops.As[S, Q]
+//   type    isBoundedBy[S <: AnyTypeSet, B] = S#Types#union <:<  either[B]#union
+//   type isNotBoundedBy[S <: AnyTypeSet, B] = S#Types#union <:!< either[B]#union
 
-  type FromHList[L <: HList] = ops.FromHList[L]
+//   type    isBoundedByUnion[S <: AnyTypeSet, U <: AnyTypeUnion] = S#Types#union <:<  U#union
+//   type isNotBoundedByUnion[S <: AnyTypeSet, U <: AnyTypeUnion] = S#Types#union <:!< U#union
 
-  type ToHList[S <: AnyTypeSet] = ops.ToHList[S]
 
-  type  ToList[S <: AnyTypeSet] = ops.ToList[S]
+//   /*
+//     Function types
+//   */
+//   type \[S <: AnyTypeSet, Q <: AnyTypeSet] = ops.Subtract[S, Q]
 
-  type MapToHList[F <: Poly1, S <: AnyTypeSet] = ops.MapToHList[F, S]
+//   type ∪[S <: AnyTypeSet, Q <: AnyTypeSet] = ops.Union[S, Q]
 
-  type  MapToList[F <: Poly1, S <: AnyTypeSet] = ops.MapToList[F, S]
+//   type Pop[S <: AnyTypeSet, E] = ops.Pop[S, E]
 
-  type     MapSet[F <: Poly1, S <: AnyTypeSet] = ops.MapSet[F, S]
+//   type Lookup[S <: AnyTypeSet, E] = ops.Lookup[S, E]
 
-  type MapFoldSet[F <: Poly1, S <: AnyTypeSet, R] = ops.MapFoldSet[F, S, R]
+//   type Take[S <: AnyTypeSet, Q <: AnyTypeSet] = ops.Take[S, Q]
 
-  /*
-    Ops
-  */
-  implicit def typeSetOps[S <: AnyTypeSet](s: S): TypeSetOps[S] = TypeSetOps[S](s)
-  case class   TypeSetOps[S <: AnyTypeSet](s: S) extends AnyTypeSetOps[S](s) {
+//   type Replace[S <: AnyTypeSet, Q <: AnyTypeSet] = ops.Replace[S, Q]
 
-    def :~:[E](e: E)(implicit check: E ∉ S): (E :~: S) = ConsImpl.cons(e, s)
+//   type As[S <: AnyTypeSet, Q <: AnyTypeSet] = ops.As[S, Q]
 
-  }
+//   type FromHList[L <: HList] = ops.FromHList[L]
 
-}
+//   type ToHList[S <: AnyTypeSet] = ops.ToHList[S]
+
+//   type  ToList[S <: AnyTypeSet] = ops.ToList[S]
+
+//   type MapToHList[F <: Poly1, S <: AnyTypeSet] = ops.MapToHList[F, S]
+
+//   type  MapToList[F <: Poly1, S <: AnyTypeSet] = ops.MapToList[F, S]
+
+//   type     MapSet[F <: Poly1, S <: AnyTypeSet] = ops.MapSet[F, S]
+
+//   type MapFoldSet[F <: Poly1, S <: AnyTypeSet, R] = ops.MapFoldSet[F, S, R]
+
+//   /*
+//     Ops
+//   */
+//   implicit def typeSetOps[S <: AnyTypeSet](s: S): TypeSetOps[S] = TypeSetOps[S](s)
+//   case class   TypeSetOps[S <: AnyTypeSet](s: S) extends AnyTypeSetOps[S](s) {
+
+//     def :~:[E](e: E)(implicit check: E ∉ S): (E :~: S) = ConsImpl.cons(e, s)
+
+//   }
+
+// }

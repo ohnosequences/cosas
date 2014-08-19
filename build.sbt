@@ -1,6 +1,6 @@
 Nice.scalaProject
 
-name := "type-sets"
+name := "pointless"
 
 description := "type-sets project"
 

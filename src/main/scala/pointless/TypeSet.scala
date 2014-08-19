@@ -3,19 +3,18 @@ package ohnosequences.pointless
 import AnyFn._
 import shapeless.{ HList, Poly1 }
 
-trait anyTypeSet {
+/*
+  ### ADT
+*/
+sealed trait AnyTypeSet
 
-  type typeUnion <: anyTypeUnion
+trait ∅ extends AnyTypeSet
 
-  /*
-    ### ADT
-  */
-  type AnyTypeSet
+trait :~:[E,S <: AnyTypeSet] extends AnyTypeSet
 
-  type ∅ <: AnyTypeSet
+trait typeSet {
+
   val  ∅ : ∅  // the space before : is needed
-
-  type :~:[E,S <: AnyTypeSet] <: AnyTypeSet
 
   /*
     ### Predicates and aliases
@@ -80,12 +79,12 @@ trait anyTypeSet {
 
   /* Elements of the set are from the type union */
   @annotation.implicitNotFound(msg = "Can't prove that elements of ${S} are from the type union ${U}")
-  type isBoundedByUnion[S <: AnyTypeSet, U <: typeUnion#AnyTypeUnion]
+  type isBoundedByUnion[S <: AnyTypeSet, U <: AnyTypeUnion]
 
   @annotation.implicitNotFound(msg = "Can't prove that elements of ${S} are not from the type union ${U}")
-  type isNotBoundedByUnion[S <: AnyTypeSet, U <: typeUnion#AnyTypeUnion]
+  type isNotBoundedByUnion[S <: AnyTypeSet, U <: AnyTypeUnion]
 
-  final type boundedByUnion[U <: typeUnion#AnyTypeUnion] = {
+  final type boundedByUnion[U <: AnyTypeUnion] = {
     type    is[S <: AnyTypeSet] = S    isBoundedByUnion U
     type isNot[S <: AnyTypeSet] = S isNotBoundedByUnion U
   }

@@ -1,28 +1,20 @@
-package ohnosequences.pointless
+// package ohnosequences.pointless
 
-trait anyRecord {
+// trait AnyRecord {
 
-  // abstract dep
-  type representable <: anyRepresentable
-  type property <: anyProperty
-  type typeSet <: anyTypeSet
+//   type Properties <: AnyTypeSet
+//   val  properties: Properties
+//   // should be provided implicitly:
+//   val  propertiesBound: Properties isboundedBy AnyProperty
 
-  type AnyRecord <: AnyRecordImpl with representable#AnyRepresentableImpl
+//   type Raw <: AnyTypeSet
+//   // should be provided implicitly:
+//   // val  representedProperties: Raw isValuesOf Properties
+// }
 
-  trait AnyRecordImpl { self: representable#AnyRepresentableImpl =>
+// object AnyRecord {
 
-    type Properties <: typeSet#AnyTypeSet
-    val  properties: Properties
-    // should be provided implicitly:
-    val  propertiesBound: typeSet#isBoundedBy[Properties, property#AnyProperty]
+//   type PropertiesOf[R <: AnyRecord] = R#Properties
 
-    type Raw <: typeSet#AnyTypeSet
-    // should be provided implicitly:
-    // val  representedProperties: Raw isValuesOf Properties
-  }
-
-  type PropertiesOf[R <: AnyRecordImpl] = R#Properties
-
-
-  abstract class AnyRecordOps[R <: AnyRecord](val record: R) {}
-}
+//   abstract class AnyRecordOps[R <: AnyRecord](val record: R) {}
+// }
