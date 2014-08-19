@@ -1,6 +1,6 @@
 package ohnosequences.pointless.test
 
-import ohnosequences.pointless.impl.property._
+import ohnosequences.pointless._, representable._, property._
 
 object exampleProperties {
   

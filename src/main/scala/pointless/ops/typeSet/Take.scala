@@ -1,8 +1,8 @@
 /* ## Taking a subset */
 
-package ohnosequences.pointless.impl.ops
+package ohnosequences.pointless.ops.typeSet
 
-import ohnosequences.pointless._, AnyFn._, impl._, typeSet._
+import ohnosequences.pointless._, AnyFn._, typeSet._
 
 @annotation.implicitNotFound(msg = "Cannot take subset ${Q} from ${S}")
 trait Take[S <: AnyTypeSet, Q <: AnyTypeSet] extends Fn1[S] with Constant[Q]

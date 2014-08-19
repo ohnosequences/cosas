@@ -2,7 +2,7 @@ package ohnosequences.pointless.tests
 
 import shapeless._
 import shapeless.test.illTyped
-import ohnosequences.pointless._, impl._, typeSet._
+import ohnosequences.pointless._, typeSet._
 
 class TypeSetTests extends org.scalatest.FunSuite {
 

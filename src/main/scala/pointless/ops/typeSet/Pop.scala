@@ -5,9 +5,9 @@ It's like `Lookup`, but it removes the element
 
 */
 
-package ohnosequences.pointless.impl.ops
+package ohnosequences.pointless.ops.typeSet
 
-import ohnosequences.pointless._, AnyFn._, impl._, typeSet._
+import ohnosequences.pointless._, AnyFn._, typeSet._
 
 @annotation.implicitNotFound(msg = "Can't pop an element of type ${E} from the set ${S}")
 trait Pop[S <: AnyTypeSet, E] extends Fn1[S] with WithCodomain[(E, AnyTypeSet)] {

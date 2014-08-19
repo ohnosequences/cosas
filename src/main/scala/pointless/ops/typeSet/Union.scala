@@ -1,8 +1,8 @@
 /* ## Sum/union of two type sets */
 
-package ohnosequences.pointless.impl.ops
+package ohnosequences.pointless.ops.typeSet
 
-import ohnosequences.pointless._, AnyFn._, impl._, typeSet._
+import ohnosequences.pointless._, AnyFn._, typeSet._
 
 @annotation.implicitNotFound(msg = "Can't union ${S} with ${Q}")
 trait Union[S <: AnyTypeSet, Q <: AnyTypeSet] extends Fn2[S, Q] with WithCodomain[AnyTypeSet]

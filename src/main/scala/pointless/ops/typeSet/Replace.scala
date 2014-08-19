@@ -8,9 +8,9 @@ Note that the type of the result is the same (`S`).
 
 */
 
-package ohnosequences.pointless.impl.ops
+package ohnosequences.pointless.ops.typeSet
 
-import ohnosequences.pointless._, AnyFn._, impl._, typeSet._
+import ohnosequences.pointless._, AnyFn._, typeSet._
 
 @annotation.implicitNotFound(msg = "Can't replace elements in ${S} with ${Q}")
 trait Replace[S <: AnyTypeSet, Q <: AnyTypeSet] extends Fn2[S, Q] with Constant[S]
