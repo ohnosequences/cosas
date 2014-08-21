@@ -29,7 +29,9 @@ object typeSet {
 
 
   protected case class ConsSet[E, S <: AnyTypeSet](head: E, tail: S)(implicit check: E ∉ S) extends AnyTypeSet {
+
     type Types = tail.Types#or[E]
+    
     def toStr = {
       val h = head match {
         case _: String => "\""+head+"\""

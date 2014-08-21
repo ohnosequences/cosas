@@ -11,18 +11,18 @@ object representable {
 
   trait AnyRepresentable { me => 
 
-    type Me = me.type
+    final type Me = me.type
 
     type Raw
 
     /*
       `Raw` tagged with `self.type`; this lets you recognize a denotation while being able to operate on it as `Raw`.
     */
-    type Rep = RepOf[Me]
+    final type Rep = RepOf[Me]
   }
 
   // FIXME: "Not a simple type"
-  final type RepOf[R <: AnyRepresentable] = R#Raw with Tag[R]
+  final type RepOf[R <: AnyRepresentable] =  R#Raw with Tag[R]
   final type RawOf[R <: AnyRepresentable] = R#Raw
 
   implicit def representableOps[R <: AnyRepresentable](r: R): RepresentableOps[R] = new RepresentableOps[R](r)
@@ -43,7 +43,7 @@ object representable {
   sealed trait AnyTag {}
   sealed trait Tag[R <: AnyRepresentable] extends AnyTag with shapeless.record.KeyTag[R, RawOf[R]]
 
-  // def tagWith[R <: AnyRepresentable, U <: RawOf[R]](r: R, raw: U): RepOf[R] = TagWith[R](r)(raw)
+  // def tagWith[R <: AnyRepresentable, U <: R#Raw](r: R, raw: U): RepOf[R] = TagWith[R](r)(raw)
 
 }
 

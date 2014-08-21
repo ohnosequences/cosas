@@ -4,9 +4,9 @@ import ohnosequences.pointless._, representable._, property._
 
 object exampleProperties {
   
-  object key extends Property[String]
-  object name extends Property[String]
-  object age extends Property[Integer]
+  case object key extends Property[String]
+  case object name extends Property[String]
+  case object age extends Property[Integer]
 }
 
 class uhoh extends org.scalatest.FunSuite {

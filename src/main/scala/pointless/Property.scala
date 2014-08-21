@@ -19,7 +19,7 @@ object property {
   }
 
   implicit def propertyOps[P <: AnyProperty](p: P): PropertyOps[P] = new PropertyOps[P](p)
-  class PropertyOps[P <: AnyProperty](p: P) extends RepresentableOps(p) { self =>
+  class PropertyOps[P <: AnyProperty](val p: P) extends RepresentableOps(p) { self =>
 
     def is(value: RawOf[P]): RepOf[P] = self =>> value
   }
