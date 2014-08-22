@@ -1,8 +1,8 @@
 Nice.scalaProject
 
-name := "type-sets"
+name := "pointless"
 
-description := "type-sets project"
+description := "pointless but useful project"
 
 organization := "ohnosequences"
 
@@ -10,7 +10,7 @@ bucketSuffix := "era7.com"
 
 scalaVersion := "2.11.2"
 
-crossScalaVersions := Seq("2.10.4", "2.11.2")
+crossScalaVersions := Seq("2.10.4")
 
 libraryDependencies += {
   CrossVersion.partialVersion(scalaVersion.value) match {
@@ -21,5 +21,5 @@ libraryDependencies += {
 }
 
 libraryDependencies ++= Seq (
-  "org.scalatest" %% "scalatest" % "2.2.1" % "test"
+  "org.scalatest" %% "scalatest" % "2.2.2" % "test"
 )

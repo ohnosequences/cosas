@@ -1,9 +1,11 @@
-## Type-sets
+## Pointless
 
-This library defines an abstraction of a _type set_, which is something similar to a heterogeneous
-list, like `HList` from shapeless, with the difference that it can store only things of different
-types. Also it provides some basic operations on these sets and one of them is a _fast_ check that a
-type is in the set (in compile time) without traversing the set.
+_It's **pointless**, but **useful**_
+
+
+* Records
+* Type union
+* Type sets — something similar to a heterogeneous list, like `HList` from shapeless, with the difference that it can store only things of different types. Also it provides some basic operations on these sets and one of them is a _fast_ check that a type is in the set (in compile time) without traversing the set.
 
 
 ### Usage
