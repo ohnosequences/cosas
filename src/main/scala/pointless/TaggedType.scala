@@ -7,9 +7,9 @@ package ohnosequences.pointless
   - `Rep <: Raw` is just `Raw` tagged with `this.type`; the `Rep`resentation
 */
 
-object representable {
+object taggedType {
 
-  trait AnyRepresentable { me => 
+  trait AnyTaggedType { me => 
 
     final type Me = me.type
 
@@ -18,32 +18,45 @@ object representable {
     /*
       `Raw` tagged with `self.type`; this lets you recognize a denotation while being able to operate on it as `Raw`.
     */
-    final type Rep = RepOf[Me]
+    // we don't actually need this
+    // final type Rep = Tagged[Me]
+
+    implicit def fromTagged(x: Tagged[Me]): Me = me
+    // I don't know why this works
+    implicit def yetAnotherFromRep[X <: Me](rep: Tagged[X]): Me = me
   }
 
+  trait TaggedType[R] extends AnyTaggedType {
+
+    type Raw = R
+  }
+
+  type Tagged[T <: AnyTaggedType] = T#Raw with Tag[T]
   // FIXME: "Not a simple type"
-  final type RepOf[R <: AnyRepresentable] =  R#Raw with Tag[R]
-  final type RawOf[R <: AnyRepresentable] = R#Raw
+  type RawOf[T <: AnyTaggedType] = T#Raw
+  
+  type @@[T <: AnyTaggedType] = Tagged[T]
 
-  implicit def representableOps[R <: AnyRepresentable](r: R): RepresentableOps[R] = new RepresentableOps[R](r)
-  class RepresentableOps[R <: AnyRepresentable](r: R) {
+  implicit def taggedTypeOps[T <: AnyTaggedType](t: T): TaggedTypeOps[T] = new TaggedTypeOps[T](t)
+  
+  class TaggedTypeOps[T <: AnyTaggedType](val t: T) {
 
-    def =>>[U <: RawOf[R]](raw: U): RepOf[R] = TagWith[R](r)(raw)
+    def =>>[R <: RawOf[T]](raw: R): Tagged[T] = TagWith[T](t)(raw)
   }
 
   /* 
     Tagging
   */
-  case class TagWith[R <: AnyRepresentable](val d: R) {
+  case class TagWith[T <: AnyTaggedType](val t: T) {
 
-    def apply(r: RawOf[R]): RepOf[R] = r.asInstanceOf[RepOf[R]]
+    def apply(r: RawOf[T]): Tagged[T] = r.asInstanceOf[Tagged[T]]
   }
 
   // Has to be empty! See http://www.scala-lang.org/old/node/11165.html#comment-49097
   sealed trait AnyTag {}
-  sealed trait Tag[R <: AnyRepresentable] extends AnyTag with shapeless.record.KeyTag[R, RawOf[R]]
+  sealed trait Tag[T <: AnyTaggedType] extends AnyTag with shapeless.record.KeyTag[T, RawOf[T]]
 
-  // def tagWith[R <: AnyRepresentable, U <: R#Raw](r: R, raw: U): RepOf[R] = TagWith[R](r)(raw)
+  // def tagWith[R <: AnyTaggedType, U <: R#Raw](r: R, raw: U): Tagged[R] = TagWith[R](r)(raw)
 
 }
 

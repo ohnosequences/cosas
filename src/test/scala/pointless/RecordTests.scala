@@ -1,7 +1,7 @@
 package ohnosequences.pointless.tests
 
 import shapeless.test.{typed, illTyped}
-import ohnosequences.pointless._, representable._, property._, typeSet._, record._
+import ohnosequences.pointless._, taggedType._, property._, typeSet._, record._
 
 object RecordTestsContext {
 
@@ -24,11 +24,11 @@ object RecordTestsContext {
     val r: R
   )(implicit
     val idIsThere: Id ∈ PropertiesOf[R],
-    val getId: Lookup[RawOf[R], RepOf[Id]]
+    val getId: Lookup[RawOf[R], Tagged[Id]]
   )
   {
 
-    def getId(entry: RepOf[R]): RepOf[Id] = entry get id
+    def getId(entry: Tagged[R]): Tagged[Id] = entry get id
   }
 
   val vProps = email :~: color :~: ∅
@@ -73,25 +73,25 @@ class RecordTests extends org.scalatest.FunSuite {
 
     implicitly [
       // using external bounds
-      (id.type :~: name.type :~: ∅) isRepresentedBy (RepOf[id.type] :~: RepOf[name.type] :~: ∅)
+      (id.type :~: name.type :~: ∅) isRepresentedBy (Tagged[id.type] :~: Tagged[name.type] :~: ∅)
     ]
 
-    implicitly [
-      // using the local Rep of each property
-      (id.type :~: name.type :~: ∅) isRepresentedBy (id.Rep :~: name.Rep :~: ∅)
-    ] 
+    // implicitly [
+    //   // using the local Rep of each property
+    //   (id.type :~: name.type :~: ∅) isRepresentedBy (id.Rep :~: name.Rep :~: ∅)
+    // ] 
 
     implicitly [ 
-      simpleUser.Raw =:= (id.Rep :~: name.Rep :~: ∅)
+      RawOf[simpleUser.type] =:= (Tagged[id.type] :~: Tagged[name.type] :~: ∅)
     ]
 
     implicitly [ 
       // check the Values alias
-      simpleUser.Raw =:= (id.Rep :~: name.Rep :~: ∅)
+      simpleUser.Raw =:= (Tagged[id.type] :~: Tagged[name.type] :~: ∅)
     ]
 
     implicitly [
-      simpleUser.representedProperties.Out =:= (id.Rep :~: name.Rep :~: ∅)
+      simpleUser.representedProperties.Out =:= (Tagged[id.type] :~: Tagged[name.type] :~: ∅)
     ]
   }
 
@@ -99,16 +99,16 @@ class RecordTests extends org.scalatest.FunSuite {
 
     implicitly [ 
       // the declared property order
-      simpleUser.Raw =:= (id.Rep :~: name.Rep :~: ∅)
+      simpleUser.Raw =:= (Tagged[id.type] :~: Tagged[name.type] :~: ∅)
     ]
 
     // they get reordered
-    val simpleUserV: simpleUser.Rep = simpleUser fields {
+    val simpleUserV: Tagged[simpleUser.type] = simpleUser fields {
       (name is "Antonio") :~:
       (id is 29681) :~: ∅
     }
 
-    val sameSimpleUserV: simpleUser.Rep = simpleUser fields {
+    val sameSimpleUserV: Tagged[simpleUser.type] = simpleUser fields {
       (id is 29681) :~:
       (name is "Antonio") :~: ∅
     }
@@ -171,7 +171,7 @@ class RecordTests extends org.scalatest.FunSuite {
 
   test("can see a record entry as another") {
 
-    val hey: simpleUser.Rep = normalUserEntry as simpleUser
+    val hey: Tagged[simpleUser.type] = normalUserEntry as simpleUser
   }
 
 }

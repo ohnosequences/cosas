@@ -1,11 +1,11 @@
 package ohnosequences.pointless
 
-import ohnosequences.pointless._, representable._
+import ohnosequences.pointless._, taggedType._
 import scala.reflect.ClassTag
 
 object property {
 
-  trait AnyProperty extends AnyRepresentable {
+  trait AnyProperty extends AnyTaggedType {
 
     val label: String
     val classTag: ClassTag[Raw]
@@ -19,9 +19,9 @@ object property {
   }
 
   implicit def propertyOps[P <: AnyProperty](p: P): PropertyOps[P] = new PropertyOps[P](p)
-  class PropertyOps[P <: AnyProperty](val p: P) extends RepresentableOps(p) { self =>
+  class PropertyOps[P <: AnyProperty](val p: P) extends TaggedTypeOps(p) { self =>
 
-    def is(value: RawOf[P]): RepOf[P] = self =>> value
+    def is(value: RawOf[P]): Tagged[P] = self =>> value
   }
 
 }
