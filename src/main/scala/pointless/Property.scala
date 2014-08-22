@@ -1,31 +1,32 @@
 package ohnosequences.pointless
 
-import ohnosequences.pointless._, taggedType._
+import AnyTaggedType._
 import scala.reflect.ClassTag
 
-object property {
+trait AnyProperty extends AnyTaggedType {
 
-  trait AnyProperty extends AnyTaggedType {
-
-    val label: String
-    val classTag: ClassTag[Raw]
-  }
-
-  class Property[V](implicit val classTag: ClassTag[V]) extends AnyProperty {
-
-    val label = this.toString
-
-    type Raw = V
-  }
-
-  implicit def propertyOps[P <: AnyProperty](p: P): PropertyOps[P] = new PropertyOps[P](p)
-  class PropertyOps[P <: AnyProperty](val p: P) extends TaggedTypeOps(p) { self =>
-
-    def is(value: RawOf[P]): Tagged[P] = self =>> value
-  }
-
+  val label: String
+  val classTag: ClassTag[Raw]
 }
 
+class Property[V](implicit val classTag: ClassTag[V]) extends AnyProperty {
+
+  val label = this.toString
+
+  type Raw = V
+}
+
+object AnyProperty {
+
+  implicit def propertyOps[P <: AnyProperty](p: P): PropertyOps[P] = new PropertyOps[P](p)
+}
+
+class PropertyOps[P <: AnyProperty](val p: P) extends TaggedTypeOps(p) { self =>
+
+  def is(value: RawOf[P]): Tagged[P] = self =>> value
+}
+
+// TODO: restore this
 // /* 
 //   For a given arbitrary type `Smth`, filters any property set, 
 //   leaving only those which have the `Smth HasProperty _` evidence

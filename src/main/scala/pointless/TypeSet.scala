@@ -1,23 +1,19 @@
 package ohnosequences.pointless
 
-import AnyFn._, typeUnion._, taggedType._
+import AnyFn._, AnyTypeUnion._, AnyTaggedType._
 import shapeless.{ HList, Poly1, <:!<, =:!= }
 
-object typeSet {
+sealed trait AnyTypeSet {
 
-  // type typeUnion <: anyTypeUnion
+  type Types <: AnyTypeUnion
 
-  /*
-    ### ADT
-  */
-  sealed trait AnyTypeSet {
+  def toStr: String
+  override def toString = "{" + toStr + "}"
+}
 
-    type Types <: AnyTypeUnion
 
-    def toStr: String
-    override def toString = "{" + toStr + "}"
-  }
-
+private[pointless] object TypeSetImpl {
+  import AnyTypeSet._
 
   sealed trait AnyEmptySet extends AnyTypeSet {
 
@@ -25,10 +21,10 @@ object typeSet {
     def toStr = ""
   }
 
-  private object EmptySet extends AnyEmptySet
+  object EmptySet extends AnyEmptySet
 
 
-  protected case class ConsSet[E, S <: AnyTypeSet](head: E, tail: S)(implicit check: E ∉ S) extends AnyTypeSet {
+  case class ConsSet[E, S <: AnyTypeSet](head: E, tail: S)(implicit check: E ∉ S) extends AnyTypeSet {
 
     type Types = tail.Types#or[E]
     
@@ -44,16 +40,18 @@ object typeSet {
   }
 
   /* This method covers constructor to check that you are not adding a duplicate */
-  private object ConsSet {
+  object ConsSet {
     def cons[E, S <: AnyTypeSet](e: E, set: S)(implicit check: E ∉ S): ConsSet[E,S] = ConsSet(e, set) 
   }
+}
 
+object AnyTypeSet {
 
-  final type ∅ = AnyEmptySet
-  val ∅ : ∅ = EmptySet // the space before : is needed
-  val emptySet : ∅ = EmptySet
+  final type ∅ = TypeSetImpl.AnyEmptySet
+  val ∅ : ∅ = TypeSetImpl.EmptySet // the space before : is needed
+  val emptySet : ∅ = TypeSetImpl.EmptySet
 
-  final type :~:[E, S <: AnyTypeSet] = ConsSet[E, S]
+  final type :~:[E, S <: AnyTypeSet] = TypeSetImpl.ConsSet[E, S]
 
   /*
     ### Predicates and aliases
@@ -169,62 +167,64 @@ object typeSet {
 
   type MapFoldSet[F <: Poly1, S <: AnyTypeSet, R] = ops.typeSet.MapFoldSet[F, S, R]
 
-  /*
-    Ops
-  */
-  implicit def typeSetOps[S <: AnyTypeSet](s: S): Ops[S] = Ops[S](s)
-  case class   Ops[S <: AnyTypeSet](s: S) {
-
-    /* Element-related */
-
-    def :~:[E](e: E)(implicit check: E ∉ S): (E :~: S) = ConsSet.cons(e, s)
-
-    def pop[E](implicit check: E ∈ S, pop: S Pop E): pop.Out = pop(s)
-
-    def lookup[E](implicit check: E ∈ S, lookup: S Lookup E): lookup.Out = lookup(s)
-
-
-    /* Set-related */
-
-    def \[Q <: AnyTypeSet](q: Q)(implicit sub: S \ Q): sub.Out = sub(s, q)
-
-    def ∪[Q <: AnyTypeSet](q: Q)(implicit uni: S ∪ Q): uni.Out = uni(s, q)
-
-    def take[Q <: AnyTypeSet](implicit check: Q ⊂ S, take: S Take Q): take.Out = take(s)
-
-    def replace[Q <: AnyTypeSet](q: Q)(implicit check: Q ⊂ S, replace: S Replace Q): replace.Out = replace(s, q)
-
-
-    /* Conversions */
-
-    def as[Q <: AnyTypeSet]      (implicit check: S ~:~ Q, reorder: S As Q): reorder.Out = reorder(s)
-    def as[Q <: AnyTypeSet](q: Q)(implicit check: S ~:~ Q, reorder: S As Q): reorder.Out = reorder(s)
-
-    def toHList(implicit toHList: ToHList[S]): toHList.Out = toHList(s)
-
-    def  toList(implicit  toList:  ToList[S]):  toList.Out =  toList(s)
-
-    def toListOf[T](implicit toListOf: S ToListOf T): List[T] = toListOf(s)
-
-
-    /* Mappers */
-
-    def mapToHList[F <: Poly1](f: F)(implicit mapF: F MapToHList S): mapF.Out = mapF(s)
-
-    def  mapToList[F <: Poly1](f: F)(implicit mapF: F  MapToList S): mapF.Out = mapF(s)
-
-    def        map[F <: Poly1](f: F)(implicit mapF: F     MapSet S): mapF.Out = mapF(s)
-
-    def mapFold[F <: Poly1, R](f: F)(r: R)(op: (R, R) => R)(implicit mapFold: MapFoldSet[F, S, R]): mapFold.Out = mapFold(s, r, op)
-
-  }
-
-  implicit def hListOps[L <: HList](l: L): HListOps[L] = HListOps[L](l)
-  case class   HListOps[L <: HList](l: L) {
-
-    def toTypeSet(implicit fromHList: FromHList[L]): fromHList.Out = fromHList(l)
-  }
+  implicit def typeSetOps[S <: AnyTypeSet](s: S): TypeSetOps[S] = new TypeSetOps[S](s)
+  implicit def hListOps[L <: HList](l: L): HListOps[L] = new HListOps[L](l)
 
   def fromHList[L <: HList](l: L)(implicit fromHList: FromHList[L]): fromHList.Out = fromHList(l)
 
+}
+
+
+class TypeSetOps[S <: AnyTypeSet](s: S) {
+  import AnyTypeSet._
+
+  /* Element-related */
+
+  def :~:[E](e: E)(implicit check: E ∉ S): (E :~: S) = TypeSetImpl.ConsSet.cons(e, s)
+
+  def pop[E](implicit check: E ∈ S, pop: S Pop E): pop.Out = pop(s)
+
+  def lookup[E](implicit check: E ∈ S, lookup: S Lookup E): lookup.Out = lookup(s)
+
+
+  /* Set-related */
+
+  def \[Q <: AnyTypeSet](q: Q)(implicit sub: S \ Q): sub.Out = sub(s, q)
+
+  def ∪[Q <: AnyTypeSet](q: Q)(implicit uni: S ∪ Q): uni.Out = uni(s, q)
+
+  def take[Q <: AnyTypeSet](implicit check: Q ⊂ S, take: S Take Q): take.Out = take(s)
+
+  def replace[Q <: AnyTypeSet](q: Q)(implicit check: Q ⊂ S, replace: S Replace Q): replace.Out = replace(s, q)
+
+
+  /* Conversions */
+
+  def as[Q <: AnyTypeSet]      (implicit check: S ~:~ Q, reorder: S As Q): reorder.Out = reorder(s)
+  def as[Q <: AnyTypeSet](q: Q)(implicit check: S ~:~ Q, reorder: S As Q): reorder.Out = reorder(s)
+
+  def toHList(implicit toHList: ToHList[S]): toHList.Out = toHList(s)
+
+  def  toList(implicit  toList:  ToList[S]):  toList.Out =  toList(s)
+
+  def toListOf[T](implicit toListOf: S ToListOf T): List[T] = toListOf(s)
+
+
+  /* Mappers */
+
+  def mapToHList[F <: Poly1](f: F)(implicit mapF: F MapToHList S): mapF.Out = mapF(s)
+
+  def  mapToList[F <: Poly1](f: F)(implicit mapF: F  MapToList S): mapF.Out = mapF(s)
+
+  def        map[F <: Poly1](f: F)(implicit mapF: F     MapSet S): mapF.Out = mapF(s)
+
+  def mapFold[F <: Poly1, R](f: F)(r: R)(op: (R, R) => R)(implicit mapFold: MapFoldSet[F, S, R]): mapFold.Out = mapFold(s, r, op)
+
+}
+
+
+class HListOps[L <: HList](l: L) {
+  import AnyTypeSet._
+
+  def toTypeSet(implicit fromHList: FromHList[L]): fromHList.Out = fromHList(l)
 }

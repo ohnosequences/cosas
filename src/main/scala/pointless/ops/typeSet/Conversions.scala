@@ -2,7 +2,7 @@
 
 package ohnosequences.pointless.ops.typeSet
 
-import ohnosequences.pointless._, AnyFn._, typeSet._
+import ohnosequences.pointless._, AnyFn._, AnyTypeSet._
 import shapeless._
 
 case object id extends Poly1 { implicit def default[T] = at[T]((t:T) => t) }

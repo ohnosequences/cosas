@@ -2,7 +2,7 @@
 
 package ohnosequences.pointless.ops.typeSet
 
-import ohnosequences.pointless._, AnyFn._, typeSet._
+import ohnosequences.pointless._, AnyFn._, AnyTypeSet._
 
 @annotation.implicitNotFound(msg = "Can't subtract ${Q} from ${S}")
 trait Subtract[S <: AnyTypeSet, Q <: AnyTypeSet] extends Fn2[S, Q] with WithCodomain[AnyTypeSet]

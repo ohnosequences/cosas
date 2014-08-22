@@ -1,7 +1,7 @@
 package ohnosequences.pointless.tests
 
 import shapeless.test.{typed, illTyped}
-import ohnosequences.pointless._, taggedType._, property._, typeSet._, record._
+import ohnosequences.pointless._, AnyTaggedType._, AnyProperty._, AnyTypeSet._, AnyRecord._
 
 object RecordTestsContext {
 

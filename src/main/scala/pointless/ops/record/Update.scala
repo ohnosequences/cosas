@@ -7,7 +7,7 @@ It's like `Lookup`, but it removes the element
 
 package ohnosequences.pointless.ops.record
 
-import ohnosequences.pointless._, AnyFn._, taggedType._, property._, typeSet._, record._
+import ohnosequences.pointless._, AnyFn._, AnyTaggedType._, AnyProperty._, AnyTypeSet._, AnyRecord._
 
 @annotation.implicitNotFound(msg = "Can't update record ${R} with property values ${Ps}")
 trait Update[R <: AnyRecord, Ps <: AnyTypeSet] extends Fn2[Tagged[R], Ps] with Constant[Tagged[R]]

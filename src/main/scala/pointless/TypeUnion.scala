@@ -2,29 +2,20 @@ package ohnosequences.pointless
 
 import shapeless.{ <:!< }
 
-object typeUnion {
+/*
+  The two type-level constructors of a type union. 
+  A generic term looks like `either[A]#or[B]#or[C]`.
+*/
+trait AnyTypeUnion {
 
-  /*
-    The two type-level constructors of a type union. 
-    A generic term looks like `either[A]#or[B]#or[C]`.
-  */
-  final type either[X] = TypeUnion[not[X]]
+  type or[Y] <: AnyTypeUnion
+  type union // kind of return
+}
 
-  trait AnyTypeUnion {
+object AnyTypeUnion {
 
-    type or[Y] <: AnyTypeUnion
-    type union // kind of return
-  }
-
-  /* Builder */
-  trait TypeUnion[T] extends AnyTypeUnion {
-
-    type or[S] = TypeUnion[T with not[S]]  
-    type union = not[T]
-  }
-
-  private type not[T] = T => Nothing
-  private type just[T] = not[not[T]]
+  private[pointless] type not[T] = T => Nothing
+  private[pointless] type just[T] = not[not[T]]
 
   /*
     Type-level operations
@@ -39,4 +30,15 @@ object typeUnion {
     type    is[X] = X    isOneOf U
     type isNot[X] = X isNotOneOf U
   }
+}
+
+import AnyTypeUnion._
+
+sealed trait either[X] extends TypeUnion[not[X]]
+
+/* Builder */
+trait TypeUnion[T] extends AnyTypeUnion {
+
+  type or[S] = TypeUnion[T with not[S]]  
+  type union = not[T]
 }

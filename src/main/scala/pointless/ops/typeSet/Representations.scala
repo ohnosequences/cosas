@@ -18,7 +18,7 @@
 
 package ohnosequences.pointless.ops.typeSet
 
-import ohnosequences.pointless._, AnyFn._, taggedType._, typeSet._
+import ohnosequences.pointless._, AnyFn._, AnyTaggedType._, AnyTypeSet._
 
 @annotation.implicitNotFound(msg = "Can't construct a set of representations for ${S}")
 trait Represented[S <: AnyTypeSet] extends AnyFn with WithCodomain[AnyTypeSet]

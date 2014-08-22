@@ -1,6 +1,6 @@
 package ohnosequences.pointless.test
 
-import ohnosequences.pointless._, taggedType._, property._
+import ohnosequences.pointless._, AnyTaggedType._, AnyProperty._
 
 object exampleProperties {
   
@@ -21,7 +21,7 @@ class uhoh extends org.scalatest.FunSuite {
     val n = name is "Rigoberto Smith"
 
     val a = age is 13123
-    val a0 = age =>> (13123: Integer)
+    val a0: Tagged[age.type] = age =>> (13123: Integer)
 
     illTyped (
     """

@@ -1,20 +1,31 @@
 package ohnosequences.pointless
 
-import ohnosequences.pointless._, typeSet._, taggedType._, property._
+import AnyTypeSet._, AnyProperty._, AnyTaggedType._
 
-object record {
+trait AnyRecord extends AnyTaggedType {
 
-  trait AnyRecord extends AnyTaggedType {
+  type Properties <: AnyTypeSet
+  val  properties: Properties
+  // should be provided implicitly:
+  val  propertiesBound: Properties isBoundedBy AnyProperty
 
-    type Properties <: AnyTypeSet
-    val  properties: Properties
-    // should be provided implicitly:
-    val  propertiesBound: Properties isBoundedBy AnyProperty
+  type Raw <: AnyTypeSet
+  // should be provided implicitly:
+  val representedProperties: Properties isRepresentedBy Raw
+}
 
-    type Raw <: AnyTypeSet
-    // should be provided implicitly:
-    val representedProperties: Properties isRepresentedBy Raw
-  }
+class Record[Props <: AnyTypeSet, Vals <: AnyTypeSet](val properties: Props)(implicit 
+  val propertiesBound: Props isBoundedBy AnyProperty,
+  val representedProperties: Props isRepresentedBy Vals
+) extends AnyRecord {
+
+  val label = this.toString
+
+  type Properties = Props
+  type Raw = Vals
+}
+
+object AnyRecord {
 
   // extractors
   type withProperties[Ps <: AnyTypeSet] = AnyRecord { type Properties = Ps }
@@ -22,60 +33,40 @@ object record {
   // accessors
   type PropertiesOf[R <: AnyRecord] = R#Properties
 
-  class Record[Props <: AnyTypeSet, Vals <: AnyTypeSet](val properties: Props)(implicit 
-    val propertiesBound: Props isBoundedBy AnyProperty,
-    val representedProperties: Props isRepresentedBy Vals
-  ) extends AnyRecord {
+  implicit def recordOps[R <: AnyRecord](rec: R): RecordOps[R] = new RecordOps(rec)
+  implicit def recordRepOps[R <: AnyRecord](recEntry: Tagged[R]): RepOps[R] = new RepOps(recEntry)
+}
 
-    val label = this.toString
+import AnyRecord._
 
-    type Properties = Props
-    type Raw = Vals
-  }
+class RecordOps[R <: AnyRecord](val rec: R) extends TaggedTypeOps(rec) {
 
-  object AnyRecord {
+  /* Same as just tagging with `=>>`, but you can pass fields in any order */
+  def fields[Vs <: AnyTypeSet](values: Vs)
+    (implicit 
+      p: Vs As RawOf[R]
+    ): Tagged[R] = rec =>> p(values)
+}
 
-    type withProperties[Ps <: AnyTypeSet] = AnyRecord { type Properties = Ps }
-    type PropertiesOf[R <: AnyRecord] = R#Properties
-  }
-
-
-  /*
-    Ops 
-  */
+class RepOps[R <: AnyRecord](val recEntry: Tagged[R]) {
   import ops.record._
 
-  implicit def recordOps[R <: AnyRecord](rec: R): RecordOps[R] = new RecordOps(rec)
-  class RecordOps[R <: AnyRecord](val rec: R) extends TaggedTypeOps(rec) {
-
-    /* Same as just tagging with `=>>`, but you can pass fields in any order */
-    def fields[Vs <: AnyTypeSet](values: Vs)
-      (implicit 
-        p: Vs As RawOf[R]
-      ): Tagged[R] = rec =>> p(values)
-  }
-
-  implicit def recordRepOps[R <: AnyRecord](recEntry: Tagged[R]): RepOps[R] = new RepOps(recEntry)
-  class RepOps[R <: AnyRecord](val recEntry: Tagged[R]) {
-
-    def get[P <: AnyProperty](p: P)
-      (implicit get: R Get P): Tagged[P] = get(recEntry)
+  def get[P <: AnyProperty](p: P)
+    (implicit get: R Get P): Tagged[P] = get(recEntry)
 
 
-    def update[P <: AnyProperty](propRep: Tagged[P])
-      (implicit upd: R Update (Tagged[P] :~: ∅)): Tagged[R] = upd(recEntry, propRep :~: ∅)
+  def update[P <: AnyProperty](propRep: Tagged[P])
+    (implicit upd: R Update (Tagged[P] :~: ∅)): Tagged[R] = upd(recEntry, propRep :~: ∅)
 
-    def update[Ps <: AnyTypeSet](propReps: Ps)
-      (implicit upd: R Update Ps): Tagged[R] = upd(recEntry, propReps)
+  def update[Ps <: AnyTypeSet](propReps: Ps)
+    (implicit upd: R Update Ps): Tagged[R] = upd(recEntry, propReps)
 
 
-    def as[Other <: AnyRecord](other: Other)
-      (implicit project: Take[RawOf[R], RawOf[Other]]): Tagged[Other] = other =>> project(recEntry)
+  def as[Other <: AnyRecord](other: Other)
+    (implicit project: Take[RawOf[R], RawOf[Other]]): Tagged[Other] = other =>> project(recEntry)
 
-    def as[Other <: AnyRecord, Rest <: AnyTypeSet](other: Other, rest: Rest)
-      (implicit transform: Transform[R, Other, Rest]): Tagged[Other] = transform(recEntry, other, rest)
-
-  }
+  def as[Other <: AnyRecord, Rest <: AnyTypeSet](other: Other, rest: Rest)
+    (implicit transform: Transform[R, Other, Rest]): Tagged[Other] = transform(recEntry, other, rest)
 
 }
 
