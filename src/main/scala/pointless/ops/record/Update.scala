@@ -10,7 +10,8 @@ package ohnosequences.pointless.ops.record
 import ohnosequences.pointless._, AnyFn._, AnyTaggedType._, AnyProperty._, AnyTypeSet._, AnyRecord._
 
 @annotation.implicitNotFound(msg = "Can't update record ${R} with property values ${Ps}")
-trait Update[R <: AnyRecord, Ps <: AnyTypeSet] extends Fn2[Tagged[R], Ps] with Constant[Tagged[R]]
+trait Update[R <: AnyRecord, Ps <: AnyTypeSet]
+  extends Fn2[Tagged[R], Ps] { type Out = Tagged[R] }
 
 object Update {
 

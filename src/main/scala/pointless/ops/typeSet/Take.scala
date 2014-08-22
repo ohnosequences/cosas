@@ -5,7 +5,8 @@ package ohnosequences.pointless.ops.typeSet
 import ohnosequences.pointless._, AnyFn._, AnyTypeSet._
 
 @annotation.implicitNotFound(msg = "Cannot take subset ${Q} from ${S}")
-trait Take[S <: AnyTypeSet, Q <: AnyTypeSet] extends Fn1[S] with Constant[Q]
+trait Take[S <: AnyTypeSet, Q <: AnyTypeSet]
+  extends Fn1[S] { type Out = Q }
 
 object Take {
 

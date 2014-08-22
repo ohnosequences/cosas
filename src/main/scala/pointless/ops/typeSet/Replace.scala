@@ -13,7 +13,8 @@ package ohnosequences.pointless.ops.typeSet
 import ohnosequences.pointless._, AnyFn._, AnyTypeSet._
 
 @annotation.implicitNotFound(msg = "Can't replace elements in ${S} with ${Q}")
-trait Replace[S <: AnyTypeSet, Q <: AnyTypeSet] extends Fn2[S, Q] with Constant[S]
+trait Replace[S <: AnyTypeSet, Q <: AnyTypeSet]
+  extends Fn2[S, Q] { type Out = S }
 
 object Replace extends Replace_2 {
 

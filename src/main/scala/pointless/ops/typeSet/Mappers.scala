@@ -102,7 +102,8 @@ Map-folder for sets
 Just a copy of MapFolder for `HList`s from shapeless. 
 It can be done as a combination of MapToList and list fold, but we don't want traverse it twice.
 */
-trait MapFoldSet[F <: Poly1, S <: AnyTypeSet, R] extends Fn3[S, R, (R, R) => R] with Constant[R]
+trait MapFoldSet[F <: Poly1, S <: AnyTypeSet, R] 
+  extends Fn3[S, R, (R, R) => R] { type Out = R }
   
 object MapFoldSet {
   

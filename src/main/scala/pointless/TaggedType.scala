@@ -20,6 +20,7 @@ trait TaggedType[R] extends AnyTaggedType {
 
 object AnyTaggedType {
 
+  /* Accessors */
   type RawOf[T <: AnyTaggedType] = T#Raw
 
   /* This lets you recognize a tagged type while being able to operate on it as `Raw` */

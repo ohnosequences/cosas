@@ -10,7 +10,8 @@ package ohnosequences.pointless.ops.record
 import ohnosequences.pointless._, AnyFn._, AnyTaggedType._, AnyProperty._, AnyTypeSet._, AnyRecord._
 
 @annotation.implicitNotFound(msg = "Can't get property ${P} of the record ${R}")
-trait Get[R <: AnyRecord, P <: AnyProperty] extends Fn1[Tagged[R]] with Constant[Tagged[P]] 
+trait Get[R <: AnyRecord, P <: AnyProperty] 
+  extends Fn1[Tagged[R]] { type Out = Tagged[P] } 
 
 object Get {
 

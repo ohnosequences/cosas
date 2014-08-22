@@ -27,10 +27,10 @@ class Record[Props <: AnyTypeSet, Vals <: AnyTypeSet](val properties: Props)(imp
 
 object AnyRecord {
 
-  // extractors
+  /* Refiners */
   type withProperties[Ps <: AnyTypeSet] = AnyRecord { type Properties = Ps }
 
-  // accessors
+  /* Accessors */
   type PropertiesOf[R <: AnyRecord] = R#Properties
 
   implicit def recordOps[R <: AnyRecord](rec: R): RecordOps[R] = new RecordOps(rec)

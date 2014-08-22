@@ -9,7 +9,8 @@ package ohnosequences.pointless.ops.typeSet
 import ohnosequences.pointless._, AnyFn._, AnyTypeSet._
 
 @annotation.implicitNotFound(msg = "Can't reorder ${S} to ${Q}")
-trait As[S <: AnyTypeSet, Q <: AnyTypeSet] extends Fn1[S] with Constant[Q] 
+trait As[S <: AnyTypeSet, Q <: AnyTypeSet]
+  extends Fn1[S] { type Out = Q } 
 
 object As {
   def apply[S <: AnyTypeSet, Q <: AnyTypeSet]
