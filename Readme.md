@@ -15,16 +15,15 @@ To add a dependency on this library to your sbt project, add these lines to your
 ```scala
 resolvers += "Era7 maven releases" at "http://releases.era7.com.s3.amazonaws.com"
 
-libraryDependencies += "ohnosequences" %% "type-sets" % "0.4.0"
+libraryDependencies += "ohnosequences" %% "pointless" % "0.6.0" // not released yet
 ```
 
-The artifact is published for scala `2.10.4` and `2.11.1`.
+The artifact is published only for scala `2.11.2`.
 
 
 ### Documentation
 
 Documentation is generated from the code by [literator](https://github.com/laughedelic/literator) 
-tool. You can start from [TypeSet](docs/src/main/scala/TypeSet.md) definitions and use index for 
-navigation, see also [tests](docs/src/test/scala/TypeSetTests.md) for examples.
+tool. See the `docs/` folder and tests for examples.
 
-Also, there are [API docs](http://ohnosequences.com/type-sets/docs/api/0.4.0)
+Also, there are [API docs](http://ohnosequences.com/pointless/docs/api/0.5.0)
