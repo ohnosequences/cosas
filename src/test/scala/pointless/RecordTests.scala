@@ -1,7 +1,7 @@
 package ohnosequences.pointless.tests
 
 import shapeless.test.{typed, illTyped}
-import ohnosequences.pointless._, AnyTaggedType._, AnyProperty._, AnyTypeSet._, AnyRecord._
+import ohnosequences.pointless._, AnyTaggedType._, AnyProperty._, AnyTypeSet._, AnyRecord._, AnyTypeUnion._
 
 object RecordTestsContext {
 
@@ -172,6 +172,33 @@ class RecordTests extends org.scalatest.FunSuite {
   test("can see a record entry as another") {
 
     val hey: Tagged[simpleUser.type] = normalUserEntry as simpleUser
+  }
+
+  test("records (suprisingly) have properties") {
+
+    // implicit val sp = AnyRecord.recordHasProperties(simpleUser)
+    // implicitly[simpleUser.type HasProperties (id.type :~: name.type :~: ∅)]
+    // implicitly[simpleUser.type HasProperty id.type](simpleUser.recordHasProperties)
+
+    implicitly[name.type isIn PropertiesOf[simpleUser.type]]
+    implicitly[name.type isOneOf simpleUser.properties.Types]
+
+  /* Some additional evidences that are known for any record: it *has* it's properties */
+  // implicit def recordHasProperty[R <: AnyRecord, P <: AnyProperty](implicit 
+  //     checkIn: P ∈ PropertiesOf[R]
+  //   ):   R HasProperty P =
+  //   new (R HasProperty P)
+
+  // implicit def recordHasProperties[R <: AnyRecord, Ps <: AnyTypeSet](implicit 
+  //     checkBound: Ps isBoundedBy AnyProperty,
+  //     isSubset: Ps ⊂ PropertiesOf[R]
+  //   ):   R HasProperties Ps =
+  //   new (R HasProperties Ps)
+
+    import simpleUser._
+    implicitly[simpleUser.type HasProperty name.type](AnyProperty.fromSetToAProperty(ownProps(simpleUser.propertiesBound)))
+    // implicitly[simpleUser.type HasProperties (name.type :~: ∅)]
+    // implicitly[name.type isOneOf (either[id.type]#or[name.type])]
   }
 
 }

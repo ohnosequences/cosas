@@ -59,7 +59,7 @@ object AnyTypeSet {
 
   /* An element is in the set */
   @annotation.implicitNotFound(msg = "Can't prove that ${E} is an element of ${S}")
-  type    isIn[E, S <: AnyTypeSet] = E    isOneOf S#Types
+  final type isIn[E, S <: AnyTypeSet] = E isOneOf S#Types
   final type ∈[E, S <: AnyTypeSet] = E isIn S
 
   @annotation.implicitNotFound(msg = "Can't prove that ${E} is not an element of ${S}")

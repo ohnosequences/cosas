@@ -20,10 +20,10 @@ object AnyTypeUnion {
   /*
     Type-level operations
   */
-  @annotation.implicitNotFound(msg = "isOneOf check is not implemented")
+  @annotation.implicitNotFound(msg = "Can't prove that ${X} is one of ${U}")
   type    isOneOf[X, U <: AnyTypeUnion] = just[X] <:<  U#union
 
-  @annotation.implicitNotFound(msg = "isNotOneOf check is not implemented")
+  @annotation.implicitNotFound(msg = "Can't prove that ${X} is not one of ${U}")
   type isNotOneOf[X, U <: AnyTypeUnion] = just[X] <:!< U#union
 
   final type oneOf[U <: AnyTypeUnion] = {
