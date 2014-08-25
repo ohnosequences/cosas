@@ -174,30 +174,28 @@ class RecordTests extends org.scalatest.FunSuite {
     val hey: Tagged[simpleUser.type] = normalUserEntry as simpleUser
   }
 
-  test("records (suprisingly) have properties") {
+  test("having properties") {
 
-    // implicit val sp = AnyRecord.recordHasProperties(simpleUser)
-    // implicitly[simpleUser.type HasProperties (id.type :~: name.type :~: ∅)]
-    // implicitly[simpleUser.type HasProperty id.type](simpleUser.recordHasProperties)
-
-    val nameIsIn = implicitly[name.type isIn PropertiesOf[simpleUser.type]]
-
-    implicitly[simpleUser.type HasProperties (id.type :~: name.type :~: ∅)](simpleUser.itHasProps)
-
-    implicitly[simpleUser.type HasProperty name.type](HasProperty.fromSetToAProperty(simpleUser.itHasProps, nameIsIn))
-
-    // import simpleUser._
-    // implicitly[simpleUser.type HasProperty name.type](HasProperty.fromSetToAProperty)
-
+    // just somtehing having properties
     object foo
     implicit val foo_props = foo has name :~: color :~: ∅
 
     implicitly[foo.type HasProperty name.type]
     implicitly[foo.type HasProperty color.type]
 
-    implicitly[foo.type HasProperties ∅](HasProperties.fromSetToASubset)
+    implicitly[foo.type HasProperties ∅]
     implicitly[foo.type HasProperties (name.type :~: ∅)]
     implicitly[foo.type HasProperties (color.type :~: name.type :~: ∅)]
+
+    // a record which has properties
+    implicitly[simpleUser.type HasProperties (id.type :~: name.type :~: ∅)]
+    implicitly[simpleUser.type HasProperties (name.type :~: id.type :~: ∅)]
+    implicitly[simpleUser.type HasProperties (name.type :~: ∅)]
+    implicitly[simpleUser.type HasProperties (id.type :~: ∅)]
+
+    implicitly[simpleUser.type HasProperty name.type]
+    implicitly[simpleUser.type HasProperty id.type]
+
   }
 
 }

@@ -28,50 +28,25 @@ object AnyProperty {
 
   implicit def hasPropertiesOps[T](t: T): HasPropertiesOps[T] = new HasPropertiesOps[T](t)
 
+  // NOTE: this is not in the companion object, because if it's there, it loops the implicit search
+  /* ∀ T, Ps, Qs ⊂ Ps  (T HasProperties Ps => T HasProperties Qs) */
+  implicit def fromSetToASubset[T, Ps <: AnyTypeSet.Of[AnyProperty], Qs <: SubsetOf[Ps]]
+    (implicit ps: T HasProperties Ps):
+         T HasProperties Qs =
+    new (T HasProperties Qs)
+
+  @annotation.implicitNotFound(msg = "Can't prove that ${Smth} has property ${P}")
+  final type HasProperty[Smth, P <: AnyProperty] = HasProperties[Smth, P :~: ∅]
 }
 
 // TODO: separate as ops
-
-/* Evidence that an arbitrary type `Smth` has property `P` */
-@annotation.implicitNotFound(msg = "Can't prove that ${Smth} has property ${P}")
-sealed class HasProperty[Smth, P <: AnyProperty]
-/* or a set of properties `Ps` */
+/* Evidence that an arbitrary type `Smth` has a set of properties `Ps` */
 @annotation.implicitNotFound(msg = "Can't prove that ${Smth} has properties ${Ps}")
-sealed class HasProperties[Smth, Ps <: AnyTypeSet.Of[AnyProperty]] //(implicit setBound: Ps isBoundedBy AnyProperty) 
+sealed class HasProperties[Smth, Ps <: AnyTypeSet.Of[AnyProperty]]
 
+class HasPropertiesOps[Smth](smth: Smth) {
 
-object HasProperty {
-  /* (T HasProperties Ps) & (P ∈ Ps) => (T HasProperty P) */
-  implicit def fromSetToAProperty[T, Ps <: AnyTypeSet.Of[AnyProperty], P <: AnyProperty](implicit
-      ps: T HasProperties Ps, ep: P ∈ Ps
-    ):   T HasProperty P =
-    new (T HasProperty P)
-}
-
-object HasProperties extends HasProperties_2 {
-  /* (T HasProperties Ps) & (Qs ⊂ Ps) => (T HasProperties Qs) */
-
-  implicit def fromSetToASubset[T, Ps <: AnyTypeSet.Of[AnyProperty], Qs <: AnyTypeSet.SubsetOf[Ps]]
-    (implicit ne: Ps ~:!~ Qs, ps: T HasProperties Ps):
-         T HasProperties Qs =
-    new (T HasProperties Qs)
-}
-
-trait HasProperties_2 {
-  implicit def fromSetToReordered[T, Ps <: AnyTypeSet.Of[AnyProperty], Qs <: AnyTypeSet.Of[AnyProperty]]
-    (implicit ps: T HasProperties Ps, eq: Ps ~:~ Qs):
-         T HasProperties Qs =
-    new (T HasProperties Qs)
-}
-
-class HasPropertiesOps[T](t: T) {
-
-  /* Handy way of creating an implicit evidence saying that this vertex type has that property */
-  // def has[P <: AnyProperty](p: P): T HasProperty P = new (T HasProperty P)
-  def has[Ps <: AnyTypeSet.Of[AnyProperty]](ps: Ps): T HasProperties Ps = new (T HasProperties Ps)
-
-  // def get[P <: AnyProperty](p: P)
-  //   (implicit get: T Get P): Tagged[P] = get(recEntry)
+  def has[Ps <: AnyTypeSet.Of[AnyProperty]](ps: Ps): Smth HasProperties Ps = new (Smth HasProperties Ps)
 
 }
 
