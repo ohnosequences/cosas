@@ -25,7 +25,7 @@ private[pointless] object TypeSetImpl {
   object EmptySet extends AnyEmptySet
 
 
-  case class ConsSet[E, S <: AnyTypeSet](head: E, tail: S)(implicit check: E ∉ S) extends AnyTypeSet {
+  case class ConsSet[E, S <: AnyTypeSet](val head: E, val tail: S)(implicit val check: E ∉ S) extends AnyTypeSet {
 
     type Types = tail.Types#or[E]
     type Bound = Types#union

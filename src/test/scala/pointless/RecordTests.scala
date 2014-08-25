@@ -7,6 +7,7 @@ object RecordTestsContext {
 
   case object id extends Property[Integer]
   case object name extends Property[String]
+  case object notProperty
 
   case object simpleUser extends Record(id :~: name :~: ∅)
 
@@ -29,6 +30,8 @@ object RecordTestsContext {
   {
 
     def getId(entry: Tagged[R]): Tagged[Id] = entry get id
+
+    val p = r.properties
   }
 
   val vProps = email :~: color :~: ∅
@@ -66,6 +69,14 @@ object RecordTestsContext {
 class RecordTests extends org.scalatest.FunSuite {
 
   import RecordTestsContext._
+
+  test("record property bound works") {
+
+    illTyped("""
+
+      val uhoh = Record(id :~: name :~: notProperty :~: ∅)
+    """)
+  }
 
   test("recognizing record value types") {
 

@@ -12,6 +12,8 @@ scalaVersion := "2.11.2"
 
 crossScalaVersions := Seq("2.10.4")
 
+wartremoverWarnings ++= Warts.all
+
 libraryDependencies += {
   CrossVersion.partialVersion(scalaVersion.value) match {
     case Some((2, scalaMajor)) if scalaMajor >= 11 =>

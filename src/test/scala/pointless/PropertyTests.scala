@@ -7,6 +7,7 @@ object exampleProperties {
   case object key extends Property[String]
   case object name extends Property[String]
   case object age extends Property[Integer]
+  case object valueless extends Property
 }
 
 class uhoh extends org.scalatest.FunSuite {
@@ -34,5 +35,10 @@ class uhoh extends org.scalatest.FunSuite {
       val uhoh = age is true
     """
     )
+  }
+
+  test("valueless properties lead to nothing") {
+
+    implicitly[AnyTaggedType.RawOf[valueless.type] =:= Nothing]: Unit
   }
 }
