@@ -6,11 +6,11 @@ import shapeless.{ HList, Poly1, <:!<, =:!= }
 sealed trait AnyTypeSet {
 
   type Types <: AnyTypeUnion
+  type Bound // should be Types#union, but we can't set it here
 
   def toStr: String
   override def toString = "{" + toStr + "}"
 }
-
 
 private[pointless] object TypeSetImpl {
   import AnyTypeSet._
@@ -18,6 +18,7 @@ private[pointless] object TypeSetImpl {
   sealed trait AnyEmptySet extends AnyTypeSet {
 
     type Types = either[Nothing]
+    type Bound = Types#union
     def toStr = ""
   }
 
@@ -27,6 +28,7 @@ private[pointless] object TypeSetImpl {
   case class ConsSet[E, S <: AnyTypeSet](head: E, tail: S)(implicit check: E ∉ S) extends AnyTypeSet {
 
     type Types = tail.Types#or[E]
+    type Bound = Types#union
     
     def toStr = {
       val h = head match {
@@ -53,6 +55,15 @@ object AnyTypeSet {
 
   final type :~:[E, S <: AnyTypeSet] = TypeSetImpl.ConsSet[E, S]
 
+  // it's like KList, but a set
+  type Of[T] = AnyTypeSet { type Bound <: just[T] }
+
+  type SubsetOf[S <: AnyTypeSet] = AnyTypeSet { type Bound <: S#Bound }
+
+  type SupersetOf[S <: AnyTypeSet] = AnyTypeSet { type Bound >: S#Bound }
+
+  // type SameAs[S <: AnyTypeSet] = SubsetOf[S] with SupersetOf[S]
+
   /*
     ### Predicates and aliases
   */
@@ -72,12 +83,14 @@ object AnyTypeSet {
   }
 
   /* One set is a subset of another */
-  @annotation.implicitNotFound(msg = "Can't prove that ${Q} is a subset of ${Q}")
+  @annotation.implicitNotFound(msg = "Can't prove that ${S} is a subset of ${Q}")
   type isSubsetOf[S <: AnyTypeSet, Q <: AnyTypeSet] = S#Types#union <:<  Q#Types#union 
+  @annotation.implicitNotFound(msg = "Can't prove that ${S} is a subset of ${Q}")
   final type ⊂[S <: AnyTypeSet, Q <: AnyTypeSet] = S isSubsetOf Q
 
-  @annotation.implicitNotFound(msg = "Can't prove that ${Q} is not a subset of ${Q}")
+  @annotation.implicitNotFound(msg = "Can't prove that ${S} is not a subset of ${Q}")
   type isNotSubsetOf[S <: AnyTypeSet, Q <: AnyTypeSet] = S#Types#union <:!< Q#Types#union
+  @annotation.implicitNotFound(msg = "Can't prove that ${S} is not a subset of ${Q}")
   final type ⊄[S <: AnyTypeSet, Q <: AnyTypeSet] = S isNotSubsetOf Q
 
   final type subsetOf[Q <: AnyTypeSet] = {

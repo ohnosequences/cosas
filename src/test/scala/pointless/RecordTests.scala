@@ -180,25 +180,24 @@ class RecordTests extends org.scalatest.FunSuite {
     // implicitly[simpleUser.type HasProperties (id.type :~: name.type :~: ∅)]
     // implicitly[simpleUser.type HasProperty id.type](simpleUser.recordHasProperties)
 
-    implicitly[name.type isIn PropertiesOf[simpleUser.type]]
-    implicitly[name.type isOneOf simpleUser.properties.Types]
+    val nameIsIn = implicitly[name.type isIn PropertiesOf[simpleUser.type]]
 
-  /* Some additional evidences that are known for any record: it *has* it's properties */
-  // implicit def recordHasProperty[R <: AnyRecord, P <: AnyProperty](implicit 
-  //     checkIn: P ∈ PropertiesOf[R]
-  //   ):   R HasProperty P =
-  //   new (R HasProperty P)
+    implicitly[simpleUser.type HasProperties (id.type :~: name.type :~: ∅)](simpleUser.itHasProps)
 
-  // implicit def recordHasProperties[R <: AnyRecord, Ps <: AnyTypeSet](implicit 
-  //     checkBound: Ps isBoundedBy AnyProperty,
-  //     isSubset: Ps ⊂ PropertiesOf[R]
-  //   ):   R HasProperties Ps =
-  //   new (R HasProperties Ps)
+    implicitly[simpleUser.type HasProperty name.type](HasProperty.fromSetToAProperty(simpleUser.itHasProps, nameIsIn))
 
-    import simpleUser._
-    implicitly[simpleUser.type HasProperty name.type](AnyProperty.fromSetToAProperty(ownProps(simpleUser.propertiesBound)))
-    // implicitly[simpleUser.type HasProperties (name.type :~: ∅)]
-    // implicitly[name.type isOneOf (either[id.type]#or[name.type])]
+    // import simpleUser._
+    // implicitly[simpleUser.type HasProperty name.type](HasProperty.fromSetToAProperty)
+
+    object foo
+    implicit val foo_props = foo has name :~: color :~: ∅
+
+    implicitly[foo.type HasProperty name.type]
+    implicitly[foo.type HasProperty color.type]
+
+    implicitly[foo.type HasProperties ∅](HasProperties.fromSetToASubset)
+    implicitly[foo.type HasProperties (name.type :~: ∅)]
+    implicitly[foo.type HasProperties (color.type :~: name.type :~: ∅)]
   }
 
 }

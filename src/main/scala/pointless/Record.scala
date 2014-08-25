@@ -4,18 +4,18 @@ import AnyTypeSet._, AnyProperty._, AnyTaggedType._, AnyTypeUnion._
 
 trait AnyRecord extends AnyTaggedType {
 
-  type Properties <: AnyTypeSet
+  type Properties <: AnyTypeSet.Of[AnyProperty]
   val  properties: Properties
   // should be provided implicitly:
-  implicit val  propertiesBound: Properties isBoundedBy AnyProperty
+  // implicit val  propertiesBound: Properties isBoundedBy AnyProperty
 
   type Raw <: AnyTypeSet
   // should be provided implicitly:
   implicit val representedProperties: Properties isRepresentedBy Raw
 }
 
-class Record[Props <: AnyTypeSet, Vals <: AnyTypeSet](val properties: Props)(implicit 
-  val propertiesBound: Props isBoundedBy AnyProperty,
+class Record[Props <: AnyTypeSet.Of[AnyProperty], Vals <: AnyTypeSet](val properties: Props)(implicit 
+  // val propertiesBound: Props isBoundedBy AnyProperty,
   val representedProperties: Props isRepresentedBy Vals
 ) extends AnyRecord {
 
@@ -28,7 +28,7 @@ class Record[Props <: AnyTypeSet, Vals <: AnyTypeSet](val properties: Props)(imp
 object AnyRecord {
 
   /* Refiners */
-  type withProperties[Ps <: AnyTypeSet] = AnyRecord { type Properties = Ps }
+  type withProperties[Ps <: AnyTypeSet.Of[AnyProperty]] = AnyRecord { type Properties = Ps }
 
   /* Accessors */
   type PropertiesOf[R <: AnyRecord] = R#Properties
@@ -42,21 +42,9 @@ object AnyRecord {
     new RecordRepOps[R](recEntry)
 
   /* Any record *has* it's own properties */
-  implicit def ownProps[R <: AnyRecord](implicit
-      sdk: PropertiesOf[R] isBoundedBy AnyProperty
-    ):   R HasProperties PropertiesOf[R] =
-    new (R HasProperties PropertiesOf[R])
-
-  // implicit def recordHasProperty[R <: AnyRecord, P <: AnyProperty](implicit 
-  //     checkIn: P ∈ R#Properties
-  //   ):   R HasProperty P =
-  //   new (R HasProperty P)
-
-  // implicit def recordHasProperties[R <: AnyRecord, Ps <: AnyTypeSet](implicit 
-  //     checkBound: Ps isBoundedBy AnyProperty,
-  //     isSubset: Ps ⊂ PropertiesOf[R]
-  //   ):   R HasProperties Ps =
-  //   new (R HasProperties Ps)
+  // implicit def ownProps[R <: AnyRecord]:
+  //        R HasProperties PropertiesOf[R] =
+  //   new (R HasProperties PropertiesOf[R])
 
 }
 
@@ -64,10 +52,7 @@ import AnyRecord._
 
 class RecordOps[R <: AnyRecord](val rec: R) extends TaggedTypeOps(rec) {
 
-  // implicit def recordHasProperty[P <: AnyProperty](implicit 
-  //     checkIn: P ∈ PropertiesOf[R]
-  //   ):   R HasProperty P =
-  //   new (R HasProperty P)
+  implicit val itHasProps: R HasProperties PropertiesOf[R] = rec has rec.properties
 
   /* Same as just tagging with `=>>`, but you can pass fields in any order */
   def fields[Vs <: AnyTypeSet](values: Vs)(implicit

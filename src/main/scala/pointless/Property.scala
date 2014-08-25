@@ -22,42 +22,53 @@ class PropertyOps[P <: AnyProperty](val p: P) extends TaggedTypeOps(p) { self =>
   def is(value: RawOf[P]): Tagged[P] = self =>> value
 }
 
-
-/* Evidence that an arbitrary type `Smth` has property `P` */
-@annotation.implicitNotFound(msg = "Can't prove that ${Smth} has property ${P}")
-sealed class HasProperty[Smth, +P <: AnyProperty]
-/* or a set of properties `Ps` */
-@annotation.implicitNotFound(msg = "Can't prove that ${Smth} has properties ${Ps}")
-sealed class HasProperties[Smth, +Ps <: AnyTypeSet](implicit setBound: Ps isBoundedBy AnyProperty) 
-
-
 object AnyProperty {
 
   implicit def propertyOps[P <: AnyProperty](p: P): PropertyOps[P] = new PropertyOps[P](p)
 
   implicit def hasPropertiesOps[T](t: T): HasPropertiesOps[T] = new HasPropertiesOps[T](t)
 
+}
+
+// TODO: separate as ops
+
+/* Evidence that an arbitrary type `Smth` has property `P` */
+@annotation.implicitNotFound(msg = "Can't prove that ${Smth} has property ${P}")
+sealed class HasProperty[Smth, P <: AnyProperty]
+/* or a set of properties `Ps` */
+@annotation.implicitNotFound(msg = "Can't prove that ${Smth} has properties ${Ps}")
+sealed class HasProperties[Smth, Ps <: AnyTypeSet.Of[AnyProperty]] //(implicit setBound: Ps isBoundedBy AnyProperty) 
+
+
+object HasProperty {
   /* (T HasProperties Ps) & (P ∈ Ps) => (T HasProperty P) */
-  implicit def fromSetToAProperty[T, Ps <: AnyTypeSet, P <: AnyProperty](
-      ps: T HasProperties Ps)(implicit  ep: P ∈ Ps
+  implicit def fromSetToAProperty[T, Ps <: AnyTypeSet.Of[AnyProperty], P <: AnyProperty](implicit
+      ps: T HasProperties Ps, ep: P ∈ Ps
     ):   T HasProperty P =
     new (T HasProperty P)
+}
 
+object HasProperties extends HasProperties_2 {
   /* (T HasProperties Ps) & (Qs ⊂ Ps) => (T HasProperties Qs) */
-  implicit def fromSetToASubset[T, Ps <: AnyTypeSet, Qs <: AnyTypeSet](implicit 
-      checkBound: Qs isBoundedBy AnyProperty,
-      ps: T HasProperties Ps, ep: Qs ⊂ Ps
-    ):   T HasProperties Qs = 
-    new (T HasProperties Qs)
 
+  implicit def fromSetToASubset[T, Ps <: AnyTypeSet.Of[AnyProperty], Qs <: AnyTypeSet.SubsetOf[Ps]]
+    (implicit ne: Ps ~:!~ Qs, ps: T HasProperties Ps):
+         T HasProperties Qs =
+    new (T HasProperties Qs)
+}
+
+trait HasProperties_2 {
+  implicit def fromSetToReordered[T, Ps <: AnyTypeSet.Of[AnyProperty], Qs <: AnyTypeSet.Of[AnyProperty]]
+    (implicit ps: T HasProperties Ps, eq: Ps ~:~ Qs):
+         T HasProperties Qs =
+    new (T HasProperties Qs)
 }
 
 class HasPropertiesOps[T](t: T) {
 
   /* Handy way of creating an implicit evidence saying that this vertex type has that property */
-  def has[P <: AnyProperty](p: P): T HasProperty P = new (T HasProperty P)
-  def has[Ps <: AnyTypeSet](ps: Ps)
-    (implicit setBound: Ps isBoundedBy AnyProperty): T HasProperties Ps = new (T HasProperties Ps)
+  // def has[P <: AnyProperty](p: P): T HasProperty P = new (T HasProperty P)
+  def has[Ps <: AnyTypeSet.Of[AnyProperty]](ps: Ps): T HasProperties Ps = new (T HasProperties Ps)
 
   // def get[P <: AnyProperty](p: P)
   //   (implicit get: T Get P): Tagged[P] = get(recEntry)

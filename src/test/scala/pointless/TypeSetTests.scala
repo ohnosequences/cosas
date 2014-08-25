@@ -33,6 +33,24 @@ class TypeSetTests extends org.scalatest.FunSuite {
     val vals = 1 :~: 'a' :~: true :~: ∅
     implicitly[boundedBy[AnyVal]#is[vals.type]]
 
+
+    // case class foo[S <: AnyTypeSet.TypeSetOf[Int]]()
+    implicitly[foos.type <:< AnyTypeSet.Of[foo]]
+    // implicitly[(Int :~: ∅) <:< AnyTypeSet.Of[AnyVal]]
+    trait goos {
+      type F <: AnyTypeSet.Of[foo]
+      val  f: F
+    }
+    object g extends goos {
+      type F = foos.type
+      val f = foos: F
+    }
+    case class boos[T <: AnyTypeSet.Of[foo]](t: T) extends goos {
+      type F = T
+      val f = t
+    }
+    val b = boos(foos)
+
   }
 
 
@@ -51,6 +69,11 @@ class TypeSetTests extends org.scalatest.FunSuite {
     implicitly[(Int :~: Char :~: ∅) ⊂ (Char :~: Int :~: ∅)]
     implicitly[(Int :~: Char :~: ∅) ~:~ (Char :~: Int :~: ∅)]
 
+    def isSubsetOfb[S <: AnyTypeSet.SubsetOf[b.type]] = true
+    assert(isSubsetOfb[Boolean :~: Int :~: ∅] == true)
+    illTyped("""
+      val x = isSubsetOfb[Boolean :~: Int :~: String :~: ∅]
+    """)
   }
 
   test("pop") {
