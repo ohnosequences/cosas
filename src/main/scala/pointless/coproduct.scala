@@ -19,11 +19,16 @@ trait CNil extends AnyCoproduct {
 
   type Length = _0
   type Head = Nothing
+
+  type At = _0
+  type Value = Nothing
+
+  val ev = implicitly[ (At,Value) isOneOf Types ]
 }
 
 object CNil extends CNil
 
-class :+:[H, T <: AnyCoproduct] extends AnyCoproduct {
+trait :+:[H, T <: AnyCoproduct] extends AnyCoproduct {
 
   type Me = this.type
 
@@ -37,23 +42,15 @@ class :+:[H, T <: AnyCoproduct] extends AnyCoproduct {
   def at[N <: Nat, V](pos: N, value: V)(implicit ev: (N,V) isOneOf Types): ValueOf[Me] = At[N,V,Me](pos, value)
 }
 
-object AnyCoproduct {
+sealed trait ValueOf[C <: AnyCoproduct] extends AnyCoproduct {
 
-  implicit def coproductOps[C <: AnyCoproduct] = CoproductOps[C]()
-}
-
-case class CoproductOps[C <: AnyCoproduct]() {
-
-  def at[N <: Nat, V](pos: N)(value: V)(implicit ev: (N,V) isOneOf C#Types): At[N,V,C] = At(pos, value)
-}
-
-sealed trait ValueOf[C <: AnyCoproduct] {
+  type Types = C#Types
+  type Bound = C#Bound
+  type Length = C#Length
 
   type At <: Nat
   type Value
   val value: Value
-
-  val ev: (At,Value) isOneOf C#Types
 }
 
 case class At[N <: Nat, V, C <: AnyCoproduct](val pos: N, val value: V)(implicit val ev: (N,V) isOneOf C#Types)
