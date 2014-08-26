@@ -17,7 +17,7 @@ class Property[V](implicit val classTag: ClassTag[V]) extends AnyProperty {
   type Raw = V
 }
 
-class PropertyOps[P <: AnyProperty](val p: P) extends TaggedTypeOps(p) { self =>
+class PropertyOps[P <: AnyProperty](val p: P) extends TaggedTypeOps[P](p) { self =>
 
   def is(value: RawOf[P]): Tagged[P] = self =>> value
 }
@@ -44,7 +44,7 @@ object AnyProperty {
 @annotation.implicitNotFound(msg = "Can't prove that ${Smth} has properties ${Ps}")
 sealed class HasProperties[Smth, Ps <: AnyTypeSet.Of[AnyProperty]]
 
-class HasPropertiesOps[Smth](smth: Smth) {
+class HasPropertiesOps[Smth](val smth: Smth) {
 
   def has[Ps <: AnyTypeSet.Of[AnyProperty]](ps: Ps): Smth HasProperties Ps = new (Smth HasProperties Ps)
 

@@ -1,13 +1,13 @@
 package ohnosequences.pointless
 
-import AnyTypeSet._, AnyProperty._, AnyTaggedType._, AnyTypeUnion._
+import AnyTypeSet._, AnyProperty._, AnyTaggedType.Tagged, AnyTypeUnion._
 
 trait AnyRecord extends AnyTaggedType { me =>
 
   type Properties <: AnyTypeSet.Of[AnyProperty]
   val  properties: Properties
 
-  /* Any record *has* it's own properties */
+  /* Any record *has* its own properties */
   implicit val myOwnProperties: Me HasProperties Properties = (me: Me) has properties
 
   type Raw <: AnyTypeSet
@@ -30,9 +30,11 @@ object AnyRecord {
 
   /* Refiners */
   type withProperties[Ps <: AnyTypeSet.Of[AnyProperty]] = AnyRecord { type Properties = Ps }
+  type withRaw[R <: AnyTypeSet] = AnyRecord { type Raw = R }
 
   /* Accessors */
   type PropertiesOf[R <: AnyRecord] = R#Properties
+  type RawOf[R <: AnyRecord] = R#Raw
 
   implicit def recordOps[R <: AnyRecord](rec: R): 
         RecordOps[R] = 
@@ -46,11 +48,11 @@ object AnyRecord {
 
 import AnyRecord._
 
-class RecordOps[R <: AnyRecord](val rec: R) extends TaggedTypeOps(rec) {
+class RecordOps[R <: AnyRecord](val rec: R) extends TaggedTypeOps[R](rec) {
 
   /* Same as just tagging with `=>>`, but you can pass fields in any order */
   def fields[Vs <: AnyTypeSet](values: Vs)(implicit
-      reorder: Vs As RawOf[R]
+      reorder: Vs As AnyRecord.RawOf[R]
     ): Tagged[R] = rec =>> reorder(values)
 }
 
