@@ -12,22 +12,38 @@ sealed trait AnyTypeSet {
   override def toString = "{" + toStr + "}"
 }
 
+trait EmptySet extends AnyTypeSet
+trait NonEmptySet extends AnyTypeSet {
+    type Head
+    val  head: Head
+
+    type Tail <: AnyTypeSet
+    val  tail: Tail
+
+    // should be provided implicitly:
+    import AnyTypeSet.{ ∉ }
+    val check: Head ∉ Tail
+}
+
 private[pointless] object TypeSetImpl {
   import AnyTypeSet._
 
-  sealed trait AnyEmptySet extends AnyTypeSet {
+  trait EmptySetImpl extends AnyTypeSet {
 
     type Types = either[Nothing]
     type Bound = Types#union
+
     def toStr = ""
   }
 
-  object EmptySet extends AnyEmptySet
+  object EmptySetImpl extends EmptySetImpl
 
 
-  case class ConsSet[E, S <: AnyTypeSet](val head: E, val tail: S)(implicit val check: E ∉ S) extends AnyTypeSet {
+  case class ConsSet[H, T <: AnyTypeSet]
+    (val head : H,  val tail : T)(implicit val check: H ∉ T) extends NonEmptySet {
+    type Head = H; type Tail = T
 
-    type Types = tail.Types#or[E]
+    type Types = Tail#Types#or[Head]
     type Bound = Types#union
     
     def toStr = {
@@ -47,11 +63,20 @@ private[pointless] object TypeSetImpl {
   }
 }
 
+object NonEmptySet {
+
+  type Of[T] = NonEmptySet {
+    type Bound <: just[T]
+    type Head <: T
+    type Tail <: AnyTypeSet.Of[T]
+  }
+}
+
 object AnyTypeSet {
 
-  final type ∅ = TypeSetImpl.AnyEmptySet
-  val ∅ : ∅ = TypeSetImpl.EmptySet // the space before : is needed
-  val emptySet : ∅ = TypeSetImpl.EmptySet
+  final type ∅ = TypeSetImpl.EmptySetImpl
+  val ∅ : ∅ = TypeSetImpl.EmptySetImpl // the space before : is needed
+  val emptySet : ∅ = TypeSetImpl.EmptySetImpl
 
   final type :~:[E, S <: AnyTypeSet] = TypeSetImpl.ConsSet[E, S]
 

@@ -189,23 +189,36 @@ class RecordTests extends org.scalatest.FunSuite {
 
     // just somtehing having properties
     object foo
-    implicit val foo_props = foo has name :~: color :~: ∅
+    // implicit val foo_props = foo has name :~: color :~: ∅
 
-    implicitly[foo.type HasProperty name.type]
-    implicitly[foo.type HasProperty color.type]
+    // implicitly[foo.type HasProperty name.type]
+    // implicitly[foo.type HasProperty color.type]
 
-    implicitly[foo.type HasProperties ∅]
-    implicitly[foo.type HasProperties (name.type :~: ∅)]
-    implicitly[foo.type HasProperties (color.type :~: name.type :~: ∅)]
+    // implicitly[foo.type HasProperties ∅]
+    // implicitly[foo.type HasProperties (name.type :~: ∅)]
+    // implicitly[foo.type HasProperties (color.type :~: name.type :~: ∅)]
 
     // a record which has properties
-    implicitly[simpleUser.type HasProperties (id.type :~: name.type :~: ∅)]
+    implicitly[simpleUser.type HasProperties (id.type :~: name.type :~: ∅)] //(consToSet[simpleUser.type, id.type :~: name.type :~: ∅])
     implicitly[simpleUser.type HasProperties (name.type :~: id.type :~: ∅)]
     implicitly[simpleUser.type HasProperties (name.type :~: ∅)]
     implicitly[simpleUser.type HasProperties (id.type :~: ∅)]
 
     implicitly[simpleUser.type HasProperty name.type]
     implicitly[simpleUser.type HasProperty id.type]
+
+    // adding some properties to a record
+    implicit val moar = simpleUser has email :~: color :~: ∅
+    // implicitly[simpleUser.type HasProperties (email.type :~: id.type :~: ∅)]
+    // (
+    //   cons[simpleUser.type, email.type, id.type :~: ∅](
+    //     implicitly[simpleUser.type HasProperty email.type],
+    //     cons[simpleUser.type, id.type, ∅](
+    //       setToSubset, //[simpleUser.type, simpleUser.Properties, id.type],
+    //       setToSubset
+    //     )
+    //   )
+    // )
 
   }
 
