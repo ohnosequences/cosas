@@ -199,7 +199,7 @@ class RecordTests extends org.scalatest.FunSuite {
     // implicitly[foo.type HasProperties (color.type :~: name.type :~: ∅)]
 
     // a record which has properties
-    implicitly[simpleUser.type HasProperties (id.type :~: name.type :~: ∅)] //(consToSet[simpleUser.type, id.type :~: name.type :~: ∅])
+    implicitly[simpleUser.type HasProperties (id.type :~: name.type :~: ∅)]
     implicitly[simpleUser.type HasProperties (name.type :~: id.type :~: ∅)]
     implicitly[simpleUser.type HasProperties (name.type :~: ∅)]
     implicitly[simpleUser.type HasProperties (id.type :~: ∅)]
@@ -207,15 +207,17 @@ class RecordTests extends org.scalatest.FunSuite {
     implicitly[simpleUser.type HasProperty name.type]
     implicitly[simpleUser.type HasProperty id.type]
 
-    // adding some properties to a record
+    // adding some moar properties
     implicit val moar = simpleUser has email :~: color :~: ∅
+
+    // // FIXME: see "!!!"
     // implicitly[simpleUser.type HasProperties (email.type :~: id.type :~: ∅)]
-    // (
+    //  (
     //   cons[simpleUser.type, email.type, id.type :~: ∅](
     //     implicitly[simpleUser.type HasProperty email.type],
-    //     cons[simpleUser.type, id.type, ∅](
-    //       setToSubset, //[simpleUser.type, simpleUser.Properties, id.type],
-    //       setToSubset
+    //     cons[simpleUser.type, id.type, ∅] (
+    //       setToProp[simpleUser.type, id.type, simpleUser.Properties], // <-- !!!
+    //       empty
     //     )
     //   )
     // )

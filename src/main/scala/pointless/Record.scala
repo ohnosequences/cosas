@@ -8,7 +8,7 @@ trait AnyRecord extends AnyTaggedType { me =>
   val  properties: Properties
 
   /* Any record *has* its own properties */
-  implicit val myOwnProperties: Me HasProperties Properties = (me: Me) has properties
+  implicit val myOwnProperties: Me Has Properties = (me: Me) has properties
 
   type Raw <: AnyTypeSet
   // should be provided implicitly:

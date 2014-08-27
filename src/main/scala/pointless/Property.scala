@@ -30,56 +30,51 @@ object AnyProperty extends AnyProperty_2 {
 
   implicit def hasPropertiesOps[T](t: T): HasPropertiesOps[T] = new HasPropertiesOps[T](t)
 
-  // implicit def setToProp[T, Ps <: AnyTypeSet.Of[AnyProperty], P <: AnyProperty]
-  //   (implicit ps: T HasProperties Ps, in: P ∈ Ps):
-  //        T HasProperty P =
-  //   new (T HasProperty P)
-
   // NOTE: this is not in the companion object, because if it's there, it loops the implicit search
-  /* ∀ T, Ps, Qs ⊂ Ps  (T HasProperties Ps => T Has Qs) */
-  implicit def setToSubset[T, Ps <: AnyTypeSet.Of[AnyProperty], Qs <: SubsetOf[Ps]]
-    (implicit ps: T HasProperties Ps):
-         T Has Qs =
-    new (T Has Qs)
+
+  implicit def setToProp[T, P <: AnyProperty, Ps <: AnyTypeSet.Of[AnyProperty]]
+    (implicit ps: T Has Ps, in: P ∈ Ps):
+         T HasProperty P =
+    new (T HasProperty P)
+
+  // /* ∀ T, Ps, Qs ⊂ Ps  (T Has Ps => T Has Qs) */
+  // implicit def setToSubset[T, Ps <: AnyTypeSet.Of[AnyProperty], Qs <: SubsetOf[Ps]]
+  //   (implicit ps: T Has Ps):
+  //        T HasProperties Qs =
+  //   new (T HasProperties Qs)
 
 }
 
-trait AnyProperty_2 extends AnyProperty_3 {
+trait AnyProperty_2 {
 
-  @annotation.implicitNotFound(msg = "Can't prove that ${Smth} has property ${P}")
-  final type HasProperty[Smth, P <: AnyProperty] = HasProperties[Smth, P :~: ∅]
+  // @annotation.implicitNotFound(msg = "Can't prove that ${Smth} has property ${P}")
+  // final type HasProperty[Smth, P <: AnyProperty] = Has[Smth, P :~: ∅]
 
-  /* ∀ T, P, Ps  (T HasProperty P & T HasProperties Ps => T Has (P :~: Ps)) */
+  implicit def empty[T]: T HasProperties ∅ = new (T HasProperties ∅)
+  /* ∀ T, P, Ps  (T HasProperty P & T Has Ps => T Has (P :~: Ps)) */
   implicit def cons[T, P <: AnyProperty, Ps <: AnyTypeSet.Of[AnyProperty]]
-    (implicit  p: T HasProperty P, ps: T HasProperties Ps):
-         T Has (P :~: Ps) =
-    new (T Has (P :~: Ps))
-
-}
-
-trait AnyProperty_3 {
-
-  implicit def hashas[T, Ps <: AnyTypeSet.Of[AnyProperty]]
-    (implicit ps: T Has Ps):
-         T HasProperties Ps =
-    new (T HasProperties Ps)
+    (implicit p: T HasProperty P, ps: T HasProperties Ps):
+         T HasProperties (P :~: Ps) =
+    new (T HasProperties (P :~: Ps))
 
 }
 
 // TODO: separate as ops
 /* Evidence that an arbitrary type `Smth` has a set of properties `Ps` */
-@annotation.implicitNotFound(msg = "Can't prove that ${Smth} has properties ${Ps}")
-sealed class Has[Smth, Ps]
-sealed class HasProperties[Smth, Ps <: AnyTypeSet.Of[AnyProperty]] extends Has[Smth, Ps]
+sealed class Has[Smth, Ps <: AnyTypeSet.Of[AnyProperty]] // for declaration
 
-// @annotation.implicitNotFound(msg = "Can't prove that ${Smth} has property ${P}")
-// sealed class HasProperty[Smth, P <: AnyProperty]
+// For checks
+@annotation.implicitNotFound(msg = "Can't prove that ${Smth} has property ${P}")
+sealed class HasProperty[Smth, P <: AnyProperty]
+@annotation.implicitNotFound(msg = "Can't prove that ${Smth} has properties ${Ps}")
+sealed class HasProperties[Smth, Ps <: AnyTypeSet]
+
 
 class HasPropertiesOps[Smth](val smth: Smth) {
 
   def has[Ps <: AnyTypeSet.Of[AnyProperty]](ps: Ps): 
-         Smth HasProperties Ps = 
-    new (Smth HasProperties Ps)
+         Smth Has Ps = 
+    new (Smth Has Ps)
 
 }
 
