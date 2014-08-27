@@ -15,7 +15,7 @@ trait AnyRecord extends AnyTaggedType { me =>
   implicit val representedProperties: Properties isRepresentedBy Raw
 }
 
-class Record[Props <: AnyTypeSet.Of[AnyProperty], Vals <: AnyTypeSet](val properties: Props)(implicit 
+class Record[Props <: AnyTypeSet with AnyTypeSet.Of[AnyProperty], Vals <: AnyTypeSet](val properties: Props)(implicit 
   // val propertiesBound: Props isBoundedBy AnyProperty,
   val representedProperties: Props isRepresentedBy Vals
 ) extends AnyRecord {
@@ -71,7 +71,7 @@ class RecordRepOps[R <: AnyRecord](val recEntry: Tagged[R]) {
 
 
   def as[Other <: AnyRecord](other: Other)
-    (implicit project: Take[RawOf[R], RawOf[Other]]): Tagged[Other] = other =>> project(recEntry)
+    (implicit project: Take[RawOf[R], RawOf[Other]]): Tagged[Other] = (other:Other) =>> project(recEntry)
 
   def as[Other <: AnyRecord, Rest <: AnyTypeSet](other: Other, rest: Rest)
     (implicit transform: Transform[R, Other, Rest]): Tagged[Other] = transform(recEntry, other, rest)

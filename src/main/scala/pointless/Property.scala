@@ -19,7 +19,7 @@ class Property[V](implicit val classTag: ClassTag[V]) extends AnyProperty {
 
 class PropertyOps[P <: AnyProperty](val p: P) extends TaggedTypeOps[P](p) { self =>
 
-  def is(value: RawOf[P]): Tagged[P] = self =>> value
+  def is(value: RawOf[P]): Tagged[P] = p =>> value
 }
 
 object AnyProperty extends AnyProperty_2 {

@@ -36,7 +36,17 @@ import AnyTaggedType._
 
 class TaggedTypeOps[T <: AnyTaggedType](val t: T) {
 
-  def =>>[R <: RawOf[T]](raw: R): Tagged[T] = TagWith[T](t)(raw)
+  def =>>(raw: RawOf[T]): Tagged[T] = {
+
+    TagWith[T](t)[RawOf[T]](raw)
+  }
+
+  def tagAs[R <: RawOf[T]](raw: R): R with Tagged[T] = {
+
+    val tagger: TagWith[T] = TagWith[T](t)
+
+    tagger[R](raw)
+  }
 }
 
 /* 
@@ -48,5 +58,5 @@ sealed trait Tag[T <: AnyTaggedType] extends AnyTag with shapeless.record.KeyTag
 
 case class TagWith[T <: AnyTaggedType](val t: T) {
 
-  def apply(r: RawOf[T]): Tagged[T] = r.asInstanceOf[Tagged[T]]
+  def apply[R <: RawOf[T]](r: R): R with Tagged[T] = r.asInstanceOf[R with Tagged[T]]
 }
