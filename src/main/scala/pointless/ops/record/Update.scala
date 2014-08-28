@@ -17,11 +17,12 @@ object Update {
 
   implicit def update[R <: AnyRecord, Ps <: AnyTypeSet]
     (implicit 
-      check: Ps ⊂ Tagged[R],
-      replace: Replace[Tagged[R], Ps]
-    ):  Update[R, Ps] with out[Tagged[R]] = 
+      getR: Tagged[R] => R,
+      check: Ps ⊂ AnyRecord.RawOf[R],
+      replace: Replace[AnyRecord.RawOf[R], Ps]
+    ):  Update[R, Ps] =
     new Update[R, Ps] {
-      def apply(recEntry: Tagged[R], propReps: Ps): Out = replace(recEntry, propReps)
+      def apply(recEntry: Tagged[R], propReps: Ps): Out = getR(recEntry) =>> replace(recEntry: AnyRecord.RawOf[R], propReps)
     }
 
 }

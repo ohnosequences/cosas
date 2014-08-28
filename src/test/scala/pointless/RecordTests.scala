@@ -185,6 +185,32 @@ class RecordTests extends org.scalatest.FunSuite {
     val hey: Tagged[simpleUser.type] = normalUserEntry as simpleUser
   }
 
+  test("update fields") {
+
+    assert(
+      (normalUserEntry update (color is "albero")) ==
+      (normalUser fields (
+        (normalUserEntry get name) :~: 
+        (normalUserEntry get id) :~: 
+        (normalUserEntry get email) :~:
+        (color is "albero") :~:
+        ∅
+      ))
+    )
+
+    assert(
+      (normalUserEntry update ((name is "bar") :~: (id is 321) :~: ∅)) ==
+      (normalUser fields (
+        (name is "bar") :~: 
+        (color is "orange") :~:
+        (id is 321) :~: 
+        (email is "foo@bar.qux") :~:
+        ∅
+      ))
+    )
+
+  }
+
   test("having properties") {
 
     // just somtehing having properties

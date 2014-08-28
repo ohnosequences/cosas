@@ -65,7 +65,7 @@ class RecordRepOps[R <: AnyRecord](val recEntry: Tagged[R]) {
 
 
   def update[P <: AnyProperty](propRep: Tagged[P])
-    (implicit upd: R Update (Tagged[P] :~: ∅)): Tagged[R] = upd(recEntry, propRep :~: ∅)
+    (implicit check: (Tagged[P] :~: ∅) ⊂ Tagged[R], upd: R Update (Tagged[P] :~: ∅)): Tagged[R] = upd(recEntry, propRep :~: ∅)
 
   def update[Ps <: AnyTypeSet](propReps: Ps)
     (implicit upd: R Update Ps): Tagged[R] = upd(recEntry, propReps)
