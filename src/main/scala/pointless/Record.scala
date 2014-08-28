@@ -53,7 +53,7 @@ class RecordOps[R <: AnyRecord](val rec: R) extends TaggedTypeOps[R](rec) {
 
   /* Same as just tagging with `=>>`, but you can pass fields in any order */
   def fields[Vs <: AnyTypeSet](values: Vs)(implicit
-      reorder: Vs As AnyRecord.RawOf[R]
+      reorder: Vs ReorderTo AnyRecord.RawOf[R]
     ): Tagged[R] = rec =>> reorder(values)
 }
 

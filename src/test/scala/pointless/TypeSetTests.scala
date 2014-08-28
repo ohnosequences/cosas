@@ -129,11 +129,11 @@ class TypeSetTests extends org.scalatest.FunSuite {
   test("reordering") {
     val s = 1 :~: 'a' :~: "foo" :~: ∅
 
-    assert(∅.as[∅] == ∅)
-    assert(s.as[Char :~: Int :~: String :~: ∅] == 'a' :~: 1 :~: "foo" :~: ∅)
+    assert(∅.reorderTo[∅] == ∅)
+    assert(s.reorderTo[Char :~: Int :~: String :~: ∅] == 'a' :~: 1 :~: "foo" :~: ∅)
 
     val p = "bar" :~: 2 :~: 'b' :~: ∅
-    assert((s as p) == "foo" :~: 1 :~: 'a' :~: ∅)
+    assert((s reorderTo p) == "foo" :~: 1 :~: 'a' :~: ∅)
   }
 
   test("subtraction") {

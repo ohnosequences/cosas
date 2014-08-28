@@ -189,7 +189,7 @@ object AnyTypeSet {
 
   type Replace[S <: AnyTypeSet, Q <: AnyTypeSet] = ops.typeSet.Replace[S, Q]
 
-  type As[S <: AnyTypeSet, Q <: AnyTypeSet] = ops.typeSet.As[S, Q]
+  type ReorderTo[S <: AnyTypeSet, Q <: AnyTypeSet] = ops.typeSet.ReorderTo[S, Q]
 
   type FromHList[L <: HList] = ops.typeSet.FromHList[L]
 
@@ -240,8 +240,8 @@ class TypeSetOps[S <: AnyTypeSet](s: S) {
 
   /* Conversions */
 
-  def as[Q <: AnyTypeSet]      (implicit check: S ~:~ Q, reorder: S As Q): reorder.Out = reorder(s)
-  def as[Q <: AnyTypeSet](q: Q)(implicit check: S ~:~ Q, reorder: S As Q): reorder.Out = reorder(s)
+  def reorderTo[Q <: AnyTypeSet]      (implicit check: S ~:~ Q, reorder: S ReorderTo Q): reorder.Out = reorder(s)
+  def reorderTo[Q <: AnyTypeSet](q: Q)(implicit check: S ~:~ Q, reorder: S ReorderTo Q): reorder.Out = reorder(s)
 
   def toHList(implicit toHList: ToHList[S]): toHList.Out = toHList(s)
 
