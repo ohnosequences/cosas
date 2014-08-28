@@ -87,6 +87,8 @@ object AnyTypeSet {
 
   type SupersetOf[S <: AnyTypeSet] = AnyTypeSet { type Bound >: S#Bound }
 
+  type BoundedByUnion[U <: AnyTypeUnion] = AnyTypeSet { type Bound <: U#union }
+
   // type SameAs[S <: AnyTypeSet] = SubsetOf[S] with SupersetOf[S]
 
   /*

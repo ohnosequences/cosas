@@ -4,6 +4,8 @@ import AnyTypeSet._, AnyProperty._, AnyTaggedType.Tagged, AnyTypeUnion._
 
 trait AnyRecord extends AnyTaggedType { me =>
 
+  val label: String
+
   type Properties <: AnyTypeSet.Of[AnyProperty]
   val  properties: Properties
 
@@ -16,7 +18,6 @@ trait AnyRecord extends AnyTaggedType { me =>
 }
 
 class Record[Props <: AnyTypeSet.Of[AnyProperty], Vals <: AnyTypeSet](val properties: Props)(implicit 
-  // val propertiesBound: Props isBoundedBy AnyProperty,
   val representedProperties: Props isRepresentedBy Vals
 ) extends AnyRecord {
 
