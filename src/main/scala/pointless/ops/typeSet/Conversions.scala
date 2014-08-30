@@ -2,8 +2,8 @@
 
 package ohnosequences.pointless.ops.typeSet
 
-import ohnosequences.pointless._, AnyFn._, AnyTypeSet._
-import shapeless._
+import ohnosequences.pointless._, AnyFn._, AnyTypeSet._, AnyTaggedType._
+import shapeless._, poly._
 
 case object id extends Poly1 { implicit def default[T] = at[T]((t:T) => t) }
 
@@ -91,4 +91,40 @@ object ToList {
       type O = X
       def apply(s: H1 :~: H2 :~: T): Out = s.head :: lt(s.tail.head :~: s.tail.tail)
     }
+}
+
+
+@annotation.implicitNotFound(msg = "Can't parse typeset ${S} from ${X}")
+// NOTE: it should be restricted to AnyTypeSet.Of[AnyProperty], when cons os know to return the same thing
+trait ParseFrom[S <: AnyTypeSet, X]
+  extends Fn2[S, X] with WithCodomain[AnyTypeSet]
+
+object ParseFrom {
+
+  def apply[S <: AnyTypeSet, X]
+    (implicit parser: ParseFrom[S, X]): ParseFrom[S, X] with out[parser.Out] = parser
+
+  implicit def empty[X]: 
+        (∅ ParseFrom X) with out[∅] = 
+    new (∅ ParseFrom X) {
+
+      type Out = ∅
+      def apply(s: ∅, x: X): Out = ∅
+    }
+
+  implicit def cons[X,
+    H <: AnyProperty, T <: AnyTypeSet,
+    F <: Poly1
+  ](implicit
+    f: Case1.Aux[F, (H, X), (Tagged[H], X)],
+    t: ParseFrom[T, X]
+  ):  ((H :~: T) ParseFrom X) with out[Tagged[H] :~: t.Out] =
+  new ((H :~: T) ParseFrom X) {
+    
+    type Out = Tagged[H] :~: t.Out
+    def apply(s: H :~: T, x: X): Out = {
+      val (head, rest) = f((s.head, x)) 
+      head :~: t(s.tail, rest)
+    }
+  }
 }

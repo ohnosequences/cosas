@@ -1,8 +1,8 @@
 package ohnosequences.pointless.tests
 
-import shapeless._
 import shapeless.test.illTyped
-import ohnosequences.pointless._, AnyTypeSet._
+import ohnosequences.pointless._, AnyTypeSet._, AnyTaggedType._
+import ops.typeSet._
 
 class TypeSetTests extends org.scalatest.FunSuite {
 
@@ -13,8 +13,8 @@ class TypeSetTests extends org.scalatest.FunSuite {
     // or with nicer syntax:
     implicitly[Any ∉ ∅]
 
-    // FIXME: Yoda style doesn't work
-    // implicitly[in[∅]#isNot[Any]]
+    // or Yoda style:
+    implicitly[in[∅]#isNot[Any]]
 
   }
 
@@ -170,7 +170,7 @@ class TypeSetTests extends org.scalatest.FunSuite {
 
   test("mappers") {
 
-    import poly._
+    import shapeless._, poly._
 
     object id extends Poly1 { implicit def default[T] = at[T]((t:T) => t) }
     object toStr extends (Any -> String)(_.toString)
@@ -204,6 +204,8 @@ class TypeSetTests extends org.scalatest.FunSuite {
 
   test("conversions to HList/List") {
 
+    import shapeless._
+
     assert(∅.toHList == HNil)
     assert((1 :~: 'a' :~: "foo" :~: ∅).toHList == (1 :: 'a' :: "foo" :: HNil))
 
@@ -219,6 +221,8 @@ class TypeSetTests extends org.scalatest.FunSuite {
 
   test("conversion from HList") {
 
+    import shapeless._
+
     assert(HNil.toTypeSet == ∅)
     assert(fromHList(HNil) == ∅)
 
@@ -228,5 +232,4 @@ class TypeSetTests extends org.scalatest.FunSuite {
     illTyped("""(1 :: 'x' :: 2 :: "foo" :: HNil).toTypeSet""")
 
   }
-
 }

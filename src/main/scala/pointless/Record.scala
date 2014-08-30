@@ -1,6 +1,8 @@
 package ohnosequences.pointless
 
-import AnyTypeSet._, AnyProperty._, AnyTaggedType.Tagged, AnyTypeUnion._
+import AnyTypeSet._, AnyProperty._, AnyTaggedType.Tagged, AnyTypeUnion._, AnyRecord._
+import ops.typeSet._
+
 
 trait AnyRecord extends AnyTaggedType { me =>
 
@@ -46,8 +48,6 @@ object AnyRecord {
     new RecordRepOps[R](recEntry)
 
 }
-
-import AnyRecord._
 
 class RecordOps[R <: AnyRecord](val rec: R) extends TaggedTypeOps[R](rec) {
 

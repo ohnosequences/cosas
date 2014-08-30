@@ -181,42 +181,44 @@ object AnyTypeSet {
 
   type ∪[S <: AnyTypeSet, Q <: AnyTypeSet] = ops.typeSet.Union[S, Q]
 
-  type Pop[S <: AnyTypeSet, E] = ops.typeSet.Pop[S, E]
+  // type Pop[S <: AnyTypeSet, E] = ops.typeSet.Pop[S, E]
 
-  type Lookup[S <: AnyTypeSet, E] = ops.typeSet.Lookup[S, E]
+  // type Lookup[S <: AnyTypeSet, E] = ops.typeSet.Lookup[S, E]
 
-  type Take[S <: AnyTypeSet, Q <: AnyTypeSet] = ops.typeSet.Take[S, Q]
+  // type Take[S <: AnyTypeSet, Q <: AnyTypeSet] = ops.typeSet.Take[S, Q]
 
-  type Replace[S <: AnyTypeSet, Q <: AnyTypeSet] = ops.typeSet.Replace[S, Q]
+  // type Replace[S <: AnyTypeSet, Q <: AnyTypeSet] = ops.typeSet.Replace[S, Q]
 
-  type ReorderTo[S <: AnyTypeSet, Q <: AnyTypeSet] = ops.typeSet.ReorderTo[S, Q]
+  // type ReorderTo[S <: AnyTypeSet, Q <: AnyTypeSet] = ops.typeSet.ReorderTo[S, Q]
 
-  type FromHList[L <: HList] = ops.typeSet.FromHList[L]
+  // type FromHList[L <: HList] = ops.typeSet.FromHList[L]
 
-  type ToHList[S <: AnyTypeSet] = ops.typeSet.ToHList[S]
+  // type ToHList[S <: AnyTypeSet] = ops.typeSet.ToHList[S]
 
-  type  ToList[S <: AnyTypeSet] = ops.typeSet.ToList[S]
+  // type  ToList[S <: AnyTypeSet] = ops.typeSet.ToList[S]
 
-  final type ToListOf[S <: AnyTypeSet, T] = ToList[S] with o[T]
+  type ToListOf[S <: AnyTypeSet, T] = ops.typeSet.ToList[S] with o[T]
 
-  type MapToHList[F <: Poly1, S <: AnyTypeSet] = ops.typeSet.MapToHList[F, S]
+  // type MapToHList[F <: Poly1, S <: AnyTypeSet] = ops.typeSet.MapToHList[F, S]
 
-  type  MapToList[F <: Poly1, S <: AnyTypeSet] = ops.typeSet.MapToList[F, S]
+  // type  MapToList[F <: Poly1, S <: AnyTypeSet] = ops.typeSet.MapToList[F, S]
 
-  type     MapSet[F <: Poly1, S <: AnyTypeSet] = ops.typeSet.MapSet[F, S]
+  // type     MapSet[F <: Poly1, S <: AnyTypeSet] = ops.typeSet.MapSet[F, S]
 
-  type MapFoldSet[F <: Poly1, S <: AnyTypeSet, R] = ops.typeSet.MapFoldSet[F, S, R]
+  // type MapFoldSet[F <: Poly1, S <: AnyTypeSet, R] = ops.typeSet.MapFoldSet[F, S, R]
 
   implicit def typeSetOps[S <: AnyTypeSet](s: S): TypeSetOps[S] = new TypeSetOps[S](s)
   implicit def hListOps[L <: HList](l: L): HListOps[L] = new HListOps[L](l)
 
-  def fromHList[L <: HList](l: L)(implicit fromHList: FromHList[L]): fromHList.Out = fromHList(l)
+  def fromHList[L <: HList](l: L)
+    (implicit fromHList: ops.typeSet.FromHList[L]): fromHList.Out = fromHList(l)
 
 }
 
 
 class TypeSetOps[S <: AnyTypeSet](s: S) {
   import AnyTypeSet._
+  import ops.typeSet._
 
   /* Element-related */
 
@@ -249,6 +251,7 @@ class TypeSetOps[S <: AnyTypeSet](s: S) {
 
   def toListOf[T](implicit toListOf: S ToListOf T): List[T] = toListOf(s)
 
+  def parseFrom[X](x: X)(implicit parser: S ParseFrom X): parser.Out = parser(s, x)
 
   /* Mappers */
 
@@ -262,9 +265,6 @@ class TypeSetOps[S <: AnyTypeSet](s: S) {
 
 }
 
-
 class HListOps[L <: HList](l: L) {
-  import AnyTypeSet._
-
-  def toTypeSet(implicit fromHList: FromHList[L]): fromHList.Out = fromHList(l)
+  def toTypeSet(implicit fromHList: ops.typeSet.FromHList[L]): fromHList.Out = fromHList(l)
 }

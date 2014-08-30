@@ -7,7 +7,9 @@ It's like `Lookup`, but it removes the element
 
 package ohnosequences.pointless.ops.record
 
-import ohnosequences.pointless._, AnyFn._, AnyTaggedType.Tagged, AnyProperty._, AnyTypeSet._, AnyRecord._
+import ohnosequences.pointless._
+import AnyFn._, AnyTaggedType.Tagged, AnyProperty._, AnyTypeSet._, AnyRecord._
+import ops.typeSet._
 
 @annotation.implicitNotFound(msg = "Can't transform ${R} to ${Other} with values ${Rest}")
 trait Transform[R <: AnyRecord, Other <: AnyRecord, Rest <: AnyTypeSet] 

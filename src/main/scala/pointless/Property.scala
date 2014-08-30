@@ -24,7 +24,7 @@ class PropertyOps[P <: AnyProperty](val p: P) extends TaggedTypeOps[P](p) { self
 
 object AnyProperty extends AnyProperty_2 {
 
-  type Of[T] = AnyProperty { type Raw = T }
+  type ofType[T] = AnyProperty { type Raw = T }
 
   implicit def propertyOps[P <: AnyProperty](p: P): PropertyOps[P] = new PropertyOps[P](p)
 
