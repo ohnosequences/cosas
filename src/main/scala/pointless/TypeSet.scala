@@ -253,6 +253,8 @@ class TypeSetOps[S <: AnyTypeSet](s: S) {
 
   def parseFrom[X](x: X)(implicit parser: S ParseFrom X): parser.Out = parser(s, x)
 
+  def serializeTo[X](implicit serializer: S SerializeTo X): X = serializer(s)
+
   /* Mappers */
 
   def mapToHList[F <: Poly1](f: F)(implicit mapF: F MapToHList S): mapF.Out = mapF(s)

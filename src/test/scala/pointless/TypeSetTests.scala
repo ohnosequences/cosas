@@ -232,4 +232,117 @@ class TypeSetTests extends org.scalatest.FunSuite {
     illTyped("""(1 :: 'x' :: 2 :: "foo" :: HNil).toTypeSet""")
 
   }
+
+  test("parse") {
+    import shapeless._
+
+    case object key extends Property[String]
+    case object name extends Property[String]
+    case object age extends Property[Integer]
+
+    // using record here just for convenience
+    object rec extends Record(name :~: age :~: key :~: ∅)
+
+    val recEntry = rec =>> (
+      (name is "foo") :~: 
+      (age is 12) :~: 
+      (key is "s0dl52f23k") :~: 
+      ∅
+    )
+
+    // Map parser get's values from map by key, which is the property label
+    object MapParser extends Poly1 {
+
+      implicit def caseInteger[P <: AnyProperty.ofType[Integer]] = 
+        at[(P, Map[String, String])]{ case (p, m) => (p is m(p.label).toInt, m) }
+
+      implicit def caseString[P <: AnyProperty.ofType[String]] = 
+        at[(P, Map[String, String])]{ case (p, m) => (p is m(p.label).toString, m) }
+    }
+
+    assertResult(recEntry) {
+      import MapParser._
+
+      rec.properties parseFrom Map(
+        "age" -> "12",
+        "name" -> "foo", 
+        "key" -> "s0dl52f23k"
+      )
+    }
+
+    // List parser just takes the values sequentially, so the order must correspond the order of properties
+    object ListParser extends Poly1 {
+
+      implicit def caseInteger[P <: AnyProperty.ofType[Integer]] = 
+        at[(P, List[String])]{ case (p, l) => (p is l.head.toInt, l.tail) }
+
+      implicit def caseString[P <: AnyProperty.ofType[String]] = 
+        at[(P, List[String])]{ case (p, l) => (p is l.head.toString, l.tail) }
+    }
+
+    assertResult(recEntry) {
+      import ListParser._
+
+      rec.properties parseFrom List(
+        "foo",
+        "12",
+        "s0dl52f23k"
+      )
+    }
+
+  }
+
+  test("serialize") {
+    import shapeless._
+
+    case object key extends Property[String]
+    case object name extends Property[String]
+    case object age extends Property[Integer]
+
+    // using record here just for convenience
+    object rec extends Record(name :~: age :~: key :~: ∅)
+
+    val recEntry = rec =>> (
+      (name is "foo") :~: 
+      (age is 12) :~: 
+      (key is "s0dl52f23k") :~: 
+      ∅
+    )
+
+    // Map parser get's values from map by key, which is the property label
+    implicit def serializeProperty[P <: AnyProperty](t: Tagged[P])
+      (implicit getP: Tagged[P] => P): Map[String, String] = Map(getP(t).label -> t.toString)
+
+    // assertResult(Map("age" -> "12", "name" -> "foo", "key" -> "s0dl52f23k")) {
+
+    //   implicit def anyMapMonoid[X, Y]: Monoid[Map[X, Y]] = new Monoid[Map[X, Y]] {
+    //     def zero: M = Map[X, Y]()
+    //     def append(a: M, b: M): M = a ++ b
+    //   }
+
+    //   (recEntry: rec.Raw).serializeTo[Map[String, String]] (SerializeTo.cons //: rec.Raw SerializeTo Map[String, String]
+    //                                                        // (
+    //                                                        //  anyMapMonoid[String, String],
+    //                                                        //  serializeProperty[name.type],
+    //                                                        //  SerializeTo.cons
+    //                                                        //  )
+    //                                                        )
+    // }
+
+    // List parser just takes the values sequentially, so the order must correspond the order of properties
+    implicit def toStr[P](p: P): List[String] = List(p.toString)
+
+    implicit def toRaw[T <: AnyTaggedType](uh: Tagged[T]): RawOf[T] = uh
+    assertResult(List("foo", "12", "s0dl52f23k")) {
+
+      implicit def anyListMonoid[X]: AnyMonoid.Of[List[X]] = new Monoid[List[X]] {
+        def zero: M = List[X]()
+        def append(a: M, b: M): M = a ++ b
+      }
+
+      (recEntry: rec.Raw).serializeTo[List[String]]
+    }
+
+  }
+
 }

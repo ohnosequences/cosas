@@ -128,3 +128,55 @@ object ParseFrom {
     }
   }
 }
+
+
+trait AnyMonoid {
+  type M
+  def zero: M
+  def append(a: M, b: M): M
+}
+
+trait Monoid[T] extends AnyMonoid {
+  type M = T
+}
+
+object AnyMonoid {
+  type Of[T] = AnyMonoid { type M = T }
+}
+
+// @annotation.implicitNotFound(msg = "Can't serialize record ${S} to ${X}")
+trait SerializeTo[S <: AnyTypeSet, X] extends Fn1[S] {
+
+  type Out = X 
+  val monoid: AnyMonoid.Of[X]
+}
+
+object SerializeTo {
+
+  def apply[S <: AnyTypeSet, X]
+    (implicit serializer: S SerializeTo X): S SerializeTo X = serializer
+
+  implicit def empty[X](implicit m: AnyMonoid.Of[X]):
+        (∅ SerializeTo X) = 
+    new (∅ SerializeTo X) {
+
+      val monoid = m
+
+      def apply(r: ∅): Out = monoid.zero
+    }
+
+  implicit def cons[X,
+    H, T <: AnyTypeSet
+  ](implicit
+    m: AnyMonoid.Of[X],
+    f: H => X,
+    t: T SerializeTo X
+  ):  ((H :~: T) SerializeTo X) =
+  new ((H :~: T) SerializeTo X) {
+    
+    val monoid = m
+
+    def apply(s: H :~: T): Out = monoid.append(f(s.head), t(s.tail))
+  }
+
+}
