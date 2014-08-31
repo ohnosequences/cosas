@@ -42,4 +42,16 @@ class uhoh extends org.scalatest.FunSuite {
     implicitly[AnyTaggedType.RawOf[valueless.type] =:= Nothing]: Unit
   }
 
+  test("having properties") {
+    object foo
+    implicit val foo_props = foo has name :~: age :~: ∅
+
+    implicitly[foo.type HasProperty name.type]
+    implicitly[foo.type HasProperty age.type]
+
+    implicitly[foo.type HasProperties ∅]
+    implicitly[foo.type HasProperties (name.type :~: ∅)]
+    implicitly[foo.type HasProperties (age.type :~: name.type :~: ∅)]
+  }
+
 }

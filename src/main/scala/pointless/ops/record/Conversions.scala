@@ -34,3 +34,22 @@ object Transform {
     }
 
 }
+
+
+@annotation.implicitNotFound(msg = "Can't parse record ${R} from ${X}")
+trait ParseRecordFrom[R <: AnyRecord, X]
+  extends Fn2[R, X] { type Out = Tagged[R] }
+
+object ParseRecordFrom {
+
+  def apply[R <: AnyRecord, X]
+    (implicit parser: ParseRecordFrom[R, X]): ParseRecordFrom[R, X] with out[parser.Out] = parser
+
+  implicit def any[R <: AnyRecord, X](implicit
+    parseSet: (R#Properties ParseFrom X) with out[R#Raw]
+  ):  (R ParseRecordFrom X) =
+  new (R ParseRecordFrom X) {
+    
+    def apply(r: R, x: X): Out = r =>> parseSet(r.properties, x)
+  }
+}

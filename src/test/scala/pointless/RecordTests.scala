@@ -215,18 +215,6 @@ class RecordTests extends org.scalatest.FunSuite {
 
   test("having properties") {
 
-    // just somtehing having properties
-    object foo
-    // implicit val foo_props = foo has name :~: color :~: ∅
-
-    // implicitly[foo.type HasProperty name.type]
-    // implicitly[foo.type HasProperty color.type]
-
-    // implicitly[foo.type HasProperties ∅]
-    // implicitly[foo.type HasProperties (name.type :~: ∅)]
-    // implicitly[foo.type HasProperties (color.type :~: name.type :~: ∅)]
-
-    // a record which has properties
     implicitly[simpleUser.type HasProperties (id.type :~: name.type :~: ∅)]
     implicitly[simpleUser.type HasProperties (name.type :~: id.type :~: ∅)]
     implicitly[simpleUser.type HasProperties (name.type :~: ∅)]
@@ -249,6 +237,49 @@ class RecordTests extends org.scalatest.FunSuite {
     //     )
     //   )
     // )
+
+  }
+
+  test("parsing") {
+    // Map parser get's values from map by key, which is the property label
+    object MapParser {
+      implicit def caseInteger[P <: AnyProperty.ofType[Integer]](p: P, m: Map[String, String]):
+        (Tagged[P], Map[String, String]) = (p is m(p.label).toInt, m)
+
+      implicit def caseString[P <: AnyProperty.ofType[String]](p: P, m: Map[String, String]):
+        (Tagged[P], Map[String, String]) = (p is m(p.label).toString, m)
+    }
+
+    assertResult(normalUserEntry) {
+      import MapParser._
+
+      normalUser parseFrom Map(
+        "name" -> "foo",
+        "color" -> "orange",
+        "id" -> "123",
+        "email" -> "foo@bar.qux"
+      )
+    }
+
+    // List parser just takes the values sequentially, so the order must correspond the order of properties
+    object ListParser {
+      implicit def caseInteger[P <: AnyProperty.ofType[Integer]](p: P, l: List[String]):
+        (Tagged[P], List[String]) = (p is l.head.toInt, l.tail)
+
+      implicit def caseString[P <: AnyProperty.ofType[String]](p: P, l: List[String]):
+        (Tagged[P], List[String]) = (p is l.head.toString, l.tail)
+    }
+
+    assertResult(normalUserEntry) {
+      import ListParser._
+
+      normalUser parseFrom List(
+        "123",
+        "foo",
+        "foo@bar.qux",
+        "orange"
+      )
+    }
 
   }
 

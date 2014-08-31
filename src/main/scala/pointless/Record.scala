@@ -55,6 +55,10 @@ class RecordOps[R <: AnyRecord](val rec: R) extends TaggedTypeOps[R](rec) {
   def fields[Vs <: AnyTypeSet](values: Vs)(implicit
       reorder: Vs ReorderTo AnyRecord.RawOf[R]
     ): Tagged[R] = rec =>> reorder(values)
+
+  import ops.record._
+
+  def parseFrom[X](x: X)(implicit parser: R ParseRecordFrom X): Tagged[R] = parser(rec, x)
 }
 
 class RecordRepOps[R <: AnyRecord](val recEntry: Tagged[R]) {
