@@ -318,7 +318,6 @@ class TypeSetTests extends org.scalatest.FunSuite {
     implicit def propertyToStr[P <: AnyProperty](t: Tagged[P])
       (implicit getP: Tagged[P] => P): List[String] = List(getP(t).label + " -> " + t.toString)
 
-    implicit def toRaw[T <: AnyTaggedType](uh: Tagged[T]): RawOf[T] = uh
     assert(
       s.serializeTo[List[String]] ==
       List("name -> foo", "age -> 12", "key -> s0dl52f23k")

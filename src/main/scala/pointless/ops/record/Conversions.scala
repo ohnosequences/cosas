@@ -37,19 +37,38 @@ object Transform {
 
 
 @annotation.implicitNotFound(msg = "Can't parse record ${R} from ${X}")
-trait ParseRecordFrom[R <: AnyRecord, X]
+trait ParseFrom[R <: AnyRecord, X]
   extends Fn2[R, X] { type Out = Tagged[R] }
 
-object ParseRecordFrom {
+object ParseFrom {
 
   def apply[R <: AnyRecord, X]
-    (implicit parser: ParseRecordFrom[R, X]): ParseRecordFrom[R, X] with out[parser.Out] = parser
+    (implicit parser: ParseFrom[R, X]): ParseFrom[R, X] with out[parser.Out] = parser
 
   implicit def any[R <: AnyRecord, X](implicit
-    parseSet: (R#Properties ParseFrom X) with out[R#Raw]
-  ):  (R ParseRecordFrom X) =
-  new (R ParseRecordFrom X) {
+    parseSet: ops.typeSet.ParseFrom[R#Properties, X] with out[R#Raw]
+  ):  (R ParseFrom X) =
+  new (R ParseFrom X) {
     
     def apply(r: R, x: X): Out = r =>> parseSet(r.properties, x)
   }
+}
+
+
+@annotation.implicitNotFound(msg = "Can't serialize record ${R} to ${X}")
+trait SerializeTo[R <: AnyRecord, X] extends Fn1[RawOf[R]] { type Out = X }
+
+object SerializeTo {
+
+  def apply[R <: AnyRecord, X]
+    (implicit serializer: R SerializeTo X): R SerializeTo X = serializer
+
+  implicit def any[R <: AnyRecord, X](implicit
+    serializeSet: ops.typeSet.SerializeTo[RawOf[R], X]
+  ):  (R SerializeTo X) =
+  new (R SerializeTo X) {
+    
+    def apply(r: RawOf[R]): Out = serializeSet(r) //: RawOf[R])
+  }
+
 }

@@ -283,4 +283,50 @@ class RecordTests extends org.scalatest.FunSuite {
 
   }
 
+  test("serialize") {
+    // // Map //
+    // implicit def anyMapMonoid[X, Y]: Monoid[Map[X, Y]] = new Monoid[Map[X, Y]] {
+    //   def zero: M = Map[X, Y]()
+    //   def append(a: M, b: M): M = a ++ b
+    // }
+
+    // implicit def serializeProperty[P <: AnyProperty](t: Tagged[P])
+    //   (implicit getP: Tagged[P] => P): Map[String, String] = Map(getP(t).label -> t.toString)
+
+    // type MSS = Map[String, String]
+
+    // assert(
+    //   normalUserEntry.serializeTo[Map[String, String]](ops.record.SerializeTo.any[normalUser.type, MSS](
+    //     ops.typeSet.SerializeTo.cons(
+    //       anyMapMonoid[String, String], 
+    //       serializeProperty[id.type], 
+    //       ops.typeSet.SerializeTo.cons
+    //     )
+    //   )) == Map(
+    //     "name" -> "foo",
+    //     "color" -> "orange",
+    //     "id" -> "123",
+    //     "email" -> "foo@bar.qux"
+    //   )
+    // )
+
+    // List //
+    implicit def anyListMonoid[X]: AnyMonoid.Of[List[X]] = new Monoid[List[X]] {
+      def zero: M = List[X]()
+      def append(a: M, b: M): M = a ++ b
+    }
+
+    // implicit def propertyToStr[P <: AnyProperty](t: Tagged[P])
+    //   (implicit getP: Tagged[P] => P): List[String] = List(getP(t).label + " -> " + t.toString)
+
+    implicit def toStr[P](p: P): List[String] = List(p.toString)
+
+    // FIXME: doesn't work with poymorphic serializer like propertyToStr
+    assert(
+      normalUserEntry.serializeTo[List[String]] ==
+      List("123", "foo", "foo@bar.qux", "orange")
+    )
+
+  }
+
 }

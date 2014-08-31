@@ -58,7 +58,7 @@ class RecordOps[R <: AnyRecord](val rec: R) extends TaggedTypeOps[R](rec) {
 
   import ops.record._
 
-  def parseFrom[X](x: X)(implicit parser: R ParseRecordFrom X): Tagged[R] = parser(rec, x)
+  def parseFrom[X](x: X)(implicit parser: R ParseFrom X): Tagged[R] = parser(rec, x)
 }
 
 class RecordRepOps[R <: AnyRecord](val recEntry: Tagged[R]) {
@@ -81,4 +81,6 @@ class RecordRepOps[R <: AnyRecord](val recEntry: Tagged[R]) {
   def as[Other <: AnyRecord, Rest <: AnyTypeSet](other: Other, rest: Rest)
     (implicit transform: Transform[R, Other, Rest]): Tagged[Other] = transform(recEntry, other, rest)
 
+
+  def serializeTo[X](implicit serializer: R SerializeTo X): X = serializer(recEntry)
 }

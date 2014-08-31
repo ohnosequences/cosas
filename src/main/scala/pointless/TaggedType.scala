@@ -28,6 +28,8 @@ object AnyTaggedType {
   type Tagged[T <: AnyTaggedType] = T#Raw with Tag[T]
   type @@[T <: AnyTaggedType] = Tagged[T]
 
+  implicit def toRaw[T <: AnyTaggedType](uh: Tagged[T]): RawOf[T] = uh //.asInstanceOf[RawOf[T]]
+
   implicit def taggedTypeOps[T <: AnyTaggedType](t: T): TaggedTypeOps[T] = new TaggedTypeOps[T](t)
   
 }
