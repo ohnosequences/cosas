@@ -95,7 +95,7 @@ object ToList {
 
 
 @annotation.implicitNotFound(msg = "Can't parse typeset ${S} from ${X}")
-// NOTE: it should be restricted to AnyTypeSet.Of[AnyProperty], when cons os know to return the same thing
+// NOTE: it should be restricted to AnyTypeSet.Of[AnyProperty], when :~: is known to return the same thing
 trait ParseFrom[S <: AnyTypeSet, X]
   extends Fn2[S, X] with WithCodomain[AnyTypeSet]
 
@@ -109,21 +109,22 @@ object ParseFrom {
     new (∅ ParseFrom X) {
 
       type Out = ∅
+
       def apply(s: ∅, x: X): Out = ∅
     }
 
   implicit def cons[X,
-    H <: AnyProperty, T <: AnyTypeSet,
-    F <: Poly1
+    H <: AnyTaggedType, T <: AnyTypeSet
   ](implicit
-    f: Case1.Aux[F, (H, X), (Tagged[H], X)],
+    f: (H, X) => (Tagged[H], X),
     t: ParseFrom[T, X]
   ):  ((H :~: T) ParseFrom X) with out[Tagged[H] :~: t.Out] =
   new ((H :~: T) ParseFrom X) {
     
     type Out = Tagged[H] :~: t.Out
+
     def apply(s: H :~: T, x: X): Out = {
-      val (head, rest) = f((s.head, x)) 
+      val (head, rest) = f(s.head, x)
       head :~: t(s.tail, rest)
     }
   }
@@ -144,24 +145,22 @@ object AnyMonoid {
   type Of[T] = AnyMonoid { type M = T }
 }
 
-// @annotation.implicitNotFound(msg = "Can't serialize record ${S} to ${X}")
-trait SerializeTo[S <: AnyTypeSet, X] extends Fn1[S] {
-
-  type Out = X 
+@annotation.implicitNotFound(msg = "Can't serialize typeset ${S} to ${X}")
+trait SerializeTo[S <: AnyTypeSet, X] extends Fn1[S] { type Out = X
+  // implicitly:
   val monoid: AnyMonoid.Of[X]
 }
 
 object SerializeTo {
 
-  def apply[S <: AnyTypeSet, X]
-    (implicit serializer: S SerializeTo X): S SerializeTo X = serializer
+  def apply[S <: AnyTypeSet, M]
+    (implicit serializer: S SerializeTo M): S SerializeTo M = serializer
 
   implicit def empty[X](implicit m: AnyMonoid.Of[X]):
         (∅ SerializeTo X) = 
     new (∅ SerializeTo X) {
 
       val monoid = m
-
       def apply(r: ∅): Out = monoid.zero
     }
 
@@ -175,7 +174,6 @@ object SerializeTo {
   new ((H :~: T) SerializeTo X) {
     
     val monoid = m
-
     def apply(s: H :~: T): Out = monoid.append(f(s.head), t(s.tail))
   }
 
