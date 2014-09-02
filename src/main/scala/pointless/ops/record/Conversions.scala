@@ -63,12 +63,39 @@ object SerializeTo {
   def apply[R <: AnyRecord, X]
     (implicit serializer: R SerializeTo X): R SerializeTo X = serializer
 
-  implicit def any[R <: AnyRecord, X](implicit
-    serializeSet: ops.typeSet.SerializeTo[RawOf[R], X]
+  // implicit def any[X, R <: AnyRecord](implicit
+  //   serializeSet: SerializeTagged[X, R#Properties] //{ type In1 = RawOf[R] }
+  //   // spsps: R#Properties isRepresentedBy se
+  // ):  (R SerializeTo X) =
+  // new (R SerializeTo X) {
+    
+  //   type In1 = serializeSet.In1
+  //   def apply(r: In1): Out = serializeSet(r)
+  // }
+
+  implicit def empty[X, R <: AnyRecord.withProperties[∅]](implicit s: ops.typeSet.SerializeTo[∅, X]):
+        (R SerializeTo X) = 
+    new (R SerializeTo X) {
+
+      def apply(r: RawOf[R]): Out = s(∅)
+    }
+
+  implicit def cons[X,
+    H <: AnyProperty, T <: AnyTypeSet, //.Of[AnyProperty], TR <: AnyTypeSet,
+    R <: AnyRecord { 
+      // type Properties = H :~: T
+      // type Raw = Tagged[H] :~: TR
+      type Raw = H :~: T
+    }
+  ](implicit
+    // e: R#Properties isRepresentedBy RRaw,
+    // s: ops.typeSet.SerializeTo[Tagged[H] :~: TR, X]
+
+    s: ops.typeSet.SerializeTo[H :~: T, X]
   ):  (R SerializeTo X) =
   new (R SerializeTo X) {
     
-    def apply(r: RawOf[R]): Out = serializeSet(r) //: RawOf[R])
+    def apply(r: RawOf[R]): Out = s(r)
   }
 
 }

@@ -83,6 +83,8 @@ object AnyTypeSet {
   // it's like KList, but a set
   type Of[T] = AnyTypeSet { type Bound <: just[T] }
 
+  // type RepsOf[NES <: NonEmptySet] = NonEmptySet { type Head = Tagged[NES#Head]; type Tail = RepsOf[NES#Tail] }
+
   type SubsetOf[S <: AnyTypeSet] = AnyTypeSet { type Bound <: S#Bound }
 
   type SupersetOf[S <: AnyTypeSet] = AnyTypeSet { type Bound >: S#Bound }

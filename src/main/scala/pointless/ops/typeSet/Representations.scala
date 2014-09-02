@@ -25,11 +25,14 @@ trait Represented[S <: AnyTypeSet] extends AnyFn with WithCodomain[AnyTypeSet]
 
 object Represented {
 
-  implicit val empty: Represented[∅] with out[∅] = new Represented[∅] { type Out = ∅ }
+  implicit val empty: 
+    Represented[∅] with Out[∅] = 
+    new Represented[∅] with Out[∅]
 
   implicit def cons[H <: AnyTaggedType, T <: AnyTypeSet]
-    (implicit t: Represented[T]): Represented[H :~: T] with out[Tagged[H] :~: t.Out] =
-      new Represented[H :~: T] { type Out = Tagged[H] :~: t.Out }
+    (implicit t: Represented[T]): 
+          Represented[H :~: T] with Out[Tagged[H] :~: t.Out] =
+      new Represented[H :~: T] with Out[Tagged[H] :~: t.Out]
 }
 
 

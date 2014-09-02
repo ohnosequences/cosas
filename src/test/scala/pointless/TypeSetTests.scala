@@ -309,6 +309,10 @@ class TypeSetTests extends org.scalatest.FunSuite {
       Map("age" -> "12", "name" -> "foo", "key" -> "s0dl52f23k")
     )
 
+    assert(
+      ∅.serializeTo[Map[String, String]] == Map()
+    )
+
     // List //
     implicit def anyListMonoid[X]: AnyMonoid.Of[List[X]] = new Monoid[List[X]] {
       def zero: M = List[X]()
@@ -321,6 +325,10 @@ class TypeSetTests extends org.scalatest.FunSuite {
     assert(
       s.serializeTo[List[String]] ==
       List("name -> foo", "age -> 12", "key -> s0dl52f23k")
+    )
+
+    assert(
+      ∅.serializeTo[List[String]] == List()
     )
 
   }

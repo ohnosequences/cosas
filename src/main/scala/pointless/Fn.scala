@@ -2,11 +2,10 @@ package ohnosequences.pointless
 
 
 trait AnyFn { type Out }
-
+trait Out[X] extends AnyFn { type Out = X }
 object AnyFn {
   
   type out[T] = AnyFn { type Out = T }
-
   trait WithCodomain[Z] extends AnyFn { type Out <: Z }
 
 

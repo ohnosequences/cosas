@@ -82,5 +82,5 @@ class RecordRepOps[R <: AnyRecord](val recEntry: Tagged[R]) {
     (implicit transform: Transform[R, Other, Rest]): Tagged[Other] = transform(recEntry, other, rest)
 
 
-  def serializeTo[X](implicit serializer: R SerializeTo X): X = serializer(recEntry)
+  def serializeTo[X](implicit serializer: (R SerializeTo X) { type In1 = RawOf[R] }): X = serializer(recEntry)
 }

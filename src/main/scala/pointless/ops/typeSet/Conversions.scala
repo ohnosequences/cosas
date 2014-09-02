@@ -146,22 +146,20 @@ object AnyMonoid {
 }
 
 @annotation.implicitNotFound(msg = "Can't serialize typeset ${S} to ${X}")
-trait SerializeTo[S <: AnyTypeSet, X] extends Fn1[S] { type Out = X
+trait SerializeTo[S <: AnyTypeSet, X] extends Fn1[S] with Out[X]
   // implicitly:
-  val monoid: AnyMonoid.Of[X]
-}
+  // val monoid: AnyMonoid.Of[X]
 
 object SerializeTo {
 
-  def apply[S <: AnyTypeSet, M]
-    (implicit serializer: S SerializeTo M): S SerializeTo M = serializer
+  def apply[S <: AnyTypeSet, X]
+    (implicit serializer: S SerializeTo X): S SerializeTo X = serializer
 
   implicit def empty[X](implicit m: AnyMonoid.Of[X]):
         (∅ SerializeTo X) = 
     new (∅ SerializeTo X) {
 
-      val monoid = m
-      def apply(r: ∅): Out = monoid.zero
+      def apply(r: ∅): Out = m.zero
     }
 
   implicit def cons[X,
@@ -173,8 +171,41 @@ object SerializeTo {
   ):  ((H :~: T) SerializeTo X) =
   new ((H :~: T) SerializeTo X) {
     
-    val monoid = m
-    def apply(s: H :~: T): Out = monoid.append(f(s.head), t(s.tail))
+    def apply(s: H :~: T): Out = m.append(f(s.head), t(s.tail))
+  }
+
+}
+
+@annotation.implicitNotFound(msg = "Can't serialize typeset ${S} to ${X}")
+trait SerializeTagged[X, S <: AnyTypeSet] //, SReps <: AnyTypeSet] 
+  extends AnyFn1 { type Out = X
+
+  type In1 <: AnyTypeSet
+
+
+  // implicitly:
+  // val tagged: S isRepresentedBy In1
+}
+
+object SerializeTagged {
+
+  implicit def empty[X](implicit m: AnyMonoid.Of[X]):
+        SerializeTagged[X, ∅] = 
+    new SerializeTagged[X, ∅] {
+      type In1 = ∅
+      def apply(r: ∅): Out = m.zero
+    }
+
+  implicit def cons[X, H <: AnyTaggedType, T <: AnyTypeSet] //, TReps <: AnyTypeSet]
+  (implicit
+    // tr: T isRepresentedBy TReps,
+    m: AnyMonoid.Of[X],
+    f: Tagged[H] => X,
+    t: SerializeTagged[X, T] //, TReps]
+  ):  SerializeTagged[X, H :~: T] = //, Tagged[H] :~: TReps] =
+  new SerializeTagged[X, H :~: T] { //, Tagged[H] :~: TReps] {
+    type In1 = Tagged[H] :~: t.In1
+    def apply(s: In1): Out = m.append(f(s.head), t(s.tail))
   }
 
 }
