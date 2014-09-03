@@ -1,6 +1,6 @@
 package ohnosequences.pointless
 
-import AnyTypeSet._, AnyProperty._, AnyTaggedType.Tagged, AnyTypeUnion._, AnyRecord._
+import AnyTypeSet._, AnyProperty._, AnyTaggedType.Tagged, AnyTypeUnion._, AnyRecord._, AnyFn._
 import ops.typeSet._
 
 
@@ -56,9 +56,9 @@ class RecordOps[R <: AnyRecord](val rec: R) extends TaggedTypeOps[R](rec) {
       reorder: Vs ReorderTo AnyRecord.RawOf[R]
     ): Tagged[R] = rec =>> reorder(values)
 
-  import ops.record._
+  def parseFrom[X](x: X)(implicit parseSet: (R#Properties ParseFrom X) with out[R#Raw]): Tagged[R] = 
+    rec =>> parseSet(rec.properties, x)
 
-  def parseFrom[X](x: X)(implicit parser: R ParseFrom X): Tagged[R] = parser(rec, x)
 }
 
 class RecordRepOps[R <: AnyRecord](val recEntry: Tagged[R]) {
@@ -82,5 +82,5 @@ class RecordRepOps[R <: AnyRecord](val recEntry: Tagged[R]) {
     (implicit transform: Transform[R, Other, Rest]): Tagged[Other] = transform(recEntry, other, rest)
 
 
-  def serializeTo[X](implicit serializer: (R SerializeTo X) { type In1 = RawOf[R] }): X = serializer(recEntry)
+  def serializeTo[X](implicit serializer: R#Raw SerializeTo X): X = serializer(recEntry: R#Raw)
 }

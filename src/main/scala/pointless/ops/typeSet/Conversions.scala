@@ -95,20 +95,18 @@ object ToList {
 
 
 @annotation.implicitNotFound(msg = "Can't parse typeset ${S} from ${X}")
-// NOTE: it should be restricted to AnyTypeSet.Of[AnyProperty], when :~: is known to return the same thing
+// NOTE: it should be restricted to AnyTypeSet.Of[AnyTaggedType], when :~: is known to return the same thing
 trait ParseFrom[S <: AnyTypeSet, X]
   extends Fn2[S, X] with WithCodomain[AnyTypeSet]
 
 object ParseFrom {
 
   def apply[S <: AnyTypeSet, X]
-    (implicit parser: ParseFrom[S, X]): ParseFrom[S, X] with out[parser.Out] = parser
+    (implicit parser: ParseFrom[S, X]): ParseFrom[S, X] = parser
 
   implicit def empty[X]: 
-        (∅ ParseFrom X) with out[∅] = 
-    new (∅ ParseFrom X) {
-
-      type Out = ∅
+        (∅ ParseFrom X) with Out[∅] = 
+    new (∅ ParseFrom X) with Out[∅] {
 
       def apply(s: ∅, x: X): Out = ∅
     }
@@ -118,10 +116,8 @@ object ParseFrom {
   ](implicit
     f: (H, X) => (Tagged[H], X),
     t: ParseFrom[T, X]
-  ):  ((H :~: T) ParseFrom X) with out[Tagged[H] :~: t.Out] =
-  new ((H :~: T) ParseFrom X) {
-    
-    type Out = Tagged[H] :~: t.Out
+  ):  ((H :~: T) ParseFrom X) with Out[Tagged[H] :~: t.Out] =
+  new ((H :~: T) ParseFrom X) with Out[Tagged[H] :~: t.Out] {
 
     def apply(s: H :~: T, x: X): Out = {
       val (head, rest) = f(s.head, x)
@@ -137,25 +133,18 @@ trait AnyMonoid {
   def append(a: M, b: M): M
 }
 
-trait Monoid[T] extends AnyMonoid {
-  type M = T
-}
+trait Monoid[T] extends AnyMonoid { type M = T }
 
-object AnyMonoid {
-  type Of[T] = AnyMonoid { type M = T }
-}
 
 @annotation.implicitNotFound(msg = "Can't serialize typeset ${S} to ${X}")
 trait SerializeTo[S <: AnyTypeSet, X] extends Fn1[S] with Out[X]
-  // implicitly:
-  // val monoid: AnyMonoid.Of[X]
 
 object SerializeTo {
 
   def apply[S <: AnyTypeSet, X]
     (implicit serializer: S SerializeTo X): S SerializeTo X = serializer
 
-  implicit def empty[X](implicit m: AnyMonoid.Of[X]):
+  implicit def empty[X](implicit m: Monoid[X]):
         (∅ SerializeTo X) = 
     new (∅ SerializeTo X) {
 
@@ -165,47 +154,13 @@ object SerializeTo {
   implicit def cons[X,
     H, T <: AnyTypeSet
   ](implicit
-    m: AnyMonoid.Of[X],
+    m: Monoid[X],
     f: H => X,
     t: T SerializeTo X
   ):  ((H :~: T) SerializeTo X) =
   new ((H :~: T) SerializeTo X) {
     
     def apply(s: H :~: T): Out = m.append(f(s.head), t(s.tail))
-  }
-
-}
-
-@annotation.implicitNotFound(msg = "Can't serialize typeset ${S} to ${X}")
-trait SerializeTagged[X, S <: AnyTypeSet] //, SReps <: AnyTypeSet] 
-  extends AnyFn1 { type Out = X
-
-  type In1 <: AnyTypeSet
-
-
-  // implicitly:
-  // val tagged: S isRepresentedBy In1
-}
-
-object SerializeTagged {
-
-  implicit def empty[X](implicit m: AnyMonoid.Of[X]):
-        SerializeTagged[X, ∅] = 
-    new SerializeTagged[X, ∅] {
-      type In1 = ∅
-      def apply(r: ∅): Out = m.zero
-    }
-
-  implicit def cons[X, H <: AnyTaggedType, T <: AnyTypeSet] //, TReps <: AnyTypeSet]
-  (implicit
-    // tr: T isRepresentedBy TReps,
-    m: AnyMonoid.Of[X],
-    f: Tagged[H] => X,
-    t: SerializeTagged[X, T] //, TReps]
-  ):  SerializeTagged[X, H :~: T] = //, Tagged[H] :~: TReps] =
-  new SerializeTagged[X, H :~: T] { //, Tagged[H] :~: TReps] {
-    type In1 = Tagged[H] :~: t.In1
-    def apply(s: In1): Out = m.append(f(s.head), t(s.tail))
   }
 
 }

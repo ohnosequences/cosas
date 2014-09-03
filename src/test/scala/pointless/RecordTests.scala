@@ -284,64 +284,40 @@ class RecordTests extends org.scalatest.FunSuite {
   }
 
   test("serialize") {
-    // // Map //
-    // implicit def anyMapMonoid[X, Y]: Monoid[Map[X, Y]] = new Monoid[Map[X, Y]] {
-    //   def zero: M = Map[X, Y]()
-    //   def append(a: M, b: M): M = a ++ b
-    // }
+    // Map //
+    implicit def anyMapMonoid[X, Y]: Monoid[Map[X, Y]] = new Monoid[Map[X, Y]] {
+      def zero: M = Map[X, Y]()
+      def append(a: M, b: M): M = a ++ b
+    }
 
-    // implicit def serializeProperty[P <: AnyProperty](t: Tagged[P])
-    //   (implicit getP: Tagged[P] => P): Map[String, String] = Map(getP(t).label -> t.toString)
+    implicit def serializeProperty[P <: AnyProperty](t: Tagged[P])
+      (implicit getP: Tagged[P] => P): Map[String, String] = Map(getP(t).label -> t.toString)
 
-    // assert(
-    //   normalUserEntry.serializeTo[Map[String, String]]
-    //   // (ops.record.SerializeTo.any[normalUser.type, MSS](
-    //   //   ops.typeSet.SerializeTo.cons(
-    //   //     anyMapMonoid[String, String], 
-    //   //     serializeProperty[id.type], 
-    //   //     ops.typeSet.SerializeTo.cons
-    //   //   )
-    //   // ))
-    //    == Map(
-    //     "name" -> "foo",
-    //     "color" -> "orange",
-    //     "id" -> "123",
-    //     "email" -> "foo@bar.qux"
-    //   )
-    // )
+    assert(
+      normalUserEntry.serializeTo[Map[String, String]] == 
+      Map(
+        "name" -> "foo",
+        "color" -> "orange",
+        "id" -> "123",
+        "email" -> "foo@bar.qux"
+      )
+    )
 
     // List //
-    implicit def anyListMonoid[X]: AnyMonoid.Of[List[X]] = new Monoid[List[X]] {
+    implicit def anyListMonoid[X]: Monoid[List[X]] = new Monoid[List[X]] {
       def zero: M = List[X]()
       def append(a: M, b: M): M = a ++ b
     }
 
-    implicit def propertyIntToStr[P <: AnyProperty.ofType[Integer]](t: Tagged[P])
-      (implicit getP: Tagged[P] => P): List[String] = List(getP(t).toString + " -> " + t.toString)
-
-    implicit def propertyStrToStr[P <: AnyProperty.ofType[String]](t: Tagged[P])
-      (implicit getP: Tagged[P] => P): List[String] = List(getP(t).toString + " -> " + t.toString)
+    implicit def propertyIntToStr[P <: AnyProperty](t: Tagged[P])
+      (implicit getP: Tagged[P] => P): List[String] = List(getP(t).label + " -> " + t.toString)
 
     // implicit def toStr[P](p: P): List[String] = List(p.toString)
 
-    // val ser = implicitly[SerializeTagged[List[String], normalUser.Properties] {type In1 = normalUser.Raw}] //(SerializeTagged.cons)
-
-    // val ser = implicitly[ops.record.SerializeTo[normalUser.type, List[String]]](
-    //   ops.record.SerializeTo.cons
-    // )
-    // (ops.record.SerializeTo.any[List[String], normalUser.type]
-    //   (ops.typeSet.SerializeTagged.cons[List[String], id.type, 
-    //     name.type :~: email.type :~: color.type :~: ∅
-    //     // Tagged[name.type] :~: Tagged[email.type] :~: Tagged[color.type] :~: ∅
-    //   ])
-    // )
-
-    // FIXME: doesn't work with poymorphic serializer like propertyToStr
-    // assert(
-    //   // normalUserEntry.serializeTo[List[String]] == //(ops.record.SerializeTo.any[List[String], normalUser.type]) ==
-    //   ser(normalUserEntry: normalUser.Raw) == 
-    //   List("123", "foo", "foo@bar.qux", "orange")
-    // )
+    assert(
+      normalUserEntry.serializeTo[List[String]] ==
+      List("id -> 123", "name -> foo", "email -> foo@bar.qux", "color -> orange")
+    )
 
   }
 

@@ -314,7 +314,7 @@ class TypeSetTests extends org.scalatest.FunSuite {
     )
 
     // List //
-    implicit def anyListMonoid[X]: AnyMonoid.Of[List[X]] = new Monoid[List[X]] {
+    implicit def anyListMonoid[X]: Monoid[List[X]] = new Monoid[List[X]] {
       def zero: M = List[X]()
       def append(a: M, b: M): M = a ++ b
     }

@@ -23,16 +23,19 @@ import ohnosequences.pointless._, AnyFn._, AnyTaggedType._, AnyTypeSet._
 @annotation.implicitNotFound(msg = "Can't construct a set of representations for ${S}")
 trait Represented[S <: AnyTypeSet] extends AnyFn with WithCodomain[AnyTypeSet]
 
-object Represented {
+object Represented extends Represented2 {
 
   implicit val empty: 
-    Represented[∅] with Out[∅] = 
+        Represented[∅] with Out[∅] = 
     new Represented[∅] with Out[∅]
+}
 
-  implicit def cons[H <: AnyTaggedType, T <: AnyTypeSet]
-    (implicit t: Represented[T]): 
-          Represented[H :~: T] with Out[Tagged[H] :~: t.Out] =
-      new Represented[H :~: T] with Out[Tagged[H] :~: t.Out]
+trait Represented2 {
+
+  implicit def cons[H <: AnyTaggedType, T <: AnyTypeSet, TR <: AnyTypeSet]
+    (implicit t: Represented[T] with out[TR]): 
+          Represented[H :~: T] with Out[Tagged[H] :~: TR] =
+      new Represented[H :~: T] with Out[Tagged[H] :~: TR]
 }
 
 
