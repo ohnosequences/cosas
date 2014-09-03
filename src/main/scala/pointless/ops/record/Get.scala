@@ -13,17 +13,15 @@ import ops.typeSet._
 
 @annotation.implicitNotFound(msg = "Can't get property ${P} of the record ${R}")
 trait Get[R <: AnyRecord, P <: AnyProperty] 
-  extends Fn1[Tagged[R]] { type Out = Tagged[P] } 
+  extends Fn1[Tagged[R]] with Out[Tagged[P]]
 
 object Get {
 
   implicit def getter[R <: AnyRecord, P <: AnyProperty]
     (implicit 
       isThere: P ∈ PropertiesOf[R],
-      lookup: Lookup[RawOf[R], Tagged[P]]
-    ):  Get[R, P] with out[Tagged[P]] = 
-    new Get[R, P] {
-      def apply(recEntry: Tagged[R]): Out = lookup(recEntry)
-    }
+      pop: RawOf[R] Pop Tagged[P]
+    ):  Get[R, P] = 
+    new Get[R, P] { def apply(recEntry: Tagged[R]): Out = pop(recEntry)._1 }
 
 }

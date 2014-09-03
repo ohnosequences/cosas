@@ -78,10 +78,18 @@ class TypeSetTests extends org.scalatest.FunSuite {
 
   test("pop") {
     val s = 1 :~: 'a' :~: "foo" :~: ∅
-
+    type st = Int :~: Char :~: String :~: ∅
+    val uhouh = 1 :~: ∅
     assert(s.pop[Int] == (1, 'a' :~: "foo" :~: ∅))
-    assert(s.pop[Char] == ('a', 1 :~: "foo" :~: ∅))
+    // val uh: (Char, Int :~: String :~: ∅) = pop[Char,Char] from s
+    // assert(s.pop[Char](
+    //        // implicitly[Char ∈ st], 
+    //        Pop.foundInTail(Pop.foundInHead)
+    //        ) == ('a', 1 :~: "foo" :~: ∅))
+    
+    // val hhhh: (Char, Int :~: String :~: ∅)  = pop[AnyVal, Char] from s
     assert(s.pop[String] == ("foo", 1 :~: 'a' :~: ∅))
+
   }
 
   test("contains/lookup") {
@@ -217,6 +225,9 @@ class TypeSetTests extends org.scalatest.FunSuite {
     object buh extends foo
     assert((boo :~: buh :~: ∅).toList == List[foo](boo, buh))
 
+    val s = 1 :~: 'a' :~: buh :~: "sdk" :~: boo :~: ∅
+    // val buhbuh = pop[foo] from s
+
   }
 
   test("conversion from HList") {
@@ -224,7 +235,6 @@ class TypeSetTests extends org.scalatest.FunSuite {
     import shapeless._
 
     assert(HNil.toTypeSet == ∅)
-    assert(fromHList(HNil) == ∅)
 
     val l = 1 :: 'a' :: "foo" :: HNil
     assert(l.toTypeSet == 1 :~: 'a' :~: "foo" :~: ∅)

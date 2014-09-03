@@ -19,22 +19,22 @@ object RecordTestsContext {
 
   case object normalUser extends Record(id :~: name :~: email :~: color :~: ∅)
 
-  case class HasRecordWithId[
-    Id <: AnyProperty, 
-    R <: AnyRecord
-  ](
-    val id: Id,
-    val r: R
-  )(implicit
-    val idIsThere: Id ∈ PropertiesOf[R],
-    val getId: Lookup[RawOf[R], Tagged[Id]]
-  )
-  {
+  // case class HasRecordWithId[
+  //   Id <: AnyProperty, 
+  //   R <: AnyRecord
+  // ](
+  //   val id: Id,
+  //   val r: R
+  // )(implicit
+  //   val idIsThere: Id ∈ PropertiesOf[R],
+  //   val getId: Lookup[RawOf[R], Tagged[Id]]
+  // )
+  // {
 
-    def getId(entry: Tagged[R]): Tagged[Id] = entry get id
+  //   def getId(entry: Tagged[R]): Tagged[Id] = entry get id
 
-    val p = r.properties
-  }
+  //   val p = r.properties
+  // }
 
   val vProps = email :~: color :~: ∅
   // nothing works with this
@@ -48,7 +48,7 @@ object RecordTestsContext {
     ∅
   )
 
-  val hasRecordWithId = new HasRecordWithId(id, normalUser)
+  // val hasRecordWithId = new HasRecordWithId(id, normalUser)
 
   // creating a record instance is easy and neat:
   val simpleUserEntry = simpleUser fields (
@@ -175,12 +175,12 @@ class RecordTests extends org.scalatest.FunSuite {
     val uhoh = simpleUserEntry get id
   }
 
-  test("recognize entries coming from different paths") {
+  // test("recognize entries coming from different paths") {
 
-    assert {
-      (hasRecordWithId getId normalUserEntry) == ( normalUserEntry get id)
-    }
-  }
+  //   assert {
+  //     (hasRecordWithId getId normalUserEntry) == ( normalUserEntry get id)
+  //   }
+  // }
 
   test("can see a record entry as another") {
 

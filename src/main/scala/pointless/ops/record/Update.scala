@@ -13,7 +13,7 @@ import ops.typeSet._
 
 @annotation.implicitNotFound(msg = "Can't update record ${R} with property values ${Ps}")
 trait Update[R <: AnyRecord, Ps <: AnyTypeSet]
-  extends Fn2[Tagged[R], Ps] { type Out = Tagged[R] }
+  extends Fn2[Tagged[R], Ps] with Out[Tagged[R]]
 
 object Update {
 
@@ -24,7 +24,9 @@ object Update {
       replace: Replace[AnyRecord.RawOf[R], Ps]
     ):  Update[R, Ps] =
     new Update[R, Ps] {
-      def apply(recEntry: Tagged[R], propReps: Ps): Out = getR(recEntry) =>> replace(recEntry: AnyRecord.RawOf[R], propReps)
+
+      def apply(recEntry: Tagged[R], propReps: Ps): Out = 
+        getR(recEntry) =>> replace(recEntry: AnyRecord.RawOf[R], propReps)
     }
 
 }

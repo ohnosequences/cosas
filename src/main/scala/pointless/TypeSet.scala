@@ -74,6 +74,9 @@ object NonEmptySet {
 
 object AnyTypeSet {
 
+  type TypesOf[S <: AnyTypeSet] = S#Types
+  type BoundOf[S <: AnyTypeSet] = S#Bound
+
   final type ∅ = TypeSetImpl.EmptySetImpl
   val ∅ : ∅ = TypeSetImpl.EmptySetImpl // the space before : is needed
   val emptySet : ∅ = TypeSetImpl.EmptySetImpl
@@ -83,11 +86,9 @@ object AnyTypeSet {
   // it's like KList, but a set
   type Of[T] = AnyTypeSet { type Bound <: just[T] }
 
-  // type RepsOf[NES <: NonEmptySet] = NonEmptySet { type Head = Tagged[NES#Head]; type Tail = RepsOf[NES#Tail] }
+  type SubsetOf[S <: AnyTypeSet] = AnyTypeSet { type Bound <: BoundOf[S] }
 
-  type SubsetOf[S <: AnyTypeSet] = AnyTypeSet { type Bound <: S#Bound }
-
-  type SupersetOf[S <: AnyTypeSet] = AnyTypeSet { type Bound >: S#Bound }
+  type SupersetOf[S <: AnyTypeSet] = AnyTypeSet { type Bound >: BoundOf[S] }
 
   type BoundedByUnion[U <: AnyTypeUnion] = AnyTypeSet { type Bound <: U#union }
 
@@ -99,11 +100,11 @@ object AnyTypeSet {
 
   /* An element is in the set */
   @annotation.implicitNotFound(msg = "Can't prove that ${E} is an element of ${S}")
-  final type isIn[E, S <: AnyTypeSet] = E isOneOf S#Types
+  final type isIn[E, S <: AnyTypeSet] = E isOneOf TypesOf[S]
   final type ∈[E, S <: AnyTypeSet] = E isIn S
 
   @annotation.implicitNotFound(msg = "Can't prove that ${E} is not an element of ${S}")
-  type isNotIn[E, S <: AnyTypeSet] = E isNotOneOf S#Types
+  type isNotIn[E, S <: AnyTypeSet] = E isNotOneOf TypesOf[S]
   final type ∉[E, S <: AnyTypeSet] = E isNotIn S
 
   final type in[S <: AnyTypeSet] = {
@@ -113,12 +114,12 @@ object AnyTypeSet {
 
   /* One set is a subset of another */
   @annotation.implicitNotFound(msg = "Can't prove that ${S} is a subset of ${Q}")
-  type isSubsetOf[S <: AnyTypeSet, Q <: AnyTypeSet] = S#Types#union <:<  Q#Types#union 
+  type isSubsetOf[S <: AnyTypeSet, Q <: AnyTypeSet] = BoundOf[S] <:< BoundOf[Q] 
   @annotation.implicitNotFound(msg = "Can't prove that ${S} is a subset of ${Q}")
   final type ⊂[S <: AnyTypeSet, Q <: AnyTypeSet] = S isSubsetOf Q
 
   @annotation.implicitNotFound(msg = "Can't prove that ${S} is not a subset of ${Q}")
-  type isNotSubsetOf[S <: AnyTypeSet, Q <: AnyTypeSet] = S#Types#union <:!< Q#Types#union
+  type isNotSubsetOf[S <: AnyTypeSet, Q <: AnyTypeSet] = BoundOf[S] <:!< BoundOf[Q]
   @annotation.implicitNotFound(msg = "Can't prove that ${S} is not a subset of ${Q}")
   final type ⊄[S <: AnyTypeSet, Q <: AnyTypeSet] = S isNotSubsetOf Q
 
@@ -130,11 +131,11 @@ object AnyTypeSet {
 
   /* Two sets have the same type union bound */
   @annotation.implicitNotFound(msg = "Can't prove that ${S} is the same as ${Q}")
-  type isSameAs[S <: AnyTypeSet, Q <: AnyTypeSet] = S#Types#union =:=  Q#Types#union
+  type    isSameAs[S <: AnyTypeSet, Q <: AnyTypeSet] = BoundOf[S] =:=  BoundOf[Q]
   type ~:~[S <: AnyTypeSet, Q <: AnyTypeSet] = S isSameAs Q
 
   @annotation.implicitNotFound(msg = "Can't prove that ${S} is not the same as ${Q}")
-  type isNotSameAs[S <: AnyTypeSet, Q <: AnyTypeSet] = S#Types#union =:!= Q#Types#union
+  type isNotSameAs[S <: AnyTypeSet, Q <: AnyTypeSet] = BoundOf[S] =:!= BoundOf[Q]
   type ~:!~[S <: AnyTypeSet, Q <: AnyTypeSet] = S isNotSameAs Q
 
   final type sameAs[Q <: AnyTypeSet] = {
@@ -145,10 +146,10 @@ object AnyTypeSet {
 
   /* Elements of the set are bounded by the type */
   @annotation.implicitNotFound(msg = "Can't prove that elements of ${S} are bounded by ${B}")
-  type isBoundedBy[S <: AnyTypeSet, B] = S#Types#union <:<  either[B]#union
+  type isBoundedBy[S <: AnyTypeSet, B] = BoundOf[S] <:< just[B]
 
   @annotation.implicitNotFound(msg = "Can't prove that elements of ${S} are not bounded by ${B}")
-  type isNotBoundedBy[S <: AnyTypeSet, B] = S#Types#union <:!< either[B]#union
+  type isNotBoundedBy[S <: AnyTypeSet, B] = BoundOf[S] <:!< just[B]
 
   final type boundedBy[B] = {
     type    is[S <: AnyTypeSet] = S    isBoundedBy B
@@ -158,10 +159,10 @@ object AnyTypeSet {
 
   /* Elements of the set are from the type union */
   @annotation.implicitNotFound(msg = "Can't prove that elements of ${S} are from the type union ${U}")
-  type    isBoundedByUnion[S <: AnyTypeSet, U <: AnyTypeUnion] = S#Types#union <:<  U#union
+  type    isBoundedByUnion[S <: AnyTypeSet, U <: AnyTypeUnion] = BoundOf[S] <:<  U#union
 
   @annotation.implicitNotFound(msg = "Can't prove that elements of ${S} are not from the type union ${U}")
-  type isNotBoundedByUnion[S <: AnyTypeSet, U <: AnyTypeUnion] = S#Types#union <:!< U#union
+  type isNotBoundedByUnion[S <: AnyTypeSet, U <: AnyTypeUnion] = BoundOf[S] <:!< U#union
 
   final type boundedByUnion[U <: AnyTypeUnion] = {
     type    is[S <: AnyTypeSet] = S    isBoundedByUnion U
@@ -172,53 +173,21 @@ object AnyTypeSet {
   @annotation.implicitNotFound(msg = "Can't prove that ${S} is represented by ${R}")
   type isRepresentedBy[S <: AnyTypeSet, R <: AnyTypeSet] = ops.typeSet.Represented[S] with out[R]
 
-  // type tagsOf[S <: AnyTypeSet, R <: AnyTypeSet] = ops.typeSet.TagsOf[S] with out[R]
+  type represents[S <: AnyTypeSet, R <: AnyTypeSet] = ops.typeSet.TagsOf[S] with out[R]
 
-
-  // object AnyTypeSet {
-  /*
-    ### Functions
-  */
   type \[S <: AnyTypeSet, Q <: AnyTypeSet] = ops.typeSet.Subtract[S, Q]
 
   type ∪[S <: AnyTypeSet, Q <: AnyTypeSet] = ops.typeSet.Union[S, Q]
 
-  // type Pop[S <: AnyTypeSet, E] = ops.typeSet.Pop[S, E]
+  type ToListOf[S <: AnyTypeSet, T] = ops.typeSet.ToList[S] with wrapped[T]
 
-  // type Lookup[S <: AnyTypeSet, E] = ops.typeSet.Lookup[S, E]
-
-  // type Take[S <: AnyTypeSet, Q <: AnyTypeSet] = ops.typeSet.Take[S, Q]
-
-  // type Replace[S <: AnyTypeSet, Q <: AnyTypeSet] = ops.typeSet.Replace[S, Q]
-
-  // type ReorderTo[S <: AnyTypeSet, Q <: AnyTypeSet] = ops.typeSet.ReorderTo[S, Q]
-
-  // type FromHList[L <: HList] = ops.typeSet.FromHList[L]
-
-  // type ToHList[S <: AnyTypeSet] = ops.typeSet.ToHList[S]
-
-  // type  ToList[S <: AnyTypeSet] = ops.typeSet.ToList[S]
-
-  type ToListOf[S <: AnyTypeSet, T] = ops.typeSet.ToList[S] with o[T]
-
-  // type MapToHList[F <: Poly1, S <: AnyTypeSet] = ops.typeSet.MapToHList[F, S]
-
-  // type  MapToList[F <: Poly1, S <: AnyTypeSet] = ops.typeSet.MapToList[F, S]
-
-  // type     MapSet[F <: Poly1, S <: AnyTypeSet] = ops.typeSet.MapSet[F, S]
-
-  // type MapFoldSet[F <: Poly1, S <: AnyTypeSet, R] = ops.typeSet.MapFoldSet[F, S, R]
 
   implicit def typeSetOps[S <: AnyTypeSet](s: S): TypeSetOps[S] = new TypeSetOps[S](s)
   implicit def hListOps[L <: HList](l: L): HListOps[L] = new HListOps[L](l)
 
-  def fromHList[L <: HList](l: L)
-    (implicit fromHList: ops.typeSet.FromHList[L]): fromHList.Out = fromHList(l)
-
 }
 
-
-class TypeSetOps[S <: AnyTypeSet](s: S) {
+class TypeSetOps[S <: AnyTypeSet](val s: S) {
   import AnyTypeSet._
   import ops.typeSet._
 
@@ -226,10 +195,12 @@ class TypeSetOps[S <: AnyTypeSet](s: S) {
 
   def :~:[E](e: E)(implicit check: E ∉ S): (E :~: S) = TypeSetImpl.ConsSet.cons(e, s)
 
-  def pop[E](implicit check: E ∈ S, pop: S Pop E): pop.Out = pop(s)
+  def pop[E](implicit pop: S Pop E): pop.Out = pop(s)
 
-  def lookup[E](implicit check: E ∈ S, lookup: S Lookup E): lookup.Out = lookup(s)
+  def lookup[E](implicit check: E ∈ S, lookup: S Lookup E): E = lookup(s)
 
+  // deletes the first element of type E
+  def delete[E](implicit check: E ∈ S, del: S Delete E): del.Out = del(s)
 
   /* Set-related */
 

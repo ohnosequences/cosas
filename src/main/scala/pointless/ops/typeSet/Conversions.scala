@@ -9,7 +9,7 @@ case object id extends Poly1 { implicit def default[T] = at[T]((t:T) => t) }
 
 
 @annotation.implicitNotFound(msg = "Can't convert ${S} to an HList")
-trait ToHList[S <: AnyTypeSet] extends Fn1[S] with WithCodomain[HList]
+trait ToHList[S <: AnyTypeSet] extends Fn1[S] with OutBound[HList]
 
 object ToHList {
 
@@ -27,7 +27,7 @@ object ToHList {
 
 
 @annotation.implicitNotFound(msg = "Can't convert ${L} to a TypeSet (maybe element types are not distinct)")
-trait FromHList[L <: HList] extends Fn1[L] with WithCodomain[AnyTypeSet]
+trait FromHList[L <: HList] extends Fn1[L] with OutBound[AnyTypeSet]
 
 object FromHList {
 
@@ -53,51 +53,42 @@ object FromHList {
 
 
 @annotation.implicitNotFound(msg = "Can't convert ${S} to a List")
-trait ToList[S <: AnyTypeSet] extends Fn1[S] with WrappedIn[List]
+trait ToList[S <: AnyTypeSet] extends Fn1[S] with OutWrappedIn[List]
 
 object ToList {
 
   def apply[S <: AnyTypeSet](implicit toList: ToList[S]): ToList[S] with out[toList.Out] = toList
 
-  // NOTE: approach with using MapToList doesn't work...
+  // case object id_ extends Poly1 { implicit def default[T <: X, X] = at[T]{ (t: T) => (t: X) } }
   
-  // case object id_ extends Poly1 { implicit def default[T <: X, X] = at[T]((t: T) => (t: X)) }
-  // 
-  // implicit def any[S <: AnyTypeSet](implicit 
-  //     mapper: id_.type MapToList S
-  //   ):  ToList[S] with o[mapper.O] =
-  //   new ToList[S] {
-  //     type O = mapper.O
-  //     def apply(s: S): Out = mapper(s)
-  //   }
+  // implicit def any[S <: AnyTypeSet, O](implicit 
+  //     mapper: (id_.type MapToList S) with wrapped[O]
+  //   ):  ToList[S] with Wrapped[O] =
+  //   new ToList[S] with Wrapped[O] { def apply(s: S): Out = mapper(s) }
 
-  implicit def empty[X]: ToList[∅] with o[X] = 
-    new ToList[∅] {
-      type O = X
-      def apply(s: ∅): Out = Nil
-    }
+  implicit def empty[X]: 
+        ToList[∅] with Wrapped[X] = 
+    new ToList[∅] with Wrapped[X] { def apply(s: ∅): Out = Nil }
   
-  implicit def one[X, H <: X]: ToList[H :~: ∅] with o[X] =
-    new ToList[H :~: ∅] {
-      type O = X
-      def apply(s: H :~: ∅): Out = List[X](s.head)
-    }
+  implicit def one[X, H <: X]:
+        ToList[H :~: ∅] with Wrapped[X] =
+    new ToList[H :~: ∅] with Wrapped[X] { def apply(s: H :~: ∅): Out = List[X](s.head) }
 
   implicit def cons2[X, H1 <: X, H2 <: X, T <: AnyTypeSet]
     (implicit 
-      lt: ToList[H2 :~: T] with o[X]
-    ):  ToList[H1 :~: H2 :~: T] with o[X] = 
-    new ToList[H1 :~: H2 :~: T] {
-      type O = X
+      lt: ToList[H2 :~: T] with wrapped[X]
+    ):  ToList[H1 :~: H2 :~: T] with Wrapped[X] = 
+    new ToList[H1 :~: H2 :~: T] with Wrapped[X] {
+
       def apply(s: H1 :~: H2 :~: T): Out = s.head :: lt(s.tail.head :~: s.tail.tail)
     }
+
 }
 
 
 @annotation.implicitNotFound(msg = "Can't parse typeset ${S} from ${X}")
 // NOTE: it should be restricted to AnyTypeSet.Of[AnyTaggedType], when :~: is known to return the same thing
-trait ParseFrom[S <: AnyTypeSet, X]
-  extends Fn2[S, X] with WithCodomain[AnyTypeSet]
+trait ParseFrom[S <: AnyTypeSet, X] extends Fn2[S, X] with OutBound[AnyTypeSet]
 
 object ParseFrom {
 
@@ -112,12 +103,12 @@ object ParseFrom {
     }
 
   implicit def cons[X,
-    H <: AnyTaggedType, T <: AnyTypeSet
+    H <: AnyTaggedType, T <: AnyTypeSet, TO <: AnyTypeSet
   ](implicit
     f: (H, X) => (Tagged[H], X),
-    t: ParseFrom[T, X]
-  ):  ((H :~: T) ParseFrom X) with Out[Tagged[H] :~: t.Out] =
-  new ((H :~: T) ParseFrom X) with Out[Tagged[H] :~: t.Out] {
+    t: ParseFrom[T, X] with out[TO]
+  ):  ((H :~: T) ParseFrom X) with Out[Tagged[H] :~: TO] =
+  new ((H :~: T) ParseFrom X) with Out[Tagged[H] :~: TO] {
 
     def apply(s: H :~: T, x: X): Out = {
       val (head, rest) = f(s.head, x)
