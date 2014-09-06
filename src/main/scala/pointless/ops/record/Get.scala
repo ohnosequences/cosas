@@ -19,13 +19,8 @@ object Get {
 
   implicit def getter[R <: AnyRecord, P <: AnyProperty]
     (implicit 
-      isThere: P ∈ PropertiesOf[R],
-      pop: RawOf[R] Pop ValueOf[P]
+      lookup: RawOf[R] Lookup ValueOf[P]
     ):  Get[R, P] = 
-    new Get[R, P] {
-
-      def apply(recEntry: RawOf[R]): Out =
-        pop(recEntry)._1
-    }
+    new Get[R, P] { def apply(recRaw: RawOf[R]): Out = lookup(recRaw) }
 
 }

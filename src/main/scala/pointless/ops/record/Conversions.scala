@@ -31,8 +31,8 @@ object Transform {
     ):  Transform[R, Other, Rest] = 
     new Transform[R, Other, Rest] {
 
-      def apply(recEntry: RawOf[R], other: Other, rest: Rest): Out = 
-        valueOf[Other](project(uni(recEntry, rest)))
+      def apply(recRaw: RawOf[R], other: Other, rest: Rest): Out = 
+        valueOf[Other](project(uni(recRaw, rest)))
     }
 
 }

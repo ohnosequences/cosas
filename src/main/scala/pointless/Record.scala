@@ -43,11 +43,11 @@ object AnyRecord {
         RecordOps[R] = 
     new RecordOps[R](rec)
 
-  // this is the key: you'll only get record ops _if_ you have a ValueOf[R]. From that point, you don't need the wrapper at all, just use `recEntry.raw`. This lets you make RecordRepOps a value class itself!
+  // NOTE: you'll only get record ops _if_ you have a ValueOf[R]. From that point, you don't need the wrapper at all, just use `recEntry.raw`. This lets you make RecordRawOps a value class itself!
   // see https://stackoverflow.com/questions/14861862/how-do-you-enrich-value-classes-without-overhead/
   implicit def recordRepOps[R <: AnyRecord](recEntry: ValueOf[R]): 
-        RecordRepOps[R] = 
-    new RecordRepOps[R](recEntry.raw)
+        RecordRawOps[R] = 
+    new RecordRawOps[R](recEntry.raw)
 
 }
 
@@ -63,31 +63,30 @@ class RecordOps[R <: AnyRecord](val rec: R) extends TypeOps[R](rec) {
 
 }
 
-// class RecordRepOps[R <: AnyRecord](val recEntry: ValueOf[R]) {
-class RecordRepOps[R <: AnyRecord](val recEntry: RawOf[R]) extends AnyVal {
+class RecordRawOps[R <: AnyRecord](val recRaw: RawOf[R]) extends AnyVal {
   
   import ops.record._
 
   def get[P <: AnyProperty](p: P)
-    (implicit lookup: RawOf[R] Lookup ValueOf[P]): ValueOf[P] = lookup(recEntry.raw)
-    // (implicit get: R Get P): ValueOf[P] = get(recEntry)
+    (implicit get: R Get P): ValueOf[P] = get(recRaw)
+    // (implicit lookup: RawOf[R] Lookup ValueOf[P]): ValueOf[P] = lookup(recRaw.raw)
 
 
   def update[P <: AnyProperty](propRep: ValueOf[P])
     (implicit check: (ValueOf[P] :~: ∅) ⊂ RawOf[R], 
               upd: R Update (ValueOf[P] :~: ∅)
-    ): ValueOf[R] = upd(recEntry, propRep :~: ∅)
+    ): ValueOf[R] = upd(recRaw, propRep :~: ∅)
 
   def update[Ps <: AnyTypeSet](propReps: Ps)
-    (implicit upd: R Update Ps): ValueOf[R] = upd(recEntry, propReps)
+    (implicit upd: R Update Ps): ValueOf[R] = upd(recRaw, propReps)
 
 
   def as[Other <: AnyRecord](other: Other)
-    (implicit project: Take[RawOf[R], RawOf[Other]]): ValueOf[Other] = valueOf[Other](project(recEntry))
+    (implicit project: Take[RawOf[R], RawOf[Other]]): ValueOf[Other] = valueOf[Other](project(recRaw))
 
   def as[Other <: AnyRecord, Rest <: AnyTypeSet](other: Other, rest: Rest)
-    (implicit transform: Transform[R, Other, Rest]): ValueOf[Other] = transform(recEntry, other, rest)
+    (implicit transform: Transform[R, Other, Rest]): ValueOf[Other] = transform(recRaw, other, rest)
 
 
-  def serializeTo[X](implicit serializer: R#Raw SerializeTo X): X = serializer(recEntry)
+  def serializeTo[X](implicit serializer: R#Raw SerializeTo X): X = serializer(recRaw)
 }

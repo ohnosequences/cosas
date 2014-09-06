@@ -24,9 +24,9 @@ object Update {
     ):  Update[R, Ps] =
     new Update[R, Ps] {
 
-      def apply(recEntry: RawOf[R], propReps: Ps): Out = 
+      def apply(recRaw: RawOf[R], propReps: Ps): Out = 
 
-        valueOf[R](replace(recEntry, propReps))
+        valueOf[R](replace(recRaw, propReps))
     }
 
 }
