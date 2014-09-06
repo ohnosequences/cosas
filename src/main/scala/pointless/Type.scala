@@ -1,6 +1,7 @@
 package ohnosequences.pointless
 
 trait AnyType {
+
   type Raw
 
   type Me = this.type
@@ -10,6 +11,7 @@ trait AnyType {
 trait Type[R] extends AnyType { type Raw = R }
 
 object AnyType {
+
   type withRaw[R] = AnyType { type Raw = R }
 
   type RawOf[T <: AnyType] = T#Raw
@@ -22,8 +24,10 @@ object AnyType {
 }
 import AnyType._
 
+trait Value[T <: AnyType, @specialized V] extends Any
 
-final class ValueOf[T <: AnyType](val raw: RawOf[T]) extends AnyVal {
+final class ValueOf[T <: AnyType](val raw: RawOf[T]) extends AnyVal with Value[T,RawOf[T]] {
+
   type Type = T
   override def toString = raw.toString
 }

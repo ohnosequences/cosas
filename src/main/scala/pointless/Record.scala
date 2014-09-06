@@ -43,9 +43,11 @@ object AnyRecord {
         RecordOps[R] = 
     new RecordOps[R](rec)
 
+  // this is the key: you'll only get record ops _if_ you have a ValueOf[R]. From that point, you don't need the wrapper at all, just use `recEntry.raw`. This lets you make RecordRepOps a value class itself!
+  // see https://stackoverflow.com/questions/14861862/how-do-you-enrich-value-classes-without-overhead/
   implicit def recordRepOps[R <: AnyRecord](recEntry: ValueOf[R]): 
         RecordRepOps[R] = 
-    new RecordRepOps[R](recEntry)
+    new RecordRepOps[R](recEntry.raw)
 
 }
 
@@ -61,7 +63,9 @@ class RecordOps[R <: AnyRecord](val rec: R) extends TypeOps[R](rec) {
 
 }
 
-class RecordRepOps[R <: AnyRecord](val recEntry: ValueOf[R]) {
+// class RecordRepOps[R <: AnyRecord](val recEntry: ValueOf[R]) {
+class RecordRepOps[R <: AnyRecord](val recEntry: RawOf[R]) extends AnyVal {
+  
   import ops.record._
 
   def get[P <: AnyProperty](p: P)
@@ -78,11 +82,11 @@ class RecordRepOps[R <: AnyRecord](val recEntry: ValueOf[R]) {
 
 
   def as[Other <: AnyRecord](other: Other)
-    (implicit project: Take[RawOf[R], RawOf[Other]]): ValueOf[Other] = valueOf[Other](project(recEntry.raw))
+    (implicit project: Take[RawOf[R], RawOf[Other]]): ValueOf[Other] = valueOf[Other](project(recEntry))
 
   def as[Other <: AnyRecord, Rest <: AnyTypeSet](other: Other, rest: Rest)
     (implicit transform: Transform[R, Other, Rest]): ValueOf[Other] = transform(recEntry, other, rest)
 
 
-  def serializeTo[X](implicit serializer: R#Raw SerializeTo X): X = serializer(recEntry.raw)
+  def serializeTo[X](implicit serializer: R#Raw SerializeTo X): X = serializer(recEntry)
 }

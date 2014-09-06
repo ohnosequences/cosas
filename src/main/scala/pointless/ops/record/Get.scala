@@ -13,7 +13,7 @@ import ops.typeSet._
 
 @annotation.implicitNotFound(msg = "Can't get property ${P} of the record ${R}")
 trait Get[R <: AnyRecord, P <: AnyProperty] 
-  extends Fn1[ValueOf[R]] with Out[ValueOf[P]]
+  extends Fn1[RawOf[R]] with Out[ValueOf[P]]
 
 object Get {
 
@@ -24,8 +24,8 @@ object Get {
     ):  Get[R, P] = 
     new Get[R, P] {
 
-      def apply(recEntry: ValueOf[R]): Out =
-        pop(recEntry.raw)._1
+      def apply(recEntry: RawOf[R]): Out =
+        pop(recEntry)._1
     }
 
 }
