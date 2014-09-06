@@ -130,13 +130,13 @@ class RecordTests extends org.scalatest.FunSuite {
     """)
   }
 
-  ignore("can access property values") {
+  test("can access property values") {
 
     assert{ (simpleUserEntry get id) == id(123) }
     assert{ (simpleUserEntry get name) == name("foo") }
   }
 
-  ignore("can access property values from vals and volatile vals") {
+  test("can access property values from vals and volatile vals") {
 
     assert{ (vRecordEntry get email) == email("oh@buh.com") }
   }
@@ -148,16 +148,16 @@ class RecordTests extends org.scalatest.FunSuite {
 
   test("update fields") {
 
-    // assert(
-    //   (normalUserEntry update (color("albero"))) ==
-    //   (normalUser fields (
-    //     (normalUserEntry get name) :~: 
-    //     (normalUserEntry get id) :~: 
-    //     (normalUserEntry get email) :~:
-    //     (color("albero")) :~:
-    //     ∅
-    //   ))
-    // )
+    assert(
+      (normalUserEntry update (color("albero"))) ==
+      (normalUser fields (
+        (normalUserEntry get name) :~: 
+        (normalUserEntry get id) :~: 
+        (normalUserEntry get email) :~:
+        (color("albero")) :~:
+        ∅
+      ))
+    )
 
     assert(
       (normalUserEntry update ((name("bar")) :~: (id(321)) :~: ∅)) ==

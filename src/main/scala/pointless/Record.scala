@@ -65,7 +65,8 @@ class RecordRepOps[R <: AnyRecord](val recEntry: ValueOf[R]) {
   import ops.record._
 
   def get[P <: AnyProperty](p: P)
-    (implicit get: R Get P): ValueOf[P] = get(recEntry)
+    (implicit lookup: RawOf[R] Lookup ValueOf[P]): ValueOf[P] = lookup(recEntry.raw)
+    // (implicit get: R Get P): ValueOf[P] = get(recEntry)
 
 
   def update[P <: AnyProperty](propRep: ValueOf[P])
