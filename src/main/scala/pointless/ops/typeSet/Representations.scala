@@ -21,41 +21,37 @@ package ohnosequences.pointless.ops.typeSet
 import ohnosequences.pointless._, AnyFn._, AnyTaggedType._, AnyTypeSet._
 
 @annotation.implicitNotFound(msg = "Can't construct a set of representations for ${S}")
-trait Represented[S <: AnyTypeSet] extends AnyFn with WithCodomain[AnyTypeSet]
+trait Represented[S <: AnyTypeSet] extends AnyFn with OutBound[AnyTypeSet]
 
 object Represented {
 
-  implicit val empty: Represented[∅] with out[∅] = new Represented[∅] { type Out = ∅ }
+  implicit val empty: 
+        Represented[∅] with Out[∅] = 
+    new Represented[∅] with Out[∅]
 
-  implicit def cons[H <: AnyTaggedType, T <: AnyTypeSet]
-    (implicit t: Represented[T]): Represented[H :~: T] with out[Tagged[H] :~: t.Out] =
-      new Represented[H :~: T] { type Out = Tagged[H] :~: t.Out }
+  implicit def cons[H <: AnyTaggedType, T <: AnyTypeSet, TR <: AnyTypeSet]
+    (implicit t: Represented[T] with Out[TR]): 
+          Represented[H :~: T] with Out[Tagged[H] :~: TR] =
+      new Represented[H :~: T] with Out[Tagged[H] :~: TR]
 }
 
 
-// @annotation.implicitNotFound(msg = "")
-// trait TagsOf[S <: TypeSet] extends DepFn1[S] { type Out <: TypeSet }
+@annotation.implicitNotFound(msg = "Can't get tags of the set ${S}")
+trait TagsOf[S <: AnyTypeSet] extends Fn1[S] with OutBound[AnyTypeSet]
 
-// object TagsOf {
+object TagsOf {
 
-//   def apply[S <: TypeSet](implicit keys: TagsOf[S]): Aux[S, keys.Out] = keys
+  implicit val empty: 
+        TagsOf[∅] with Out[∅] =
+    new TagsOf[∅] with Out[∅] { def apply(s: ∅): Out = ∅ }
 
-//   type Aux[S <: TypeSet, O <: TypeSet] = TagsOf[S] { type Out = O }
+  implicit def cons[H <: AnyTaggedType, T <: AnyTypeSet, TO <: AnyTypeSet]
+    (implicit 
+      getH: Tagged[H] => H, 
+      rest: TagsOf[T] with out[TO]
+    ):  TagsOf[Tagged[H] :~: T] with Out[H :~: TO] =
+    new TagsOf[Tagged[H] :~: T] with Out[H :~: TO] {
 
-//   implicit val empty: Aux[∅, ∅] =
-//     new TagsOf[∅] {
-//       type Out = ∅
-//       def apply(s: ∅): Out = ∅
-//     }
-
-//   implicit def cons[H <: Singleton with Representable, T <: TypeSet]
-//     (implicit fromRep: Tagged[H] => H, t: TagsOf[T]): Aux[Tagged[H] :~: T, H :~: t.Out] =
-//       new TagsOf[Tagged[H] :~: T] {
-//         type Out = H :~: t.Out
-//         def apply(s: Tagged[H] :~: T): Out = {
-
-//           val uh: H = fromRep(s.head)
-//           uh :~: t(s.tail)
-//         }
-//       }
-// }
+      def apply(s: Tagged[H] :~: T): Out = getH(s.head) :~: rest(s.tail)
+    }
+}

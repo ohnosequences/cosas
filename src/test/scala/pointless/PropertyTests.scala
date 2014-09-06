@@ -1,12 +1,13 @@
 package ohnosequences.pointless.test
 
-import ohnosequences.pointless._, AnyTaggedType._, AnyProperty._
+import ohnosequences.pointless._, AnyTaggedType._, AnyProperty._, AnyTypeSet._
 
 object exampleProperties {
   
   case object key extends Property[String]
   case object name extends Property[String]
   case object age extends Property[Integer]
+  case object valueless extends Property
 }
 
 class uhoh extends org.scalatest.FunSuite {
@@ -35,4 +36,22 @@ class uhoh extends org.scalatest.FunSuite {
     """
     )
   }
+
+  test("valueless properties lead to nothing") {
+
+    implicitly[AnyTaggedType.RawOf[valueless.type] =:= Nothing]: Unit
+  }
+
+  test("having properties") {
+    object foo
+    implicit val foo_props = foo has name :~: age :~: ∅
+
+    implicitly[foo.type HasProperty name.type]
+    implicitly[foo.type HasProperty age.type]
+
+    implicitly[foo.type HasProperties ∅]
+    implicitly[foo.type HasProperties (name.type :~: ∅)]
+    implicitly[foo.type HasProperties (age.type :~: name.type :~: ∅)]
+  }
+
 }

@@ -6,3 +6,5 @@ addSbtPlugin("ohnosequences" % "nice-sbt-settings" % "0.4.0")
 addSbtPlugin("laughedelic" % "literator-plugin" % "0.5.2")
 
 addSbtPlugin("com.markatta" % "taglist-plugin" % "1.3.1")
+
+addSbtPlugin("org.brianmckenna" % "sbt-wartremover" % "0.11")

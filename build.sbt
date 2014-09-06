@@ -23,3 +23,7 @@ libraryDependencies += {
 libraryDependencies ++= Seq (
   "org.scalatest" %% "scalatest" % "2.2.2" % "test"
 )
+
+wartremoverWarnings ++= Warts.all
+
+wartremoverExcluded ++= Seq("ohnosequences.pointless.test")

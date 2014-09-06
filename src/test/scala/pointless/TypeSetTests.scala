@@ -1,8 +1,8 @@
 package ohnosequences.pointless.tests
 
-import shapeless._
 import shapeless.test.illTyped
-import ohnosequences.pointless._, AnyTypeSet._
+import ohnosequences.pointless._, AnyTypeSet._, AnyTaggedType._
+import ops.typeSet._
 
 class TypeSetTests extends org.scalatest.FunSuite {
 
@@ -13,8 +13,8 @@ class TypeSetTests extends org.scalatest.FunSuite {
     // or with nicer syntax:
     implicitly[Any ∉ ∅]
 
-    // FIXME: Yoda style doesn't work
-    // implicitly[in[∅]#isNot[Any]]
+    // or Yoda style:
+    implicitly[in[∅]#isNot[Any]]
 
   }
 
@@ -32,6 +32,24 @@ class TypeSetTests extends org.scalatest.FunSuite {
 
     val vals = 1 :~: 'a' :~: true :~: ∅
     implicitly[boundedBy[AnyVal]#is[vals.type]]
+
+
+    // case class foo[S <: AnyTypeSet.TypeSetOf[Int]]()
+    implicitly[foos.type <:< AnyTypeSet.Of[foo]]
+    // implicitly[(Int :~: ∅) <:< AnyTypeSet.Of[AnyVal]]
+    trait goos {
+      type F <: AnyTypeSet.Of[foo]
+      val  f: F
+    }
+    object g extends goos {
+      type F = foos.type
+      val f = foos: F
+    }
+    case class boos[T <: AnyTypeSet.Of[foo]](t: T) extends goos {
+      type F = T
+      val f = t
+    }
+    val b = boos(foos)
 
   }
 
@@ -51,14 +69,27 @@ class TypeSetTests extends org.scalatest.FunSuite {
     implicitly[(Int :~: Char :~: ∅) ⊂ (Char :~: Int :~: ∅)]
     implicitly[(Int :~: Char :~: ∅) ~:~ (Char :~: Int :~: ∅)]
 
+    def isSubsetOfb[S <: AnyTypeSet.SubsetOf[b.type]] = true
+    assert(isSubsetOfb[Boolean :~: Int :~: ∅] == true)
+    illTyped("""
+      val x = isSubsetOfb[Boolean :~: Int :~: String :~: ∅]
+    """)
   }
 
   test("pop") {
     val s = 1 :~: 'a' :~: "foo" :~: ∅
-
+    type st = Int :~: Char :~: String :~: ∅
+    val uhouh = 1 :~: ∅
     assert(s.pop[Int] == (1, 'a' :~: "foo" :~: ∅))
-    assert(s.pop[Char] == ('a', 1 :~: "foo" :~: ∅))
+    // val uh: (Char, Int :~: String :~: ∅) = pop[Char,Char] from s
+    // assert(s.pop[Char](
+    //        // implicitly[Char ∈ st], 
+    //        Pop.foundInTail(Pop.foundInHead)
+    //        ) == ('a', 1 :~: "foo" :~: ∅))
+    
+    // val hhhh: (Char, Int :~: String :~: ∅)  = pop[AnyVal, Char] from s
     assert(s.pop[String] == ("foo", 1 :~: 'a' :~: ∅))
+
   }
 
   test("contains/lookup") {
@@ -106,11 +137,11 @@ class TypeSetTests extends org.scalatest.FunSuite {
   test("reordering") {
     val s = 1 :~: 'a' :~: "foo" :~: ∅
 
-    assert(∅.as[∅] == ∅)
-    assert(s.as[Char :~: Int :~: String :~: ∅] == 'a' :~: 1 :~: "foo" :~: ∅)
+    assert(∅.reorderTo[∅] == ∅)
+    assert(s.reorderTo[Char :~: Int :~: String :~: ∅] == 'a' :~: 1 :~: "foo" :~: ∅)
 
     val p = "bar" :~: 2 :~: 'b' :~: ∅
-    assert((s as p) == "foo" :~: 1 :~: 'a' :~: ∅)
+    assert((s reorderTo p) == "foo" :~: 1 :~: 'a' :~: ∅)
   }
 
   test("subtraction") {
@@ -147,7 +178,7 @@ class TypeSetTests extends org.scalatest.FunSuite {
 
   test("mappers") {
 
-    import poly._
+    import shapeless._, poly._
 
     object id extends Poly1 { implicit def default[T] = at[T]((t:T) => t) }
     object toStr extends (Any -> String)(_.toString)
@@ -181,6 +212,8 @@ class TypeSetTests extends org.scalatest.FunSuite {
 
   test("conversions to HList/List") {
 
+    import shapeless._
+
     assert(∅.toHList == HNil)
     assert((1 :~: 'a' :~: "foo" :~: ∅).toHList == (1 :: 'a' :: "foo" :: HNil))
 
@@ -192,17 +225,121 @@ class TypeSetTests extends org.scalatest.FunSuite {
     object buh extends foo
     assert((boo :~: buh :~: ∅).toList == List[foo](boo, buh))
 
+    val s = 1 :~: 'a' :~: buh :~: "sdk" :~: boo :~: ∅
+    // val buhbuh = pop[foo] from s
+
   }
 
   test("conversion from HList") {
 
+    import shapeless._
+
     assert(HNil.toTypeSet == ∅)
-    assert(fromHList(HNil) == ∅)
 
     val l = 1 :: 'a' :: "foo" :: HNil
     assert(l.toTypeSet == 1 :~: 'a' :~: "foo" :~: ∅)
 
     illTyped("""(1 :: 'x' :: 2 :: "foo" :: HNil).toTypeSet""")
+
+  }
+
+  test("parse") {
+    case object key extends Property[String]
+    case object name extends Property[String]
+    case object age extends Property[Integer]
+
+    // using record here just for convenience
+    object rec extends Record(name :~: age :~: key :~: ∅)
+
+    val recEntry = rec =>> (
+      (name is "foo") :~: 
+      (age is 12) :~: 
+      (key is "s0dl52f23k") :~: 
+      ∅
+    )
+
+    // Map parser get's values from map by key, which is the property label
+    object MapParser {
+      implicit def caseInteger[P <: AnyProperty.ofType[Integer]](p: P, m: Map[String, String]):
+        (Tagged[P], Map[String, String]) = (p is m(p.label).toInt, m)
+
+      implicit def caseString[P <: AnyProperty.ofType[String]](p: P, m: Map[String, String]):
+        (Tagged[P], Map[String, String]) = (p is m(p.label).toString, m)
+    }
+
+    assertResult(recEntry) {
+      import MapParser._
+
+      rec.properties parseFrom Map(
+        "age" -> "12",
+        "name" -> "foo", 
+        "key" -> "s0dl52f23k"
+      )
+    }
+
+    // List parser just takes the values sequentially, so the order must correspond the order of properties
+    object ListParser {
+      implicit def caseInteger[P <: AnyProperty.ofType[Integer]](p: P, l: List[String]):
+        (Tagged[P], List[String]) = (p is l.head.toInt, l.tail)
+
+      implicit def caseString[P <: AnyProperty.ofType[String]](p: P, l: List[String]):
+        (Tagged[P], List[String]) = (p is l.head.toString, l.tail)
+    }
+
+    assertResult(recEntry) {
+      import ListParser._
+
+      rec.properties parseFrom List(
+        "foo",
+        "12",
+        "s0dl52f23k"
+      )
+    }
+
+  }
+
+  test("serialize") {
+    case object name extends Property[String]
+    case object age  extends Property[Integer]
+    case object key  extends Property[String]
+
+    val s = (name is "foo") :~: (age is 12) :~: (key is "s0dl52f23k") :~: ∅
+
+    // Map //
+    implicit def anyMapMonoid[X, Y]: Monoid[Map[X, Y]] = new Monoid[Map[X, Y]] {
+      def zero: M = Map[X, Y]()
+      def append(a: M, b: M): M = a ++ b
+    }
+
+    implicit def serializeProperty[P <: AnyProperty](t: Tagged[P])
+      (implicit getP: Tagged[P] => P): Map[String, String] = Map(getP(t).label -> t.toString)
+
+    assert(
+      s.serializeTo[Map[String, String]] ==
+      Map("age" -> "12", "name" -> "foo", "key" -> "s0dl52f23k")
+    )
+
+    assert(
+      ∅.serializeTo[Map[String, String]] == Map()
+    )
+
+    // List //
+    implicit def anyListMonoid[X]: Monoid[List[X]] = new Monoid[List[X]] {
+      def zero: M = List[X]()
+      def append(a: M, b: M): M = a ++ b
+    }
+
+    implicit def propertyToStr[P <: AnyProperty](t: Tagged[P])
+      (implicit getP: Tagged[P] => P): List[String] = List(getP(t).label + " -> " + t.toString)
+
+    assert(
+      s.serializeTo[List[String]] ==
+      List("name -> foo", "age -> 12", "key -> s0dl52f23k")
+    )
+
+    assert(
+      ∅.serializeTo[List[String]] == List()
+    )
 
   }
 

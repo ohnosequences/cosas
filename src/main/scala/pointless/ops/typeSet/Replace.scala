@@ -13,13 +13,12 @@ package ohnosequences.pointless.ops.typeSet
 import ohnosequences.pointless._, AnyFn._, AnyTypeSet._
 
 @annotation.implicitNotFound(msg = "Can't replace elements in ${S} with ${Q}")
-trait Replace[S <: AnyTypeSet, Q <: AnyTypeSet]
-  extends Fn2[S, Q] { type Out = S }
+trait Replace[S <: AnyTypeSet, Q <: AnyTypeSet] extends Fn2[S, Q] with Out[S]
 
 object Replace extends Replace_2 {
 
   def apply[S <: AnyTypeSet, Q <: AnyTypeSet]
-    (implicit replace: Replace[S, Q]): Replace[S, Q] with out[replace.Out] = replace
+    (implicit replace: Replace[S, Q]): Replace[S, Q] = replace
 
   implicit def empty[S <: AnyTypeSet]:
         Replace[S, ∅] = 
@@ -27,13 +26,14 @@ object Replace extends Replace_2 {
 
   implicit def replaceHead[H, T <: AnyTypeSet, Q <: AnyTypeSet, QOut <: AnyTypeSet]
     (implicit 
-      pop: Pop.Aux[Q, H, QOut, H],
+      pop: PopSOut[Q, H, QOut],
       rest: Replace[T, QOut]
     ):  Replace[H :~: T, Q] =
     new Replace[H :~: T, Q] {
+
       def apply(s: H :~: T, q: Q): H :~: T = {
-        val tpl = pop(q)
-        tpl._1 :~: rest(s.tail, tpl._2)
+        val (h, qq) = pop(q)
+        h :~: rest(s.tail, qq)
       }
     }
 }
@@ -43,6 +43,7 @@ trait Replace_2 {
     (implicit rest: Replace[T, Q]):
         Replace[H :~: T, Q] =
     new Replace[H :~: T, Q] {
+
       def apply(s: H :~: T, q: Q) = s.head :~: rest(s.tail, q)
     }
 }
