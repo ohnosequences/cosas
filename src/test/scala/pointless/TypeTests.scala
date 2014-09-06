@@ -14,7 +14,7 @@ class TypeTests extends org.scalatest.FunSuite {
   test("creating values") {
 
     val blue = Color("blue")
-    val green = "green" is Color
+    val green = valueOf[Color.type]("green")
 
     assert{ blue.raw == "blue" }
     assert{ green.raw == "green" }

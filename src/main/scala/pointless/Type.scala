@@ -14,23 +14,28 @@ object AnyType {
 
   type RawOf[T <: AnyType] = T#Raw
 
+  def valueOf[T <: AnyType](r: RawOf[T]): ValueOf[T] = new ValueOf[T](r)
+
   implicit def typeOps[T <: AnyType](t: T): TypeOps[T] = new TypeOps[T](t)
+
+  // implicit def toRaw[T <: AnyType](v: ValueOf[T]): RawOf[T] = v.raw
 }
 import AnyType._
 
 
 final class ValueOf[T <: AnyType](val raw: RawOf[T]) extends AnyVal {
   type Type = T
+  override def toString = raw.toString
 }
 
 class TypeOps[T <: AnyType](t: T) {
 
   // def `<:`(r: RawOf[T]): ValueOf[T] = new ValueOf[T](r)
   def apply(r: RawOf[T]): ValueOf[T] = new ValueOf[T](r)
+  def withValue(r: RawOf[T]): ValueOf[T] = new ValueOf[T](r)
 }
 
 object ValueOf {
-  implicit def toRaw[T <: AnyType](v: ValueOf[T]): RawOf[T] = v.raw
 
   implicit def valueOps[T <: AnyType](v: ValueOf[T]): ValueOps[T] = new ValueOps[T](v)
 
@@ -38,7 +43,7 @@ object ValueOf {
 }
 
 class AnyOps[X](x: X) {
-  def is[T <: AnyType.withRaw[X]](t: T): ValueOf[T] = new ValueOf[T](x)
+  // def is[T <: AnyType.withRaw[X]](t: T): ValueOf[T] = new ValueOf[T](x)
 }
 
 class ValueOps[T <: AnyType](v: ValueOf[T]) {

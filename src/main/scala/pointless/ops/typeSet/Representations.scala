@@ -18,7 +18,7 @@
 
 package ohnosequences.pointless.ops.typeSet
 
-import ohnosequences.pointless._, AnyFn._, AnyTaggedType._, AnyTypeSet._
+import ohnosequences.pointless._, AnyFn._, AnyType._, AnyTypeSet._
 
 @annotation.implicitNotFound(msg = "Can't construct a set of representations for ${S}")
 trait Represented[S <: AnyTypeSet] extends AnyFn with OutBound[AnyTypeSet]
@@ -29,10 +29,10 @@ object Represented {
         Represented[∅] with Out[∅] = 
     new Represented[∅] with Out[∅]
 
-  implicit def cons[H <: AnyTaggedType, T <: AnyTypeSet, TR <: AnyTypeSet]
+  implicit def cons[H <: AnyType, T <: AnyTypeSet, TR <: AnyTypeSet]
     (implicit t: Represented[T] with Out[TR]): 
-          Represented[H :~: T] with Out[Tagged[H] :~: TR] =
-      new Represented[H :~: T] with Out[Tagged[H] :~: TR]
+          Represented[H :~: T] with Out[ValueOf[H] :~: TR] =
+      new Represented[H :~: T] with Out[ValueOf[H] :~: TR]
 }
 
 
@@ -45,13 +45,13 @@ object TagsOf {
         TagsOf[∅] with Out[∅] =
     new TagsOf[∅] with Out[∅] { def apply(s: ∅): Out = ∅ }
 
-  implicit def cons[H <: AnyTaggedType, T <: AnyTypeSet, TO <: AnyTypeSet]
+  implicit def cons[H <: AnyType, T <: AnyTypeSet, TO <: AnyTypeSet]
     (implicit 
-      getH: Tagged[H] => H, 
+      getH: ValueOf[H] => H, 
       rest: TagsOf[T] with out[TO]
-    ):  TagsOf[Tagged[H] :~: T] with Out[H :~: TO] =
-    new TagsOf[Tagged[H] :~: T] with Out[H :~: TO] {
+    ):  TagsOf[ValueOf[H] :~: T] with Out[H :~: TO] =
+    new TagsOf[ValueOf[H] :~: T] with Out[H :~: TO] {
 
-      def apply(s: Tagged[H] :~: T): Out = getH(s.head) :~: rest(s.tail)
+      def apply(s: ValueOf[H] :~: T): Out = getH(s.head) :~: rest(s.tail)
     }
 }

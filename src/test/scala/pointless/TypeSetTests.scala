@@ -1,7 +1,7 @@
 package ohnosequences.pointless.tests
 
 import shapeless.test.illTyped
-import ohnosequences.pointless._, AnyTypeSet._, AnyTaggedType._
+import ohnosequences.pointless._, AnyTypeSet._, AnyType._
 import ops.typeSet._
 
 class TypeSetTests extends org.scalatest.FunSuite {
@@ -251,23 +251,23 @@ class TypeSetTests extends org.scalatest.FunSuite {
     // using record here just for convenience
     object rec extends Record(name :~: age :~: key :~: ∅)
 
-    val recEntry = rec =>> (
-      (name is "foo") :~: 
-      (age is 12) :~: 
-      (key is "s0dl52f23k") :~: 
+    val recEntry = rec(
+      name("foo") :~: 
+      age(12) :~: 
+      key("s0dl52f23k") :~: 
       ∅
     )
 
     // Map parser get's values from map by key, which is the property label
     object MapParser {
       implicit def caseInteger[P <: AnyProperty.ofType[Integer]](p: P, m: Map[String, String]):
-        (Tagged[P], Map[String, String]) = (p is m(p.label).toInt, m)
+        (ValueOf[P], Map[String, String]) = (p(m(p.label).toInt), m)
 
       implicit def caseString[P <: AnyProperty.ofType[String]](p: P, m: Map[String, String]):
-        (Tagged[P], Map[String, String]) = (p is m(p.label).toString, m)
+        (ValueOf[P], Map[String, String]) = (p(m(p.label).toString), m)
     }
 
-    assertResult(recEntry) {
+    assertResult(recEntry.raw) {
       import MapParser._
 
       rec.properties parseFrom Map(
@@ -280,13 +280,13 @@ class TypeSetTests extends org.scalatest.FunSuite {
     // List parser just takes the values sequentially, so the order must correspond the order of properties
     object ListParser {
       implicit def caseInteger[P <: AnyProperty.ofType[Integer]](p: P, l: List[String]):
-        (Tagged[P], List[String]) = (p is l.head.toInt, l.tail)
+        (ValueOf[P], List[String]) = (p(l.head.toInt), l.tail)
 
       implicit def caseString[P <: AnyProperty.ofType[String]](p: P, l: List[String]):
-        (Tagged[P], List[String]) = (p is l.head.toString, l.tail)
+        (ValueOf[P], List[String]) = (p(l.head.toString), l.tail)
     }
 
-    assertResult(recEntry) {
+    assertResult(recEntry.raw) {
       import ListParser._
 
       rec.properties parseFrom List(
@@ -303,7 +303,7 @@ class TypeSetTests extends org.scalatest.FunSuite {
     case object age  extends Property[Integer]
     case object key  extends Property[String]
 
-    val s = (name is "foo") :~: (age is 12) :~: (key is "s0dl52f23k") :~: ∅
+    val s = name("foo") :~: age(12) :~: key("s0dl52f23k") :~: ∅
 
     // Map //
     implicit def anyMapMonoid[X, Y]: Monoid[Map[X, Y]] = new Monoid[Map[X, Y]] {
@@ -311,8 +311,8 @@ class TypeSetTests extends org.scalatest.FunSuite {
       def append(a: M, b: M): M = a ++ b
     }
 
-    implicit def serializeProperty[P <: AnyProperty](t: Tagged[P])
-      (implicit getP: Tagged[P] => P): Map[String, String] = Map(getP(t).label -> t.toString)
+    implicit def serializeProperty[P <: AnyProperty](t: ValueOf[P])
+      (implicit getP: ValueOf[P] => P): Map[String, String] = Map(getP(t).label -> t.toString)
 
     assert(
       s.serializeTo[Map[String, String]] ==
@@ -329,8 +329,8 @@ class TypeSetTests extends org.scalatest.FunSuite {
       def append(a: M, b: M): M = a ++ b
     }
 
-    implicit def propertyToStr[P <: AnyProperty](t: Tagged[P])
-      (implicit getP: Tagged[P] => P): List[String] = List(getP(t).label + " -> " + t.toString)
+    implicit def propertyToStr[P <: AnyProperty](t: ValueOf[P])
+      (implicit getP: ValueOf[P] => P): List[String] = List(getP(t).label + " -> " + t.toString)
 
     assert(
       s.serializeTo[List[String]] ==

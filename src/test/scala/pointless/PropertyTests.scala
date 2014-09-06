@@ -1,6 +1,6 @@
 package ohnosequences.pointless.test
 
-import ohnosequences.pointless._, AnyTaggedType._, AnyProperty._, AnyTypeSet._
+import ohnosequences.pointless._, AnyType._, AnyProperty._, AnyTypeSet._
 
 object exampleProperties {
   
@@ -17,29 +17,29 @@ class uhoh extends org.scalatest.FunSuite {
 
   test("create property instances") {
 
-    val k = key is "2aE5Cgo7Gv62"
+    val k = key("2aE5Cgo7Gv62")
 
-    val n = name is "Rigoberto Smith"
+    val n = name("Rigoberto Smith")
 
-    val a = age is 13123
-    val a0: Tagged[age.type] = age =>> (13123: Integer)
+    val a = age(13123)
+    val a0: ValueOf[age.type] = age(13123: Integer)
 
     illTyped (
     """
-      val z = key is 34343
+      val z = key(34343)
     """
     )
 
     illTyped (
     """
-      val uhoh = age is true
+      val uhoh = age(true)
     """
     )
   }
 
   test("valueless properties lead to nothing") {
 
-    implicitly[AnyTaggedType.RawOf[valueless.type] =:= Nothing]: Unit
+    implicitly[RawOf[valueless.type] =:= Nothing]: Unit
   }
 
   test("having properties") {

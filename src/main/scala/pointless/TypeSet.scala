@@ -1,6 +1,6 @@
 package ohnosequences.pointless
 
-import AnyFn._, AnyTypeUnion._, AnyTaggedType._
+import AnyFn._, AnyTypeUnion._
 import shapeless.{ HList, Poly1, <:!<, =:!= }
 
 sealed trait AnyTypeSet {

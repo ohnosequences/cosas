@@ -1,10 +1,10 @@
 package ohnosequences.pointless
 
-import AnyTypeSet._, AnyProperty._, AnyTaggedType.Tagged, AnyTypeUnion._, AnyRecord._, AnyFn._
+import AnyTypeSet._, AnyProperty._, AnyType._, AnyTypeUnion._, AnyFn._
 import ops.typeSet._
 
 
-trait AnyRecord extends AnyTaggedType { me =>
+trait AnyRecord extends AnyType {
 
   val label: String
 
@@ -12,7 +12,7 @@ trait AnyRecord extends AnyTaggedType { me =>
   val  properties: Properties
 
   /* Any record *has* its own properties */
-  implicit val myOwnProperties: Me Has Properties = (me: Me) has properties
+  implicit val myOwnProperties: Me Has Properties = (this: Me) has properties
 
   type Raw <: AnyTypeSet
   // should be provided implicitly:
@@ -37,50 +37,52 @@ object AnyRecord {
 
   /* Accessors */
   type PropertiesOf[R <: AnyRecord] = R#Properties
-  type RawOf[R <: AnyRecord] = R#Raw
+  // type RawOf[R <: AnyRecord] = R#Raw
 
   implicit def recordOps[R <: AnyRecord](rec: R): 
         RecordOps[R] = 
     new RecordOps[R](rec)
 
-  implicit def recordRepOps[R <: AnyRecord](recEntry: Tagged[R]): 
+  implicit def recordRepOps[R <: AnyRecord](recEntry: ValueOf[R]): 
         RecordRepOps[R] = 
     new RecordRepOps[R](recEntry)
 
 }
 
-class RecordOps[R <: AnyRecord](val rec: R) extends TaggedTypeOps[R](rec) {
+class RecordOps[R <: AnyRecord](val rec: R) extends TypeOps[R](rec) {
 
   /* Same as just tagging with `=>>`, but you can pass fields in any order */
   def fields[Vs <: AnyTypeSet](values: Vs)(implicit
-      reorder: Vs ReorderTo AnyRecord.RawOf[R]
-    ): Tagged[R] = rec =>> reorder(values)
+      reorder: Vs ReorderTo RawOf[R]
+    ): ValueOf[R] = valueOf[R](reorder(values))
 
-  def parseFrom[X](x: X)(implicit parseSet: (R#Properties ParseFrom X) with out[R#Raw]): Tagged[R] = 
-    rec =>> parseSet(rec.properties, x)
+  def parseFrom[X](x: X)(implicit parseSet: (R#Properties ParseFrom X) with out[R#Raw]): ValueOf[R] = 
+    valueOf[R](parseSet(rec.properties, x))
 
 }
 
-class RecordRepOps[R <: AnyRecord](val recEntry: Tagged[R]) {
+class RecordRepOps[R <: AnyRecord](val recEntry: ValueOf[R]) {
   import ops.record._
 
   def get[P <: AnyProperty](p: P)
-    (implicit get: R Get P): Tagged[P] = get(recEntry)
+    (implicit get: R Get P): ValueOf[P] = get(recEntry)
 
 
-  def update[P <: AnyProperty](propRep: Tagged[P])
-    (implicit check: (Tagged[P] :~: ∅) ⊂ Tagged[R], upd: R Update (Tagged[P] :~: ∅)): Tagged[R] = upd(recEntry, propRep :~: ∅)
+  def update[P <: AnyProperty](propRep: ValueOf[P])
+    (implicit check: (ValueOf[P] :~: ∅) ⊂ RawOf[R], 
+              upd: R Update (ValueOf[P] :~: ∅)
+    ): ValueOf[R] = upd(recEntry, propRep :~: ∅)
 
   def update[Ps <: AnyTypeSet](propReps: Ps)
-    (implicit upd: R Update Ps): Tagged[R] = upd(recEntry, propReps)
+    (implicit upd: R Update Ps): ValueOf[R] = upd(recEntry, propReps)
 
 
   def as[Other <: AnyRecord](other: Other)
-    (implicit project: Take[RawOf[R], RawOf[Other]]): Tagged[Other] = (other:Other) =>> project(recEntry)
+    (implicit project: Take[RawOf[R], RawOf[Other]]): ValueOf[Other] = valueOf[Other](project(recEntry.raw))
 
   def as[Other <: AnyRecord, Rest <: AnyTypeSet](other: Other, rest: Rest)
-    (implicit transform: Transform[R, Other, Rest]): Tagged[Other] = transform(recEntry, other, rest)
+    (implicit transform: Transform[R, Other, Rest]): ValueOf[Other] = transform(recEntry, other, rest)
 
 
-  def serializeTo[X](implicit serializer: R#Raw SerializeTo X): X = serializer(recEntry: R#Raw)
+  def serializeTo[X](implicit serializer: R#Raw SerializeTo X): X = serializer(recEntry.raw)
 }
