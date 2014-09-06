@@ -13,7 +13,7 @@ import ops.typeSet._
 
 @annotation.implicitNotFound(msg = "Can't transform ${R} to ${Other} with values ${Rest}")
 trait Transform[R <: AnyRecord, Other <: AnyRecord, Rest <: AnyTypeSet] 
-  extends Fn3[ValueOf[R], Other, Rest] with Out[ValueOf[Other]]
+  extends Fn3[RawOf[R], Other, Rest] with Out[ValueOf[Other]]
 
 object Transform {
 
@@ -31,8 +31,8 @@ object Transform {
     ):  Transform[R, Other, Rest] = 
     new Transform[R, Other, Rest] {
 
-      def apply(recEntry: ValueOf[R], other: Other, rest: Rest): Out = 
-        valueOf[Other](project(uni(recEntry.raw, rest)))
+      def apply(recEntry: RawOf[R], other: Other, rest: Rest): Out = 
+        valueOf[Other](project(uni(recEntry, rest)))
     }
 
 }
