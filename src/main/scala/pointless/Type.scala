@@ -24,11 +24,25 @@ object AnyType {
 }
 import AnyType._
 
-trait Value[T <: AnyType, @specialized V] extends Any
+object AnyValue {
+
+  type withType[T0 <: AnyType] = AnyValue { type T = T0 }
+  type TypeOf[V0 <: AnyValue] = V0#T
+}
+
+sealed trait AnyValue extends Any {
+
+  type T <: AnyType
+  type V <: T#Raw
+}
+trait Value[T0 <: AnyType, @specialized V0 <: T0#Raw] extends Any with AnyValue {
+
+  type T = T0
+  type V = V0
+}
 
 final class ValueOf[T <: AnyType](val raw: RawOf[T]) extends AnyVal with Value[T,RawOf[T]] {
 
-  type Type = T
   override def toString = raw.toString
 }
 
