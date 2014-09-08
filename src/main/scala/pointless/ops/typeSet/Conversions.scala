@@ -2,7 +2,7 @@
 
 package ohnosequences.pointless.ops.typeSet
 
-import ohnosequences.pointless._, AnyFn._, AnyTypeSet._, AnyType._
+import ohnosequences.pointless._, AnyFn._, AnyTypeSet._, AnyWrap._
 import shapeless._, poly._
 
 case object id extends Poly1 { implicit def default[T] = at[T]((t:T) => t) }
@@ -53,7 +53,7 @@ object FromHList {
 
 
 @annotation.implicitNotFound(msg = "Can't convert ${S} to a List")
-trait ToList[S <: AnyTypeSet] extends Fn1[S] with OutWrappedIn[List]
+trait ToList[S <: AnyTypeSet] extends Fn1[S] with OutInContainer[List]
 
 object ToList {
 
@@ -63,22 +63,22 @@ object ToList {
   
   // implicit def any[S <: AnyTypeSet, O](implicit 
   //     mapper: (id_.type MapToList S) with wrapped[O]
-  //   ):  ToList[S] with Wrapped[O] =
-  //   new ToList[S] with Wrapped[O] { def apply(s: S): Out = mapper(s) }
+  //   ):  ToList[S] with InContainer[O] =
+  //   new ToList[S] with InContainer[O] { def apply(s: S): Out = mapper(s) }
 
   implicit def empty[X]: 
-        ToList[∅] with Wrapped[X] = 
-    new ToList[∅] with Wrapped[X] { def apply(s: ∅): Out = Nil }
+        ToList[∅] with InContainer[X] = 
+    new ToList[∅] with InContainer[X] { def apply(s: ∅): Out = Nil }
   
   implicit def one[X, H <: X]:
-        ToList[H :~: ∅] with Wrapped[X] =
-    new ToList[H :~: ∅] with Wrapped[X] { def apply(s: H :~: ∅): Out = List[X](s.head) }
+        ToList[H :~: ∅] with InContainer[X] =
+    new ToList[H :~: ∅] with InContainer[X] { def apply(s: H :~: ∅): Out = List[X](s.head) }
 
   implicit def cons2[X, H1 <: X, H2 <: X, T <: AnyTypeSet]
     (implicit 
       lt: ToList[H2 :~: T] with wrapped[X]
-    ):  ToList[H1 :~: H2 :~: T] with Wrapped[X] = 
-    new ToList[H1 :~: H2 :~: T] with Wrapped[X] {
+    ):  ToList[H1 :~: H2 :~: T] with InContainer[X] = 
+    new ToList[H1 :~: H2 :~: T] with InContainer[X] {
 
       def apply(s: H1 :~: H2 :~: T): Out = s.head :: lt(s.tail.head :~: s.tail.tail)
     }
@@ -87,7 +87,7 @@ object ToList {
 
 
 @annotation.implicitNotFound(msg = "Can't parse typeset ${S} from ${X}")
-// NOTE: it should be restricted to AnyTypeSet.Of[AnyType], when :~: is known to return the same thing
+// NOTE: it should be restricted to AnyTypeSet.Of[AnyWrap], when :~: is known to return the same thing
 trait ParseFrom[S <: AnyTypeSet, X] extends Fn2[S, X] with OutBound[AnyTypeSet]
 
 object ParseFrom {
@@ -103,7 +103,7 @@ object ParseFrom {
     }
 
   implicit def cons[X,
-    H <: AnyType, T <: AnyTypeSet, TO <: AnyTypeSet
+    H <: AnyWrap, T <: AnyTypeSet, TO <: AnyTypeSet
   ](implicit
     f: (H, X) => (ValueOf[H], X),
     t: ParseFrom[T, X] with out[TO]

@@ -8,7 +8,7 @@ It's like `Lookup`, but it removes the element
 package ohnosequences.pointless.ops.record
 
 import ohnosequences.pointless._
-import AnyFn._, AnyType._, AnyTypeSet._, AnyRecord._
+import AnyFn._, AnyWrap._, AnyTypeSet._, AnyRecord._
 import ops.typeSet._
 
 @annotation.implicitNotFound(msg = "Can't get property ${P} of the record ${R}")

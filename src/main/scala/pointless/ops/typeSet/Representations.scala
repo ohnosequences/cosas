@@ -18,7 +18,7 @@
 
 package ohnosequences.pointless.ops.typeSet
 
-import ohnosequences.pointless._, AnyFn._, AnyType._, AnyTypeSet._
+import ohnosequences.pointless._, AnyFn._, AnyWrap._, AnyTypeSet._
 
 @annotation.implicitNotFound(msg = "Can't construct a set of values for ${S}")
 trait ValuesOf[S <: AnyTypeSet] extends AnyFn with OutBound[AnyTypeSet]
@@ -29,7 +29,7 @@ object ValuesOf {
         ValuesOf[∅] with Out[∅] = 
     new ValuesOf[∅] with Out[∅]
 
-  implicit def cons[H <: AnyType, T <: AnyTypeSet, TR <: AnyTypeSet]
+  implicit def cons[H <: AnyWrap, T <: AnyTypeSet, TR <: AnyTypeSet]
     (implicit t: ValuesOf[T] with out[TR]): 
           ValuesOf[H :~: T] with Out[ValueOf[H] :~: TR] =
       new ValuesOf[H :~: T] with Out[ValueOf[H] :~: TR]
@@ -43,7 +43,7 @@ object UnionOfRaws {
   implicit val empty: UnionOfRaws[∅] with Out[TypeUnion.empty] =
                   new UnionOfRaws[∅] with Out[TypeUnion.empty]
 
-  implicit def cons[H <: AnyType, T <: AnyTypeSet, TU <: AnyTypeUnion]
+  implicit def cons[H <: AnyWrap, T <: AnyTypeSet, TU <: AnyTypeUnion]
     (implicit t: UnionOfRaws[T] with out[TU]): 
            UnionOfRaws[H :~: T] with Out[TU#or[RawOf[H]]] =
        new UnionOfRaws[H :~: T] with Out[TU#or[RawOf[H]]]
@@ -58,7 +58,7 @@ object TypesOf {
         TypesOf[∅] with Out[∅] =
     new TypesOf[∅] with Out[∅] { def apply(s: ∅): Out = ∅ }
 
-  implicit def cons[H <: AnyType, T <: AnyTypeSet, TO <: AnyTypeSet]
+  implicit def cons[H <: AnyWrap, T <: AnyTypeSet, TO <: AnyTypeSet]
     (implicit 
       getH: ValueOf[H] => H, 
       rest: TypesOf[T] with out[TO]

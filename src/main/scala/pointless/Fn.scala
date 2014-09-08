@@ -6,15 +6,15 @@ trait AnyFn { type Out }
 trait OutBound[X] extends AnyFn { type Out <: X }
 trait Out[X]      extends AnyFn { type Out = X }
 
-trait OutWrapped extends AnyFn { type O }
-trait OutWrappedIn[F[_]] extends OutWrapped { type Out = F[O] }
-trait Wrapped[X] extends OutWrapped { type O = X }
+trait ContainerOut extends AnyFn { type O }
+trait OutInContainer[F[_]] extends ContainerOut { type Out = F[O] }
+trait InContainer[X] extends ContainerOut { type O = X }
 
 object AnyFn {
   
   // "soft" refinements:
   type out[T] = AnyFn { type Out = T }
-  type wrapped[T] = OutWrapped { type O = T }
+  type wrapped[T] = ContainerOut { type O = T }
 }
 
 /* Fns with different number of arguments */

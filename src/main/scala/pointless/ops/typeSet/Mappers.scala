@@ -33,7 +33,7 @@ object MapToHList {
 
 /* Mapping a set to a List: normally, when you are mapping everything to one type */
 @annotation.implicitNotFound(msg = "Can't map ${F} over ${S} to a List")
-trait MapToList[F <: Poly1, S <: AnyTypeSet] extends Fn1[S] with OutWrappedIn[List] 
+trait MapToList[F <: Poly1, S <: AnyTypeSet] extends Fn1[S] with OutInContainer[List] 
 
 object MapToList {
 
@@ -41,13 +41,13 @@ object MapToList {
     (implicit mapper: MapToList[F, S]): MapToList[F, S] = mapper
   
   implicit def empty[F <: Poly1, X]: 
-        MapToList[F, ∅] with Wrapped[X] = 
-    new MapToList[F, ∅] with Wrapped[X] { def apply(s: ∅): Out = Nil }
+        MapToList[F, ∅] with InContainer[X] = 
+    new MapToList[F, ∅] with InContainer[X] { def apply(s: ∅): Out = Nil }
   
   implicit def one[H, F <: Poly1, X]
     (implicit h: Case1.Aux[F, H, X]): 
-          MapToList[F, H :~: ∅] with Wrapped[X] = 
-      new MapToList[F, H :~: ∅] with Wrapped[X] { 
+          MapToList[F, H :~: ∅] with InContainer[X] = 
+      new MapToList[F, H :~: ∅] with InContainer[X] { 
 
         def apply(s: H :~: ∅): Out = List[X](h(s.head))
       }
@@ -56,8 +56,8 @@ object MapToList {
     (implicit
       h: Case1.Aux[F, H1, X], 
       t: MapToList[F, H2 :~: T] with wrapped[X]
-    ):  MapToList[F, H1 :~: H2 :~: T] with Wrapped[X] = 
-    new MapToList[F, H1 :~: H2 :~: T] with Wrapped[X] {
+    ):  MapToList[F, H1 :~: H2 :~: T] with InContainer[X] = 
+    new MapToList[F, H1 :~: H2 :~: T] with InContainer[X] {
 
       def apply(s: H1 :~: H2 :~: T): Out = h(s.head) :: t(s.tail)
     }

@@ -1,10 +1,10 @@
 package ohnosequences.pointless
 
-import AnyTypeSet._, AnyProperty._, AnyType._, AnyTypeUnion._, AnyFn._
+import AnyTypeSet._, AnyProperty._, AnyWrap._, AnyTypeUnion._, AnyFn._
 import ops.typeSet._
 
 
-trait AnyRecord extends AnyType {
+trait AnyRecord extends AnyWrap {
 
   val label: String
 
@@ -14,6 +14,7 @@ trait AnyRecord extends AnyType {
   /* Any record *has* its own properties */
   implicit val myOwnProperties: Me Has Properties = (this: Me) has properties
 
+  /* Record wraps a set of values of it's properties */
   type Raw <: AnyTypeSet
   // should be provided implicitly:
   implicit val valuesOfProperties: Raw areValuesOf Properties
@@ -50,7 +51,7 @@ object AnyRecord {
 
 }
 
-class RecordOps[R <: AnyRecord](val rec: R) extends TypeOps[R](rec) {
+class RecordOps[R <: AnyRecord](val rec: R) extends WrapOps[R](rec) {
 
   /* Same as just tagging with `=>>`, but you can pass fields in any order */
   def fields[Vs <: AnyTypeSet](values: Vs)(implicit
