@@ -2,7 +2,7 @@ package ohnosequences.pointless.tests
 
 import shapeless.test.{typed, illTyped}
 import ohnosequences.pointless._
-import AnyTaggedType.Tagged, AnyProperty._, AnyTypeSet._, AnyRecord._, AnyTypeUnion._
+import AnyType._, AnyProperty._, AnyTypeSet._, AnyRecord._, AnyTypeUnion._
 import ops.typeSet._
 
 object RecordTestsContext {
@@ -19,32 +19,15 @@ object RecordTestsContext {
 
   case object normalUser extends Record(id :~: name :~: email :~: color :~: ∅)
 
-  // case class HasRecordWithId[
-  //   Id <: AnyProperty, 
-  //   R <: AnyRecord
-  // ](
-  //   val id: Id,
-  //   val r: R
-  // )(implicit
-  //   val idIsThere: Id ∈ PropertiesOf[R],
-  //   val getId: Lookup[RawOf[R], Tagged[Id]]
-  // )
-  // {
-
-  //   def getId(entry: Tagged[R]): Tagged[Id] = entry get id
-
-  //   val p = r.properties
-  // }
-
   val vProps = email :~: color :~: ∅
   // nothing works with this
   val vRecord = new Record(email :~: color :~: ∅)
 
   val vEmail = "oh@buh.com"
 
-  val vRecordEntry = vRecord =>> (
-    (email is vEmail) :~:
-    (color is "blue") :~:
+  val vRecordEntry = vRecord(
+    (email(vEmail)) :~:
+    (color("blue")) :~:
     ∅
   )
 
@@ -52,17 +35,17 @@ object RecordTestsContext {
 
   // creating a record instance is easy and neat:
   val simpleUserEntry = simpleUser fields (
-    (id is 123) :~: 
-    (name is "foo") :~: 
+    (id(123)) :~: 
+    (name("foo")) :~: 
     ∅
   )
 
   // this way the order of properties does not matter
   val normalUserEntry = normalUser fields (
-    (name is "foo") :~: 
-    (color is "orange") :~:
-    (id is 123) :~: 
-    (email is "foo@bar.qux") :~:
+    (name("foo")) :~: 
+    (color("orange")) :~:
+    (id(123)) :~: 
+    (email("foo@bar.qux")) :~:
     ∅
   )
 
@@ -82,29 +65,24 @@ class RecordTests extends org.scalatest.FunSuite {
 
   test("recognizing record value types") {
 
-    implicitly [∅ isRepresentedBy ∅]
+    implicitly [∅ areValuesOf ∅]
 
     implicitly [
       // using external bounds
-      (id.type :~: name.type :~: ∅) isRepresentedBy (Tagged[id.type] :~: Tagged[name.type] :~: ∅)
+      (ValueOf[id.type] :~: ValueOf[name.type] :~: ∅) areValuesOf (id.type :~: name.type :~: ∅)
     ]
 
-    // implicitly [
-    //   // using the local Rep of each property
-    //   (id.type :~: name.type :~: ∅) isRepresentedBy (id.Rep :~: name.Rep :~: ∅)
-    // ] 
-
     implicitly [ 
-      RawOf[simpleUser.type] =:= (Tagged[id.type] :~: Tagged[name.type] :~: ∅)
+      RawOf[simpleUser.type] =:= (ValueOf[id.type] :~: ValueOf[name.type] :~: ∅)
     ]
 
     implicitly [ 
       // check the Values alias
-      simpleUser.Raw =:= (Tagged[id.type] :~: Tagged[name.type] :~: ∅)
+      simpleUser.Raw =:= (ValueOf[id.type] :~: ValueOf[name.type] :~: ∅)
     ]
 
     implicitly [
-      simpleUser.representedProperties.Out =:= (Tagged[id.type] :~: Tagged[name.type] :~: ∅)
+      simpleUser.valuesOfProperties.Out =:= (ValueOf[id.type] :~: ValueOf[name.type] :~: ∅)
     ]
   }
 
@@ -112,38 +90,36 @@ class RecordTests extends org.scalatest.FunSuite {
 
     implicitly [ 
       // the declared property order
-      simpleUser.Raw =:= (Tagged[id.type] :~: Tagged[name.type] :~: ∅)
+      simpleUser.Raw =:= (ValueOf[id.type] :~: ValueOf[name.type] :~: ∅)
     ]
 
     // they get reordered
-    val simpleUserV: Tagged[simpleUser.type] = simpleUser fields {
-      (name is "Antonio") :~:
-      (id is 29681) :~: ∅
+    val simpleUserV: ValueOf[simpleUser.type] = simpleUser fields {
+      (name("Antonio")) :~:
+      (id(29681)) :~: ∅
     }
 
-    val sameSimpleUserV: Tagged[simpleUser.type] = simpleUser fields {
-      (id is 29681) :~:
-      (name is "Antonio") :~: ∅
+    val sameSimpleUserV: ValueOf[simpleUser.type] = simpleUser fields {
+      (id(29681)) :~:
+      (name("Antonio")) :~: ∅
     }
 
     assert {
-      simpleUserV === sameSimpleUserV
+      simpleUserV == sameSimpleUserV
     }
   }
 
   test("should fail when some properties are missing") {
     // you have to set _all_ properties
     assertTypeError("""
-    val wrongAttrSet = simpleUser is (
-      (id is 123) :~: ∅
-    )
+    val wrongAttrSet = simpleUser(id(123) :~: ∅)
     """)
 
     // but you still have to present all properties:
     assertTypeError("""
     val wrongAttrSet = normalUser fields (
-      (id is 123) :~:
-      (name is "foo") :~: 
+      id(123) :~:
+      name("foo") :~: 
       ∅
     )
     """)
@@ -151,62 +127,40 @@ class RecordTests extends org.scalatest.FunSuite {
 
   test("can access property values") {
 
-    assert {
-
-      (simpleUserEntry get id) === 123
-    }
-
-    assert {
-
-      (simpleUserEntry get name) === "foo"
-    }
+    assert{ (simpleUserEntry get id) == id(123) }
+    assert{ (simpleUserEntry get name) == name("foo") }
   }
 
   test("can access property values from vals and volatile vals") {
 
-    assert {
-
-      (vRecordEntry get email) === "oh@buh.com"
-    }
+    assert{ (vRecordEntry get email) == email("oh@buh.com") }
   }
-
-  test("generic ops outside record work") {
-
-    val uhoh = simpleUserEntry get id
-  }
-
-  // test("recognize entries coming from different paths") {
-
-  //   assert {
-  //     (hasRecordWithId getId normalUserEntry) == ( normalUserEntry get id)
-  //   }
-  // }
 
   test("can see a record entry as another") {
 
-    val hey: Tagged[simpleUser.type] = normalUserEntry as simpleUser
+    val hey: ValueOf[simpleUser.type] = normalUserEntry as simpleUser
   }
 
   test("update fields") {
 
     assert(
-      (normalUserEntry update (color is "albero")) ==
+      (normalUserEntry update (color("albero"))) ==
       (normalUser fields (
         (normalUserEntry get name) :~: 
         (normalUserEntry get id) :~: 
         (normalUserEntry get email) :~:
-        (color is "albero") :~:
+        (color("albero")) :~:
         ∅
       ))
     )
 
     assert(
-      (normalUserEntry update ((name is "bar") :~: (id is 321) :~: ∅)) ==
+      (normalUserEntry update ((name("bar")) :~: (id(321)) :~: ∅)) ==
       (normalUser fields (
-        (name is "bar") :~: 
-        (color is "orange") :~:
-        (id is 321) :~: 
-        (email is "foo@bar.qux") :~:
+        (name("bar")) :~: 
+        (color("orange")) :~:
+        (id(321)) :~: 
+        (email("foo@bar.qux")) :~:
         ∅
       ))
     )
@@ -243,11 +197,11 @@ class RecordTests extends org.scalatest.FunSuite {
   test("parsing") {
     // Map parser get's values from map by key, which is the property label
     object MapParser {
-      implicit def caseInteger[P <: AnyProperty.ofType[Integer]](p: P, m: Map[String, String]):
-        (Tagged[P], Map[String, String]) = (p is m(p.label).toInt, m)
+      implicit def caseInteger[P <: AnyProperty with AnyType.withRaw[Integer]](p: P, m: Map[String, String]):
+        (ValueOf[P], Map[String, String]) = (p(m(p.label).toInt), m)
 
-      implicit def caseString[P <: AnyProperty.ofType[String]](p: P, m: Map[String, String]):
-        (Tagged[P], Map[String, String]) = (p is m(p.label).toString, m)
+      implicit def caseString[P <: AnyProperty with AnyType.withRaw[String]](p: P, m: Map[String, String]):
+        (ValueOf[P], Map[String, String]) = (p(m(p.label).toString), m)
     }
 
     assertResult(normalUserEntry) {
@@ -263,11 +217,11 @@ class RecordTests extends org.scalatest.FunSuite {
 
     // List parser just takes the values sequentially, so the order must correspond the order of properties
     object ListParser {
-      implicit def caseInteger[P <: AnyProperty.ofType[Integer]](p: P, l: List[String]):
-        (Tagged[P], List[String]) = (p is l.head.toInt, l.tail)
+      implicit def caseInteger[P <: AnyProperty with AnyType.withRaw[Integer]](p: P, l: List[String]):
+        (ValueOf[P], List[String]) = (p(l.head.toInt), l.tail)
 
-      implicit def caseString[P <: AnyProperty.ofType[String]](p: P, l: List[String]):
-        (Tagged[P], List[String]) = (p is l.head.toString, l.tail)
+      implicit def caseString[P <: AnyProperty with AnyType.withRaw[String]](p: P, l: List[String]):
+        (ValueOf[P], List[String]) = (p(l.head.toString), l.tail)
     }
 
     assertResult(normalUserEntry) {
@@ -290,8 +244,8 @@ class RecordTests extends org.scalatest.FunSuite {
       def append(a: M, b: M): M = a ++ b
     }
 
-    implicit def serializeProperty[P <: AnyProperty](t: Tagged[P])
-      (implicit getP: Tagged[P] => P): Map[String, String] = Map(getP(t).label -> t.toString)
+    implicit def serializeProperty[P <: AnyProperty](t: ValueOf[P])
+      (implicit getP: ValueOf[P] => P): Map[String, String] = Map(getP(t).label -> t.toString)
 
     assert(
       normalUserEntry.serializeTo[Map[String, String]] == 
@@ -309,8 +263,8 @@ class RecordTests extends org.scalatest.FunSuite {
       def append(a: M, b: M): M = a ++ b
     }
 
-    implicit def propertyIntToStr[P <: AnyProperty](t: Tagged[P])
-      (implicit getP: Tagged[P] => P): List[String] = List(getP(t).label + " -> " + t.toString)
+    implicit def propertyIntToStr[P <: AnyProperty](t: ValueOf[P])
+      (implicit getP: ValueOf[P] => P): List[String] = List(getP(t).label + " -> " + t.toString)
 
     // implicit def toStr[P](p: P): List[String] = List(p.toString)
 

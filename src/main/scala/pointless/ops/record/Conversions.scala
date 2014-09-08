@@ -8,12 +8,12 @@ It's like `Lookup`, but it removes the element
 package ohnosequences.pointless.ops.record
 
 import ohnosequences.pointless._
-import AnyFn._, AnyTaggedType.Tagged, AnyProperty._, AnyTypeSet._, AnyRecord._
+import AnyFn._, AnyType._, AnyProperty._, AnyTypeSet._, AnyRecord._
 import ops.typeSet._
 
 @annotation.implicitNotFound(msg = "Can't transform ${R} to ${Other} with values ${Rest}")
 trait Transform[R <: AnyRecord, Other <: AnyRecord, Rest <: AnyTypeSet] 
-  extends Fn3[Tagged[R], Other, Rest] with Out[Tagged[Other]]
+  extends Fn3[RawOf[R], Other, Rest] with Out[ValueOf[Other]]
 
 object Transform {
 
@@ -31,7 +31,8 @@ object Transform {
     ):  Transform[R, Other, Rest] = 
     new Transform[R, Other, Rest] {
 
-      def apply(recEntry: Tagged[R], other: Other, rest: Rest): Out = other =>> project(uni(recEntry, rest))
+      def apply(recRaw: RawOf[R], other: Other, rest: Rest): Out = 
+        valueOf[Other](project(uni(recRaw, rest)))
     }
 
 }

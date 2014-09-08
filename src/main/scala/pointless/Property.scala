@@ -1,9 +1,9 @@
 package ohnosequences.pointless
 
-import AnyTaggedType._, AnyTypeSet._, AnyFn._
+import AnyType._, AnyTypeSet._, AnyFn._
 import scala.reflect.ClassTag
 
-trait AnyProperty extends AnyTaggedType {
+trait AnyProperty extends AnyType {
 
   val label: String
   val classTag: ClassTag[Raw]
@@ -17,9 +17,8 @@ class Property[V](implicit val classTag: ClassTag[V]) extends AnyProperty {
   type Raw = V
 }
 
-class PropertyOps[P <: AnyProperty](val p: P) extends TaggedTypeOps[P](p) { self =>
-
-  def is(value: RawOf[P]): Tagged[P] = p =>> value
+class PropertyOps[P <: AnyProperty](val p: P) extends TypeOps[P](p) {
+  // ... //
 }
 
 object AnyProperty extends AnyProperty_2 {

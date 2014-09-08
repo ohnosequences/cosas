@@ -7,7 +7,7 @@
   case object id extends Property[Int]
   case object name extends Property[String]
 
-  implicitly[Represented.By[
+  implicitly[ValuesOf.By[
     id.type :~: name.type :~: ∅,
     id.Rep  :~: name.Rep  :~: ∅
   ]]
@@ -18,40 +18,53 @@
 
 package ohnosequences.pointless.ops.typeSet
 
-import ohnosequences.pointless._, AnyFn._, AnyTaggedType._, AnyTypeSet._
+import ohnosequences.pointless._, AnyFn._, AnyType._, AnyTypeSet._
 
-@annotation.implicitNotFound(msg = "Can't construct a set of representations for ${S}")
-trait Represented[S <: AnyTypeSet] extends AnyFn with OutBound[AnyTypeSet]
+@annotation.implicitNotFound(msg = "Can't construct a set of values for ${S}")
+trait ValuesOf[S <: AnyTypeSet] extends AnyFn with OutBound[AnyTypeSet]
 
-object Represented {
+object ValuesOf {
 
   implicit val empty: 
-        Represented[∅] with Out[∅] = 
-    new Represented[∅] with Out[∅]
+        ValuesOf[∅] with Out[∅] = 
+    new ValuesOf[∅] with Out[∅]
 
-  implicit def cons[H <: AnyTaggedType, T <: AnyTypeSet, TR <: AnyTypeSet]
-    (implicit t: Represented[T] with Out[TR]): 
-          Represented[H :~: T] with Out[Tagged[H] :~: TR] =
-      new Represented[H :~: T] with Out[Tagged[H] :~: TR]
+  implicit def cons[H <: AnyType, T <: AnyTypeSet, TR <: AnyTypeSet]
+    (implicit t: ValuesOf[T] with out[TR]): 
+          ValuesOf[H :~: T] with Out[ValueOf[H] :~: TR] =
+      new ValuesOf[H :~: T] with Out[ValueOf[H] :~: TR]
 }
 
+@annotation.implicitNotFound(msg = "Can't construct a set of raw types for ${S}")
+trait UnionOfRaws[S <: AnyTypeSet] extends AnyFn with OutBound[AnyTypeUnion]
 
-@annotation.implicitNotFound(msg = "Can't get tags of the set ${S}")
-trait TagsOf[S <: AnyTypeSet] extends Fn1[S] with OutBound[AnyTypeSet]
+object UnionOfRaws {
 
-object TagsOf {
+  implicit val empty: UnionOfRaws[∅] with Out[TypeUnion.empty] =
+                  new UnionOfRaws[∅] with Out[TypeUnion.empty]
+
+  implicit def cons[H <: AnyType, T <: AnyTypeSet, TU <: AnyTypeUnion]
+    (implicit t: UnionOfRaws[T] with out[TU]): 
+           UnionOfRaws[H :~: T] with Out[TU#or[RawOf[H]]] =
+       new UnionOfRaws[H :~: T] with Out[TU#or[RawOf[H]]]
+}
+
+@annotation.implicitNotFound(msg = "Can't get types of the values set ${S}")
+trait TypesOf[S <: AnyTypeSet] extends Fn1[S] with OutBound[AnyTypeSet]
+
+object TypesOf {
 
   implicit val empty: 
-        TagsOf[∅] with Out[∅] =
-    new TagsOf[∅] with Out[∅] { def apply(s: ∅): Out = ∅ }
+        TypesOf[∅] with Out[∅] =
+    new TypesOf[∅] with Out[∅] { def apply(s: ∅): Out = ∅ }
 
-  implicit def cons[H <: AnyTaggedType, T <: AnyTypeSet, TO <: AnyTypeSet]
+  implicit def cons[H <: AnyType, T <: AnyTypeSet, TO <: AnyTypeSet]
     (implicit 
-      getH: Tagged[H] => H, 
-      rest: TagsOf[T] with out[TO]
-    ):  TagsOf[Tagged[H] :~: T] with Out[H :~: TO] =
-    new TagsOf[Tagged[H] :~: T] with Out[H :~: TO] {
+      getH: ValueOf[H] => H, 
+      rest: TypesOf[T] with out[TO]
+    ):  TypesOf[ValueOf[H] :~: T] with Out[H :~: TO] =
+    new TypesOf[ValueOf[H] :~: T] with Out[H :~: TO] {
 
-      def apply(s: Tagged[H] :~: T): Out = getH(s.head) :~: rest(s.tail)
+      def apply(s: ValueOf[H] :~: T): Out = getH(s.head) :~: rest(s.tail)
     }
 }

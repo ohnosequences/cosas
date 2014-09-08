@@ -1,6 +1,6 @@
 package ohnosequences.pointless
 
-import AnyFn._, AnyTypeUnion._, AnyTaggedType._
+import AnyFn._, AnyTypeUnion._
 import shapeless.{ HList, Poly1, <:!<, =:!= }
 
 sealed trait AnyTypeSet {
@@ -22,7 +22,7 @@ trait NonEmptySet extends AnyTypeSet {
 
     // should be provided implicitly:
     import AnyTypeSet.{ ∉ }
-    val check: Head ∉ Tail
+    val headIsNew: Head ∉ Tail
 }
 
 private[pointless] object TypeSetImpl {
@@ -30,7 +30,7 @@ private[pointless] object TypeSetImpl {
 
   trait EmptySetImpl extends AnyTypeSet {
 
-    type Types = either[Nothing]
+    type Types = TypeUnion.empty
     type Bound = Types#union
 
     def toStr = ""
@@ -40,10 +40,10 @@ private[pointless] object TypeSetImpl {
 
 
   case class ConsSet[H, T <: AnyTypeSet]
-    (val head : H,  val tail : T)(implicit val check: H ∉ T) extends NonEmptySet {
+    (val head : H,  val tail : T)(implicit val headIsNew: H ∉ T) extends NonEmptySet {
     type Head = H; type Tail = T
 
-    type Types = Tail#Types#or[Head]
+    type Types = TypesOf[Tail]#or[Head]
     type Bound = Types#union
     
     def toStr = {
@@ -170,10 +170,11 @@ object AnyTypeSet {
   }
 
   /* One set consists of representations of the types in another */
-  @annotation.implicitNotFound(msg = "Can't prove that ${S} is represented by ${R}")
-  type isRepresentedBy[S <: AnyTypeSet, R <: AnyTypeSet] = ops.typeSet.Represented[S] with out[R]
+  @annotation.implicitNotFound(msg = "Can't prove that ${Vs} are values of ${Ts}")
+  type areValuesOf[Vs <: AnyTypeSet, Ts <: AnyTypeSet] = ops.typeSet.ValuesOf[Ts] with out[Vs]
 
-  type represents[S <: AnyTypeSet, R <: AnyTypeSet] = ops.typeSet.TagsOf[S] with out[R]
+  @annotation.implicitNotFound(msg = "Can't prove that ${Ts} are types of ${Vs}")
+  type areTypesOf[Ts <: AnyTypeSet, Vs <: AnyTypeSet] = ops.typeSet.TypesOf[Ts] with out[Vs]
 
   type \[S <: AnyTypeSet, Q <: AnyTypeSet] = ops.typeSet.Subtract[S, Q]
 
@@ -238,6 +239,11 @@ class TypeSetOps[S <: AnyTypeSet](val s: S) {
 
   def mapFold[F <: Poly1, R](f: F)(r: R)(op: (R, R) => R)(implicit mapFold: MapFoldSet[F, S, R]): mapFold.Out = mapFold(s, r, op)
 
+  /* Predicates */
+
+  def checkForAll[P <: AnyTypePredicate](implicit prove: CheckForAll[S, P]): CheckForAll[S, P] = prove
+
+  def checkForAny[P <: AnyTypePredicate](implicit prove: CheckForAny[S, P]): CheckForAny[S, P] = prove
 }
 
 class HListOps[L <: HList](l: L) {
