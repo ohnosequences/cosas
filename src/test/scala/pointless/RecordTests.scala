@@ -65,17 +65,12 @@ class RecordTests extends org.scalatest.FunSuite {
 
   test("recognizing record value types") {
 
-    implicitly [∅ isRepresentedBy ∅]
+    implicitly [∅ areValuesOf ∅]
 
     implicitly [
       // using external bounds
-      (id.type :~: name.type :~: ∅) isRepresentedBy (ValueOf[id.type] :~: ValueOf[name.type] :~: ∅)
+      (ValueOf[id.type] :~: ValueOf[name.type] :~: ∅) areValuesOf (id.type :~: name.type :~: ∅)
     ]
-
-    // implicitly [
-    //   // using the local Rep of each property
-    //   (id.type :~: name.type :~: ∅) isRepresentedBy (id.Rep :~: name.Rep :~: ∅)
-    // ] 
 
     implicitly [ 
       RawOf[simpleUser.type] =:= (ValueOf[id.type] :~: ValueOf[name.type] :~: ∅)
@@ -87,7 +82,7 @@ class RecordTests extends org.scalatest.FunSuite {
     ]
 
     implicitly [
-      simpleUser.representedProperties.Out =:= (ValueOf[id.type] :~: ValueOf[name.type] :~: ∅)
+      simpleUser.valuesOfProperties.Out =:= (ValueOf[id.type] :~: ValueOf[name.type] :~: ∅)
     ]
   }
 

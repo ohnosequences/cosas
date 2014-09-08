@@ -30,6 +30,13 @@ object AnyTypeUnion {
     type    is[X] = X    isOneOf U
     type isNot[X] = X isNotOneOf U
   }
+
+  @annotation.implicitNotFound(msg = "Can't prove that ${V} is subunion of ${U}")
+  type    isSubunionOf[V <: AnyTypeUnion, U <: AnyTypeUnion] = V#union <:<  U#union
+
+  @annotation.implicitNotFound(msg = "Can't prove that ${V <: AnyTypeUnion} is not subunion of ${U}")
+  type isNotSubunionOf[V <: AnyTypeUnion, U <: AnyTypeUnion] = V#union <:!< U#union
+
 }
 
 import AnyTypeUnion._
@@ -41,4 +48,8 @@ trait TypeUnion[T] extends AnyTypeUnion {
 
   type or[S] = TypeUnion[T with not[S]]  
   type union = not[T]
+}
+
+object TypeUnion {
+  type empty = either[Nothing]
 }

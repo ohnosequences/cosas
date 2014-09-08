@@ -13,7 +13,6 @@ trait Type[R] extends AnyType { type Raw = R }
 object AnyType {
 
   type withRaw[R] = AnyType { type Raw = R }
-
   type RawOf[T <: AnyType] = T#Raw
 
   def valueOf[T <: AnyType](r: RawOf[T]): ValueOf[T] = new ValueOf[T](r)
@@ -26,19 +25,20 @@ import AnyType._
 
 object AnyValue {
 
-  type withType[T0 <: AnyType] = AnyValue { type T = T0 }
-  type TypeOf[V0 <: AnyValue] = V0#T
+  type ofType[T <: AnyType] = AnyValue { type Type = T }
+  type TypeOf[V <: AnyValue] = V#Type
+  type RawOf[V <: AnyValue] = AnyType.RawOf[TypeOf[V]]
 }
 
 sealed trait AnyValue extends Any {
 
-  type T <: AnyType
-  type V <: T#Raw
+  type Type <: AnyType
+  type Value <: Type#Raw
 }
-trait Value[T0 <: AnyType, @specialized V0 <: T0#Raw] extends Any with AnyValue {
+trait Value[T <: AnyType, @specialized V <: T#Raw] extends Any with AnyValue {
 
-  type T = T0
-  type V = V0
+  type Type = T
+  type Value = V
 }
 
 final class ValueOf[T <: AnyType](val raw: RawOf[T]) extends AnyVal with Value[T,RawOf[T]] {

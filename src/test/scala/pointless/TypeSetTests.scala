@@ -1,7 +1,7 @@
 package ohnosequences.pointless.tests
 
 import shapeless.test.illTyped
-import ohnosequences.pointless._, AnyTypeSet._, AnyType._
+import ohnosequences.pointless._, AnyTypeSet._, AnyType._, AnyTypeUnion._
 import ops.typeSet._
 
 class TypeSetTests extends org.scalatest.FunSuite {
@@ -51,8 +51,34 @@ class TypeSetTests extends org.scalatest.FunSuite {
     }
     val b = boos(foos)
 
+    type AllowedTypes = either[Int]#or[Boolean]
+    def checkTypes[S <: AnyTypeSet.BoundedByUnion[AllowedTypes]](s: S) = assert(true)
+    checkTypes(1 :~: false :~: ∅)
+    illTyped("""checkTypes(1 :~: 'a' :~: ∅)""")
+
+    implicitly[(Boolean :~: Int :~: ∅) isBoundedByUnion AllowedTypes]
+    implicitly[(Boolean :~: Char :~: Int :~: ∅) isNotBoundedByUnion AllowedTypes]
   }
 
+  test("check smth for every element") {
+
+    type AllowedTypes = either[Int]#or[Boolean]
+    val s = 1 :~: false :~: ∅
+
+    trait isAllowed extends TypePredicate[Any] {
+      type Condition[X] = X isOneOf AllowedTypes
+    }
+    implicitly[Check[Int :~: ∅, isAllowed]]
+    implicitly[Check[Boolean :~: Int :~: ∅, isAllowed]]
+
+    trait isInSet[S <: AnyTypeSet] extends TypePredicate[Any] {
+      type Condition[X] = X ∈ S
+    }
+    implicitly[Check[Boolean :~: Int :~: ∅, isInSet[s.type]]]
+
+    s.check[isAllowed]
+    s.check[isInSet[s.type]]
+  }
 
   test("subset") {
 

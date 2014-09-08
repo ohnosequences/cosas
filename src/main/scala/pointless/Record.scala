@@ -16,11 +16,11 @@ trait AnyRecord extends AnyType {
 
   type Raw <: AnyTypeSet
   // should be provided implicitly:
-  implicit val representedProperties: Properties isRepresentedBy Raw
+  implicit val valuesOfProperties: Raw areValuesOf Properties
 }
 
 class Record[Props <: AnyTypeSet.Of[AnyProperty], Vals <: AnyTypeSet](val properties: Props)(implicit 
-  val representedProperties: Props isRepresentedBy Vals
+  val valuesOfProperties: Vals areValuesOf Props
 ) extends AnyRecord {
 
   val label = this.toString
@@ -37,7 +37,6 @@ object AnyRecord {
 
   /* Accessors */
   type PropertiesOf[R <: AnyRecord] = R#Properties
-  // type RawOf[R <: AnyRecord] = R#Raw
 
   implicit def recordOps[R <: AnyRecord](rec: R): 
         RecordOps[R] = 
