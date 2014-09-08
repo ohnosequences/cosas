@@ -68,16 +68,20 @@ class TypeSetTests extends org.scalatest.FunSuite {
     trait isAllowed extends TypePredicate[Any] {
       type Condition[X] = X isOneOf AllowedTypes
     }
-    implicitly[Check[Int :~: ∅, isAllowed]]
-    implicitly[Check[Boolean :~: Int :~: ∅, isAllowed]]
+    implicitly[CheckForAll[Int :~: ∅, isAllowed]]
+    implicitly[CheckForAll[Boolean :~: Int :~: ∅, isAllowed]]
 
     trait isInSet[S <: AnyTypeSet] extends TypePredicate[Any] {
       type Condition[X] = X ∈ S
     }
-    implicitly[Check[Boolean :~: Int :~: ∅, isInSet[s.type]]]
+    implicitly[CheckForAll[Boolean :~: Int :~: ∅, isInSet[s.type]]]
 
-    s.check[isAllowed]
-    s.check[isInSet[s.type]]
+    s.checkForAll[isAllowed]
+    s.checkForAll[isInSet[s.type]]
+
+    val q = 'a' :~: true :~: "bar" :~: ∅
+    q.checkForAny[isInSet[s.type]]
+
   }
 
   test("subset") {

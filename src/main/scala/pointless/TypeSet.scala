@@ -239,8 +239,11 @@ class TypeSetOps[S <: AnyTypeSet](val s: S) {
 
   def mapFold[F <: Poly1, R](f: F)(r: R)(op: (R, R) => R)(implicit mapFold: MapFoldSet[F, S, R]): mapFold.Out = mapFold(s, r, op)
 
+  /* Predicates */
 
-  def check[P <: AnyTypePredicate](implicit prove: Check[S, P]): Check[S, P] = prove
+  def checkForAll[P <: AnyTypePredicate](implicit prove: CheckForAll[S, P]): CheckForAll[S, P] = prove
+
+  def checkForAny[P <: AnyTypePredicate](implicit prove: CheckForAny[S, P]): CheckForAny[S, P] = prove
 }
 
 class HListOps[L <: HList](l: L) {
