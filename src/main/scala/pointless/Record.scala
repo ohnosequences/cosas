@@ -61,6 +61,7 @@ class RecordOps[R <: AnyRecord](val rec: R) extends WrapOps[R](rec) {
   def parseFrom[X](x: X)(implicit parseSet: (R#Properties ParseFrom X) with out[R#Raw]): ValueOf[R] = 
     valueOf[R](parseSet(rec.properties, x))
 
+  def entry(values: RawOf[R]): ValueOf[R] = valueOf[R](values)
 }
 
 class RecordRawOps[R <: AnyRecord](val recRaw: RawOf[R]) extends AnyVal {
