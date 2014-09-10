@@ -58,7 +58,7 @@ class RecordOps[R <: AnyRecord](val rec: R) extends WrapOps[R](rec) {
       reorder: Vs ReorderTo RawOf[R]
     ): ValueOf[R] = valueOf[R](reorder(values))
 
-  def parseFrom[X](x: X)(implicit parseSet: (R#Properties ParseFrom X) with out[R#Raw]): ValueOf[R] = 
+  def parseFrom[X](x: X)(implicit parseSet: (R#Properties ParseFrom X) { type Out = R#Raw }): ValueOf[R] = 
     valueOf[R](parseSet(rec.properties, x))
 
 }

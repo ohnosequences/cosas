@@ -24,9 +24,9 @@ object Transform {
       Uni <: AnyTypeSet,
       Missing <: AnyTypeSet
     ](implicit
-      missing: (RawOf[Other] \ RawOf[R]) with out[Missing],
+      missing: (RawOf[Other] \ RawOf[R]) { type Out = Missing },
       allMissing: Rest ~:~ Missing,
-      uni: (RawOf[R] ∪ Rest) with out[Uni],
+      uni: (RawOf[R] ∪ Rest) { type Out = Uni },
       project: Take[Uni, RawOf[Other]]
     ):  Transform[R, Other, Rest] = 
     new Transform[R, Other, Rest] {

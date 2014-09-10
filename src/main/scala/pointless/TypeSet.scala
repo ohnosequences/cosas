@@ -171,16 +171,16 @@ object AnyTypeSet {
 
   /* One set consists of representations of the types in another */
   @annotation.implicitNotFound(msg = "Can't prove that ${Vs} are values of ${Ts}")
-  type areValuesOf[Vs <: AnyTypeSet, Ts <: AnyTypeSet] = ops.typeSet.ValuesOf[Ts] with out[Vs]
+  type areValuesOf[Vs <: AnyTypeSet, Ts <: AnyTypeSet] = ops.typeSet.ValuesOf[Ts] { type Out = Vs }
 
   @annotation.implicitNotFound(msg = "Can't prove that ${Ts} are types of ${Vs}")
-  type areTypesOf[Ts <: AnyTypeSet, Vs <: AnyTypeSet] = ops.typeSet.TypesOf[Ts] with out[Vs]
+  type areWrapsOf[Ts <: AnyTypeSet, Vs <: AnyTypeSet] = ops.typeSet.WrapsOf[Ts] { type Out = Vs }
 
   type \[S <: AnyTypeSet, Q <: AnyTypeSet] = ops.typeSet.Subtract[S, Q]
 
   type ∪[S <: AnyTypeSet, Q <: AnyTypeSet] = ops.typeSet.Union[S, Q]
 
-  type ToListOf[S <: AnyTypeSet, T] = ops.typeSet.ToList[S] with wrapped[T]
+  type ToListOf[S <: AnyTypeSet, T] = ops.typeSet.ToList[S] { type O = T }
 
 
   implicit def typeSetOps[S <: AnyTypeSet](s: S): TypeSetOps[S] = new TypeSetOps[S](s)

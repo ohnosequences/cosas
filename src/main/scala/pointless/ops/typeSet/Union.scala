@@ -13,24 +13,24 @@ object Union extends UnionSets_2 {
   def apply[S <: AnyTypeSet, Q <: AnyTypeSet]
     (implicit uni: Union[S, Q]): Union[S, Q] = uni
 
-  implicit def sInQ[S <: AnyTypeSet, Q <: AnyTypeSet](implicit e: S ⊂ Q):
+  implicit def sInQ[S <: AnyTypeSet.SubsetOf[Q], Q <: AnyTypeSet]:
         Union[S, Q] with Out[Q] =
     new Union[S, Q] with Out[Q] { def apply(s: S, q: Q) = q }
 }
 
 /* * (Dual) case when Q is a subset of S => just S: */
 trait UnionSets_2 extends UnionSets_3 {
-  implicit def qInS[S <: AnyTypeSet, Q <: AnyTypeSet](implicit e: Q ⊂ S):
+  implicit def qInS[S <: AnyTypeSet, Q <: AnyTypeSet.SubsetOf[S]]:
         Union[S, Q] with Out[S] =
     new Union[S, Q] with Out[S] { def apply(s: S, q: Q) = s }
 }
 
 /* * Case when S.head is in Q => throwing it away: */
 trait UnionSets_3 extends UnionSets_4 {
-  implicit def sConsWithoutHead[SH, ST <: AnyTypeSet, Q <: AnyTypeSet, O <: AnyTypeSet]
+  implicit def sHead[SH, ST <: AnyTypeSet, Q <: AnyTypeSet, O <: AnyTypeSet]
     (implicit 
       sh: SH ∈ Q, 
-      rest: (ST ∪ Q) with out[O]
+      rest: (ST ∪ Q) { type Out = O }
     ):  Union[SH :~: ST, Q] with Out[O] =
     new Union[SH :~: ST, Q] with Out[O] {
 
@@ -40,10 +40,10 @@ trait UnionSets_3 extends UnionSets_4 {
 
 /* * (Dual) case when Q.head is in S => throwing it away: */
 trait UnionSets_4 extends UnionSets_5 {
-  implicit def qConsWithoutHead[S <: AnyTypeSet, QH, QT <: AnyTypeSet, O <: AnyTypeSet]
+  implicit def qHead[S <: AnyTypeSet, QH, QT <: AnyTypeSet, O <: AnyTypeSet]
     (implicit
       qh: QH ∈ S, 
-      rest: (S ∪ QT) with out[O]
+      rest: (S ∪ QT) { type Out = O }
     ):  Union[S, QH :~: QT] with Out[O] =
     new Union[S, QH :~: QT] with Out[O] {
 
@@ -55,9 +55,9 @@ trait UnionSets_4 extends UnionSets_5 {
 trait UnionSets_5 {
   implicit def bothHeads[SH, ST <: AnyTypeSet, QH, QT <: AnyTypeSet, O <: AnyTypeSet]
     (implicit
-      sh: SH ∉ QT, 
-      qh: QH ∉ ST, 
-      rest: (ST ∪ QT) with out[O]
+      sh: SH ∉ (QH :~: QT), 
+      qh: QH ∉ (SH :~: ST), 
+      rest: (ST ∪ QT) { type Out = O }
     ):  Union[SH :~: ST, QH :~: QT] with Out[SH :~: QH :~: O] =
     new Union[SH :~: ST, QH :~: QT] with Out[SH :~: QH :~: O] {
 

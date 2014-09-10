@@ -23,7 +23,7 @@ object MapToHList {
     OutH, OutT <: HList
   ](implicit
     h: Case1.Aux[F, H, OutH], 
-    t: MapToHList[F, T] with out[OutT]
+    t: MapToHList[F, T] { type Out = OutT }
   ):  MapToHList[F, H :~: T] with Out[OutH :: OutT] = 
   new MapToHList[F, H :~: T] with Out[OutH :: OutT] { 
 
@@ -55,7 +55,7 @@ object MapToList {
   implicit def cons2[H1, H2, T <: AnyTypeSet, F <: Poly1, X]
     (implicit
       h: Case1.Aux[F, H1, X], 
-      t: MapToList[F, H2 :~: T] with wrapped[X]
+      t: MapToList[F, H2 :~: T] { type O = X }
     ):  MapToList[F, H1 :~: H2 :~: T] with InContainer[X] = 
     new MapToList[F, H1 :~: H2 :~: T] with InContainer[X] {
 
@@ -82,7 +82,7 @@ object MapSet {
     T <: AnyTypeSet, OutT <: AnyTypeSet
   ](implicit
     h: Case1.Aux[F, H, OutH], 
-    t: MapSet[F, T] with out[OutT],
+    t: MapSet[F, T] { type Out = OutT },
     e: OutH ∉ OutT  // the key check here
   ):  MapSet[F, H :~: T] with Out[OutH :~: OutT] = 
   new MapSet[F, H :~: T] with Out[OutH :~: OutT] {

@@ -13,8 +13,8 @@ trait InContainer[X] extends ContainerOut { type O = X }
 object AnyFn {
   
   // "soft" refinements:
+  // NOTE: use it with caution (only for type bounds)
   type out[T] = AnyFn { type Out = T }
-  type wrapped[T] = ContainerOut { type O = T }
 }
 
 /* Fns with different number of arguments */

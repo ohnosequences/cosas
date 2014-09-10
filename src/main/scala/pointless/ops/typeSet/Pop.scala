@@ -47,7 +47,8 @@ trait Pop_2 {
 trait Lookup[S <: AnyTypeSet, E] extends Fn1[S] with Out[E]
 
 object Lookup {
-  implicit def popToLookup[S <: AnyTypeSet, E](implicit p: S Pop E): 
+  implicit def popToLookup[S <: AnyTypeSet, E]
+    (implicit p: S Pop E): 
         Lookup[S, E] = 
     new Lookup[S, E] { def apply(s: S): Out = p(s)._1 }
 }
@@ -58,7 +59,8 @@ object Lookup {
 trait Delete[S <: AnyTypeSet, E] extends Fn1[S] with OutBound[AnyTypeSet]
 
 object Delete {
-  implicit def popToDelete[S <: AnyTypeSet, E, SO <: AnyTypeSet](implicit p: PopSOut[S, E, SO]): 
+  implicit def popToDelete[S <: AnyTypeSet, E, SO <: AnyTypeSet]
+    (implicit p: PopSOut[S, E, SO]): 
         Delete[S, E] with Out[SO] = 
     new Delete[S, E] with Out[SO] { def apply(s: S): Out = p(s)._2 }
 }

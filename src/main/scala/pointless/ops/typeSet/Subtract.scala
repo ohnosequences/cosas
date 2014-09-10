@@ -13,10 +13,9 @@ object Subtract extends SubtractSets_2 {
   def apply[S <: AnyTypeSet, Q <: AnyTypeSet]
     (implicit sub: S Subtract Q): S Subtract Q = sub
 
-  implicit def sInQ[S <: AnyTypeSet, Q <: AnyTypeSet]
-    (implicit e: S ⊂ Q):
-          (S Subtract Q) with Out[∅] = 
-      new (S Subtract Q) with Out[∅] { def apply(s: S, q: Q) = ∅ }
+  implicit def sInQ[S <: AnyTypeSet.SubsetOf[Q], Q <: AnyTypeSet]:
+        (S Subtract Q) with Out[∅] = 
+    new (S Subtract Q) with Out[∅] { def apply(s: S, q: Q) = ∅ }
 }
 
 trait SubtractSets_2 extends SubtractSets_3 {
@@ -29,7 +28,7 @@ trait SubtractSets_2 extends SubtractSets_3 {
   implicit def sConsWithoutHead[H, T <: AnyTypeSet,  Q <: AnyTypeSet, TO <: AnyTypeSet] 
     (implicit 
       h: H ∈ Q, 
-      rest: (T \ Q) with out[TO]
+      rest: (T \ Q) { type Out = TO }
     ):  ((H :~: T) Subtract Q) with Out[TO] =
     new ((H :~: T) Subtract Q) with Out[TO] { def apply(s: H :~: T, q: Q) = rest(s.tail, q) }
 }
@@ -39,7 +38,7 @@ trait SubtractSets_3 {
   implicit def sConsAnyHead[H, T <: AnyTypeSet, Q <: AnyTypeSet, TO <: AnyTypeSet] 
     (implicit 
       h: H ∉ Q, 
-      rest: (T \ Q) with out[TO]
+      rest: (T \ Q) { type Out = TO }
     ):  ((H :~: T) Subtract Q) with Out[H :~: TO] =
     new ((H :~: T) Subtract Q) with Out[H :~: TO] { def apply(s: H :~: T, q: Q) = s.head :~: rest(s.tail, q) }
 }

@@ -30,9 +30,10 @@ object ValuesOf {
     new ValuesOf[∅] with Out[∅]
 
   implicit def cons[H <: AnyWrap, T <: AnyTypeSet, TR <: AnyTypeSet]
-    (implicit t: ValuesOf[T] with out[TR]): 
-          ValuesOf[H :~: T] with Out[ValueOf[H] :~: TR] =
-      new ValuesOf[H :~: T] with Out[ValueOf[H] :~: TR]
+    (implicit 
+      t: ValuesOf[T] { type Out = TR }
+    ):  ValuesOf[H :~: T] with Out[ValueOf[H] :~: TR] =
+    new ValuesOf[H :~: T] with Out[ValueOf[H] :~: TR]
 }
 
 @annotation.implicitNotFound(msg = "Can't construct a set of raw types for ${S}")
@@ -44,26 +45,27 @@ object UnionOfRaws {
                   new UnionOfRaws[∅] with Out[TypeUnion.empty]
 
   implicit def cons[H <: AnyWrap, T <: AnyTypeSet, TU <: AnyTypeUnion]
-    (implicit t: UnionOfRaws[T] with out[TU]): 
-           UnionOfRaws[H :~: T] with Out[TU#or[RawOf[H]]] =
-       new UnionOfRaws[H :~: T] with Out[TU#or[RawOf[H]]]
+    (implicit 
+      t: UnionOfRaws[T] { type Out = TU }
+    ):  UnionOfRaws[H :~: T] with Out[TU#or[RawOf[H]]] =
+    new UnionOfRaws[H :~: T] with Out[TU#or[RawOf[H]]]
 }
 
-@annotation.implicitNotFound(msg = "Can't get types of the values set ${S}")
-trait TypesOf[S <: AnyTypeSet] extends Fn1[S] with OutBound[AnyTypeSet]
+@annotation.implicitNotFound(msg = "Can't get wraps of the values set ${S}")
+trait WrapsOf[S <: AnyTypeSet] extends Fn1[S] with OutBound[AnyTypeSet]
 
-object TypesOf {
+object WrapsOf {
 
   implicit val empty: 
-        TypesOf[∅] with Out[∅] =
-    new TypesOf[∅] with Out[∅] { def apply(s: ∅): Out = ∅ }
+        WrapsOf[∅] with Out[∅] =
+    new WrapsOf[∅] with Out[∅] { def apply(s: ∅): Out = ∅ }
 
   implicit def cons[H <: AnyWrap, T <: AnyTypeSet, TO <: AnyTypeSet]
     (implicit 
       getH: ValueOf[H] => H, 
-      rest: TypesOf[T] with out[TO]
-    ):  TypesOf[ValueOf[H] :~: T] with Out[H :~: TO] =
-    new TypesOf[ValueOf[H] :~: T] with Out[H :~: TO] {
+      rest: WrapsOf[T] { type Out = TO }
+    ):  WrapsOf[ValueOf[H] :~: T] with Out[H :~: TO] =
+    new WrapsOf[ValueOf[H] :~: T] with Out[H :~: TO] {
 
       def apply(s: ValueOf[H] :~: T): Out = getH(s.head) :~: rest(s.tail)
     }

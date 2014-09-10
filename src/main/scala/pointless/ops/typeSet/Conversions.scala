@@ -13,13 +13,13 @@ trait ToHList[S <: AnyTypeSet] extends Fn1[S] with OutBound[HList]
 
 object ToHList {
 
-  def apply[S <: AnyTypeSet](implicit toHList: ToHList[S]): ToHList[S] with out[toHList.Out] = toHList
+  def apply[S <: AnyTypeSet](implicit toHList: ToHList[S]): ToHList[S] = toHList
 
-  implicit def any[S <: AnyTypeSet](implicit 
-      mapper: id.type MapToHList S
-    ):  ToHList[S] with out[mapper.Out] =
-    new ToHList[S] {
-      type Out = mapper.Out
+  implicit def any[S <: AnyTypeSet, O <: HList]
+    (implicit 
+      mapper: MapToHList[id.type, S] { type Out = O }
+    ):  ToHList[S] with Out[O] =
+    new ToHList[S] with Out[O] {
       def apply(s: S): Out = mapper(s)
     }
 
@@ -31,21 +31,20 @@ trait FromHList[L <: HList] extends Fn1[L] with OutBound[AnyTypeSet]
 
 object FromHList {
 
-  def apply[L <: HList](implicit fromHList: FromHList[L]): FromHList[L] with out[fromHList.Out] = fromHList
+  def apply[L <: HList](implicit fromHList: FromHList[L]): FromHList[L] = fromHList
 
-  implicit def hnil[N <: HNil]: FromHList[N] with out[∅] = 
-    new FromHList[N] {
-      type Out = ∅
+  implicit def hnil[N <: HNil]: 
+        FromHList[N] with Out[∅] = 
+    new FromHList[N] with Out[∅] {
       def apply(l: N): Out = ∅
     }
   
   implicit def cons[H, T <: HList, OutT <: AnyTypeSet]
     (implicit 
-      rest: FromHList[T] with out[OutT],
+      rest: FromHList[T] { type Out = OutT },
       check: H ∉ OutT
-    ):  FromHList[H :: T] with out[H :~: OutT] = 
-    new FromHList[H :: T] {
-      type Out = H :~: OutT
+    ):  FromHList[H :: T] with Out[H :~: OutT] = 
+    new FromHList[H :: T] with Out[H :~: OutT] {
       def apply(l: H :: T): Out = l.head :~: rest(l.tail)
     }
 
@@ -57,7 +56,7 @@ trait ToList[S <: AnyTypeSet] extends Fn1[S] with OutInContainer[List]
 
 object ToList {
 
-  def apply[S <: AnyTypeSet](implicit toList: ToList[S]): ToList[S] with out[toList.Out] = toList
+  def apply[S <: AnyTypeSet](implicit toList: ToList[S]): ToList[S] = toList
 
   // case object id_ extends Poly1 { implicit def default[T <: X, X] = at[T]{ (t: T) => (t: X) } }
   
@@ -76,7 +75,7 @@ object ToList {
 
   implicit def cons2[X, H1 <: X, H2 <: X, T <: AnyTypeSet]
     (implicit 
-      lt: ToList[H2 :~: T] with wrapped[X]
+      lt: ToList[H2 :~: T] { type O = X }
     ):  ToList[H1 :~: H2 :~: T] with InContainer[X] = 
     new ToList[H1 :~: H2 :~: T] with InContainer[X] {
 
@@ -106,7 +105,7 @@ object ParseFrom {
     H <: AnyWrap, T <: AnyTypeSet, TO <: AnyTypeSet
   ](implicit
     f: (H, X) => (ValueOf[H], X),
-    t: ParseFrom[T, X] with out[TO]
+    t: ParseFrom[T, X] { type Out = TO }
   ):  ((H :~: T) ParseFrom X) with Out[ValueOf[H] :~: TO] =
   new ((H :~: T) ParseFrom X) with Out[ValueOf[H] :~: TO] {
 

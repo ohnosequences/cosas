@@ -199,6 +199,8 @@ class TypeSetTests extends org.scalatest.FunSuite {
     assert((∅ ∪ q) == q)
     assert((s ∪ ∅) == s)
 
+    assert((s ∪ s) == s)
+
     val sq = s ∪ q
     val qs = q ∪ s
     implicitly[sq.type ~:~ qs.type]
