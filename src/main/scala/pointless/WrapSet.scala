@@ -9,7 +9,7 @@ trait AnyWrapSet extends AnyTypeSet with AnyWrap {
   type Raw <: AnyTypeSet
 }
 
-trait EmptyWrapSet extends AnyWrapSet {
+trait EmptyWrapSet extends EmptySet with AnyWrapSet {
   def toStr = "-"
 
   type Types = TypeUnion.empty
@@ -45,14 +45,20 @@ object ConsWrapSet {
 
 object AnyWrapSet {
 
-  final type ⦲ = EmptyWrapSet
-  val ⦲ : ⦲ = EmptyWrapSet
+  // final type ⦲ = EmptyWrapSet
+  // val ⦲ : ⦲ = EmptyWrapSet
 
   final type :^:[H <: AnyWrap, T <: AnyWrapSet] = ConsWrapSet[H, T]
 
   type Of[T] = AnyWrapSet { type Bound <: just[T] }
 
-  implicit def wrapSetOps[W <: AnyWrapSet](w: W): WrapSetOps[W] = new WrapSetOps[W](w)
+  implicit def wrapSetOps[W <: AnyWrapSet](w: W): 
+        WrapSetOps[W] = 
+    new WrapSetOps[W](w)
+
+  implicit def emptySetOps[E <: EmptySet](e: E): 
+        WrapSetOps[EmptyWrapSet] = 
+    new WrapSetOps[EmptyWrapSet](EmptyWrapSet)
 }
 
 class WrapSetOps[W <: AnyWrapSet](w: W) {

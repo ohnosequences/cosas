@@ -96,10 +96,10 @@ object ParseFrom {
     (implicit parser: ParseFrom[S, X]): ParseFrom[S, X] = parser
 
   implicit def empty[X]: 
-        (⦲ ParseFrom X) = 
-    new (⦲ ParseFrom X) {
+        (EmptyWrapSet ParseFrom X) = 
+    new (EmptyWrapSet ParseFrom X) {
 
-      def apply(s: ⦲, x: X): Out = ∅
+      def apply(s: EmptyWrapSet, x: X): Out = ∅
     }
 
   implicit def cons[X,

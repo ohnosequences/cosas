@@ -11,17 +11,17 @@ object RecordTestsContext {
   case object name extends Property[String]
   case object notProperty
 
-  case object simpleUser extends Record(id :^: name :^: ⦲)
+  case object simpleUser extends Record(id :^: name :^: ∅)
 
   // more properties:
   case object email extends Property[String]
   case object color extends Property[String]
 
-  case object normalUser extends Record(id :^: name :^: email :^: color :^: ⦲)
+  case object normalUser extends Record(id :^: name :^: email :^: color :^: ∅)
 
   val vProps = email :~: color :~: ∅
   // nothing works with this
-  val vRecord = new Record(email :^: color :^: ⦲)
+  val vRecord = new Record(email :^: color :^: ∅)
 
   val vEmail = "oh@buh.com"
 
