@@ -1,7 +1,7 @@
 package ohnosequences.pointless.tests
 
 import shapeless.test.illTyped
-import ohnosequences.pointless._, AnyTypeSet._, AnyWrap._, AnyTypeUnion._
+import ohnosequences.pointless._, AnyTypeSet._, AnyWrap._, AnyTypeUnion._, AnyWrapSet._
 import ops.typeSet._
 
 class TypeSetTests extends org.scalatest.FunSuite {
@@ -281,7 +281,7 @@ class TypeSetTests extends org.scalatest.FunSuite {
     case object age extends Property[Integer]
 
     // using record here just for convenience
-    object rec extends Record(name :~: age :~: key :~: ∅)
+    object rec extends Record(name :^: age :^: key :^: ∅)
 
     val recEntry = rec(
       name("foo") :~: 

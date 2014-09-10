@@ -2,7 +2,7 @@ package ohnosequences.pointless.tests
 
 import shapeless.test.{typed, illTyped}
 import ohnosequences.pointless._
-import AnyWrap._, AnyProperty._, AnyTypeSet._, AnyRecord._, AnyTypeUnion._
+import AnyWrap._, AnyProperty._, AnyTypeSet._, AnyRecord._, AnyTypeUnion._, AnyWrapSet._
 import ops.typeSet._
 
 object RecordTestsContext {
@@ -11,17 +11,17 @@ object RecordTestsContext {
   case object name extends Property[String]
   case object notProperty
 
-  case object simpleUser extends Record(id :~: name :~: ∅)
+  case object simpleUser extends Record(id :^: name :^: ∅)
 
   // more properties:
   case object email extends Property[String]
   case object color extends Property[String]
 
-  case object normalUser extends Record(id :~: name :~: email :~: color :~: ∅)
+  case object normalUser extends Record(id :^: name :^: email :^: color :^: ∅)
 
   val vProps = email :~: color :~: ∅
   // nothing works with this
-  val vRecord = new Record(email :~: color :~: ∅)
+  val vRecord = new Record(email :^: color :^: ∅)
 
   val vEmail = "oh@buh.com"
 
@@ -81,9 +81,9 @@ class RecordTests extends org.scalatest.FunSuite {
       simpleUser.Raw =:= (ValueOf[id.type] :~: ValueOf[name.type] :~: ∅)
     ]
 
-    implicitly [
-      simpleUser.valuesOfProperties.Out =:= (ValueOf[id.type] :~: ValueOf[name.type] :~: ∅)
-    ]
+    // implicitly [
+    //   simpleUser.valuesOfProperties.Out =:= (ValueOf[id.type] :~: ValueOf[name.type] :~: ∅)
+    // ]
   }
 
   test("can provide properties in different order") {

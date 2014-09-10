@@ -85,31 +85,32 @@ object ToList {
 }
 
 
+// TODO: move to WrapSet ops
+import AnyWrapSet._
 @annotation.implicitNotFound(msg = "Can't parse typeset ${S} from ${X}")
-// NOTE: it should be restricted to AnyTypeSet.Of[AnyWrap], when :~: is known to return the same thing
-trait ParseFrom[S <: AnyTypeSet, X] extends Fn2[S, X] with OutBound[AnyTypeSet]
+trait ParseFrom[S <: AnyWrapSet, X] extends Fn2[S, X] with Out[S#Raw]
 
 object ParseFrom {
 
-  def apply[S <: AnyTypeSet, X]
+  def apply[S <: AnyWrapSet, X]
     (implicit parser: ParseFrom[S, X]): ParseFrom[S, X] = parser
 
   implicit def empty[X]: 
-        (∅ ParseFrom X) with Out[∅] = 
-    new (∅ ParseFrom X) with Out[∅] {
+        (EmptyWrapSet ParseFrom X) = 
+    new (EmptyWrapSet ParseFrom X) {
 
-      def apply(s: ∅, x: X): Out = ∅
+      def apply(s: EmptyWrapSet, x: X): Out = ∅
     }
 
   implicit def cons[X,
-    H <: AnyWrap, T <: AnyTypeSet, TO <: AnyTypeSet
+    H <: AnyWrap, T <: AnyWrapSet
   ](implicit
     f: (H, X) => (ValueOf[H], X),
-    t: ParseFrom[T, X] { type Out = TO }
-  ):  ((H :~: T) ParseFrom X) with Out[ValueOf[H] :~: TO] =
-  new ((H :~: T) ParseFrom X) with Out[ValueOf[H] :~: TO] {
+    t: ParseFrom[T, X]
+  ):  ((H :^: T) ParseFrom X) =
+  new ((H :^: T) ParseFrom X) {
 
-    def apply(s: H :~: T, x: X): Out = {
+    def apply(s: H :^: T, x: X): Out = {
       val (head, rest) = f(s.head, x)
       head :~: t(s.tail, rest)
     }

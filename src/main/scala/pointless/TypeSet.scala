@@ -3,7 +3,7 @@ package ohnosequences.pointless
 import AnyFn._, AnyTypeUnion._
 import shapeless.{ HList, Poly1, <:!<, =:!= }
 
-sealed trait AnyTypeSet {
+trait AnyTypeSet {
 
   type Types <: AnyTypeUnion
   type Bound // should be Types#union, but we can't set it here
@@ -28,7 +28,7 @@ trait NonEmptySet extends AnyTypeSet {
 private[pointless] object TypeSetImpl {
   import AnyTypeSet._
 
-  trait EmptySetImpl extends AnyTypeSet {
+  trait EmptySetImpl extends EmptySet {
 
     type Types = TypeUnion.empty
     type Bound = Types#union
@@ -60,15 +60,6 @@ private[pointless] object TypeSetImpl {
   /* This method covers constructor to check that you are not adding a duplicate */
   object ConsSet {
     def cons[E, S <: AnyTypeSet](e: E, set: S)(implicit check: E ∉ S): ConsSet[E,S] = ConsSet(e, set) 
-  }
-}
-
-object NonEmptySet {
-
-  type Of[T] = NonEmptySet {
-    type Bound <: just[T]
-    type Head <: T
-    type Tail <: AnyTypeSet.Of[T]
   }
 }
 
@@ -224,8 +215,6 @@ class TypeSetOps[S <: AnyTypeSet](val s: S) {
   def  toList(implicit  toList:  ToList[S]):  toList.Out =  toList(s)
 
   def toListOf[T](implicit toListOf: S ToListOf T): List[T] = toListOf(s)
-
-  def parseFrom[X](x: X)(implicit parser: S ParseFrom X): parser.Out = parser(s, x)
 
   def serializeTo[X](implicit serializer: S SerializeTo X): X = serializer(s)
 
