@@ -3,7 +3,7 @@ package ohnosequences.pointless
 import AnyFn._, AnyTypeUnion._
 import shapeless.{ HList, Poly1, <:!<, =:!= }
 
-sealed trait AnyTypeSet {
+trait AnyTypeSet {
 
   type Types <: AnyTypeUnion
   type Bound // should be Types#union, but we can't set it here
