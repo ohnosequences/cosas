@@ -4,15 +4,9 @@ import AnyTypeSet._, AnyProperty._, AnyWrap._, AnyTypeUnion._, AnyFn._
 import ops.typeSet._
 
 
-trait AnyRecord extends AnyWrap {
+trait AnyRecord extends AnyWrap with AnyPropertiesHolder {
 
   val label: String
-
-  type Properties <: AnyTypeSet.Of[AnyProperty]
-  val  properties: Properties
-
-  /* Any record *has* its own properties */
-  implicit val myOwnProperties: Me Has Properties = (this: Me) has properties
 
   /* Record wraps a set of values of it's properties */
   type Raw <: AnyTypeSet
@@ -20,9 +14,11 @@ trait AnyRecord extends AnyWrap {
   implicit val valuesOfProperties: Raw areValuesOf Properties
 }
 
-class Record[Props <: AnyTypeSet.Of[AnyProperty], Vals <: AnyTypeSet](val properties: Props)(implicit 
-  val valuesOfProperties: Vals areValuesOf Props
-) extends AnyRecord {
+class Record[Props <: AnyTypeSet.Of[AnyProperty], Vals <: AnyTypeSet]
+  (val properties: Props)
+  (implicit 
+    val valuesOfProperties: Vals areValuesOf Props
+  ) extends AnyRecord {
 
   val label = this.toString
 

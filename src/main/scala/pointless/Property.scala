@@ -13,69 +13,19 @@ trait AnyProperty extends AnyWrap {
 class Property[V](implicit val classTag: ClassTag[V]) extends AnyProperty {
 
   val label = this.toString
-
   type Raw = V
 }
 
-class PropertyOps[P <: AnyProperty](val p: P) extends WrapOps[P](p) {
-  // ... //
-}
-
-object AnyProperty extends AnyProperty_2 {
+object AnyProperty {
 
   type ofType[T] = AnyProperty { type Raw = T }
 
-  implicit def propertyOps[P <: AnyProperty](p: P): PropertyOps[P] = new PropertyOps[P](p)
-
-  implicit def hasPropertiesOps[T](t: T): HasPropertiesOps[T] = new HasPropertiesOps[T](t)
-
-  // NOTE: this is not in the companion object, because if it's there, it loops the implicit search
-
-  implicit def setToProp[T, P <: AnyProperty, Ps <: AnyTypeSet.Of[AnyProperty]]
-    (implicit ps: T Has Ps, in: P ∈ Ps):
-         T HasProperty P =
-    new (T HasProperty P)
-
-  // /* ∀ T, Ps, Qs ⊂ Ps  (T Has Ps => T Has Qs) */
-  // implicit def setToSubset[T, Ps <: AnyTypeSet.Of[AnyProperty], Qs <: SubsetOf[Ps]]
-  //   (implicit ps: T Has Ps):
-  //        T HasProperties Qs =
-  //   new (T HasProperties Qs)
-
+  // implicit def propertyOps[P <: AnyProperty](p: P): PropertyOps[P] = new PropertyOps[P](p)
 }
 
-trait AnyProperty_2 {
-
-  // @annotation.implicitNotFound(msg = "Can't prove that ${Smth} has property ${P}")
-  // final type HasProperty[Smth, P <: AnyProperty] = Has[Smth, P :~: ∅]
-
-  implicit def empty[T]: T HasProperties ∅ = new (T HasProperties ∅)
-  /* ∀ T, P, Ps  (T HasProperty P & T Has Ps => T Has (P :~: Ps)) */
-  implicit def cons[T, P <: AnyProperty, Ps <: AnyTypeSet.Of[AnyProperty]]
-    (implicit p: T HasProperty P, ps: T HasProperties Ps):
-         T HasProperties (P :~: Ps) =
-    new (T HasProperties (P :~: Ps))
-
-}
-
-// TODO: separate as ops
-/* Evidence that an arbitrary type `Smth` has a set of properties `Ps` */
-sealed class Has[Smth, Ps <: AnyTypeSet.Of[AnyProperty]] // for declaration
-
-// For checks
-@annotation.implicitNotFound(msg = "Can't prove that ${Smth} has property ${P}")
-sealed class HasProperty[Smth, P <: AnyProperty]
-@annotation.implicitNotFound(msg = "Can't prove that ${Smth} has properties ${Ps}")
-sealed class HasProperties[Smth, Ps <: AnyTypeSet]
-
-
-class HasPropertiesOps[Smth](val smth: Smth) {
-
-  def has[Ps <: AnyTypeSet.Of[AnyProperty]](ps: Ps): 
-         Smth Has Ps = 
-    new (Smth Has Ps)
-
-}
+// class PropertyOps[P <: AnyProperty](val p: P) extends WrapOps[P](p) {
+//   // ... //
+// }
 
 
 // TODO: restore this

@@ -178,20 +178,11 @@ class RecordTests extends org.scalatest.FunSuite {
     implicitly[simpleUser.type HasProperty id.type]
 
     // adding some moar properties
-    implicit val moar = simpleUser has email :~: color :~: ∅
+    implicit val useremail = simpleUser has email
+    implicit val usercolor = simpleUser has color
 
-    // // FIXME: see "!!!"
-    // implicitly[simpleUser.type HasProperties (email.type :~: id.type :~: ∅)]
-    //  (
-    //   cons[simpleUser.type, email.type, id.type :~: ∅](
-    //     implicitly[simpleUser.type HasProperty email.type],
-    //     cons[simpleUser.type, id.type, ∅] (
-    //       setToProp[simpleUser.type, id.type, simpleUser.Properties], // <-- !!!
-    //       empty
-    //     )
-    //   )
-    // )
-
+    implicitly[simpleUser.type HasProperties (email.type :~: id.type :~: ∅)]
+    implicitly[simpleUser.type HasProperties (email.type :~: name.type :~: color.type :~: ∅)]
   }
 
   test("parsing") {

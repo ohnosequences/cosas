@@ -239,6 +239,9 @@ class TypeSetOps[S <: AnyTypeSet](val s: S) {
 
   def mapFold[F <: Poly1, R](f: F)(r: R)(op: (R, R) => R)(implicit mapFold: MapFoldSet[F, S, R]): mapFold.Out = mapFold(s, r, op)
 
+  
+  def aggregateProperties(implicit aggr: AggregateProperties[S]): aggr.Out = aggr(s)
+
   /* Predicates */
 
   def checkForAll[P <: AnyTypePredicate](implicit prove: CheckForAll[S, P]): CheckForAll[S, P] = prove

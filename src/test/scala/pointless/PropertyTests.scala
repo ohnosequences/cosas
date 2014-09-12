@@ -43,8 +43,11 @@ class uhoh extends org.scalatest.FunSuite {
   }
 
   test("having properties") {
+    import AnyPropertiesHolder._
+
     object foo
-    implicit val foo_props = foo has name :~: age :~: ∅
+    implicit val foo_name = foo has name
+    implicit val foo_age = foo has age
 
     implicitly[foo.type HasProperty name.type]
     implicitly[foo.type HasProperty age.type]
@@ -52,6 +55,13 @@ class uhoh extends org.scalatest.FunSuite {
     implicitly[foo.type HasProperties ∅]
     implicitly[foo.type HasProperties (name.type :~: ∅)]
     implicitly[foo.type HasProperties (age.type :~: name.type :~: ∅)]
+
+    implicit val foo_key = foo has key
+
+    implicitly[foo.type HasProperty key.type]
+    implicitly[foo.type HasProperties (key.type :~: ∅)]
+    implicitly[foo.type HasProperties (age.type :~: key.type :~: ∅)]
+    implicitly[foo.type HasProperties (age.type :~: key.type :~: name.type :~: ∅)]
   }
 
 }
