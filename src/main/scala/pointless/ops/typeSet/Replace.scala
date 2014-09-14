@@ -20,30 +20,35 @@ object Replace extends Replace_2 {
   def apply[S <: AnyTypeSet, Q <: AnyTypeSet]
     (implicit replace: Replace[S, Q]): Replace[S, Q] = replace
 
-  implicit def empty[S <: AnyTypeSet]:
-        Replace[S, ∅] = 
-    new Replace[S, ∅] { def apply(s: S, q: ∅) = s }
+  implicit def empty[S <: AnyTypeSet, E <: AnyEmptySet]:
+        Replace[S, E] = 
+    new Replace[S, E] { def apply(s: In1, q: In2): Out = s }
 
-  implicit def replaceHead[H, T <: AnyTypeSet, Q <: AnyTypeSet, QOut <: AnyTypeSet]
-    (implicit 
-      pop: PopSOut[Q, H, QOut],
+  implicit def replaceHead[
+    H <: T#Bound, 
+    T <: AnyTypeSet, 
+    Q <: AnyTypeSet,
+    QOut <: AnyTypeSet
+  ](implicit
+      pop: Pop[Q, H] { type SOut = QOut },
       rest: Replace[T, QOut]
     ):  Replace[H :~: T, Q] =
     new Replace[H :~: T, Q] {
 
-      def apply(s: H :~: T, q: Q): H :~: T = {
+      def apply(s: In1, q: In2): Out = {
         val (h, qq) = pop(q)
-        h :~: rest(s.tail, qq)
+        val t: T = rest(s.tail, qq)
+        h :~: t
       }
     }
 }
 
 trait Replace_2 {
-  implicit def skipHead[H, T <: AnyTypeSet, Q <: AnyTypeSet, QOut <: AnyTypeSet]
+  implicit def skipHead[H <: T#Bound, T <: AnyTypeSet, Q <: AnyTypeSet]
     (implicit rest: Replace[T, Q]):
         Replace[H :~: T, Q] =
     new Replace[H :~: T, Q] {
 
-      def apply(s: H :~: T, q: Q) = s.head :~: rest(s.tail, q)
+      def apply(s: In1, q: In2): Out = s.head :~: rest(s.tail, q)
     }
 }

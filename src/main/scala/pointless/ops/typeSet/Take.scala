@@ -12,13 +12,13 @@ object Take {
   def apply[S <: AnyTypeSet, Q <: AnyTypeSet]
     (implicit take: Take[S, Q]): Take[S, Q] = take
 
-  implicit def empty[S <: AnyTypeSet]: 
-        Take[S, ∅] = 
-    new Take[S, ∅] { def apply(s: S): ∅ = ∅ }
+  implicit def empty[S <: AnyTypeSet, B]: 
+        Take[S, ∅[B]] = 
+    new Take[S, ∅[B]] { def apply(s: S): Out = ∅[B] }
 
-  implicit def cons[S <: AnyTypeSet, S_ <: AnyTypeSet, H, T <: AnyTypeSet]
+  implicit def cons[S <: AnyTypeSet, S_ <: AnyTypeSet, H <: T#Bound, T <: AnyTypeSet]
     (implicit 
-      pop: PopSOut[S, H, S_],
+      pop: Pop[S, H] { type SOut = S_ },
       rest: Take[S_, T]
     ):  Take[S, H :~: T] =
     new Take[S, H :~: T] { 

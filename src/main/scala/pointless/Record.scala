@@ -9,12 +9,12 @@ trait AnyRecord extends AnyWrap with AnyPropertiesHolder {
   val label: String
 
   /* Record wraps a set of values of it's properties */
-  type Raw <: AnyTypeSet
+  type Raw <: TypeSet.Of[AnyWrappedValue]
   // should be provided implicitly:
   implicit val valuesOfProperties: Raw areValuesOf Properties
 }
 
-class Record[Props <: AnyTypeSet.Of[AnyProperty], Vals <: AnyTypeSet]
+class Record[Props <: AnyTypeSet.Of[AnyProperty], Vals <: TypeSet.Of[AnyWrappedValue]]
   (val properties: Props)
   (implicit 
     val valuesOfProperties: Vals areValuesOf Props
@@ -69,12 +69,14 @@ class RecordRawOps[R <: AnyRecord](val recRaw: RawOf[R]) extends AnyVal {
 
 
   def update[P <: AnyProperty](propRep: ValueOf[P])
-    (implicit check: (ValueOf[P] :~: ∅) ⊂ RawOf[R], 
-              upd: R Update (ValueOf[P] :~: ∅)
-    ): ValueOf[R] = upd(recRaw, propRep :~: ∅)
+    (implicit check: ValueOf[P] ∈ RawOf[R], 
+              upd: R Update (ValueOf[P] :~: ∅[AnyWrappedValue])
+    ): ValueOf[R] = upd(recRaw, propRep :~: ∅[AnyWrappedValue])
 
-  def update[Ps <: AnyTypeSet](propReps: Ps)
-    (implicit upd: R Update Ps): ValueOf[R] = upd(recRaw, propReps)
+  def update[Ps <: AnyTypeSet.Of[AnyWrappedValue]](propReps: Ps)
+    (implicit check: Ps ⊂ RawOf[R], 
+              upd: R Update Ps
+    ): ValueOf[R] = upd(recRaw, propReps)
 
 
   def as[Other <: AnyRecord](other: Other)
