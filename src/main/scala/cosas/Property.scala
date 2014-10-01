@@ -3,7 +3,7 @@ package ohnosequences.cosas
 import AnyWrap._, AnyTypeSet._, AnyFn._
 import scala.reflect.ClassTag
 
-trait AnyProperty extends AnyType with Denotation[AnyProperty] {
+trait AnyProperty extends AnyType with AnyDenotationOf[AnyProperty] {
 
   type Tpe = this.type
   val  tpe = this: Tpe
@@ -17,6 +17,11 @@ trait AnyProperty extends AnyType with Denotation[AnyProperty] {
 class Property[V] extends AnyProperty {
 
   val label = this.toString
+  type Raw = V
+}
+
+class LabeledProperty[V](val label: String) extends AnyProperty {
+
   type Raw = V
 }
 
