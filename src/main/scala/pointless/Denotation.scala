@@ -9,27 +9,25 @@ trait AnyType {
 /*
   This trait represents a mapping between 
 
-  - `DenotedType` of a universe of types `TypeBound`
-  - `Raw` a type meant to be a denotation of `DenotedType` thus the name
+  - `Tpe` of a universe of types `TypeBound`
+  - `Raw` a type meant to be a denotation of `Tpe` thus the name
 */
 trait AnyDenotation extends AnyWrap {
 
   /* The base type for the types that this thing denotes */
-  type TypeBound <: AnyType
 
-  type DenotedType <: TypeBound
-  val  denotedType: DenotedType
+  type Tpe <: AnyType
+  val  tpe: Tpe
 }
 
 /*
   Bound the universe of types to be `T`s
 */
-trait Denotation[T <: AnyType] extends AnyDenotation { type TypeBound = T }
+trait AnyDenotationOf[T <: AnyType] extends AnyDenotation { type Tpe <: T }
 
 object AnyDenotation {
 
-  type withTypeBound[T <: AnyType] = AnyDenotation { type TypeBound = T }
+  type withTpe[T <: AnyType] = AnyDenotation { type Tpe = T }
 
-  type TypeBoundOf[D <: AnyDenotation] = D#TypeBound
-  type DenotedTypeOf[D <: AnyDenotation] = D#DenotedType
+  type TpeOf[D <: AnyDenotation] = D#Tpe
 }
