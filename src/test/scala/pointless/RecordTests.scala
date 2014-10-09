@@ -99,7 +99,8 @@ class RecordTests extends org.scalatest.FunSuite {
       (id(29681)) :~: ∅
     }
 
-    val sameSimpleUserV: ValueOf[simpleUser.type] = simpleUser fields {
+    // use the specific order
+    val sameSimpleUserV: ValueOf[simpleUser.type] = simpleUser entry {
       (id(29681)) :~:
       (name("Antonio")) :~: ∅
     }
