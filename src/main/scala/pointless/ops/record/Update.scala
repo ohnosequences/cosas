@@ -12,12 +12,12 @@ import AnyFn._, AnyWrap._, AnyProperty._, AnyTypeSet._, AnyRecord._
 import ops.typeSet._
 
 @annotation.implicitNotFound(msg = "Can't update record ${R} with property values ${Ps}")
-trait Update[R <: AnyRecord, Ps <: AnyTypeSet]
+trait Update[R <: AnyRecord, Ps <: AnyTypeSet.Of[AnyWrappedValue]]
   extends Fn2[RawOf[R], Ps] with Out[ValueOf[R]]
 
 object Update {
 
-  implicit def update[R <: AnyRecord, Ps <: AnyTypeSet]
+  implicit def update[R <: AnyRecord, Ps <: AnyTypeSet.Of[AnyWrappedValue]]
     (implicit 
       check: Ps ⊂ RawOf[R],
       replace: Replace[RawOf[R], Ps]

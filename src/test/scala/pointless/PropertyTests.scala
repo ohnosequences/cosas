@@ -52,16 +52,16 @@ class uhoh extends org.scalatest.FunSuite {
     implicitly[foo.type HasProperty name.type]
     implicitly[foo.type HasProperty age.type]
 
-    implicitly[foo.type HasProperties ∅]
-    implicitly[foo.type HasProperties (name.type :~: ∅)]
-    implicitly[foo.type HasProperties (age.type :~: name.type :~: ∅)]
+    implicitly[foo.type HasProperties ∅[AnyProperty]]
+    implicitly[foo.type HasProperties (name.type :~: ∅[AnyProperty])]
+    implicitly[foo.type HasProperties (age.type :~: name.type :~: ∅[AnyProperty])]
 
     implicit val foo_key = foo has key
 
     implicitly[foo.type HasProperty key.type]
-    implicitly[foo.type HasProperties (key.type :~: ∅)]
-    implicitly[foo.type HasProperties (age.type :~: key.type :~: ∅)]
-    implicitly[foo.type HasProperties (age.type :~: key.type :~: name.type :~: ∅)]
+    implicitly[foo.type HasProperties (key.type :~: ∅[AnyProperty])]
+    implicitly[foo.type HasProperties (age.type :~: key.type :~: ∅[AnyProperty])]
+    implicitly[foo.type HasProperties (age.type :~: key.type :~: name.type :~: ∅[AnyProperty])]
   }
 
 }

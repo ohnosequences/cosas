@@ -10,7 +10,7 @@ import ohnosequences.pointless._, AnyFn._, AnyTypeSet._
 
 @annotation.implicitNotFound(msg = "Can't pop an element of type ${E} from the set ${S}")
 trait Pop[S <: AnyTypeSet, E] extends Fn1[S] {
-  type SOut <: AnyTypeSet
+  type SOut <: AnyTypeSet //.Of[S#Bound]
   type Out = (E, SOut)
 }
 
@@ -19,23 +19,23 @@ trait PopSOut[S <: AnyTypeSet, E, SO <: AnyTypeSet] extends Pop[S, E] { type SOu
 object Pop extends Pop_2 {
   def apply[S <: AnyTypeSet, E](implicit pop: Pop[S, E]): Pop[S, E] = pop
 
-  implicit def foundInHead[E, H <: E, T <: AnyTypeSet]: 
+  implicit def foundInHead[E <: T#Bound, H <: E, T <: AnyTypeSet]: 
         PopSOut[H :~: T, E, T] =
     new PopSOut[H :~: T, E, T] { 
 
-      def apply(s: H :~: T): Out = (s.head, s.tail)
+      def apply(s: In1): Out = (s.head, s.tail)
     }
 }
 
 trait Pop_2 {
-  implicit def foundInTail[H, T <: AnyTypeSet, E, TO <: AnyTypeSet]
+  implicit def foundInTail[H <: T#Bound with TO#Bound, T <: AnyTypeSet, E, TO <: AnyTypeSet]
     (implicit 
       e: E ∈ T, 
-      l: PopSOut[T, E, TO]
+      l: Pop[T, E] { type SOut = TO }
     ):  PopSOut[H :~: T, E, H :~: TO] =
     new PopSOut[H :~: T, E, H :~: TO] { 
 
-      def apply(s: H :~: T): Out = {
+      def apply(s: In1): Out = {
         val (e, t) = l(s.tail)
         (e, s.head :~: t)
       }
@@ -50,7 +50,7 @@ object Lookup {
   implicit def popToLookup[S <: AnyTypeSet, E]
     (implicit p: S Pop E): 
         Lookup[S, E] = 
-    new Lookup[S, E] { def apply(s: S): Out = p(s)._1 }
+    new Lookup[S, E] { def apply(s: In1): Out = p(s)._1 }
 }
 
 
@@ -62,5 +62,5 @@ object Delete {
   implicit def popToDelete[S <: AnyTypeSet, E, SO <: AnyTypeSet]
     (implicit p: PopSOut[S, E, SO]): 
         Delete[S, E] with Out[SO] = 
-    new Delete[S, E] with Out[SO] { def apply(s: S): Out = p(s)._2 }
+    new Delete[S, E] with Out[SO] { def apply(s: In1): Out = p(s)._2 }
 }
