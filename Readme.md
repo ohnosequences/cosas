@@ -24,3 +24,7 @@ Documentation is generated from the code by [literator](https://github.com/laugh
 tool. See the `docs/` folder and tests for examples.
 
 Also, there are [API docs](http://ohnosequences.com/cosas/docs/api/0.5.0)
+
+### contact
+
+- **maintainer** [@eparejatobes](https://github.com/eparejatobes)
