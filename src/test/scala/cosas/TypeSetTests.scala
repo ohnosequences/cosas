@@ -174,7 +174,7 @@ class TypeSetTests extends org.scalatest.FunSuite {
     assert((s reorderTo p) == "foo" :~: 1 :~: 'a' :~: ∅)
   }
 
-  test("subtraction") {
+  test("substraction") {
     val s = 1 :~: 'a' :~: "foo" :~: ∅
 
     assert(∅ \ ∅ == ∅)
