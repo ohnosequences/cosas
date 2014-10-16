@@ -1,5 +1,7 @@
 # Scala singletons and existentials
 
+_**WARNING** this is about an old, non-functioning (compiler bugs) approach_
+
 ## tagging
 
 - if `R <: Singleton with Representable` use `R#Rep, R#Raw`. In general, don't use `Singleton` abstractly, only for providing ops

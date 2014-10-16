@@ -1,8 +1,8 @@
 Nice.scalaProject
 
-name := "pointless"
+name := "cosas"
 
-description := "pointless but useful project"
+description := "esas cosas raras con muchos tipos"
 
 organization := "ohnosequences"
 
@@ -26,4 +26,4 @@ libraryDependencies ++= Seq (
 
 wartremoverWarnings ++= Warts.all
 
-wartremoverExcluded ++= Seq("ohnosequences.pointless.test")
+wartremoverExcluded ++= Seq("ohnosequences.cosas.test")
