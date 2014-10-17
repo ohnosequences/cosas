@@ -1,6 +1,8 @@
 package ohnosequences.cosas
 
-/* ### Wrapping types */
+/* 
+### Wrapping types 
+*/
 
 trait AnyWrap {
 
@@ -54,6 +56,7 @@ trait WrappedValue[W <: AnyWrap, @specialized V <: W#Raw] extends Any with AnyWr
   type Value = V
 }
 
+// what about making it non-final to support subset types?
 final class ValueOf[W <: AnyWrap](val raw: RawOf[W]) extends AnyVal with WrappedValue[W, RawOf[W]] {
 
   // NOTE: it may be confusing:
@@ -68,3 +71,25 @@ final class ValueOf[W <: AnyWrap](val raw: RawOf[W]) extends AnyVal with Wrapped
 // class ValueOps[W <: AnyWrap](v: ValueOf[W]) {
 //   // ... //
 // }
+
+trait AnySubsetType extends AnyWrap {
+
+  val predicate: Raw => Boolean
+}
+
+abstract class SubsetType[R] extends Wrap[R] with AnySubsetType
+
+object AnySubsetType {
+
+    implicit class SubSetTypeOps[ST <: AnySubsetType](st: ST) {
+
+      def apply(raw: st.Raw): Option[ValueOf[ST]] = if ( st.predicate(raw) ) None else Some( new ValueOf[ST](raw) )
+      def withValue(raw: st.Raw): Option[ValueOf[ST]] = apply(raw)
+  }
+
+}
+
+
+
+
+
