@@ -8,12 +8,18 @@ sealed trait AnyTypeSet {
   type Types <: AnyTypeUnion
   type Bound // should be Types#union, but we can't set it here
 
+  type Cardinality <: shapeless.Nat
+
   def toStr: String
   override def toString = "{" + toStr + "}"
 }
 
-trait EmptySet extends AnyTypeSet
+trait EmptySet extends AnyTypeSet {
+
+  type Cardinality = shapeless._0
+}
 trait NonEmptySet extends AnyTypeSet {
+
     type Head
     val  head: Head
 
@@ -33,6 +39,8 @@ private[cosas] object TypeSetImpl {
     type Types = TypeUnion.empty
     type Bound = Types#union
 
+    type Cardinality = shapeless._0
+
     def toStr = ""
   }
 
@@ -45,6 +53,8 @@ private[cosas] object TypeSetImpl {
 
     type Types = TypesOf[Tail]#or[Head]
     type Bound = Types#union
+
+    type Cardinality = shapeless.Succ[T#Cardinality]
     
     def toStr = {
       val h = head match {
@@ -82,6 +92,8 @@ object AnyTypeSet {
   val emptySet : ∅ = TypeSetImpl.EmptySetImpl
 
   final type :~:[E, S <: AnyTypeSet] = TypeSetImpl.ConsSet[E, S]
+
+  final type cardinality[S <: AnyTypeSet] = S#Cardinality
 
   // it's like KList, but a set
   type Of[T] = AnyTypeSet { type Bound <: just[T] }

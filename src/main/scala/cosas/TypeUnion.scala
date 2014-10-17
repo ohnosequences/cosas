@@ -1,6 +1,7 @@
 package ohnosequences.cosas
 
 import shapeless.{ <:!< }
+import shapeless._, Nat._
 
 /*
   The two type-level constructors of a type union. 
@@ -10,6 +11,7 @@ trait AnyTypeUnion {
 
   type or[Y] <: AnyTypeUnion
   type union // kind of return
+  type Arity <: Nat
 }
 
 object AnyTypeUnion {
@@ -31,6 +33,8 @@ object AnyTypeUnion {
     type isNot[X] = X isNotOneOf U
   }
 
+  type arity[U <: AnyTypeUnion] = U#Arity
+
   @annotation.implicitNotFound(msg = "Can't prove that ${V} is subunion of ${U}")
   type    isSubunionOf[V <: AnyTypeUnion, U <: AnyTypeUnion] = V#union <:<  U#union
 
@@ -41,13 +45,17 @@ object AnyTypeUnion {
 
 import AnyTypeUnion._
 
-sealed trait either[X] extends TypeUnion[not[X]]
+sealed trait either[X] extends TypeUnion[not[X]] {
+
+  type Arity = _1
+}
 
 /* Builder */
-trait TypeUnion[T] extends AnyTypeUnion {
+trait TypeUnion[T] extends AnyTypeUnion { self =>
 
-  type or[S] = TypeUnion[T with not[S]]  
+  type or[S] = TypeUnion[T with not[S]] { type Arity = Succ[self.Arity] }
   type union = not[T]
+
 }
 
 object TypeUnion {

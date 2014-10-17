@@ -32,6 +32,8 @@ object AnyRecord {
   type withProperties[Ps <: AnyTypeSet.Of[AnyProperty]] = AnyRecord { type Properties = Ps }
   type withRaw[R <: AnyTypeSet] = AnyRecord { type Raw = R }
 
+  type length[R <: AnyRecord] = R#Raw#Cardinality
+
   /* Accessors */
   type PropertiesOf[R <: AnyRecord] = R#Properties
 

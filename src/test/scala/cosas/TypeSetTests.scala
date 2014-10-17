@@ -6,6 +6,16 @@ import ops.typeSet._
 
 class TypeSetTests extends org.scalatest.FunSuite {
 
+  test("set cardinality") {
+
+    import shapeless._, Nat._
+
+    type Two = cardinality[(Int :~: Char :~: ∅)]
+
+    implicitly [ Two =:= _2 ]
+
+  }
+
   test("empty set") {
 
     implicitly[Any isNotIn ∅]
