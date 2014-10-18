@@ -7,12 +7,24 @@ object WrapTestsContext {
 
   case object Color extends Wrap[String]
 
-  case class NEList[E]() extends SubsetType[List[E]] {
+  class NEList[E] extends SubsetType[List[E]] {
 
     val predicate: List[E] => Boolean = l => ! l.isEmpty
+
+    def apply(e: E): ValueOf[NEList[E]] = new ValueOf[NEList[E]](e :: Nil)
   }
 
-  def NEListOf[E]: NEList[E] = NEList()
+  object NEList {
+
+    implicit def toOps[E](v: ValueOf[NEList[E]]): NEListOps[E] = new NEListOps(v.raw)
+  }
+
+  def NEListOf[E]: NEList[E] = new NEList()
+
+  class NEListOps[E](val l: List[E]) extends AnyVal with ValueOfSubsetTypeOps[NEList[E]] {
+
+    def ::(x: E): ValueOf[NEList[E]] = unsafeValueOf[NEList[E]](x :: l)
+  }
 }
 
 class WrapTests extends org.scalatest.FunSuite {
@@ -31,8 +43,12 @@ class WrapTests extends org.scalatest.FunSuite {
 
   test("naive nonempty lists") {
 
-    val buh: Option[ValueOf[NEList[String]]] = NEListOf[String]("there's something!" :: Nil)
+    // val buh: Option[ValueOf[NEList[String]]] = NEListOf[String]("there's something!" :: Nil)
 
-    val oh = NEListOf[Int](12 :: 232 :: Nil)
+    // val oh = NEListOf[Int](12 :: 232 :: Nil)
+
+    val nelint = NEListOf(232)
+
+    val u1 = 23 :: nelint
   }
 }

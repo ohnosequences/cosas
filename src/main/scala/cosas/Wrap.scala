@@ -30,6 +30,7 @@ import AnyWrap._
 
 class WrapOps[W <: AnyWrap](t: W) {
 
+  // TODO this apply conflicts with what I want for subset types. Maybe I should just duplicate ValueOf for this case.
   def apply(r: RawOf[W]): ValueOf[W] = new ValueOf[W](r)
   def withValue(r: RawOf[W]): ValueOf[W] = new ValueOf[W](r)
 }
@@ -56,21 +57,24 @@ trait WrappedValue[W <: AnyWrap, @specialized V <: W#Raw] extends Any with AnyWr
   type Value = V
 }
 
-// what about making it non-final to support subset types?
+// what about making it non-final to support subset types? value classes cannot be extended
 final class ValueOf[W <: AnyWrap](val raw: RawOf[W]) extends AnyVal with WrappedValue[W, RawOf[W]] {
 
   // NOTE: it may be confusing:
   override def toString = raw.toString
 }
 
-// object ValueOf {
+object ValueOfOps {
 
-//   implicit def valueOps[W <: AnyWrap](v: ValueOf[W]): ValueOps[W] = new ValueOps[W](v)
-// }
+  implicit def valueOps[W <: AnyWrap](v: ValueOf[W]): ValueOfOps[W] = new ValueOfOps[W](v.raw)
+}
 
-// class ValueOps[W <: AnyWrap](v: ValueOf[W]) {
-//   // ... //
-// }
+/*
+  This class wraps RawOf but it should only be accesible from `v' : ValueOf[W]`
+*/
+class ValueOfOps[W <: AnyWrap](val v: RawOf[W]) extends AnyVal {
+  // ... //
+}
 
 trait AnySubsetType extends AnyWrap {
 
@@ -81,10 +85,30 @@ abstract class SubsetType[R] extends Wrap[R] with AnySubsetType
 
 object AnySubsetType {
 
-    implicit class SubSetTypeOps[ST <: AnySubsetType](st: ST) {
+    implicit class SubSetTypeOps[ST <: AnySubsetType](val st: ST) {
 
-      def apply(raw: st.Raw): Option[ValueOf[ST]] = if ( st.predicate(raw) ) None else Some( new ValueOf[ST](raw) )
+      // TODO why this dot?
+      def apply(raw: st.Raw): Option[ValueOf[ST]] = if ( st predicate raw ) None else Some( new ValueOf[ST](raw) )
       def withValue(raw: st.Raw): Option[ValueOf[ST]] = apply(raw)
+  }
+
+  object ValueOfSubsetTypeOps {
+
+    implicit def ValueOfSubsetTypeOps[
+      ST <: AnySubsetType,
+      Ops <: ValueOfSubsetTypeOps[ST]
+    ](v: ValueOf[ST])(implicit conv: ValueOf[ST] => Ops): Ops = conv(v)
+
+  }
+  /*
+  you should implement this trait for providing ops for values of a subset type `ST`.
+  */
+  trait ValueOfSubsetTypeOps[ST <: AnySubsetType] extends Any {
+
+    /*
+    use case: concat of sized has the sum of the two arg sizes; but how do you create the corresponding value saving a stupid check (and returning an Option)? `unsafeValueOf`. By implementing this trait you assume the responsibility that comes with being able to create unchecked values of `ST`; use it with caution!
+    */
+    protected def unsafeValueOf[ST0 <: ST](other: ST#Raw): ValueOf[ST] = new ValueOf[ST](other)
   }
 
 }
