@@ -22,3 +22,19 @@ class WrapTests extends org.scalatest.FunSuite {
     assert{ amarillo.raw == "yellow" }
   }
 }
+
+class DenotationTests extends org.scalatest.FunSuite {
+
+  object User extends Type("User")
+
+  case class user(id: String, name: String, age: Int)
+
+  test("create denotations") {
+
+    import Denotes._
+
+    val uh: user Denotes User.type = user(id = "adqwr32141", name = "Salustiano", age = 143) :%: User
+
+    val z = User denoteWith 2423423
+  }
+}

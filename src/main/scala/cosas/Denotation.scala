@@ -6,6 +6,7 @@ trait AnyType {
   val label: String
 }
 
+class Type(val label: String) extends AnyType
 /*
   This trait represents a mapping between 
 
