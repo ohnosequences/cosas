@@ -3,20 +3,12 @@ package ohnosequences.cosas
 import AnyWrap._, AnyTypeSet._, AnyFn._
 import scala.reflect.ClassTag
 
-trait AnyProperty extends AnyType with AnyDenotationOf[AnyProperty] {
-
-  type Tpe = this.type
-  val  tpe = this: Tpe
-
-  val label: String
-  // val classTag: ClassTag[Raw]
-}
+trait AnyProperty extends AnyWrap {}
 
 /* Properties should be defined as case objects: `case object name extends Property[String]` */
 // class Property[V](implicit val classTag: ClassTag[V]) extends AnyProperty {
-class Property[V] extends AnyProperty {
-
-  val label = this.toString
+class Property[V](val label: String) extends AnyProperty {
+  
   type Raw = V
 }
 
