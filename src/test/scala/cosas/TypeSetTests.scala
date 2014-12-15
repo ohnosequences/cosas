@@ -110,7 +110,7 @@ class TypeSetTests extends org.scalatest.FunSuite {
     val s = 1 :~: 'a' :~: "foo" :~: ∅
     type st = Int :~: Char :~: String :~: ∅
     val uhouh = 1 :~: ∅
-    assert(s.pop[Int] == (1, 'a' :~: "foo" :~: ∅))
+    assert(s.pop[Int] == ((1, 'a' :~: "foo" :~: ∅)))
     // val uh: (Char, Int :~: String :~: ∅) = pop[Char,Char] from s
     // assert(s.pop[Char](
     //        // implicitly[Char ∈ st], 
@@ -118,7 +118,7 @@ class TypeSetTests extends org.scalatest.FunSuite {
     //        ) == ('a', 1 :~: "foo" :~: ∅))
     
     // val hhhh: (Char, Int :~: String :~: ∅)  = pop[AnyVal, Char] from s
-    assert(s.pop[String] == ("foo", 1 :~: 'a' :~: ∅))
+    assert(s.pop[String] == (("foo", 1 :~: 'a' :~: ∅)))
 
   }
 
