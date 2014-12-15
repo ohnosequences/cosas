@@ -25,7 +25,7 @@ class WrapTests extends org.scalatest.FunSuite {
 
 class DenotationTests extends org.scalatest.FunSuite {
 
-  object User extends Type("User")
+  object UserType extends Type("User")
 
   case class user(id: String, name: String, age: Int)
 
@@ -33,8 +33,8 @@ class DenotationTests extends org.scalatest.FunSuite {
 
     import Denotes._
 
-    val uh: user Denotes User.type = user(id = "adqwr32141", name = "Salustiano", age = 143) :%: User
+    val uh: user Denotes UserType.type = user(id = "adqwr32141", name = "Salustiano", age = 143) :%: UserType
 
-    val z = User denoteWith 2423423
+    val z = UserType denoteWith 2423423
   }
 }

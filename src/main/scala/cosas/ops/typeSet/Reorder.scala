@@ -17,10 +17,10 @@ object ReorderTo {
     (implicit reorder: S ReorderTo Q): S ReorderTo Q = reorder
 
   // TODO why not one in the other direction??
-  implicit def any[S <: AnyTypeSet, Out <: AnyTypeSet]
+  implicit def any[S <: AnyTypeSet, O <: AnyTypeSet]
     (implicit 
-      eq: S ~:~ Out, 
-      take: Take[S, Out]
-    ):  (S ReorderTo Out) =
-    new (S ReorderTo Out) { def apply(s: S): Out = take(s) }
+      eq: S ~:~ O, 
+      take: Take[S, O]
+    ):  (S ReorderTo O) =
+    new (S ReorderTo O) { def apply(s: S): O = take(s) }
 }
