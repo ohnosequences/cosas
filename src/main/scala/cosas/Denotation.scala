@@ -39,7 +39,7 @@ final class Denotes[V, T <: AnyType](val value: V) extends AnyVal with AnyDenote
   // override def toString = value.toString
 }
 
-class DenotationOps[T <: AnyType](val tpe: T) {
+case class DenotationOps[T <: AnyType](val tpe: T) extends AnyVal {
 
   def denoteWith[@specialized V](v: V): (V Denotes T) = new Denotes(v)
   def :%:[@specialized V](v: V): (V Denotes T) = new Denotes(v)
@@ -50,7 +50,7 @@ object Denotes {
   // type withRaw[R] = AnyWrap { type Raw = R }
   // type RawOf[W <: AnyWrap] = W#Raw
   
-
+  implicit def denotationOps[T <: AnyType](tpe: T): DenotationOps[T] = DenotationOps(tpe)
 }
 
 /* ### Wrapping types */

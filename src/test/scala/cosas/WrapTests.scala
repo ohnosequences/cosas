@@ -5,7 +5,7 @@ import ohnosequences.cosas._, AnyWrap._, ValueOf._
 
 object WrapTestsContext {
 
-  case object Color extends Wrap[String]
+  object Color extends Wrap[String] { val label = "Color" }
 }
 
 class WrapTests extends org.scalatest.FunSuite {
@@ -17,9 +17,9 @@ class WrapTests extends org.scalatest.FunSuite {
     val verde = valueOf[Color.type]("green")
     val amarillo = Color withValue "yellow"
 
-    assert{ azul.raw == "blue" }
-    assert{ verde.raw == "green" }
-    assert{ amarillo.raw == "yellow" }
+    assert{ azul.value == "blue" }
+    assert{ verde.value == "green" }
+    assert{ amarillo.value == "yellow" }
   }
 }
 
