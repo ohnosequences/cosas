@@ -58,7 +58,7 @@ trait WrappedValue[W <: AnyWrap, @specialized V <: W#Raw] extends Any with AnyWr
 }
 
 // what about making it non-final to support subset types? value classes cannot be extended
-final class ValueOf[W <: AnyWrap](val raw: RawOf[W]) extends AnyVal with WrappedValue[W, RawOf[W]] {
+final class ValueOf[W <: AnyWrap](val raw: W#Raw) extends AnyVal with WrappedValue[W, RawOf[W]] {
 
   // NOTE: it may be confusing:
   override def toString = raw.toString
@@ -78,32 +78,38 @@ class ValueOfOps[W <: AnyWrap](val v: RawOf[W]) extends AnyVal {
 
 trait AnySubsetType extends AnyWrap {
 
-  val predicate: Raw => Boolean
+  type W <: AnyWrap
+  type Raw = W#Raw
+  def predicate(raw: W#Raw): Boolean
 }
 
-abstract class SubsetType[R] extends Wrap[R] with AnySubsetType
+trait SubsetType[W0 <: AnyWrap] extends AnySubsetType { type W = W0 }
 
 object AnySubsetType {
 
-    implicit class SubSetTypeOps[ST <: AnySubsetType](val st: ST) {
+    class SubSetTypeOps[W <: AnyWrap, ST <: SubsetType[W]](val st: ST) {
 
       // TODO why this dot?
-      def apply(raw: st.Raw): Option[ValueOf[ST]] = if ( st predicate raw ) None else Some( new ValueOf[ST](raw) )
-      def withValue(raw: st.Raw): Option[ValueOf[ST]] = apply(raw)
+      def apply(raw: ST#W#Raw): Option[ValueOf[ST]] = {
+
+        if ( st.predicate(raw) ) None else Some( new ValueOf[ST](raw) )
+      }
+      def withValue(raw: ST#Raw): Option[ValueOf[ST]] = apply(raw)
   }
 
   object ValueOfSubsetTypeOps {
 
     implicit def ValueOfSubsetTypeOps[
-      ST <: AnySubsetType,
-      Ops <: ValueOfSubsetTypeOps[ST]
+      W <: AnyWrap,
+      ST <: SubsetType[W],
+      Ops <: ValueOfSubsetTypeOps[W,ST]
     ](v: ValueOf[ST])(implicit conv: ValueOf[ST] => Ops): Ops = conv(v)
 
   }
   /*
   you should implement this trait for providing ops for values of a subset type `ST`.
   */
-  trait ValueOfSubsetTypeOps[ST <: AnySubsetType] extends Any {
+  trait ValueOfSubsetTypeOps[W <: AnyWrap, ST <: SubsetType[W]] extends Any {
 
     /*
     use case: concat of sized has the sum of the two arg sizes; but how do you create the corresponding value saving a stupid check (and returning an Option)? `unsafeValueOf`. By implementing this trait you assume the responsibility that comes with being able to create unchecked values of `ST`; use it with caution!

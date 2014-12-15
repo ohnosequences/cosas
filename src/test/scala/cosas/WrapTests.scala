@@ -7,9 +7,10 @@ object WrapTestsContext {
 
   case object Color extends Wrap[String]
 
-  class NEList[E] extends SubsetType[List[E]] {
+  final class WrappedList[E] extends Wrap[List[E]]
+  class NEList[E] extends SubsetType[WrappedList[E]] {
 
-    val predicate: List[E] => Boolean = l => ! l.isEmpty
+    def predicate(l: List[E]): Boolean = ! l.isEmpty
 
     def apply(e: E): ValueOf[NEList[E]] = new ValueOf[NEList[E]](e :: Nil)
   }
@@ -21,7 +22,7 @@ object WrapTestsContext {
 
   def NEListOf[E]: NEList[E] = new NEList()
 
-  class NEListOps[E](val l: List[E]) extends AnyVal with ValueOfSubsetTypeOps[NEList[E]] {
+  class NEListOps[E](val l: List[E]) extends AnyVal with ValueOfSubsetTypeOps[WrappedList[E], NEList[E]] {
 
     def ::(x: E): ValueOf[NEList[E]] = unsafeValueOf[NEList[E]](x :: l)
   }
