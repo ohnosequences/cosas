@@ -2,7 +2,7 @@ package ohnosequences.cosas.tests
 
 import shapeless.test.{typed, illTyped}
 import ohnosequences.cosas._
-import AnyWrap._, AnyProperty._, AnyTypeSet._, AnyRecord._, AnyTypeUnion._
+import AnyType._, AnyProperty._, AnyTypeSet._, AnyRecord._, AnyTypeUnion._
 import ops.typeSet._
 
 object RecordTestsContext {
@@ -187,10 +187,10 @@ class RecordTests extends org.scalatest.FunSuite {
   test("parsing") {
     // Map parser get's values from map by key, which is the property label
     object MapParser {
-      implicit def caseInteger[P <: AnyProperty with AnyWrap.withRaw[Integer]](p: P, m: Map[String, String]):
+      implicit def caseInteger[P <: AnyProperty with AnyType.withRaw[Integer]](p: P, m: Map[String, String]):
         (ValueOf[P], Map[String, String]) = (p(m(p.label).toInt), m)
 
-      implicit def caseString[P <: AnyProperty with AnyWrap.withRaw[String]](p: P, m: Map[String, String]):
+      implicit def caseString[P <: AnyProperty with AnyType.withRaw[String]](p: P, m: Map[String, String]):
         (ValueOf[P], Map[String, String]) = (p(m(p.label).toString), m)
     }
 
@@ -207,10 +207,10 @@ class RecordTests extends org.scalatest.FunSuite {
 
     // List parser just takes the values sequentially, so the order must correspond the order of properties
     object ListParser {
-      implicit def caseInteger[P <: AnyProperty with AnyWrap.withRaw[Integer]](p: P, l: List[String]):
+      implicit def caseInteger[P <: AnyProperty with AnyType.withRaw[Integer]](p: P, l: List[String]):
         (ValueOf[P], List[String]) = (p(l.head.toInt), l.tail)
 
-      implicit def caseString[P <: AnyProperty with AnyWrap.withRaw[String]](p: P, l: List[String]):
+      implicit def caseString[P <: AnyProperty with AnyType.withRaw[String]](p: P, l: List[String]):
         (ValueOf[P], List[String]) = (p(l.head.toString), l.tail)
     }
 

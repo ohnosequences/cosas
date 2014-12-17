@@ -1,11 +1,11 @@
 package ohnosequences.cosas.tests
 
 import shapeless.test.illTyped
-import ohnosequences.cosas._, AnyWrap._, ValueOf._
+import ohnosequences.cosas._, AnyType._
 
 object WrapTestsContext {
 
-  object Color extends Wrap[String] { val label = "Color" }
+  object Color extends Wrap[String]("Color")
 }
 
 class WrapTests extends org.scalatest.FunSuite {
@@ -13,9 +13,9 @@ class WrapTests extends org.scalatest.FunSuite {
 
   test("creating values") {
 
-    val azul = Color("blue")
-    val verde = valueOf[Color.type]("green")
-    val amarillo = Color withValue "yellow"
+    val azul = Color denoteWith "blue"
+    val verde = new ValueOf[Color.type]("green")
+    val amarillo = Color denoteWith "yellow"
 
     assert{ azul.value == "blue" }
     assert{ verde.value == "green" }
