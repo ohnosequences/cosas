@@ -1,10 +1,10 @@
 package ohnosequences.cosas.tests
 
-import ohnosequences.cosas._, AnyWrap._, ValueOf._
+import ohnosequences.cosas._, AnyType._
 
 object WrapTestsContext {
 
-  object Color extends Wrap[String] { val label = "Color" }
+  object Color extends Wrap[String]("Color")
 
   object UserType extends Type("User")
   type User = UserType.type
@@ -22,9 +22,9 @@ class WrapTests extends org.scalatest.FunSuite {
 
   test("creating values") {
 
-    val azul = Color("blue")
-    val verde = valueOf[Color.type]("green")
-    val amarillo = Color withValue "yellow"
+    val azul = Color denoteWith "blue"
+    val verde = new ValueOf[Color.type]("green")
+    val amarillo = Color denoteWith "yellow"
 
     assert{ azul.value == "blue" }
     assert{ verde.value == "green" }
@@ -47,7 +47,7 @@ class DenotationTests extends org.scalatest.FunSuite {
     // TODO: right imports here
     import org.scalactic._, TypeCheckedTripleEquals._
     // import org.scalactic._, ConversionCheckedTripleEquals._
-    // import Denotes._
+    import Denotes._
 
     val paco = "Paco"
     val u1 = paco :%: User
