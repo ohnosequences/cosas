@@ -8,7 +8,7 @@ It's like `Lookup`, but it removes the element
 package ohnosequences.cosas.ops.record
 
 import ohnosequences.cosas._
-import AnyFn._, AnyWrap._, AnyProperty._, AnyTypeSet._, AnyRecord._
+import AnyFn._, AnyType._, AnyProperty._, AnyTypeSet._, AnyRecord._
 import ops.typeSet._
 
 @annotation.implicitNotFound(msg = "Can't transform ${R} to ${Other} with values ${Rest}")
@@ -32,7 +32,7 @@ object Transform {
     new Transform[R, Other, Rest] {
 
       def apply(recRaw: RawOf[R], other: Other, rest: Rest): Out = 
-        valueOf[Other](project(uni(recRaw, rest)))
+        other denoteWith (project(uni(recRaw, rest)))
     }
 
 }

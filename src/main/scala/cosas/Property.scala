@@ -1,9 +1,9 @@
 package ohnosequences.cosas
 
-import AnyWrap._, AnyTypeSet._, AnyFn._
+import AnyTypeSet._, AnyFn._, AnyType._
 import scala.reflect.ClassTag
 
-trait AnyProperty extends AnyWrap {}
+trait AnyProperty extends AnyType {}
 
 /* Properties should be defined as case objects: `case object name extends Property[String]` */
 // class Property[V](implicit val classTag: ClassTag[V]) extends AnyProperty {
@@ -21,12 +21,13 @@ object AnyProperty {
 
   type ofType[T] = AnyProperty { type Raw = T }
 
-  // implicit def propertyOps[P <: AnyProperty](p: P): PropertyOps[P] = new PropertyOps[P](p)
+  implicit def propertyOps[P <: AnyProperty](p: P): PropertyOps[P] = new PropertyOps[P](p)
 }
 
-// class PropertyOps[P <: AnyProperty](val p: P) extends WrapOps[P](p) {
-//   // ... //
-// }
+class PropertyOps[P <: AnyProperty](val p: P) extends AnyVal {
+
+  def apply(v: P#Raw): ValueOf[P] = new ValueOf[P](v)
+}
 
 
 // TODO: restore this

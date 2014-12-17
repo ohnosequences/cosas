@@ -2,7 +2,7 @@
 
 package ohnosequences.cosas.ops.typeSet
 
-import ohnosequences.cosas._, AnyFn._, AnyTypeSet._, AnyWrap._
+import ohnosequences.cosas._, AnyFn._, AnyTypeSet._, AnyType._
 import shapeless._, poly._
 
 case object id extends Poly1 { implicit def default[T] = at[T]((t:T) => t) }
@@ -86,7 +86,7 @@ object ToList {
 
 
 @annotation.implicitNotFound(msg = "Can't parse typeset ${S} from ${X}")
-// NOTE: it should be restricted to AnyTypeSet.Of[AnyWrap], when :~: is known to return the same thing
+// NOTE: it should be restricted to AnyTypeSet.Of[AnyType], when :~: is known to return the same thing
 trait ParseFrom[S <: AnyTypeSet, X] extends Fn2[S, X] with OutBound[AnyTypeSet]
 
 object ParseFrom {
@@ -102,7 +102,7 @@ object ParseFrom {
     }
 
   implicit def cons[X,
-    H <: AnyWrap, T <: AnyTypeSet, TO <: AnyTypeSet
+    H <: AnyType, T <: AnyTypeSet, TO <: AnyTypeSet
   ](implicit
     f: (H, X) => (ValueOf[H], X),
     t: ParseFrom[T, X] { type Out = TO }
