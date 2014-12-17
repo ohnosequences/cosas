@@ -5,9 +5,9 @@ trait AnyType {
 
   val label: String
 
-  type Me = this.type
+  final type Me = this.type
 
-  implicit def meFrom[D <: AnyDenotationOf[Me]](v: D): Me = this
+  implicit final def meFrom[D <: AnyDenotationOf[Me]](v: D): Me = this
 }
 
 object AnyType {
@@ -38,7 +38,7 @@ trait AnyDenotationOf[T <: AnyType] extends Any with AnyDenotation { type Tpe = 
 
 trait AnyDenotes[@specialized V, T <: AnyType] extends Any with AnyDenotationOf[T] {
   
-  type Value = V
+  final type Value = V
 }
 /*
 Denote T with a `value: V`. Normally you write it as `V Denotes T` thus the name.
@@ -66,7 +66,7 @@ object Denotes {
   
   implicit def eqForDenotes[V, T <: AnyType]: scalaz.Equal[V Denotes T] = new scalaz.Equal[V Denotes T] {
 
-    def equal(a1: V Denotes T, a2: V Denotes T): Boolean = a1.value == a2.value
+    final def equal(a1: V Denotes T, a2: V Denotes T): Boolean = a1.value == a2.value
   }
   
 }
@@ -97,8 +97,8 @@ import AnyWrap._
 
 class WrapOps[W <: AnyWrap](val t: W) {
 
-  def apply(raw: W#Raw): ValueOf[W] = new ValueOf[W](raw)
-  def withValue(raw: W#Raw): ValueOf[W] = new ValueOf[W](raw)
+  final def apply(raw: W#Raw): ValueOf[W] = new ValueOf[W](raw)
+  final def withValue(raw: W#Raw): ValueOf[W] = new ValueOf[W](raw)
 }
 
 
@@ -111,8 +111,8 @@ sealed trait AnyWrappedValue extends Any with AnyDenotation  {
 
 trait WrappedValue[@specialized V <: W#Raw, W <: AnyWrap] extends Any with AnyWrappedValue {
 
-  type Tpe = W
-  type Value = V
+  final type Tpe = W
+  final type Value = V
 }
 
 final class ValueOf[W <: AnyWrap](val value: W#Raw) extends AnyVal with WrappedValue[W#Raw,W] {}
@@ -131,11 +131,12 @@ object AnySubsetType {
     class SubSetTypeOps[W <: AnyWrap, ST <: SubsetType[W]](val st: ST) {
 
       // TODO why this dot?
-      def apply(raw: ST#W#Raw): Option[ValueOf[ST]] = {
+      final def apply(raw: ST#W#Raw): Option[ValueOf[ST]] = {
 
         if ( st.predicate(raw) ) None else Some( new ValueOf[ST](raw) )
       }
-      def withValue(raw: ST#Raw): Option[ValueOf[ST]] = apply(raw)
+      
+      final def withValue(raw: ST#Raw): Option[ValueOf[ST]] = apply(raw)
   }
 
   object ValueOfSubsetTypeOps {
