@@ -27,3 +27,6 @@ libraryDependencies ++= Seq (
 wartremoverWarnings ++= Warts.all
 
 wartremoverExcluded ++= Seq("ohnosequences.cosas.test")
+
+// shows time for each test:
+testOptions in Test += Tests.Argument("-oD")

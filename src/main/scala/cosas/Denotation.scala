@@ -10,13 +10,20 @@ trait AnyType {
   implicit def meFrom[D <: AnyDenotationOf[Me]](v: D): Me = this
 }
 
+object AnyType {
+
+  type :%:[V, T <: AnyType] = Denotes[V,T]
+  
+  implicit def denotationOps[T <: AnyType](tpe: T): DenotationOps[T] = DenotationOps(tpe)
+}
+
 class Type(val label: String) extends AnyType
-
-object AnyType {}
-
 
 // TODO who knows what's going on here wrt specialization
 // http://axel22.github.io/2013/11/03/specialization-quirks.html
+/*
+You denote a `Type` using a `Value`
+*/
 sealed trait AnyDenotation extends Any {
 
   type Tpe <: AnyType
@@ -24,37 +31,45 @@ sealed trait AnyDenotation extends Any {
   type Value
   val  value: Value
 }
-
+/*
+Bound the denoted type
+*/
 trait AnyDenotationOf[T <: AnyType] extends Any with AnyDenotation { type Tpe = T }
 
 trait AnyDenotes[@specialized V, T <: AnyType] extends Any with AnyDenotationOf[T] {
   
   type Value = V
 }
-// TODO maybe add a witness req here?
+/*
+Denote T with a `value: V`. Normally you write it as `V Denotes T` thus the name.
+*/
 // most likely V won't be specialized here
-final class Denotes[V, T <: AnyType](val value: V) extends AnyVal with AnyDenotes[V, T] {
+final class Denotes[V, T <: AnyType](val value: V) extends AnyVal with AnyDenotes[V, T] {}
 
-  // NOTE: it may be confusing:
-  // override def toString = value.toString
-}
+final case class DenotationOps[T <: AnyType](val tpe: T) extends AnyVal {
 
-case class DenotationOps[T <: AnyType](val tpe: T) extends AnyVal {
-
-  def denoteWith[@specialized V](v: V): (V Denotes T) = new Denotes(v)
-  def :%:[@specialized V](v: V): (V Denotes T) = new Denotes(v)
+  /*
+  For example `user denoteWith (String, String, Int)` _not that this is a good idea_
+  */
+  final def denoteWith[@specialized V](v: V): (V Denotes T) = new Denotes(v)
+  /*
+  Alternative syntax, suggesting something like type ascription: `"12d655xr9" :%: id`.
+  */
+  final def :%:[@specialized V](v: V): (V Denotes T) = new Denotes(v)
 }
 
 object Denotes {
 
-  // type withRaw[R] = AnyWrap { type Raw = R }
-  // type RawOf[W <: AnyWrap] = W#Raw
+  type :%:[V, T <: AnyType] = Denotes[V,T]
   
   implicit def denotationOps[T <: AnyType](tpe: T): DenotationOps[T] = DenotationOps(tpe)
 }
 
-/* ### Wrapping types */
+/* 
+### Wrapping types 
 
+Sometimes you want to restrict the `Value`s that can be used to denote a type; that's the purpose of `AnyWrap`
+*/
 trait AnyWrap extends AnyType {
 
   type Raw
@@ -67,37 +82,25 @@ object AnyWrap {
   type withRaw[R] = AnyWrap { type Raw = R }
   type RawOf[W <: AnyWrap] = W#Raw
 
-  def valueOf[W <: AnyWrap](r: RawOf[W]): ValueOf[W] = new ValueOf[W](r)
+  def valueOf[W <: AnyWrap](r: W#Raw): ValueOf[W] = new ValueOf[W](r)
 
   implicit def typeOps[W <: AnyWrap](t: W): WrapOps[W] = new WrapOps[W](t)
-
-  // NOTE: better to do the conversion explicitly
-  // implicit def toRaw[W <: AnyWrap](v: ValueOf[W]): RawOf[W] = v.raw
 }
 
 import AnyWrap._
 
 class WrapOps[W <: AnyWrap](val t: W) {
 
-  def apply(r: RawOf[W]): ValueOf[W] = new ValueOf[W](r)
-  def withValue(r: RawOf[W]): ValueOf[W] = new ValueOf[W](r)
+  def apply(raw: W#Raw): ValueOf[W] = new ValueOf[W](raw)
+  def withValue(raw: W#Raw): ValueOf[W] = new ValueOf[W](raw)
 }
 
 
 /* ### Values of wrapped types */
-
-sealed trait AnyWrappedValue extends Any with AnyDenotation {
+sealed trait AnyWrappedValue extends Any with AnyDenotation  {
 
   type Tpe <: AnyWrap
   type Value <: Tpe#Raw
-  val value: Value
-}
-
-object AnyWrappedValue {
-
-  type ofWrap[W <: AnyWrap] = AnyWrappedValue { type Tpe = W }
-  type WrapOf[V <: AnyWrappedValue] = V#Tpe
-  type RawOf[V <: AnyWrappedValue] = V#Tpe#Raw
 }
 
 trait WrappedValue[@specialized V <: W#Raw, W <: AnyWrap] extends Any with AnyWrappedValue {
@@ -106,46 +109,4 @@ trait WrappedValue[@specialized V <: W#Raw, W <: AnyWrap] extends Any with AnyWr
   type Value = V
 }
 
-final class ValueOf[W <: AnyWrap](val value: RawOf[W]) extends AnyVal with WrappedValue[RawOf[W],W] {
-
-  // NOTE: it may be confusing:
-  override def toString = value.toString
-}
-
-// object ValueOf {
-
-//   implicit def valueOps[W <: AnyWrap](v: ValueOf[W]): ValueOps[W] = new ValueOps[W](v)
-// }
-
-// class ValueOps[W <: AnyWrap](v: ValueOf[W]) {
-//   // ... //
-// }
-
-
-
-
-/*
-  This trait represents a mapping between 
-
-  - `Tpe` of a universe of types `TypeBound`
-  - `Raw` a type meant to be a denotation of `Tpe` thus the name
-*/
-// trait AnyDenotation extends AnyWrap {
-
-//   /* The base type for the types that this thing denotes */
-
-//   type Tpe <: AnyType
-//   val  tpe: Tpe
-// }
-
-// /*
-//   Bound the universe of types to be `T`s
-// */
-// trait AnyDenotationOf[T <: AnyType] extends AnyDenotation { type Tpe <: T }
-
-// object AnyDenotation {
-
-//   type withTpe[T <: AnyType] = AnyDenotation { type Tpe = T }
-
-//   type TpeOf[D <: AnyDenotation] = D#Tpe
-// }
+final class ValueOf[W <: AnyWrap](val value: W#Raw) extends AnyVal with WrappedValue[W#Raw,W] {}

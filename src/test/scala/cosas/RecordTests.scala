@@ -39,7 +39,7 @@ object RecordTestsContext {
     (name("foo")) :~: 
     ∅
   )
-
+ 
   // this way the order of properties does not matter
   val normalUserEntry = normalUser fields (
     (name("foo")) :~: 
@@ -48,7 +48,6 @@ object RecordTestsContext {
     (email("foo@bar.qux")) :~:
     ∅
   )
-
 }
 
 class RecordTests extends org.scalatest.FunSuite {

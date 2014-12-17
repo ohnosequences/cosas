@@ -47,7 +47,9 @@ object AnyRecord {
 
 }
 
-class RecordOps[R <: AnyRecord](val rec: R) extends WrapOps[R](rec) {
+// class RecordOps[R <: AnyRecord](val rec: R) extends WrapOps[R](rec) {
+class RecordOps[R <: AnyRecord](val rec: R) extends AnyVal {
+
 
   /* Same as just tagging with `=>>`, but you can pass fields in any order */
   def fields[Vs <: AnyTypeSet](values: Vs)(implicit
