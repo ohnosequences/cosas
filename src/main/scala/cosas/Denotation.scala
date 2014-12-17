@@ -64,11 +64,31 @@ object Denotes {
   
   implicit def denotationOps[T <: AnyType](tpe: T): DenotationOps[T] = DenotationOps(tpe)
   
-  implicit def eqForDenotes[V, T <: AnyType]: scalaz.Equal[V Denotes T] = new scalaz.Equal[V Denotes T] {
+  import org.scalactic._
+  import TypeCheckedTripleEquals._
 
-    def equal(a1: V Denotes T, a2: V Denotes T): Boolean = a1.value == a2.value
-  }
-  
+  implicit def eqForDenotes[V, T <: AnyType]: 
+        Equivalence[V Denotes T] =
+    new Equivalence[V Denotes T] {
+
+      def areEquivalent(a1: V Denotes T, a2: V Denotes T): Boolean =
+        a1.value == a2.value
+    }
+
+  // trait LowPriorityDenotationConstraints extends TripleEquals {
+  //   implicit def lowPriorityDenotationConstraint[A, B](implicit equalOfB: Equal[B], ev: A <:< B): Constraint[A, B] =
+  //     new AToBEquivalenceConstraint[A, B](new DenotationEquivalence(equalOfB), ev)
+  // }
+
+  // trait DenotationEquality extends LowPriorityDenotationConstraints {
+  //   override def convertToEqualizer[T](left: T): Equalizer[T] = super.convertToEqualizer[T](left)
+  //   implicit override def convertToCheckingEqualizer[T](left: T): CheckingEqualizer[T] = new CheckingEqualizer(left)
+  //   override def unconstrainedEquality[A, B](implicit equalityOfA: Equality[A]): Constraint[A, B] = super.unconstrainedEquality[A, B]
+  //   implicit def spireConstraint[A, B](implicit equalOfA: Equal[A], ev: B <:< A): Constraint[A, B] =
+  //     new BToAEquivalenceConstraint[A, B](new DenotationEquivalence(equalOfA), ev)
+  // }
+
+  // object DenotationEquality extends DenotationEquality
 }
 
 /* 
