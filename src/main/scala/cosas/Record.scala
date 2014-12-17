@@ -39,15 +39,17 @@ object AnyRecord {
         RecordOps[R] = 
     new RecordOps[R](rec)
 
-  // NOTE: you'll only get record ops _if_ you have a ValueOf[R]. From that point, you don't need the wrapper at all, just use `recEntry.raw`. This lets you make RecordRawOps a value class itself!
+  // NOTE: you'll only get record ops _if_ you have a ValueOf[R]. From that point, you don't need the wrapper at all, just use `recEntry.value`. This lets you make RecordRawOps a value class itself!
   // see https://stackoverflow.com/questions/14861862/how-do-you-enrich-value-classes-without-overhead/
   implicit def recordRepOps[R <: AnyRecord](recEntry: ValueOf[R]): 
         RecordRawOps[R] = 
-    new RecordRawOps[R](recEntry.raw)
+    new RecordRawOps[R](recEntry.value)
 
 }
 
-class RecordOps[R <: AnyRecord](val rec: R) extends WrapOps[R](rec) {
+// class RecordOps[R <: AnyRecord](val rec: R) extends WrapOps[R](rec) {
+class RecordOps[R <: AnyRecord](val rec: R) extends AnyVal {
+
 
   /* Same as just tagging with `=>>`, but you can pass fields in any order */
   def fields[Vs <: AnyTypeSet](values: Vs)(implicit

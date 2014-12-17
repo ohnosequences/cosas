@@ -4,10 +4,10 @@ import ohnosequences.cosas._, AnyWrap._, AnyProperty._, AnyTypeSet._
 
 object exampleProperties {
   
-  case object key extends Property[String]
-  case object name extends Property[String]
-  case object age extends Property[Integer]
-  case object valueless extends Property
+  case object key extends Property[String]("key")
+  case object name extends Property[String]("name")
+  case object age extends Property[Integer]("age")
+  case object valueless extends Property("valueless")
 }
 
 class uhoh extends org.scalatest.FunSuite {
