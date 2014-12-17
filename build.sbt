@@ -22,7 +22,6 @@ libraryDependencies += {
 
 libraryDependencies ++= Seq (
   "org.scalaz"    %% "scalaz-core" % "7.1.0",
-  "org.scalactic" %% "scalactic"   % "2.2.2",
   "org.scalatest" %% "scalatest"   % "2.2.2" % Test
 )
 
