@@ -63,6 +63,12 @@ object Denotes {
   type :%:[V, T <: AnyType] = Denotes[V,T]
   
   implicit def denotationOps[T <: AnyType](tpe: T): DenotationOps[T] = DenotationOps(tpe)
+  
+  implicit def eqForDenotes[V, T <: AnyType]: scalaz.Equal[V Denotes T] = new scalaz.Equal[V Denotes T] {
+
+    def equal(a1: V Denotes T, a2: V Denotes T): Boolean = a1.value == a2.value
+  }
+  
 }
 
 /* 
