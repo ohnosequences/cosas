@@ -35,13 +35,6 @@ object denotation {
     def  value: Value
   }
 
-  type ValueOf[T <: AnyType] = Denotes[T#Raw, T]
-
-  // object AnyDenotation {
-
-  //   implicit def denotationOps[T <: AnyType](tpe: T): DenotationOps[T] = DenotationOps(tpe)
-  // }
-
   /* Bound the denoted type */
   trait AnyDenotationOf[T <: AnyType] extends Any with AnyDenotation { type Tpe = T }
 
@@ -55,28 +48,17 @@ object denotation {
   // NOTE: most likely V won't be specialized here
   final class Denotes[V, T <: AnyType](val value: V) extends AnyVal with AnyDenotes[V, T] {}
 
-  // object Denotes {
-
-    // implicit def eqForDenotes[V <: T#Raw, T <: AnyType]: 
-    //       scalaz.Equal[V Denotes T] =
-    //   new scalaz.Equal[V Denotes T] {
-    //     def equal(a1: V Denotes T, a2: V Denotes T): Boolean = a1.value == a2.value
-    //   }
-  // }
   type =:[V, T <: AnyType] = Denotes[V,T]
   type :=[T <: AnyType, V] = Denotes[V,T]
+
+  type ValueOf[T <: AnyType] = T#Raw Denotes T
+  def  valueOf[T <: AnyType, V <: T#Raw](t: T)(v: V): ValueOf[T] = v =: t
+
 
   final case class TypeOps[T <: AnyType](val tpe: T) extends AnyVal {
 
     /* For example `user denoteWith (String, String, Int)` _not that this is a good idea_ */
-    final def denoteWith[@specialized V](v: V): (V Denotes T) = new (V Denotes T)(v)
-
-    final def valueOf[@specialized V <: T#Raw](v: V): ValueOf[T] = new Denotes(v)
-
     final def =:[@specialized V](v: V): V =: T = new (V Denotes T)(v)
-    // I would prefer this, if the vertical alignement were right: 
-    // X ⊧: Type (the symbol is normally 'models' in logic, this would be perfect)
-    // X ⊨: Type (normally used for true, also fits well)
     final def :=[@specialized V](v: V): V =: T = new (V Denotes T)(v)
   }
 

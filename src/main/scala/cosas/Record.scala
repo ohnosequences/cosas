@@ -56,10 +56,10 @@ class RecordOps[R <: AnyRecord](val rec: R) extends AnyVal {
   /* Same as just tagging with `=>>`, but you can pass fields in any order */
   def fields[Vs <: AnyTypeSet](values: Vs)(implicit
       reorder: Vs ReorderTo RawOf[R]
-    ): ValueOf[R] = rec denoteWith (reorder(values))
+    ): ValueOf[R] = rec := reorder(values)
 
   def parseFrom[X](x: X)(implicit parseSet: (R#Properties ParseFrom X) { type Out = R#Raw }): ValueOf[R] = 
-    rec denoteWith (parseSet(rec.properties, x))
+    rec := parseSet(rec.properties, x)
 
 }
 
@@ -82,7 +82,7 @@ class RecordRawOps[R <: AnyRecord](val recRaw: RawOf[R]) extends AnyVal {
 
 
   def as[Other <: AnyRecord](other: Other)
-    (implicit project: Take[RawOf[R], RawOf[Other]]): ValueOf[Other] = other denoteWith (project(recRaw))
+    (implicit project: Take[RawOf[R], RawOf[Other]]): ValueOf[Other] = other := project(recRaw)
 
   def as[Other <: AnyRecord, Rest <: AnyTypeSet](other: Other, rest: Rest)
     (implicit transform: Transform[R, Other, Rest]): ValueOf[Other] = transform(recRaw, other, rest)

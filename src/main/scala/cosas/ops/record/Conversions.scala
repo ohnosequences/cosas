@@ -32,7 +32,7 @@ object Transform {
     new Transform[R, Other, Rest] {
 
       def apply(recRaw: RawOf[R], other: Other, rest: Rest): Out = 
-        other denoteWith (project(uni(recRaw, rest)))
+        other := project(uni(recRaw, rest))
     }
 
 }

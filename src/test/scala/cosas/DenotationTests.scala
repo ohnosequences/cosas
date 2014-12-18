@@ -41,9 +41,9 @@ class WrapTests extends org.scalatest.FunSuite {
 
   test("creating values") {
 
-    val azul = Color denoteWith "blue"
-    val verde = new ValueOf[Color.type]("green")
-    val amarillo = Color denoteWith "yellow"
+    val azul = Color := "blue"
+    val verde = valueOf(Color)("green")
+    val amarillo = Color := "yellow"
 
     val x1 = "yellow" =: Color
 
@@ -59,7 +59,7 @@ class DenotationTests extends org.scalatest.FunSuite with ScalazEquality {
 
   test("create denotations") {
 
-    val z = User denoteWith 2423423
+    val z = User := 2423423
 
     /* the right-associative syntax */
     val uh: userInfo =: User = userInfo(id = "adqwr32141", name = "Salustiano", age = 143) =: User
