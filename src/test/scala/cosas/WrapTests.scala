@@ -1,6 +1,5 @@
 package ohnosequences.cosas.tests
 
-import shapeless.test.illTyped
 import ohnosequences.cosas._, AnyType._, AnySubsetType._
 
 object WrapTestsContext {
@@ -55,7 +54,6 @@ class DenotationTests extends org.scalatest.FunSuite with ScalazEquality {
   import WrapTestsContext._
 
   test("create denotations") {
-    import Denotes._
 
     /* the right-associative syntax */
     val uh: userInfo :%: User.type = userInfo(id = "adqwr32141", name = "Salustiano", age = 143) :%: User
