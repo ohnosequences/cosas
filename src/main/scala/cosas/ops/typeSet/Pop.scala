@@ -36,6 +36,7 @@ trait Pop_2 {
     new PopSOut[H :~: T, E, H :~: TO] { 
 
       def apply(s: H :~: T): Out = {
+        
         val (e, t) = l(s.tail)
         (e, s.head :~: t)
       }

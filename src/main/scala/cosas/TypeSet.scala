@@ -12,8 +12,9 @@ sealed trait AnyTypeSet {
   override def toString = "{" + toStr + "}"
 }
 
-trait EmptySet extends AnyTypeSet
+trait EmptySet extends AnyTypeSet {}
 trait NonEmptySet extends AnyTypeSet {
+
     type Head
     val  head: Head
 
@@ -28,22 +29,22 @@ trait NonEmptySet extends AnyTypeSet {
 private[cosas] object TypeSetImpl {
   import AnyTypeSet._
 
-  trait EmptySetImpl extends AnyTypeSet {
+  trait EmptySetImpl extends AnyTypeSet with EmptySet {
 
-    type Types = TypeUnion.empty
+    type Types = empty
     type Bound = Types#union
 
     def toStr = ""
   }
 
-  object EmptySetImpl extends EmptySetImpl
+  object EmptySetImpl extends EmptySetImpl { override type Types = empty }
 
 
   case class ConsSet[H, T <: AnyTypeSet]
     (val head : H,  val tail : T)(implicit val headIsNew: H ∉ T) extends NonEmptySet {
     type Head = H; type Tail = T
 
-    type Types = TypesOf[Tail]#or[Head]
+    type Types = Head :∨: Tail#Types
     type Bound = Types#union
     
     def toStr = {
@@ -82,6 +83,8 @@ object AnyTypeSet {
   val emptySet : ∅ = TypeSetImpl.EmptySetImpl
 
   final type :~:[E, S <: AnyTypeSet] = TypeSetImpl.ConsSet[E, S]
+
+  final type size[S <: AnyTypeSet] = S#Types#Arity
 
   // it's like KList, but a set
   type Of[T] = AnyTypeSet { type Bound <: just[T] }
@@ -194,7 +197,7 @@ class TypeSetOps[S <: AnyTypeSet](val s: S) {
 
   /* Element-related */
 
-  def :~:[E](e: E)(implicit check: E ∉ S): (E :~: S) = TypeSetImpl.ConsSet.cons(e, s)
+  def :~:[E](e: E)(implicit check: E ∉ S): (E :~: S) = TypeSetImpl.ConsSet.cons(e, s) : (E :~: S)
 
   def pop[E](implicit pop: S Pop E): pop.Out = pop(s)
 

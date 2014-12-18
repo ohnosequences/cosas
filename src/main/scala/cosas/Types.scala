@@ -6,9 +6,9 @@ trait AnyType {
   type Raw
   val label: String
 
-  type Me = this.type
+  final type Me = this.type
 
-  implicit def meFrom[D <: AnyDenotationOf[Me]](v: D): Me = this
+  implicit final def meFrom[D <: AnyDenotationOf[Me]](v: D): Me = this
 }
 
 object AnyType {
@@ -44,7 +44,7 @@ trait AnyDenotationOf[T <: AnyType] extends Any with AnyDenotation { type Tpe = 
 
 trait AnyDenotes[@specialized V, T <: AnyType] extends Any with AnyDenotationOf[T] {
   
-  type Value = V
+  final type Value = V
 }
 /*
 Denote T with a `value: V`. Normally you write it as `V Denotes T` thus the name.
@@ -72,10 +72,54 @@ object Denotes {
   
   implicit def denotationOps[T <: AnyType](tpe: T): DenotationOps[T] = DenotationOps(tpe)
 
-  implicit def eqForDenotes[V <: T#Raw, T <: AnyType]: 
-        scalaz.Equal[V Denotes T] =
-    new scalaz.Equal[V Denotes T] {
-      def equal(a1: V Denotes T, a2: V Denotes T): Boolean = a1.value == a2.value
+  // implicit def eqForDenotes[V <: T#Raw, T <: AnyType]: 
+  //       scalaz.Equal[V Denotes T] =
+  //   new scalaz.Equal[V Denotes T] {
+  //     def equal(a1: V Denotes T, a2: V Denotes T): Boolean = a1.value == a2.value
+  //   }
+}
+
+trait AnySubsetType extends AnyType {
+
+  type W <: AnyType
+  type Raw = W#Raw
+  def predicate(raw: W#Raw): Boolean
+}
+
+trait SubsetType[W0 <: AnyType] extends AnySubsetType { type W = W0 }
+
+object AnySubsetType {
+
+  import AnyType._
+
+  implicit def sstops[W <: AnyType, ST <: SubsetType[W]](st: ST): SubSetTypeOps[W,ST] = new SubSetTypeOps(st)
+  class SubSetTypeOps[W <: AnyType, ST <: SubsetType[W]](val st: ST) extends AnyVal {
+
+    final def apply(raw: ST#W#Raw): Option[ValueOf[ST]] = {
+
+      if ( st predicate raw ) None else Some( new ValueOf[ST](raw) )
     }
-  
+    
+    final def withValue(raw: ST#Raw): Option[ValueOf[ST]] = apply(raw)
+  }
+
+  object ValueOfSubsetTypeOps {
+
+    implicit def ValueOfSubsetTypeOps[
+      W <: AnyType,
+      ST <: SubsetType[W],
+      Ops <: ValueOfSubsetTypeOps[W,ST]
+    ](v: ValueOf[ST])(implicit conv: ValueOf[ST] => Ops): Ops = conv(v)
+
+  }
+  /*
+  you should implement this trait for providing ops for values of a subset type `ST`.
+  */
+  trait ValueOfSubsetTypeOps[W <: AnyType, ST <: SubsetType[W]] extends Any {
+
+    /*
+    use case: concat of sized has the sum of the two arg sizes; but how do you create the corresponding value saving a stupid check (and returning an Option)? `unsafeValueOf`. By implementing this trait you assume the responsibility that comes with being able to create unchecked values of `ST`; use it with caution!
+    */
+    protected final def unsafeValueOf[ST0 <: ST](other: ST#Raw): ValueOf[ST] = new ValueOf[ST](other)
+  }
 }
