@@ -1,6 +1,6 @@
 package ohnosequences.cosas.tests
 
-import ohnosequences.cosas._, AnyType._, AnySubsetType._
+import ohnosequences.cosas._, denotation._, AnySubsetType._
 
 object WrapTestsContext {
 

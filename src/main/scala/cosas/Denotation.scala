@@ -1,6 +1,6 @@
 package ohnosequences.cosas
 
-object cosasType {
+object denotation {
 
   /* Something super-generic and ultra-abstract */
   trait AnyType {
@@ -16,6 +16,8 @@ object cosasType {
   type RawOf[W <: AnyType] = W#Raw
 
   object AnyType {
+    
+    implicit def typeOps[T <: AnyType](tpe: T): TypeOps[T] = TypeOps(tpe)
 
     type withRaw[R] = AnyType { type Raw = R }
   }
@@ -30,15 +32,15 @@ object cosasType {
     type Tpe <: AnyType
 
     type Value
-    val  value: Value
+    def  value: Value
   }
 
   type ValueOf[T <: AnyType] = Denotes[T#Raw, T]
 
-  object AnyDenotation {
+  // object AnyDenotation {
 
-    implicit def denotationOps[T <: AnyType](tpe: T): DenotationOps[T] = DenotationOps(tpe)
-  }
+  //   implicit def denotationOps[T <: AnyType](tpe: T): DenotationOps[T] = DenotationOps(tpe)
+  // }
 
   /* Bound the denoted type */
   trait AnyDenotationOf[T <: AnyType] extends Any with AnyDenotation { type Tpe = T }
@@ -53,18 +55,16 @@ object cosasType {
   // NOTE: most likely V won't be specialized here
   final class Denotes[V, T <: AnyType](val value: V) extends AnyVal with AnyDenotes[V, T] {}
 
-  object Denotes {
-    
-    implicit def denotationOps[T <: AnyType](tpe: T): DenotationOps[T] = DenotationOps(tpe)
+  // object Denotes {
 
     // implicit def eqForDenotes[V <: T#Raw, T <: AnyType]: 
     //       scalaz.Equal[V Denotes T] =
     //   new scalaz.Equal[V Denotes T] {
     //     def equal(a1: V Denotes T, a2: V Denotes T): Boolean = a1.value == a2.value
     //   }
-  }
+  // }
 
-  final case class DenotationOps[T <: AnyType](val tpe: T) extends AnyVal {
+  final case class TypeOps[T <: AnyType](val tpe: T) extends AnyVal {
 
     /* For example `user denoteWith (String, String, Int)` _not that this is a good idea_ */
     final def denoteWith[@specialized V](v: V): (V Denotes T) = new Denotes(v)
