@@ -47,8 +47,8 @@ object UnionOfRaws {
   implicit def cons[H <: AnyType, T <: AnyTypeSet, TU <: AnyTypeUnion]
     (implicit 
       t: UnionOfRaws[T] { type Out = TU }
-    ):  UnionOfRaws[H :~: T] with Out[TU#or[RawOf[H]]] =
-    new UnionOfRaws[H :~: T] with Out[TU#or[RawOf[H]]]
+    ):  UnionOfRaws[H :~: T] with Out[TU#or[H#Raw]] =
+    new UnionOfRaws[H :~: T] with Out[TU#or[H#Raw]]
 }
 
 @annotation.implicitNotFound(msg = "Can't get wraps of the values set ${S}")

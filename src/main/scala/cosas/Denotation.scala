@@ -13,13 +13,11 @@ object denotation {
     implicit final def meFrom[D <: AnyDenotationOf[Me]](v: D): Me = this
   }
 
-  type RawOf[W <: AnyType] = W#Raw
-
   object AnyType {
-    
-    implicit def typeOps[T <: AnyType](tpe: T): TypeOps[T] = TypeOps(tpe)
 
     type withRaw[R] = AnyType { type Raw = R }
+    
+    implicit def typeOps[T <: AnyType](tpe: T): TypeOps[T] = TypeOps(tpe)
   }
 
   class Type(val label: String) extends AnyType { type Raw = Any }

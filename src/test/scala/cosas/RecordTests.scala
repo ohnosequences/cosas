@@ -1,8 +1,8 @@
 package ohnosequences.cosas.tests
 
 import shapeless.test.{typed, illTyped}
-import ohnosequences.cosas._, propertiesHolder._, denotation._, typeSet._
-import AnyProperty._, AnyRecord._
+import ohnosequences.cosas._, propertiesHolder._, denotation._, typeSet._, property._
+import AnyRecord._
 import ops.typeSet._
 
 object RecordTestsContext {
@@ -82,11 +82,6 @@ class RecordTests extends org.scalatest.FunSuite {
     ]
 
     implicitly [ 
-      RawOf[simpleUser.type] =:= (ValueOf[id.type] :~: ValueOf[name.type] :~: ∅)
-    ]
-
-    implicitly [ 
-      // check the Values alias
       simpleUser.Raw =:= (ValueOf[id.type] :~: ValueOf[name.type] :~: ∅)
     ]
 

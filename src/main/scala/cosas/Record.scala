@@ -1,7 +1,6 @@
 package ohnosequences.cosas
 
-import typeSet._, denotation._, propertiesHolder._
-import AnyProperty._
+import typeSet._, denotation._, propertiesHolder._, property._
 import ops.typeSet._
 
 
@@ -56,7 +55,7 @@ class RecordOps[R <: AnyRecord](val rec: R) extends AnyVal {
   def apply(v: R#Raw): ValueOf[R] = new ValueOf[R](v)
   /* Same as just tagging with `=>>`, but you can pass fields in any order */
   def fields[Vs <: AnyTypeSet](values: Vs)(implicit
-      reorder: Vs ReorderTo RawOf[R]
+      reorder: Vs ReorderTo R#Raw
     ): ValueOf[R] = rec := reorder(values)
 
   def parseFrom[X](x: X)(implicit 
@@ -65,17 +64,17 @@ class RecordOps[R <: AnyRecord](val rec: R) extends AnyVal {
 
 }
 
-class RecordRawOps[R <: AnyRecord](val recRaw: RawOf[R]) extends AnyVal {
+class RecordRawOps[R <: AnyRecord](val recRaw: R#Raw) extends AnyVal {
   
   import ops.record._
 
   def get[P <: AnyProperty](p: P)
     (implicit get: R Get P): ValueOf[P] = get(recRaw)
-    // (implicit lookup: RawOf[R] Lookup ValueOf[P]): ValueOf[P] = lookup(recRaw.raw)
+    // (implicit lookup: R#Raw Lookup ValueOf[P]): ValueOf[P] = lookup(recRaw.raw)
 
 
   def update[P <: AnyProperty](propRep: ValueOf[P])
-    (implicit check: (ValueOf[P] :~: ∅) ⊂ RawOf[R], 
+    (implicit check: (ValueOf[P] :~: ∅) ⊂ R#Raw, 
               upd: R Update (ValueOf[P] :~: ∅)
     ): ValueOf[R] = upd(recRaw, propRep :~: ∅)
 
@@ -84,7 +83,7 @@ class RecordRawOps[R <: AnyRecord](val recRaw: RawOf[R]) extends AnyVal {
 
 
   def as[Other <: AnyRecord](other: Other)
-    (implicit project: Take[RawOf[R], RawOf[Other]]): ValueOf[Other] = other := project(recRaw)
+    (implicit project: Take[R#Raw, Other#Raw]): ValueOf[Other] = other := project(recRaw)
 
   def as[Other <: AnyRecord, Rest <: AnyTypeSet](other: Other, rest: Rest)
     (implicit transform: Transform[R, Other, Rest]): ValueOf[Other] = transform(recRaw, other, rest)

@@ -278,6 +278,8 @@ class TypeSetTests extends org.scalatest.FunSuite {
   }
 
   test("parse") {
+    import property._
+
     case object key extends Property[String]("key")
     case object name extends Property[String]("name")
     case object age extends Property[Integer]("age")
@@ -333,6 +335,8 @@ class TypeSetTests extends org.scalatest.FunSuite {
   }
 
   test("serialize") {
+    import property._
+
     case object name extends Property[String]("name")
     case object age  extends Property[Integer]("age")
     case object key  extends Property[String]("key")

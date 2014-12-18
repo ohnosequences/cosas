@@ -1,6 +1,6 @@
 package ohnosequences.cosas.test
 
-import ohnosequences.cosas._, denotation._, AnyProperty._, typeSet._, propertiesHolder._
+import ohnosequences.cosas._, denotation._, property._, typeSet._, propertiesHolder._
 
 object exampleProperties {
   
@@ -17,12 +17,12 @@ class uhoh extends org.scalatest.FunSuite {
 
   test("create property instances") {
 
-    val k = key("2aE5Cgo7Gv62")
+    val k: ValueOf[key.type] = key := "2aE5Cgo7Gv62"
 
-    val n = name("Rigoberto Smith")
+    val n: ValueOf[name.type] = name := "Rigoberto Smith"
 
-    val a = age(13123)
-    val a0: ValueOf[age.type] = age(13123: Integer)
+    val a = age := 13123
+    val a0: ValueOf[age.type] = age := (13123: Integer)
 
     illTyped (
     """
@@ -39,7 +39,7 @@ class uhoh extends org.scalatest.FunSuite {
 
   test("valueless properties lead to nothing") {
 
-    implicitly[RawOf[valueless.type] =:= Nothing]: Unit
+    implicitly[valueless.Raw =:= Nothing]: Unit
   }
 
   test("having properties") {
