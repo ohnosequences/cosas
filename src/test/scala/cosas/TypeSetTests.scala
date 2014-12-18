@@ -119,11 +119,12 @@ class TypeSetTests extends org.scalatest.FunSuite with ScalazEquality {
   }
 
   test("pop") {
+
     val s = 1 :~: 'a' :~: "foo" :~: ∅
 
-    assert{ s.pop[Int]    === ((1, 'a' :~: "foo" :~: ∅)) }
-    assert{ s.pop[Char]   === (('a', 1 :~: "foo" :~: ∅)) }
-    assert{ s.pop[String] === (("foo", 1 :~: 'a' :~: ∅)) }
+    assert{ s.pop[Int]    == ((1, 'a' :~: "foo" :~: ∅)) }
+    assert{ s.pop[Char]   == (('a', 1 :~: "foo" :~: ∅)) }
+    assert{ s.pop[String] == (("foo", 1 :~: 'a' :~: ∅)) }
   }
 
   test("contains/lookup") {

@@ -197,7 +197,7 @@ class TypeSetOps[S <: AnyTypeSet](val s: S) {
 
   /* Element-related */
 
-  def :~:[E](e: E)(implicit check: E ∉ S): (E :~: S) = TypeSetImpl.ConsSet.cons(e, s)
+  def :~:[E](e: E)(implicit check: E ∉ S): (E :~: S) = TypeSetImpl.ConsSet.cons(e, s) : (E :~: S)
 
   def pop[E](implicit pop: S Pop E): pop.Out = pop(s)
 
