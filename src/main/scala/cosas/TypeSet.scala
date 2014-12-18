@@ -1,6 +1,6 @@
 package ohnosequences.cosas
 
-import AnyTypeUnion._
+import typeUnion._
 import shapeless.{ HList, Poly1, <:!<, =:!= }
 
 

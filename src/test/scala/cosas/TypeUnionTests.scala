@@ -1,9 +1,10 @@
 package ohnosequences.cosas.tests
 
+import ohnosequences.cosas._, typeUnion._
+
+
 class TypeUnionTests extends org.scalatest.FunSuite {
 
-
-  import ohnosequences.cosas._, AnyTypeUnion._
 
   test("check arities") {
 
