@@ -1,14 +1,14 @@
 Nice.scalaProject
 
-name := "pointless"
+name := "cosas"
 
-description := "pointless but useful project"
+description := "esas cosas raras con muchos tipos"
 
 organization := "ohnosequences"
 
 bucketSuffix := "era7.com"
 
-scalaVersion := "2.11.2"
+scalaVersion := "2.11.4"
 
 crossScalaVersions := Seq("2.10.4")
 
@@ -21,9 +21,13 @@ libraryDependencies += {
 }
 
 libraryDependencies ++= Seq (
-  "org.scalatest" %% "scalatest" % "2.2.2" % "test"
+  "org.scalaz"    %% "scalaz-core" % "7.1.0",
+  "org.scalatest" %% "scalatest"   % "2.2.2" % Test
 )
 
-wartremoverWarnings ++= Warts.all
+// wartremoverWarnings ++= Warts.all
 
-wartremoverExcluded ++= Seq("ohnosequences.pointless.test")
+// wartremoverExcluded ++= Seq("ohnosequences.cosas.test")
+
+// shows time for each test:
+testOptions in Test += Tests.Argument("-oD")
