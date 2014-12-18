@@ -2,7 +2,8 @@ package ohnosequences.cosas
 
 object typeUnion {
 
-  import shapeless.{ <:!<, Nat }
+  import shapeless.{ <:!< }
+  import shapeless.Nat._
 
 
   /* There are two type-level constructors of a type union.
@@ -11,7 +12,7 @@ object typeUnion {
 
     type or[Y] <: AnyTypeUnion
     type union // this is like return
-    type Arity <: Nat
+    type Arity <: shapeless.Nat
     type PrevBoundNot
   }
 
@@ -23,7 +24,7 @@ object typeUnion {
   type empty = empty.type
   object empty extends AnyTypeUnion {
 
-    type Arity = shapeless.nat._0
+    type Arity = _0
     type union = not[not[Nothing]]
     type Head = Nothing
 
@@ -33,7 +34,7 @@ object typeUnion {
 
   sealed trait either[X] extends AnyTypeUnion {
 
-    type Arity = shapeless.nat._1
+    type Arity = _1
     type union = not[not[X]]
     type Head = X
 
@@ -52,13 +53,6 @@ object typeUnion {
 
   type :∨:[S, T <: AnyTypeUnion] = T#or[S]
 
-  /* Builder */
-  // trait TypeUnion[T] extends AnyTypeUnion { self =>
-
-  //   type or[S] = TypeUnion[T with not[S]] { type Arity = Succ[self.Arity] }
-  //   type union = not[T]
-
-  // }
 
   /*
     Type-level operations
