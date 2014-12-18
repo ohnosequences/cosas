@@ -1,6 +1,6 @@
 package ohnosequences.cosas
 
-import AnyTypeSet._, denotation._
+import denotation._
 import scala.reflect.ClassTag
 
 trait AnyProperty extends AnyType {}

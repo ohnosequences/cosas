@@ -1,6 +1,6 @@
 package ohnosequences.cosas.test
 
-import ohnosequences.cosas._, denotation._, AnyProperty._, AnyTypeSet._, propertiesHolder._
+import ohnosequences.cosas._, denotation._, AnyProperty._, typeSet._, propertiesHolder._
 
 object exampleProperties {
   

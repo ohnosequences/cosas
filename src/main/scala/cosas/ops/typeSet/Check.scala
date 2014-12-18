@@ -1,6 +1,6 @@
 package ohnosequences.cosas.ops.typeSet
 
-import ohnosequences.cosas._, AnyTypeSet._
+import ohnosequences.cosas._, typeSet._
 
 trait AnyTypePredicate {
   type ArgBound

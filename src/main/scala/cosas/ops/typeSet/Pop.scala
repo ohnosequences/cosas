@@ -6,7 +6,7 @@ Returns the element of the set of the given type and the rest of the set
 
 package ohnosequences.cosas.ops.typeSet
 
-import ohnosequences.cosas._, fn._, AnyTypeSet._
+import ohnosequences.cosas._, fn._, typeSet._
 
 @annotation.implicitNotFound(msg = "Can't pop an element of type ${E} from the set ${S}")
 trait Pop[S <: AnyTypeSet, E] extends Fn1[S] {

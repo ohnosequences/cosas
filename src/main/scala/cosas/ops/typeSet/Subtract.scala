@@ -2,7 +2,7 @@
 
 package ohnosequences.cosas.ops.typeSet
 
-import ohnosequences.cosas._, fn._, AnyTypeSet._
+import ohnosequences.cosas._, fn._, typeSet._
 
 @annotation.implicitNotFound(msg = "Can't subtract ${Q} from ${S}")
 trait Subtract[S <: AnyTypeSet, Q <: AnyTypeSet] extends Fn2[S, Q] with OutBound[AnyTypeSet]

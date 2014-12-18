@@ -1,7 +1,7 @@
 package ohnosequences.cosas
 
-import denotation._
-import AnyTypeSet._, AnyProperty._
+import denotation._, typeSet._
+import AnyProperty._
 import ops.typeSet._
 
 

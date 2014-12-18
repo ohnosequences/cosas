@@ -1,7 +1,7 @@
 package ohnosequences.cosas
 
-import AnyTypeSet._, AnyProperty._
-import denotation._, propertiesHolder._
+import typeSet._, denotation._, propertiesHolder._
+import AnyProperty._
 import ops.typeSet._
 
 
@@ -33,7 +33,7 @@ object AnyRecord {
   type withProperties[Ps <: AnyTypeSet.Of[AnyProperty]] = AnyRecord { type Properties = Ps }
   type withRaw[R <: AnyTypeSet] = AnyRecord { type Raw = R }
 
-  type size[R <: AnyRecord] = AnyTypeSet.size[R#Raw]
+  type size[R <: AnyRecord] = typeSet.size[R#Raw]
 
   /* Accessors */
   type PropertiesOf[R <: AnyRecord] = R#Properties

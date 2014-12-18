@@ -18,7 +18,7 @@
 
 package ohnosequences.cosas.ops.typeSet
 
-import ohnosequences.cosas._, fn._, denotation._, typeUnion._, AnyTypeSet._
+import ohnosequences.cosas._, fn._, denotation._, typeUnion._, typeSet._
 
 @annotation.implicitNotFound(msg = "Can't construct a set of values for ${S}")
 trait ValuesOf[S <: AnyTypeSet] extends AnyFn with OutBound[AnyTypeSet]

@@ -2,7 +2,7 @@
 
 package ohnosequences.cosas.ops.typeSet
 
-import ohnosequences.cosas._, fn._, AnyTypeSet._, denotation._
+import ohnosequences.cosas._, fn._, typeSet._, denotation._
 import shapeless._, poly._
 
 case object id extends Poly1 { implicit def default[T] = at[T]((t:T) => t) }

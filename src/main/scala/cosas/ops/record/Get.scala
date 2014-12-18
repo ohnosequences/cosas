@@ -7,7 +7,7 @@ It's like `Lookup`, but it removes the element
 
 package ohnosequences.cosas.ops.record
 
-import ohnosequences.cosas._, fn._, denotation._, AnyTypeSet._, AnyRecord._
+import ohnosequences.cosas._, fn._, denotation._, AnyRecord._
 import ops.typeSet._
 
 @annotation.implicitNotFound(msg = "Can't get property ${P} of the record ${R}")
