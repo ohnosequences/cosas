@@ -3,8 +3,7 @@ package ohnosequences.cosas.tests
 import ohnosequences.cosas._, AnyTypeSet._, AnyType._, AnyTypeUnion._
 import ops.typeSet._
 
-class TypeSetTests extends org.scalatest.FunSuite with ScalazEquality {
-  import scalaz.Scalaz.{ToEqualOps => _, ∅ => _, _}
+class TypeSetTests extends org.scalatest.FunSuite {
 
   class Bar
   val bar: Bar = new Bar()
@@ -132,13 +131,13 @@ class TypeSetTests extends org.scalatest.FunSuite with ScalazEquality {
     type st = s.type
 
     implicitly[Int ∈ st]
-    assert{ s.lookup[Int] === 1 }
+    assert{ s.lookup[Int] == 1 }
 
     implicitly[Char ∈ st]
-    assert{ s.lookup[Char] === 'a' }
+    assert{ s.lookup[Char] == 'a' }
 
     implicitly[String ∈ st]
-    assert{ s.lookup[String] === "foo" }
+    assert{ s.lookup[String] == "foo" }
 
     trait truth;
     trait happiness;
