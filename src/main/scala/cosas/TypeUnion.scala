@@ -12,11 +12,12 @@ trait AnyTypeUnion {
   type or[Y] <: AnyTypeUnion
   type union // kind of return
   type Arity <: Nat
+  type PrevBoundNot
 }
 
 object AnyTypeUnion {
 
-  private[cosas] type not[T] = T => Nothing
+  private[cosas] type not[T] = (T => Nothing)
   private[cosas] type just[T] = not[not[T]]
 
   /*
@@ -45,19 +46,53 @@ object AnyTypeUnion {
 
 import AnyTypeUnion._
 
-sealed trait either[X] extends TypeUnion[not[X]] {
+sealed trait either[X] extends AnyTypeUnion {
 
   type Arity = _1
+  type union = not[not[X]]
+  type Head = X
+
+  type PrevBoundNot = not[X] 
+  type or[Z] = ohnosequences.cosas.or[either[X], Z]
+}
+
+sealed trait or[T <: AnyTypeUnion, S] extends AnyTypeUnion {
+
+  type Head = S
+  type Arity = Succ[T#Arity]
+  type union = not[ T#PrevBoundNot with not[S] ]
+  type PrevBoundNot = T#PrevBoundNot with not[S]
+  type or[Z] = ohnosequences.cosas.or[ohnosequences.cosas.or[T,S], Z]
 }
 
 /* Builder */
-trait TypeUnion[T] extends AnyTypeUnion { self =>
+// trait TypeUnion[T] extends AnyTypeUnion { self =>
 
-  type or[S] = TypeUnion[T with not[S]] { type Arity = Succ[self.Arity] }
-  type union = not[T]
+//   type or[S] = TypeUnion[T with not[S]] { type Arity = Succ[self.Arity] }
+//   type union = not[T]
 
-}
+// }
 
 object TypeUnion {
-  type empty = either[Nothing]
+
+  trait empty extends AnyTypeUnion {
+
+    type Arity = _0
+    type union = not[not[Nothing]]
+    type Head = Nothing
+
+    type PrevBoundNot = not[Nothing] 
+    type or[Z] = ohnosequences.cosas.or[empty, Z]
+  }
+
+
+
+  // not(not(X))
+  // not(not(X) with not(Y))
+  // not(not(X) with not(Y) with not(Z))
+
+  // not(PrevBound with not(next))
+
+  // either[X]#or[Y]#union = 
+
 }
