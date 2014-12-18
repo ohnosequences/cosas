@@ -71,12 +71,12 @@ class DenotationTests extends org.scalatest.FunSuite with ScalazEquality {
     val u2 = paco :%: Friend
     val v = jose :%: Friend
 
-    assert { u1 === u1 }
-    assert { u1 === u1Again }
+    assert { u1 == u1 }
+    assert { u1 == u1Again }
     // assert { u2 =/= v } // not there in ScalaTest :-/
     // assert { u1 === u2 }
     assertTypeError("u1 === u2")
-    assert{ !( u2 === v ) }
+    assert{ !( u2 == v ) }
   }
 
   test("naive nonempty lists") {

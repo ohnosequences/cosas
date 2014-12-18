@@ -72,11 +72,11 @@ object Denotes {
   
   implicit def denotationOps[T <: AnyType](tpe: T): DenotationOps[T] = DenotationOps(tpe)
 
-  implicit def eqForDenotes[V <: T#Raw, T <: AnyType]: 
-        scalaz.Equal[V Denotes T] =
-    new scalaz.Equal[V Denotes T] {
-      def equal(a1: V Denotes T, a2: V Denotes T): Boolean = a1.value == a2.value
-    }
+  // implicit def eqForDenotes[V <: T#Raw, T <: AnyType]: 
+  //       scalaz.Equal[V Denotes T] =
+  //   new scalaz.Equal[V Denotes T] {
+  //     def equal(a1: V Denotes T, a2: V Denotes T): Boolean = a1.value == a2.value
+  //   }
 }
 
 trait AnySubsetType extends AnyType {
