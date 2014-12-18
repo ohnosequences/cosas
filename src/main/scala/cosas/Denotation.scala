@@ -63,13 +63,21 @@ object denotation {
     //     def equal(a1: V Denotes T, a2: V Denotes T): Boolean = a1.value == a2.value
     //   }
   // }
+  type =:[V, T <: AnyType] = Denotes[V,T]
+  type :=[T <: AnyType, V] = Denotes[V,T]
 
   final case class TypeOps[T <: AnyType](val tpe: T) extends AnyVal {
 
     /* For example `user denoteWith (String, String, Int)` _not that this is a good idea_ */
-    final def denoteWith[@specialized V](v: V): (V Denotes T) = new Denotes(v)
+    final def denoteWith[@specialized V](v: V): (V Denotes T) = new (V Denotes T)(v)
 
     final def valueOf[@specialized V <: T#Raw](v: V): ValueOf[T] = new Denotes(v)
+
+    final def =:[@specialized V](v: V): V =: T = new (V Denotes T)(v)
+    // I would prefer this, if the vertical alignement were right: 
+    // X ⊧: Type (the symbol is normally 'models' in logic, this would be perfect)
+    // X ⊨: Type (normally used for true, also fits well)
+    final def :=[@specialized V](v: V): V =: T = new (V Denotes T)(v)
   }
 
 
@@ -84,8 +92,6 @@ object denotation {
   trait SubsetType[W0 <: AnyType] extends AnySubsetType { type W = W0 }
 
   object AnySubsetType {
-
-    import AnyType._
 
     implicit def sstops[W <: AnyType, ST <: SubsetType[W]](st: ST): SubSetTypeOps[W,ST] = new SubSetTypeOps(st)
     class SubSetTypeOps[W <: AnyType, ST <: SubsetType[W]](val st: ST) extends AnyVal {
