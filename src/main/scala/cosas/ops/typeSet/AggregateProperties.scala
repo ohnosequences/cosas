@@ -1,6 +1,6 @@
 package ohnosequences.cosas.ops.typeSet
 
-import ohnosequences.cosas._, AnyFn._, AnyTypeSet._
+import ohnosequences.cosas._, fn._, AnyTypeSet._
 
 /* This is an op for aggregating properties from a vertex or an edge types set */
 @annotation.implicitNotFound(msg = "Can't aggregate properties of elements of ${S}")

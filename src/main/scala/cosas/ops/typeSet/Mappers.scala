@@ -1,6 +1,6 @@
 package ohnosequences.cosas.ops.typeSet
 
-import ohnosequences.cosas._, AnyFn._, AnyTypeSet._
+import ohnosequences.cosas._, fn._, AnyTypeSet._
 import shapeless._, poly._
   
 

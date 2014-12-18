@@ -1,7 +1,7 @@
 package ohnosequences.cosas
 
-import shapeless.{ <:!< }
-import shapeless._, Nat._
+import shapeless.{ <:!<, _ }, Nat._
+
 
 /*
   The two type-level constructors of a type union. 

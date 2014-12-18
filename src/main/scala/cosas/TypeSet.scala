@@ -1,6 +1,6 @@
 package ohnosequences.cosas
 
-import AnyFn._, AnyTypeUnion._
+import AnyTypeUnion._
 import shapeless.{ HList, Poly1, <:!<, =:!= }
 
 sealed trait AnyTypeSet {

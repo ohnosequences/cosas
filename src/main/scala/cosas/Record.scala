@@ -1,6 +1,6 @@
 package ohnosequences.cosas
 
-import AnyTypeSet._, AnyProperty._, denotation._, AnyTypeUnion._, AnyFn._
+import AnyTypeSet._, AnyProperty._, denotation._, AnyTypeUnion._
 import ops.typeSet._
 
 
@@ -58,8 +58,9 @@ class RecordOps[R <: AnyRecord](val rec: R) extends AnyVal {
       reorder: Vs ReorderTo RawOf[R]
     ): ValueOf[R] = rec := reorder(values)
 
-  def parseFrom[X](x: X)(implicit parseSet: (R#Properties ParseFrom X) { type Out = R#Raw }): ValueOf[R] = 
-    rec := parseSet(rec.properties, x)
+  def parseFrom[X](x: X)(implicit 
+    parseSet: (R#Properties ParseFrom X) { type Out = R#Raw }
+  ): ValueOf[R] = rec := parseSet(rec.properties, x)
 
 }
 

@@ -6,7 +6,7 @@ Just a combination of ~:~ and Take (reordering set)
 
 package ohnosequences.cosas.ops.typeSet
 
-import ohnosequences.cosas._, AnyFn._, AnyTypeSet._
+import ohnosequences.cosas._, fn._, AnyTypeSet._
 
 @annotation.implicitNotFound(msg = "Can't reorder ${S} to ${Q}")
 trait ReorderTo[S <: AnyTypeSet, Q <: AnyTypeSet]
