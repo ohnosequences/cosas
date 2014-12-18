@@ -1,14 +1,12 @@
 package ohnosequences.cosas.tests
 
 // NOTE: this is just copied from https://github.com/bvenners/equality-integration-demo
-import scalaz._
-import Scalaz.{ToEqualOps => _, _}
+import scalaz.Equal
 
 import org.scalactic._
 import org.scalatest._
 import TripleEqualsSupport.AToBEquivalenceConstraint
 import TripleEqualsSupport.BToAEquivalenceConstraint
-import scala.language.implicitConversions
 
 final class ScalazEquivalence[T](equal: Equal[T]) extends Equivalence[T] {
   def areEquivalent(a: T, b: T): Boolean = equal.equal(a, b)
