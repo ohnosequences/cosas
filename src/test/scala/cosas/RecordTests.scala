@@ -1,8 +1,8 @@
 package ohnosequences.cosas.tests
 
 import shapeless.test.{typed, illTyped}
-import ohnosequences.cosas._
-import denotation._, AnyProperty._, AnyTypeSet._, AnyRecord._, AnyTypeUnion._
+import ohnosequences.cosas._, propertiesHolder._, denotation._
+import AnyProperty._, AnyTypeSet._, AnyRecord._, AnyTypeUnion._
 import ops.typeSet._
 
 object RecordTestsContext {

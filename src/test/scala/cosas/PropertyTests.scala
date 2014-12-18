@@ -1,6 +1,6 @@
 package ohnosequences.cosas.test
 
-import ohnosequences.cosas._, denotation._, AnyProperty._, AnyTypeSet._
+import ohnosequences.cosas._, denotation._, AnyProperty._, AnyTypeSet._, propertiesHolder._
 
 object exampleProperties {
   
@@ -43,7 +43,6 @@ class uhoh extends org.scalatest.FunSuite {
   }
 
   test("having properties") {
-    import AnyPropertiesHolder._
 
     object foo
     implicit val foo_name = foo has name

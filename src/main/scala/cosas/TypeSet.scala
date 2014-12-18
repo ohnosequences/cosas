@@ -3,6 +3,7 @@ package ohnosequences.cosas
 import AnyTypeUnion._
 import shapeless.{ HList, Poly1, <:!<, =:!= }
 
+
 sealed trait AnyTypeSet {
 
   type Types <: AnyTypeUnion
