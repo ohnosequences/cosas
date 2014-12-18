@@ -21,13 +21,13 @@ libraryDependencies += {
 }
 
 libraryDependencies ++= Seq (
-  "org.scalaz"    %% "scalaz-core"  % "7.1.0",
-  "org.scalatest" %% "scalatest"    % "2.2.2"
+  "org.scalaz"    %% "scalaz-core" % "7.1.0",
+  "org.scalatest" %% "scalatest"   % "2.2.2" % Test
 )
 
-wartremoverWarnings ++= Warts.all
+// wartremoverWarnings ++= Warts.all
 
-wartremoverExcluded ++= Seq("ohnosequences.cosas.test")
+// wartremoverExcluded ++= Seq("ohnosequences.cosas.test")
 
 // shows time for each test:
 testOptions in Test += Tests.Argument("-oD")

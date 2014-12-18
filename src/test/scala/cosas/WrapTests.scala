@@ -1,16 +1,18 @@
 package ohnosequences.cosas.tests
 
 import shapeless.test.illTyped
-import ohnosequences.cosas._, AnyWrap._, ValueOf._, AnySubsetType._
+import ohnosequences.cosas._, AnyType._, AnySubsetType._
 
 object WrapTestsContext {
 
-  case object Color extends Wrap[String] { val label = "Color" }
+  case object Color extends Wrap[String]("Color")
+  object User extends Type("User")
+  object Friend extends Type("Friend")
+  case class userInfo(id: String, name: String, age: Int)
 
-  final class WrappedList[E] extends Wrap[List[E]] {
+  /* The NEList stuff */
+  final class WrappedList[E] extends Wrap[List[E]]("WrappedList")
 
-    lazy val label = "WrappedList"
-  }
   class NEList[E] extends SubsetType[WrappedList[E]] {
 
     lazy val label = "NEList"
@@ -22,6 +24,7 @@ object WrapTestsContext {
   object NEList {
 
     implicit def toOps[E](v: ValueOf[NEList[E]]): NEListOps[E] = new NEListOps(v.value)
+    implicit def toSSTops[E](v: NEList[E]): SubSetTypeOps[WrappedList[E], NEList[E]] = new SubSetTypeOps(v)
   }
 
   def NEListOf[E]: NEList[E] = new NEList()
@@ -33,13 +36,14 @@ object WrapTestsContext {
 }
 
 class WrapTests extends org.scalatest.FunSuite {
+
   import WrapTestsContext._
 
   test("creating values") {
 
-    val azul = Color("blue")
-    val verde = valueOf[Color.type]("green")
-    val amarillo = Color withValue "yellow"
+    val azul = Color denoteWith "blue"
+    val verde = new ValueOf[Color.type]("green")
+    val amarillo = Color denoteWith "yellow"
 
     assert{ azul.value == "blue" }
     assert{ verde.value == "green" }
@@ -47,65 +51,43 @@ class WrapTests extends org.scalatest.FunSuite {
   }
 }
 
-class DenotationTests extends org.scalatest.FunSuite {
-
-  object UserType extends Type("User")
-  type User = UserType.type
-  val User: User = UserType
-
-  object Friend extends Type("Friend")
-  type Friend = Friend.type
-
-  case class user(id: String, name: String, age: Int)
+class DenotationTests extends org.scalatest.FunSuite with ScalazEquality {
+  import WrapTestsContext._
 
   test("create denotations") {
-
     import Denotes._
 
     /* the right-associative syntax */
-    val uh: user :%: User = user(id = "adqwr32141", name = "Salustiano", age = 143) :%: User
+    val uh: userInfo :%: User.type = userInfo(id = "adqwr32141", name = "Salustiano", age = 143) :%: User
     val z = User denoteWith 2423423
   }
 
   test("type-safe equals") {
 
-    // TODO: right imports here
-    import org.scalactic.TypeCheckedTripleEquals._
-    import scalaz._, Scalaz._
-
-
     val paco = "Paco"
+    val jose = "Jose"
+
     val u1 = paco :%: User
     val u1Again = paco :%: User
+
     val u2 = paco :%: Friend
+    val v = jose :%: Friend
 
-    // TODO: needs integration with ScalaTest stuff.
-    // Things are safe if you import the above (I don't know why)
-    // illTyped {"""
-
-    //   u1 === u2
-    // """}
-
-    assert {
-
-      u1 === u1Again
-    }
-
-    assert {
-
-      u1 === u1
-    }
-
-
+    assert { u1 === u1 }
+    assert { u1 === u1Again }
+    // assert { u2 =/= v } // not there in ScalaTest :-/
+    // assert { u1 === u2 }
+    assertTypeError("u1 === u2")
+    assert{ !( u2 === v ) }
   }
 
   test("naive nonempty lists") {
 
     import WrapTestsContext._
 
-    // val buh: Option[ValueOf[NEList[String]]] = NEListOf[String]("there's something!" :: Nil)
-
-    // val oh = NEListOf[Int](12 :: 232 :: Nil)
+    import AnySubsetType._
+    // this is Some(...) but we don't know at runtime. What about a macro for this? For literals of course
+    val oh = NEListOf[Int](12 :: 232 :: Nil)
 
     val nelint = NEListOf(232)
 

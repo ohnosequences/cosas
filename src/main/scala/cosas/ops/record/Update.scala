@@ -8,7 +8,7 @@ It's like `Lookup`, but it removes the element
 package ohnosequences.cosas.ops.record
 
 import ohnosequences.cosas._
-import AnyFn._, AnyWrap._, AnyProperty._, AnyTypeSet._, AnyRecord._
+import AnyFn._, AnyType._, AnyProperty._, AnyTypeSet._, AnyRecord._
 import ops.typeSet._
 
 @annotation.implicitNotFound(msg = "Can't update record ${R} with property values ${Ps}")
@@ -26,7 +26,7 @@ object Update {
 
       def apply(recRaw: RawOf[R], propReps: Ps): Out = 
 
-        valueOf[R](replace(recRaw, propReps))
+        new ValueOf[R](replace(recRaw, propReps))
     }
 
 }
