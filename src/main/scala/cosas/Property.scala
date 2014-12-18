@@ -1,9 +1,9 @@
 package ohnosequences.cosas
 
-import denotation._
-
-
 object property {
+
+  import denotation._
+
 
   trait AnyProperty extends AnyType {}
 

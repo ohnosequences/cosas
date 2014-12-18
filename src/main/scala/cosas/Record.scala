@@ -1,10 +1,10 @@
 package ohnosequences.cosas
 
-import typeSet._, denotation._, propertiesHolder._, property._
-import ops.typeSet._
-
-
 object record {
+
+  import typeSet._, denotation._, propertiesHolder._, property._
+  import ops.typeSet._
+
 
   trait AnyRecord extends AnyType with AnyPropertiesHolder {
 

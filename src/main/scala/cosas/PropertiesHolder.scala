@@ -1,10 +1,10 @@
 package ohnosequences.cosas
 
-import denotation._, typeSet._, property._
-import ops.typeSet._
-
-
 object propertiesHolder {
+
+  import denotation._, typeSet._, property._
+  import ops.typeSet.CheckForAll
+
 
   trait AnyPropertiesHolder {
     type This = this.type

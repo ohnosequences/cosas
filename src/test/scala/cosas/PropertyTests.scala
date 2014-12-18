@@ -13,7 +13,6 @@ object exampleProperties {
 class uhoh extends org.scalatest.FunSuite {
     
   import exampleProperties._
-  import shapeless.test.illTyped
 
   test("create property instances") {
 
@@ -24,17 +23,13 @@ class uhoh extends org.scalatest.FunSuite {
     val a = age := 13123
     val a0: ValueOf[age.type] = age := (13123: Integer)
 
-    illTyped (
-    """
+    assertTypeError("""
       val z = key(34343)
-    """
-    )
+    """)
 
-    illTyped (
-    """
+    assertTypeError("""
       val uhoh = age(true)
-    """
-    )
+    """)
   }
 
   test("valueless properties lead to nothing") {

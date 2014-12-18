@@ -1,10 +1,9 @@
 package ohnosequences.cosas
 
-import typeUnion._
-import shapeless.{ <:!<, _ }, Nat._
-
-
 object typeUnion {
+
+  import shapeless.{ <:!<, Nat }
+
 
   /* There are two type-level constructors of a type union.
      A generic term looks like `either[A]#or[B]#or[C]`. */

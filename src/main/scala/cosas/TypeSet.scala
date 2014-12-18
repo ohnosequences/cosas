@@ -1,9 +1,10 @@
 package ohnosequences.cosas
 
-import typeUnion._
-import shapeless.{ HList, Poly1, <:!<, =:!= }
-
 object typeSet {
+
+  import typeUnion._
+  import shapeless.{ HList, Poly1, <:!<, =:!= }
+
 
   sealed trait AnyTypeSet {
 
@@ -174,6 +175,17 @@ object typeSet {
   type ∪[S <: AnyTypeSet, Q <: AnyTypeSet] = ops.typeSet.Union[S, Q]
 
   type ToListOf[S <: AnyTypeSet, T] = ops.typeSet.ToList[S] { type O = T }
+
+
+  trait AnyTypePredicate {
+
+    type ArgBound
+    type Condition[_ <: ArgBound]
+  }
+
+  trait TypePredicate[B] extends AnyTypePredicate { type ArgBound = B }
+
+  type Accepts[P <: AnyTypePredicate, X <: P#ArgBound] = P#Condition[X]
 
 
   class TypeSetOps[S <: AnyTypeSet](val s: S) {
