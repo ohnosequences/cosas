@@ -1,10 +1,10 @@
 package ohnosequences.cosas.tests
 
-import shapeless.test.illTyped
 import ohnosequences.cosas._, AnyTypeSet._, AnyType._, AnyTypeUnion._
 import ops.typeSet._
 
-class TypeSetTests extends org.scalatest.FunSuite {
+class TypeSetTests extends org.scalatest.FunSuite with ScalazEquality {
+  import scalaz.Scalaz.{ToEqualOps => _, ∅ => _, _}
 
   class Bar
   val bar: Bar = new Bar()
@@ -15,7 +15,7 @@ class TypeSetTests extends org.scalatest.FunSuite {
 
     type Two = cardinality[(Int :~: Char :~: ∅)]
 
-    implicitly [ Two =:= _2 ]
+    // implicitly [ Two =:= _2 ]
 
   }
 
@@ -67,7 +67,7 @@ class TypeSetTests extends org.scalatest.FunSuite {
     type AllowedTypes = either[Int]#or[Boolean]
     def checkTypes[S <: AnyTypeSet.BoundedByUnion[AllowedTypes]](s: S) = assert(true)
     checkTypes(1 :~: false :~: ∅)
-    illTyped("""checkTypes(1 :~: 'a' :~: ∅)""")
+    assertTypeError("""checkTypes(1 :~: 'a' :~: ∅)""")
 
     implicitly[(Boolean :~: Int :~: ∅) isBoundedByUnion AllowedTypes]
     implicitly[(Boolean :~: Char :~: Int :~: ∅) isNotBoundedByUnion AllowedTypes]
@@ -114,25 +114,17 @@ class TypeSetTests extends org.scalatest.FunSuite {
 
     def isSubsetOfb[S <: AnyTypeSet.SubsetOf[b.type]] = true
     assert(isSubsetOfb[Boolean :~: Int :~: ∅] == true)
-    illTyped("""
+    assertTypeError("""
       val x = isSubsetOfb[Boolean :~: Int :~: String :~: ∅]
     """)
   }
 
   test("pop") {
     val s = 1 :~: 'a' :~: "foo" :~: ∅
-    type st = Int :~: Char :~: String :~: ∅
-    val uhouh = 1 :~: ∅
-    assert(s.pop[Int] == ((1, 'a' :~: "foo" :~: ∅)))
-    // val uh: (Char, Int :~: String :~: ∅) = pop[Char,Char] from s
-    // assert(s.pop[Char](
-    //        // implicitly[Char ∈ st], 
-    //        Pop.foundInTail(Pop.foundInHead)
-    //        ) == ('a', 1 :~: "foo" :~: ∅))
-    
-    // val hhhh: (Char, Int :~: String :~: ∅)  = pop[AnyVal, Char] from s
-    assert(s.pop[String] == (("foo", 1 :~: 'a' :~: ∅)))
 
+    assert{ s.pop[Int]    === ((1, 'a' :~: "foo" :~: ∅)) }
+    assert{ s.pop[Char]   === (('a', 1 :~: "foo" :~: ∅)) }
+    assert{ s.pop[String] === (("foo", 1 :~: 'a' :~: ∅)) }
   }
 
   test("contains/lookup") {
@@ -140,13 +132,13 @@ class TypeSetTests extends org.scalatest.FunSuite {
     type st = s.type
 
     implicitly[Int ∈ st]
-    assert(s.lookup[Int] == 1)
+    assert{ s.lookup[Int] === 1 }
 
     implicitly[Char ∈ st]
-    assert(s.lookup[Char] == 'a')
+    assert{ s.lookup[Char] === 'a' }
 
     implicitly[String ∈ st]
-    assert(s.lookup[String] == "foo")
+    assert{ s.lookup[String] === "foo" }
 
     trait truth;
     trait happiness;
@@ -239,8 +231,8 @@ class TypeSetTests extends org.scalatest.FunSuite {
     assert(s.map(rev) == 1 :~: 'a' :~: "oof" :~: List(3,2,1) :~: ∅)
 
     // This case should fail, because toStr in not "type-injective"
-    illTyped("implicitly[MapSet[toStr.type, s.type]]")
-    illTyped("s.map(toStr)")
+    assertTypeError("implicitly[MapSet[toStr.type, s.type]]")
+    assertTypeError("s.map(toStr)")
 
     assert(s.mapToHList(toStr) == "1" :: "a" :: "foo" :: "List(1, 2, 3)" :: HNil)
     assert(s.mapToList(toStr) == List("1", "a", "foo", "List(1, 2, 3)"))
@@ -282,7 +274,7 @@ class TypeSetTests extends org.scalatest.FunSuite {
     val l = 1 :: 'a' :: "foo" :: HNil
     assert(l.toTypeSet == 1 :~: 'a' :~: "foo" :~: ∅)
 
-    illTyped("""(1 :: 'x' :: 2 :: "foo" :: HNil).toTypeSet""")
+    assertTypeError("""(1 :: 'x' :: 2 :: "foo" :: HNil).toTypeSet""")
 
   }
 
