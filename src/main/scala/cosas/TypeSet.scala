@@ -64,17 +64,7 @@ object typeSet {
     }
   }
 
-  // object NonEmptySet {
-
-  //   type Of[T] = NonEmptySet {
-  //     type Bound <: just[T]
-  //     type Head <: T
-  //     type Tail <: AnyTypeSet.Of[T]
-  //   }
-  // }
-
-  type TypesOf[S <: AnyTypeSet] = S#Types
-  type BoundOf[S <: AnyTypeSet] = S#Bound
+  type size[S <: AnyTypeSet] = S#Types#Arity
 
   final type ∅ = TypeSetImpl.EmptySetImpl
   val ∅ : ∅ = TypeSetImpl.EmptySetImpl // the space before : is needed
@@ -82,15 +72,13 @@ object typeSet {
 
   final type :~:[E, S <: AnyTypeSet] = TypeSetImpl.ConsSet[E, S]
 
-  final type size[S <: AnyTypeSet] = S#Types#Arity
-
   // it's like KList, but a set
   object AnyTypeSet {
     type Of[T] = AnyTypeSet { type Bound <: just[T] }
 
-    type SubsetOf[S <: AnyTypeSet] = AnyTypeSet { type Bound <: BoundOf[S] }
+    type SubsetOf[S <: AnyTypeSet] = AnyTypeSet { type Bound <: S#Bound }
 
-    type SupersetOf[S <: AnyTypeSet] = AnyTypeSet { type Bound >: BoundOf[S] }
+    type SupersetOf[S <: AnyTypeSet] = AnyTypeSet { type Bound >: S#Bound }
 
     type BoundedByUnion[U <: AnyTypeUnion] = AnyTypeSet { type Bound <: U#union }
 
@@ -105,11 +93,11 @@ object typeSet {
 
   /* An element is in the set */
   @annotation.implicitNotFound(msg = "Can't prove that ${E} is an element of ${S}")
-  final type isIn[E, S <: AnyTypeSet] = E isOneOf TypesOf[S]
+  final type isIn[E, S <: AnyTypeSet] = E isOneOf S#Types
   final type ∈[E, S <: AnyTypeSet] = E isIn S
 
   @annotation.implicitNotFound(msg = "Can't prove that ${E} is not an element of ${S}")
-  type isNotIn[E, S <: AnyTypeSet] = E isNotOneOf TypesOf[S]
+  type isNotIn[E, S <: AnyTypeSet] = E isNotOneOf S#Types
   final type ∉[E, S <: AnyTypeSet] = E isNotIn S
 
   final type in[S <: AnyTypeSet] = {
@@ -119,12 +107,12 @@ object typeSet {
 
   /* One set is a subset of another */
   @annotation.implicitNotFound(msg = "Can't prove that ${S} is a subset of ${Q}")
-  type isSubsetOf[S <: AnyTypeSet, Q <: AnyTypeSet] = BoundOf[S] <:< BoundOf[Q] 
+  type isSubsetOf[S <: AnyTypeSet, Q <: AnyTypeSet] = S#Bound <:< Q#Bound 
   @annotation.implicitNotFound(msg = "Can't prove that ${S} is a subset of ${Q}")
   final type ⊂[S <: AnyTypeSet, Q <: AnyTypeSet] = S isSubsetOf Q
 
   @annotation.implicitNotFound(msg = "Can't prove that ${S} is not a subset of ${Q}")
-  type isNotSubsetOf[S <: AnyTypeSet, Q <: AnyTypeSet] = BoundOf[S] <:!< BoundOf[Q]
+  type isNotSubsetOf[S <: AnyTypeSet, Q <: AnyTypeSet] = S#Bound <:!< Q#Bound
   @annotation.implicitNotFound(msg = "Can't prove that ${S} is not a subset of ${Q}")
   final type ⊄[S <: AnyTypeSet, Q <: AnyTypeSet] = S isNotSubsetOf Q
 
@@ -136,11 +124,11 @@ object typeSet {
 
   /* Two sets have the same type union bound */
   @annotation.implicitNotFound(msg = "Can't prove that ${S} is the same as ${Q}")
-  type    isSameAs[S <: AnyTypeSet, Q <: AnyTypeSet] = BoundOf[S] =:=  BoundOf[Q]
+  type    isSameAs[S <: AnyTypeSet, Q <: AnyTypeSet] = S#Bound =:=  Q#Bound
   type ~:~[S <: AnyTypeSet, Q <: AnyTypeSet] = S isSameAs Q
 
   @annotation.implicitNotFound(msg = "Can't prove that ${S} is not the same as ${Q}")
-  type isNotSameAs[S <: AnyTypeSet, Q <: AnyTypeSet] = BoundOf[S] =:!= BoundOf[Q]
+  type isNotSameAs[S <: AnyTypeSet, Q <: AnyTypeSet] = S#Bound =:!= Q#Bound
   type ~:!~[S <: AnyTypeSet, Q <: AnyTypeSet] = S isNotSameAs Q
 
   final type sameAs[Q <: AnyTypeSet] = {
@@ -151,10 +139,10 @@ object typeSet {
 
   /* Elements of the set are bounded by the type */
   @annotation.implicitNotFound(msg = "Can't prove that elements of ${S} are bounded by ${B}")
-  type isBoundedBy[S <: AnyTypeSet, B] = BoundOf[S] <:< just[B]
+  type isBoundedBy[S <: AnyTypeSet, B] = S#Bound <:< just[B]
 
   @annotation.implicitNotFound(msg = "Can't prove that elements of ${S} are not bounded by ${B}")
-  type isNotBoundedBy[S <: AnyTypeSet, B] = BoundOf[S] <:!< just[B]
+  type isNotBoundedBy[S <: AnyTypeSet, B] = S#Bound <:!< just[B]
 
   final type boundedBy[B] = {
     type    is[S <: AnyTypeSet] = S    isBoundedBy B
@@ -164,10 +152,10 @@ object typeSet {
 
   /* Elements of the set are from the type union */
   @annotation.implicitNotFound(msg = "Can't prove that elements of ${S} are from the type union ${U}")
-  type    isBoundedByUnion[S <: AnyTypeSet, U <: AnyTypeUnion] = BoundOf[S] <:<  U#union
+  type    isBoundedByUnion[S <: AnyTypeSet, U <: AnyTypeUnion] = S#Bound <:<  U#union
 
   @annotation.implicitNotFound(msg = "Can't prove that elements of ${S} are not from the type union ${U}")
-  type isNotBoundedByUnion[S <: AnyTypeSet, U <: AnyTypeUnion] = BoundOf[S] <:!< U#union
+  type isNotBoundedByUnion[S <: AnyTypeSet, U <: AnyTypeUnion] = S#Bound <:!< U#union
 
   final type boundedByUnion[U <: AnyTypeUnion] = {
     type    is[S <: AnyTypeSet] = S    isBoundedByUnion U

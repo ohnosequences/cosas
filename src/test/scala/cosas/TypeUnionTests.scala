@@ -16,7 +16,7 @@ class TypeUnionTests extends org.scalatest.FunSuite {
     type Three2 = arity[SBS2]
 
 
-    import shapeless._, Nat._
+    import shapeless.Nat._
     
     implicitly[ Three =:= _3 ]
     implicitly[ Three2 =:= _3 ]

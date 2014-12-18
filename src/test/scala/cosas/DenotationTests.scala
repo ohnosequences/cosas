@@ -2,7 +2,7 @@ package ohnosequences.cosas.tests
 
 import ohnosequences.cosas._, denotation._, AnySubsetType._
 
-object WrapTestsContext {
+object DenotationTestsContext {
 
   case object Color extends Wrap[String]("Color")
   object User extends Type("User")
@@ -35,9 +35,9 @@ object WrapTestsContext {
   }
 }
 
-class WrapTests extends org.scalatest.FunSuite {
+class DenotationTests extends org.scalatest.FunSuite with ScalazEquality {
 
-  import WrapTestsContext._
+  import DenotationTestsContext._
 
   test("creating values") {
 
@@ -50,12 +50,8 @@ class WrapTests extends org.scalatest.FunSuite {
     assert{ azul.value == "blue" }
     assert{ verde.value == "green" }
     assert{ amarillo.value == "yellow" }
-    assert{ amarillo === x1 }
+    assert{ amarillo == x1 }
   }
-}
-
-class DenotationTests extends org.scalatest.FunSuite with ScalazEquality {
-  import WrapTestsContext._
 
   test("create denotations") {
 
@@ -90,7 +86,7 @@ class DenotationTests extends org.scalatest.FunSuite with ScalazEquality {
 
   test("naive nonempty lists") {
 
-    import WrapTestsContext._
+    import DenotationTestsContext._
 
     import AnySubsetType._
     // this is Some(...) but we don't know at runtime. What about a macro for this? For literals of course

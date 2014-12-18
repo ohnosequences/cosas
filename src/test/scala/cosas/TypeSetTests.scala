@@ -10,7 +10,7 @@ class TypeSetTests extends org.scalatest.FunSuite {
 
   test("set size") {
 
-    import shapeless._, Nat._
+    import shapeless.Nat._
 
     type Two = size[ Int :~: Char :~: ∅ ]
 
@@ -278,7 +278,7 @@ class TypeSetTests extends org.scalatest.FunSuite {
   }
 
   test("parse") {
-    import property._
+    import property._, record._
 
     case object key extends Property[String]("key")
     case object name extends Property[String]("name")
