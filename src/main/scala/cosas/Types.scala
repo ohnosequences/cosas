@@ -14,6 +14,8 @@ trait AnyType {
 object AnyType {
 
   type :%:[V <: T#Raw, T <: AnyType] = Denotes[V,T]
+  type =:[V, T <: AnyType] = Denotes[V,T]
+  type :=[T <: AnyType, V] = Denotes[V,T]
   type withRaw[R] = AnyType { type Raw = R }
   type RawOf[W <: AnyType] = W#Raw
 
@@ -49,6 +51,13 @@ final case class DenotationOps[T <: AnyType](val tpe: T) extends AnyVal {
   Alternative syntax, suggesting something like type ascription: `"12d655xr9" :%: id`.
   */
   final def :%:[@specialized V <: T#Raw](v: V): (V Denotes T) = new Denotes(v)
+
+  import AnyType.=:
+  final def =:[@specialized V](v: V): V =: T = new Denotes(v)
+  // I would prefer this, if the vertical alignement were right: 
+  // X ⊧: Type (the symbol is normally 'models' in logic, this would be perfect)
+  // X ⊨: Type (normally used for true, also fits well)
+  final def :=[@specialized V](v: V): V =: T = new Denotes(v)
 }
 
 object Denotes {
