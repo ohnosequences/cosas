@@ -7,6 +7,7 @@ object WrapTestsContext {
   object Color extends Wrap[String]("Color")
 
   object User extends Type("User")
+  type User = User.type
 
   object Friend extends Type("Friend")
 
@@ -40,11 +41,11 @@ class DenotationTests extends org.scalatest.FunSuite with ScalazEquality {
     val z = User denoteWith 2423423
 
     /* the right-associative syntax */
-    val uh: user :%: User = user(id = "adqwr32141", name = "Salustiano", age = 143) :%: User
+    val uh: userInfo :%: User = userInfo(id = "adqwr32141", name = "Salustiano", age = 143) :%: User
     /* or with equals-sign style */
-    val oh = user(id = "adqwr32141", name = "Salustiano", age = 143) =: User
+    val oh = userInfo(id = "adqwr32141", name = "Salustiano", age = 143) =: User
     /* or in the other order */
-    val ah = User := user(id = "adqwr32141", name = "Salustiano", age = 143)
+    val ah = User := userInfo(id = "adqwr32141", name = "Salustiano", age = 143)
   }
 
   test("type-safe equals") {
