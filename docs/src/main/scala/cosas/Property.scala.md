@@ -2,22 +2,23 @@
 ```scala
 package ohnosequences.cosas
 
-import AnyWrap._, AnyTypeSet._, AnyFn._
+import AnyTypeSet._, AnyFn._, AnyType._
 import scala.reflect.ClassTag
 
-trait AnyProperty extends AnyWrap {
-
-  val label: String
-  val classTag: ClassTag[Raw]
-}
+trait AnyProperty extends AnyType {}
 ```
 
 Properties should be defined as case objects: `case object name extends Property[String]`
 
 ```scala
-class Property[V](implicit val classTag: ClassTag[V]) extends AnyProperty {
+// class Property[V](implicit val classTag: ClassTag[V]) extends AnyProperty {
+class Property[V](val label: String) extends AnyProperty {
+  
+  type Raw = V
+}
 
-  val label = this.toString
+class LabeledProperty[V](val label: String) extends AnyProperty {
+
   type Raw = V
 }
 
@@ -25,12 +26,13 @@ object AnyProperty {
 
   type ofType[T] = AnyProperty { type Raw = T }
 
-  // implicit def propertyOps[P <: AnyProperty](p: P): PropertyOps[P] = new PropertyOps[P](p)
+  implicit def propertyOps[P <: AnyProperty](p: P): PropertyOps[P] = new PropertyOps[P](p)
 }
 
-// class PropertyOps[P <: AnyProperty](val p: P) extends WrapOps[P](p) {
-//   // ... //
-// }
+class PropertyOps[P <: AnyProperty](val p: P) extends AnyVal {
+
+  def apply(v: P#Raw): ValueOf[P] = new ValueOf[P](v)
+}
 
 
 // TODO: restore this
@@ -113,13 +115,14 @@ object AnyProperty {
     + scala
       + cosas
         + [PropertyTests.scala][test/scala/cosas/PropertyTests.scala]
+        + [TypeUnionTests.scala][test/scala/cosas/TypeUnionTests.scala]
+        + [ScalazEquality.scala][test/scala/cosas/ScalazEquality.scala]
         + [WrapTests.scala][test/scala/cosas/WrapTests.scala]
         + [RecordTests.scala][test/scala/cosas/RecordTests.scala]
         + [TypeSetTests.scala][test/scala/cosas/TypeSetTests.scala]
   + main
     + scala
       + cosas
-        + [Wrap.scala][main/scala/cosas/Wrap.scala]
         + [PropertiesHolder.scala][main/scala/cosas/PropertiesHolder.scala]
         + [Record.scala][main/scala/cosas/Record.scala]
         + ops
@@ -139,17 +142,20 @@ object AnyProperty {
             + [Update.scala][main/scala/cosas/ops/record/Update.scala]
             + [Conversions.scala][main/scala/cosas/ops/record/Conversions.scala]
             + [Get.scala][main/scala/cosas/ops/record/Get.scala]
-        + [Denotation.scala][main/scala/cosas/Denotation.scala]
         + [TypeUnion.scala][main/scala/cosas/TypeUnion.scala]
         + [Fn.scala][main/scala/cosas/Fn.scala]
+        + [Types.scala][main/scala/cosas/Types.scala]
+        + csv
+          + [csv.scala][main/scala/cosas/csv/csv.scala]
         + [Property.scala][main/scala/cosas/Property.scala]
         + [TypeSet.scala][main/scala/cosas/TypeSet.scala]
 
 [test/scala/cosas/PropertyTests.scala]: ../../../test/scala/cosas/PropertyTests.scala.md
+[test/scala/cosas/TypeUnionTests.scala]: ../../../test/scala/cosas/TypeUnionTests.scala.md
+[test/scala/cosas/ScalazEquality.scala]: ../../../test/scala/cosas/ScalazEquality.scala.md
 [test/scala/cosas/WrapTests.scala]: ../../../test/scala/cosas/WrapTests.scala.md
 [test/scala/cosas/RecordTests.scala]: ../../../test/scala/cosas/RecordTests.scala.md
 [test/scala/cosas/TypeSetTests.scala]: ../../../test/scala/cosas/TypeSetTests.scala.md
-[main/scala/cosas/Wrap.scala]: Wrap.scala.md
 [main/scala/cosas/PropertiesHolder.scala]: PropertiesHolder.scala.md
 [main/scala/cosas/Record.scala]: Record.scala.md
 [main/scala/cosas/ops/typeSet/Check.scala]: ops/typeSet/Check.scala.md
@@ -166,8 +172,9 @@ object AnyProperty {
 [main/scala/cosas/ops/record/Update.scala]: ops/record/Update.scala.md
 [main/scala/cosas/ops/record/Conversions.scala]: ops/record/Conversions.scala.md
 [main/scala/cosas/ops/record/Get.scala]: ops/record/Get.scala.md
-[main/scala/cosas/Denotation.scala]: Denotation.scala.md
 [main/scala/cosas/TypeUnion.scala]: TypeUnion.scala.md
 [main/scala/cosas/Fn.scala]: Fn.scala.md
+[main/scala/cosas/Types.scala]: Types.scala.md
+[main/scala/cosas/csv/csv.scala]: csv/csv.scala.md
 [main/scala/cosas/Property.scala]: Property.scala.md
 [main/scala/cosas/TypeSet.scala]: TypeSet.scala.md

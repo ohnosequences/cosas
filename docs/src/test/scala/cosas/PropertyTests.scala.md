@@ -2,14 +2,14 @@
 ```scala
 package ohnosequences.cosas.test
 
-import ohnosequences.cosas._, AnyWrap._, AnyProperty._, AnyTypeSet._
+import ohnosequences.cosas._, AnyType._, AnyProperty._, AnyTypeSet._
 
 object exampleProperties {
   
-  case object key extends Property[String]
-  case object name extends Property[String]
-  case object age extends Property[Integer]
-  case object valueless extends Property
+  case object key extends Property[String]("key")
+  case object name extends Property[String]("name")
+  case object age extends Property[Integer]("age")
+  case object valueless extends Property("valueless")
 }
 
 class uhoh extends org.scalatest.FunSuite {
@@ -80,13 +80,14 @@ class uhoh extends org.scalatest.FunSuite {
     + scala
       + cosas
         + [PropertyTests.scala][test/scala/cosas/PropertyTests.scala]
+        + [TypeUnionTests.scala][test/scala/cosas/TypeUnionTests.scala]
+        + [ScalazEquality.scala][test/scala/cosas/ScalazEquality.scala]
         + [WrapTests.scala][test/scala/cosas/WrapTests.scala]
         + [RecordTests.scala][test/scala/cosas/RecordTests.scala]
         + [TypeSetTests.scala][test/scala/cosas/TypeSetTests.scala]
   + main
     + scala
       + cosas
-        + [Wrap.scala][main/scala/cosas/Wrap.scala]
         + [PropertiesHolder.scala][main/scala/cosas/PropertiesHolder.scala]
         + [Record.scala][main/scala/cosas/Record.scala]
         + ops
@@ -106,17 +107,20 @@ class uhoh extends org.scalatest.FunSuite {
             + [Update.scala][main/scala/cosas/ops/record/Update.scala]
             + [Conversions.scala][main/scala/cosas/ops/record/Conversions.scala]
             + [Get.scala][main/scala/cosas/ops/record/Get.scala]
-        + [Denotation.scala][main/scala/cosas/Denotation.scala]
         + [TypeUnion.scala][main/scala/cosas/TypeUnion.scala]
         + [Fn.scala][main/scala/cosas/Fn.scala]
+        + [Types.scala][main/scala/cosas/Types.scala]
+        + csv
+          + [csv.scala][main/scala/cosas/csv/csv.scala]
         + [Property.scala][main/scala/cosas/Property.scala]
         + [TypeSet.scala][main/scala/cosas/TypeSet.scala]
 
 [test/scala/cosas/PropertyTests.scala]: PropertyTests.scala.md
+[test/scala/cosas/TypeUnionTests.scala]: TypeUnionTests.scala.md
+[test/scala/cosas/ScalazEquality.scala]: ScalazEquality.scala.md
 [test/scala/cosas/WrapTests.scala]: WrapTests.scala.md
 [test/scala/cosas/RecordTests.scala]: RecordTests.scala.md
 [test/scala/cosas/TypeSetTests.scala]: TypeSetTests.scala.md
-[main/scala/cosas/Wrap.scala]: ../../../main/scala/cosas/Wrap.scala.md
 [main/scala/cosas/PropertiesHolder.scala]: ../../../main/scala/cosas/PropertiesHolder.scala.md
 [main/scala/cosas/Record.scala]: ../../../main/scala/cosas/Record.scala.md
 [main/scala/cosas/ops/typeSet/Check.scala]: ../../../main/scala/cosas/ops/typeSet/Check.scala.md
@@ -133,8 +137,9 @@ class uhoh extends org.scalatest.FunSuite {
 [main/scala/cosas/ops/record/Update.scala]: ../../../main/scala/cosas/ops/record/Update.scala.md
 [main/scala/cosas/ops/record/Conversions.scala]: ../../../main/scala/cosas/ops/record/Conversions.scala.md
 [main/scala/cosas/ops/record/Get.scala]: ../../../main/scala/cosas/ops/record/Get.scala.md
-[main/scala/cosas/Denotation.scala]: ../../../main/scala/cosas/Denotation.scala.md
 [main/scala/cosas/TypeUnion.scala]: ../../../main/scala/cosas/TypeUnion.scala.md
 [main/scala/cosas/Fn.scala]: ../../../main/scala/cosas/Fn.scala.md
+[main/scala/cosas/Types.scala]: ../../../main/scala/cosas/Types.scala.md
+[main/scala/cosas/csv/csv.scala]: ../../../main/scala/cosas/csv/csv.scala.md
 [main/scala/cosas/Property.scala]: ../../../main/scala/cosas/Property.scala.md
 [main/scala/cosas/TypeSet.scala]: ../../../main/scala/cosas/TypeSet.scala.md

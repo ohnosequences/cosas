@@ -2,104 +2,36 @@
 ```scala
 package ohnosequences.cosas.tests
 
-import ohnosequences.cosas._, AnyType._, AnySubsetType._
+// NOTE: this is just copied from https://github.com/bvenners/equality-integration-demo
+import scalaz.Equal
+import scalaz.Scalaz.{ToEqualOps => _, _}
 
-object WrapTestsContext {
+import org.scalactic._
+import org.scalatest._
+import TripleEqualsSupport.AToBEquivalenceConstraint
+import TripleEqualsSupport.BToAEquivalenceConstraint
 
-  case object Color extends Wrap[String]("Color")
-  object User extends Type("User")
-  object Friend extends Type("Friend")
-  case class userInfo(id: String, name: String, age: Int)
-```
-
-The NEList stuff
-
-```scala
-  final class WrappedList[E] extends Wrap[List[E]]("WrappedList")
-
-  class NEList[E] extends SubsetType[WrappedList[E]] {
-
-    lazy val label = "NEList"
-    def predicate(l: List[E]): Boolean = ! l.isEmpty
-
-    def apply(e: E): ValueOf[NEList[E]] = new ValueOf[NEList[E]](e :: Nil)
-  }
-
-  object NEList {
-
-    implicit def toOps[E](v: ValueOf[NEList[E]]): NEListOps[E] = new NEListOps(v.value)
-    implicit def toSSTops[E](v: NEList[E]): SubSetTypeOps[WrappedList[E], NEList[E]] = new SubSetTypeOps(v)
-  }
-
-  def NEListOf[E]: NEList[E] = new NEList()
-
-  class NEListOps[E](val l: List[E]) extends AnyVal with ValueOfSubsetTypeOps[WrappedList[E], NEList[E]] {
-
-    def ::(x: E): ValueOf[NEList[E]] = unsafeValueOf[NEList[E]](x :: l)
-  }
+final class ScalazEquivalence[T](equal: Equal[T]) extends Equivalence[T] {
+  def areEquivalent(a: T, b: T): Boolean = equal.equal(a, b)
 }
 
-class WrapTests extends org.scalatest.FunSuite {
-
-  import WrapTestsContext._
-
-  test("creating values") {
-
-    val azul = Color denoteWith "blue"
-    val verde = new ValueOf[Color.type]("green")
-    val amarillo = Color denoteWith "yellow"
-
-    assert{ azul.value == "blue" }
-    assert{ verde.value == "green" }
-    assert{ amarillo.value == "yellow" }
-  }
+trait LowPriorityScalazConstraints extends TripleEquals {
+implicit def lowPriorityScalazConstraint[A, B](implicit equalOfB: Equal[B], ev: A => B): Constraint[A, B] =
+  new AToBEquivalenceConstraint[A, B](new ScalazEquivalence(equalOfB), ev)
 }
 
-class DenotationTests extends org.scalatest.FunSuite with ScalazEquality {
-  import WrapTestsContext._
-
-  test("create denotations") {
-```
-
-the right-associative syntax
-
-```scala
-    val uh: userInfo :%: User.type = userInfo(id = "adqwr32141", name = "Salustiano", age = 143) :%: User
-    val z = User denoteWith 2423423
-  }
-
-  test("type-safe equals") {
-
-    val paco = "Paco"
-    val jose = "Jose"
-
-    val u1 = paco :%: User
-    val u1Again = paco :%: User
-
-    val u2 = paco :%: Friend
-    val v = jose :%: Friend
-
-    assert { u1 == u1 }
-    assert { u1 == u1Again }
-    // assert { u2 =/= v } // not there in ScalaTest :-/
-    // assert { u1 === u2 }
-    assertTypeError("u1 === u2")
-    assert{ !( u2 == v ) }
-  }
-
-  test("naive nonempty lists") {
-
-    import WrapTestsContext._
-
-    import AnySubsetType._
-    // this is Some(...) but we don't know at runtime. What about a macro for this? For literals of course
-    val oh = NEListOf[Int](12 :: 232 :: Nil)
-
-    val nelint = NEListOf(232)
-
-    val u1 = 23 :: nelint
-  }
+trait ScalazEquality extends LowPriorityScalazConstraints {
+  override def convertToEqualizer[T](left: T): Equalizer[T] = super.convertToEqualizer[T](left)
+  implicit override def convertToCheckingEqualizer[T](left: T): CheckingEqualizer[T] = new CheckingEqualizer(left)
+  override def unconstrainedEquality[A, B](implicit equalityOfA: Equality[A]): Constraint[A, B] = super.unconstrainedEquality[A, B]
+  implicit def spireConstraint[A, B](implicit equalOfA: Equal[A], ev: B => A): Constraint[A, B] =
+  new BToAEquivalenceConstraint[A, B](new ScalazEquivalence(equalOfA), ev)
 }
+
+object ScalazEquality extends ScalazEquality
+
+// trait ScalazAssertions extends org.scalatest.Assertions with ScalazEquality
+// object ScalazAssertions extends ScalazAssertions
 
 ```
 
