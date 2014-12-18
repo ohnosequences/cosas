@@ -62,7 +62,7 @@ sealed trait or[T <: AnyTypeUnion, S] extends AnyTypeUnion {
   type Arity = Succ[T#Arity]
   type union = not[ T#PrevBoundNot with not[S] ]
   type PrevBoundNot = T#PrevBoundNot with not[S]
-  type or[Z] = ohnosequences.cosas.or[ohnosequences.cosas.or[T,S], Z]
+  type or[Z] = ohnosequences.cosas.or[T#or[S], Z]
 }
 
 /* Builder */
@@ -75,15 +75,18 @@ sealed trait or[T <: AnyTypeUnion, S] extends AnyTypeUnion {
 
 object TypeUnion {
 
-  trait empty extends AnyTypeUnion {
+  sealed trait empty extends AnyTypeUnion {
 
     type Arity = _0
     type union = not[not[Nothing]]
     type Head = Nothing
 
     type PrevBoundNot = not[Nothing] 
-    type or[Z] = ohnosequences.cosas.or[empty, Z]
+    type or[Z] = ohnosequences.cosas.or[either[Z], Z]
   }
+
+  // type ∨[T <: AnyTypeUnion, S] = or[T,S]
+  type :∨:[S, T <: AnyTypeUnion] = T#or[S]
 
 
 
