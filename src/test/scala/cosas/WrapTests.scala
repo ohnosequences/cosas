@@ -17,9 +17,12 @@ class WrapTests extends org.scalatest.FunSuite {
     val verde = new ValueOf[Color.type]("green")
     val amarillo = Color denoteWith "yellow"
 
+    val x1 = "yellow" =: Color
+
     assert{ azul.value == "blue" }
     assert{ verde.value == "green" }
     assert{ amarillo.value == "yellow" }
+    assert{ amarillo === x1 }
   }
 }
 
@@ -38,9 +41,14 @@ class DenotationTests extends org.scalatest.FunSuite {
 
     import Denotes._
 
+    val z = User denoteWith 2423423
+
     /* the right-associative syntax */
     val uh: user :%: User = user(id = "adqwr32141", name = "Salustiano", age = 143) :%: User
-    val z = User denoteWith 2423423
+    /* or with equals-sign style */
+    val oh = user(id = "adqwr32141", name = "Salustiano", age = 143) =: User
+    /* or in the other order */
+    val ah = User := user(id = "adqwr32141", name = "Salustiano", age = 143)
   }
 
   test("type-safe equals") {
