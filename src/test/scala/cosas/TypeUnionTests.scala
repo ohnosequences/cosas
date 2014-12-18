@@ -24,8 +24,6 @@ class TypeUnionTests extends org.scalatest.FunSuite {
 
   test("check bounds") {
 
-    import TypeUnion._
-
     type S = either[String]
     type SB = either[String]#or[Boolean]
     type SB2 = either[String] or Boolean

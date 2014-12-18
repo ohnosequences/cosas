@@ -20,6 +20,20 @@ object AnyTypeUnion {
   private[cosas] type not[T] = (T => Nothing)
   private[cosas] type just[T] = not[not[T]]
 
+  type empty = empty.type
+  object empty extends AnyTypeUnion {
+
+    type Arity = shapeless.nat._0
+    type union = not[not[Nothing]]
+    type Head = Nothing
+
+    type PrevBoundNot = not[Nothing] 
+    type or[Z] = either[Z]
+  }
+
+  // type ∨[T <: AnyTypeUnion, S] = or[T,S]
+  type :∨:[S, T <: AnyTypeUnion] = T#or[S]
+
   /*
     Type-level operations
   */
@@ -48,7 +62,7 @@ import AnyTypeUnion._
 
 sealed trait either[X] extends AnyTypeUnion {
 
-  type Arity = _1
+  type Arity = shapeless.nat._1
   type union = not[not[X]]
   type Head = X
 
@@ -59,7 +73,7 @@ sealed trait either[X] extends AnyTypeUnion {
 sealed trait or[T <: AnyTypeUnion, S] extends AnyTypeUnion {
 
   type Head = S
-  type Arity = Succ[T#Arity]
+  type Arity = shapeless.Succ[T#Arity]
   type union = not[ T#PrevBoundNot with not[S] ]
   type PrevBoundNot = T#PrevBoundNot with not[S]
   type or[Z] = ohnosequences.cosas.or[T#or[S], Z]
@@ -72,30 +86,3 @@ sealed trait or[T <: AnyTypeUnion, S] extends AnyTypeUnion {
 //   type union = not[T]
 
 // }
-
-object TypeUnion {
-
-  sealed trait empty extends AnyTypeUnion {
-
-    type Arity = _0
-    type union = not[not[Nothing]]
-    type Head = Nothing
-
-    type PrevBoundNot = not[Nothing] 
-    type or[Z] = ohnosequences.cosas.or[either[Z], Z]
-  }
-
-  // type ∨[T <: AnyTypeUnion, S] = or[T,S]
-  type :∨:[S, T <: AnyTypeUnion] = T#or[S]
-
-
-
-  // not(not(X))
-  // not(not(X) with not(Y))
-  // not(not(X) with not(Y) with not(Z))
-
-  // not(PrevBound with not(next))
-
-  // either[X]#or[Y]#union = 
-
-}

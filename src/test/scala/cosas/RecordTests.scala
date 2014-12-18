@@ -66,10 +66,10 @@ class RecordTests extends org.scalatest.FunSuite {
 
     import shapeless._, Nat._
 
-    type Four = length[normalUser.type]
+    type Four = AnyRecord.size[normalUser.type]
 
     implicitly [ Four =:= _4 ]
-    implicitly [ length[simpleUser.type] =:= _2 ]
+    implicitly [ AnyRecord.size[simpleUser.type] =:= _2 ]
   }
 
   test("recognizing record value types") {

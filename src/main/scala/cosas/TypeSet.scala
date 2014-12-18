@@ -8,8 +8,6 @@ sealed trait AnyTypeSet {
   type Types <: AnyTypeUnion
   type Bound // should be Types#union, but we can't set it here
 
-  type Cardinality = Types#Arity
-
   def toStr: String
   override def toString = "{" + toStr + "}"
 }
@@ -31,22 +29,22 @@ trait NonEmptySet extends AnyTypeSet {
 private[cosas] object TypeSetImpl {
   import AnyTypeSet._
 
-  trait EmptySetImpl extends AnyTypeSet {
+  trait EmptySetImpl extends AnyTypeSet with EmptySet {
 
-    type Types = TypeUnion.empty
+    type Types = empty
     type Bound = Types#union
 
     def toStr = ""
   }
 
-  object EmptySetImpl extends EmptySetImpl
+  object EmptySetImpl extends EmptySetImpl { override type Types = empty }
 
 
   case class ConsSet[H, T <: AnyTypeSet]
     (val head : H,  val tail : T)(implicit val headIsNew: H ∉ T) extends NonEmptySet {
     type Head = H; type Tail = T
 
-    type Types = TypesOf[Tail]#or[Head]
+    type Types = Head :∨: Tail#Types
     type Bound = Types#union
     
     def toStr = {
@@ -86,7 +84,7 @@ object AnyTypeSet {
 
   final type :~:[E, S <: AnyTypeSet] = TypeSetImpl.ConsSet[E, S]
 
-  final type cardinality[S <: AnyTypeSet] = S#Cardinality
+  final type size[S <: AnyTypeSet] = S#Types#Arity
 
   // it's like KList, but a set
   type Of[T] = AnyTypeSet { type Bound <: just[T] }

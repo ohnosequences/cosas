@@ -9,14 +9,13 @@ class TypeSetTests extends org.scalatest.FunSuite {
   class Bar
   val bar: Bar = new Bar()
 
-  test("set cardinality") {
+  test("set size") {
 
     import shapeless._, Nat._
 
-    type Two = cardinality[(Int :~: Char :~: ∅)]
+    type Two = size[ Int :~: Char :~: ∅ ]
 
     implicitly [ Two =:= _2 ]
-
   }
 
   test("empty set") {
