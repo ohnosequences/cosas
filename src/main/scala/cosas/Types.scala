@@ -8,7 +8,7 @@ trait AnyType {
 
   final type Me = this.type
 
-  implicit final def meFrom[D <: AnyDenotationOf[Me]](v: D): Me = this
+  implicit final def meFrom[V](v: V Denotes Me): Me = this
 }
 
 object AnyType {
@@ -30,29 +30,14 @@ class Wrap[R](val label: String) extends AnyType { final type Raw = R }
 // TODO who knows what's going on here wrt specialization
 // http://axel22.github.io/2013/11/03/specialization-quirks.html
 /*
-You denote a `Type` using a `Value`
-*/
-sealed trait AnyDenotation extends Any {
-
-  type Tpe <: AnyType
-
-  type Value
-  val  value: Value
-}
-/*
-Bound the denoted type
-*/
-trait AnyDenotationOf[T <: AnyType] extends Any with AnyDenotation { type Tpe = T }
-
-trait AnyDenotes[@specialized V, T <: AnyType] extends Any with AnyDenotationOf[T] {
-  
-  final type Value = V
-}
-/*
 Denote T with a `value: V`. Normally you write it as `V Denotes T` thus the name.
 */
 // most likely V won't be specialized here
-final class Denotes[V, T <: AnyType](val value: V) extends AnyVal with AnyDenotes[V, T] {}
+final class Denotes[V, T <: AnyType](val value: V) extends AnyVal {
+
+  type Tpe = T
+  type Value = V
+}
 
 final case class DenotationOps[T <: AnyType](val tpe: T) extends AnyVal {
 
