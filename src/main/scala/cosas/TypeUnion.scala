@@ -1,6 +1,7 @@
 package ohnosequences.cosas
 
 import shapeless.{ <:!< }
+import shapeless._, Nat._
 
 /*
   The two type-level constructors of a type union. 
@@ -10,12 +11,28 @@ trait AnyTypeUnion {
 
   type or[Y] <: AnyTypeUnion
   type union // kind of return
+  type Arity <: Nat
+  type PrevBoundNot
 }
 
 object AnyTypeUnion {
 
-  private[cosas] type not[T] = T => Nothing
+  private[cosas] type not[T] = (T => Nothing)
   private[cosas] type just[T] = not[not[T]]
+
+  type empty = empty.type
+  object empty extends AnyTypeUnion {
+
+    type Arity = shapeless.nat._0
+    type union = not[not[Nothing]]
+    type Head = Nothing
+
+    type PrevBoundNot = not[Nothing] 
+    type or[Z] = either[Z]
+  }
+
+  // type ∨[T <: AnyTypeUnion, S] = or[T,S]
+  type :∨:[S, T <: AnyTypeUnion] = T#or[S]
 
   /*
     Type-level operations
@@ -31,6 +48,8 @@ object AnyTypeUnion {
     type isNot[X] = X isNotOneOf U
   }
 
+  type arity[U <: AnyTypeUnion] = U#Arity
+
   @annotation.implicitNotFound(msg = "Can't prove that ${V} is subunion of ${U}")
   type    isSubunionOf[V <: AnyTypeUnion, U <: AnyTypeUnion] = V#union <:<  U#union
 
@@ -41,15 +60,29 @@ object AnyTypeUnion {
 
 import AnyTypeUnion._
 
-sealed trait either[X] extends TypeUnion[not[X]]
+sealed trait either[X] extends AnyTypeUnion {
+
+  type Arity = shapeless.nat._1
+  type union = not[not[X]]
+  type Head = X
+
+  type PrevBoundNot = not[X] 
+  type or[Z] = ohnosequences.cosas.or[either[X], Z]
+}
+
+sealed trait or[T <: AnyTypeUnion, S] extends AnyTypeUnion {
+
+  type Head = S
+  type Arity = shapeless.Succ[T#Arity]
+  type union = not[ T#PrevBoundNot with not[S] ]
+  type PrevBoundNot = T#PrevBoundNot with not[S]
+  type or[Z] = ohnosequences.cosas.or[T#or[S], Z]
+}
 
 /* Builder */
-trait TypeUnion[T] extends AnyTypeUnion {
+// trait TypeUnion[T] extends AnyTypeUnion { self =>
 
-  type or[S] = TypeUnion[T with not[S]]  
-  type union = not[T]
-}
+//   type or[S] = TypeUnion[T with not[S]] { type Arity = Succ[self.Arity] }
+//   type union = not[T]
 
-object TypeUnion {
-  type empty = either[Nothing]
-}
+// }

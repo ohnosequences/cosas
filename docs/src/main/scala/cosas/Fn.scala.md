@@ -67,13 +67,14 @@ trait Fn3[A, B, C] extends AnyFn3 { type In1 = A; type In2 = B; type In3 = C }
     + scala
       + cosas
         + [PropertyTests.scala][test/scala/cosas/PropertyTests.scala]
+        + [TypeUnionTests.scala][test/scala/cosas/TypeUnionTests.scala]
+        + [ScalazEquality.scala][test/scala/cosas/ScalazEquality.scala]
         + [WrapTests.scala][test/scala/cosas/WrapTests.scala]
         + [RecordTests.scala][test/scala/cosas/RecordTests.scala]
         + [TypeSetTests.scala][test/scala/cosas/TypeSetTests.scala]
   + main
     + scala
       + cosas
-        + [Wrap.scala][main/scala/cosas/Wrap.scala]
         + [PropertiesHolder.scala][main/scala/cosas/PropertiesHolder.scala]
         + [Record.scala][main/scala/cosas/Record.scala]
         + ops
@@ -93,17 +94,20 @@ trait Fn3[A, B, C] extends AnyFn3 { type In1 = A; type In2 = B; type In3 = C }
             + [Update.scala][main/scala/cosas/ops/record/Update.scala]
             + [Conversions.scala][main/scala/cosas/ops/record/Conversions.scala]
             + [Get.scala][main/scala/cosas/ops/record/Get.scala]
-        + [Denotation.scala][main/scala/cosas/Denotation.scala]
         + [TypeUnion.scala][main/scala/cosas/TypeUnion.scala]
         + [Fn.scala][main/scala/cosas/Fn.scala]
+        + [Types.scala][main/scala/cosas/Types.scala]
+        + csv
+          + [csv.scala][main/scala/cosas/csv/csv.scala]
         + [Property.scala][main/scala/cosas/Property.scala]
         + [TypeSet.scala][main/scala/cosas/TypeSet.scala]
 
 [test/scala/cosas/PropertyTests.scala]: ../../../test/scala/cosas/PropertyTests.scala.md
+[test/scala/cosas/TypeUnionTests.scala]: ../../../test/scala/cosas/TypeUnionTests.scala.md
+[test/scala/cosas/ScalazEquality.scala]: ../../../test/scala/cosas/ScalazEquality.scala.md
 [test/scala/cosas/WrapTests.scala]: ../../../test/scala/cosas/WrapTests.scala.md
 [test/scala/cosas/RecordTests.scala]: ../../../test/scala/cosas/RecordTests.scala.md
 [test/scala/cosas/TypeSetTests.scala]: ../../../test/scala/cosas/TypeSetTests.scala.md
-[main/scala/cosas/Wrap.scala]: Wrap.scala.md
 [main/scala/cosas/PropertiesHolder.scala]: PropertiesHolder.scala.md
 [main/scala/cosas/Record.scala]: Record.scala.md
 [main/scala/cosas/ops/typeSet/Check.scala]: ops/typeSet/Check.scala.md
@@ -120,8 +124,9 @@ trait Fn3[A, B, C] extends AnyFn3 { type In1 = A; type In2 = B; type In3 = C }
 [main/scala/cosas/ops/record/Update.scala]: ops/record/Update.scala.md
 [main/scala/cosas/ops/record/Conversions.scala]: ops/record/Conversions.scala.md
 [main/scala/cosas/ops/record/Get.scala]: ops/record/Get.scala.md
-[main/scala/cosas/Denotation.scala]: Denotation.scala.md
 [main/scala/cosas/TypeUnion.scala]: TypeUnion.scala.md
 [main/scala/cosas/Fn.scala]: Fn.scala.md
+[main/scala/cosas/Types.scala]: Types.scala.md
+[main/scala/cosas/csv/csv.scala]: csv/csv.scala.md
 [main/scala/cosas/Property.scala]: Property.scala.md
 [main/scala/cosas/TypeSet.scala]: TypeSet.scala.md

@@ -3,6 +3,7 @@
 package ohnosequences.cosas
 
 import shapeless.{ <:!< }
+import shapeless._, Nat._
 ```
 
 
@@ -15,12 +16,28 @@ trait AnyTypeUnion {
 
   type or[Y] <: AnyTypeUnion
   type union // kind of return
+  type Arity <: Nat
+  type PrevBoundNot
 }
 
 object AnyTypeUnion {
 
-  private[cosas] type not[T] = T => Nothing
+  private[cosas] type not[T] = (T => Nothing)
   private[cosas] type just[T] = not[not[T]]
+
+  type empty = empty.type
+  object empty extends AnyTypeUnion {
+
+    type Arity = shapeless.nat._0
+    type union = not[not[Nothing]]
+    type Head = Nothing
+
+    type PrevBoundNot = not[Nothing] 
+    type or[Z] = either[Z]
+  }
+
+  // type ∨[T <: AnyTypeUnion, S] = or[T,S]
+  type :∨:[S, T <: AnyTypeUnion] = T#or[S]
 ```
 
 
@@ -39,6 +56,8 @@ Type-level operations
     type isNot[X] = X isNotOneOf U
   }
 
+  type arity[U <: AnyTypeUnion] = U#Arity
+
   @annotation.implicitNotFound(msg = "Can't prove that ${V} is subunion of ${U}")
   type    isSubunionOf[V <: AnyTypeUnion, U <: AnyTypeUnion] = V#union <:<  U#union
 
@@ -49,21 +68,35 @@ Type-level operations
 
 import AnyTypeUnion._
 
-sealed trait either[X] extends TypeUnion[not[X]]
+sealed trait either[X] extends AnyTypeUnion {
+
+  type Arity = shapeless.nat._1
+  type union = not[not[X]]
+  type Head = X
+
+  type PrevBoundNot = not[X] 
+  type or[Z] = ohnosequences.cosas.or[either[X], Z]
+}
+
+sealed trait or[T <: AnyTypeUnion, S] extends AnyTypeUnion {
+
+  type Head = S
+  type Arity = shapeless.Succ[T#Arity]
+  type union = not[ T#PrevBoundNot with not[S] ]
+  type PrevBoundNot = T#PrevBoundNot with not[S]
+  type or[Z] = ohnosequences.cosas.or[T#or[S], Z]
+}
 ```
 
 Builder
 
 ```scala
-trait TypeUnion[T] extends AnyTypeUnion {
+// trait TypeUnion[T] extends AnyTypeUnion { self =>
 
-  type or[S] = TypeUnion[T with not[S]]  
-  type union = not[T]
-}
+//   type or[S] = TypeUnion[T with not[S]] { type Arity = Succ[self.Arity] }
+//   type union = not[T]
 
-object TypeUnion {
-  type empty = either[Nothing]
-}
+// }
 
 ```
 
@@ -77,13 +110,14 @@ object TypeUnion {
     + scala
       + cosas
         + [PropertyTests.scala][test/scala/cosas/PropertyTests.scala]
+        + [TypeUnionTests.scala][test/scala/cosas/TypeUnionTests.scala]
+        + [ScalazEquality.scala][test/scala/cosas/ScalazEquality.scala]
         + [WrapTests.scala][test/scala/cosas/WrapTests.scala]
         + [RecordTests.scala][test/scala/cosas/RecordTests.scala]
         + [TypeSetTests.scala][test/scala/cosas/TypeSetTests.scala]
   + main
     + scala
       + cosas
-        + [Wrap.scala][main/scala/cosas/Wrap.scala]
         + [PropertiesHolder.scala][main/scala/cosas/PropertiesHolder.scala]
         + [Record.scala][main/scala/cosas/Record.scala]
         + ops
@@ -103,17 +137,20 @@ object TypeUnion {
             + [Update.scala][main/scala/cosas/ops/record/Update.scala]
             + [Conversions.scala][main/scala/cosas/ops/record/Conversions.scala]
             + [Get.scala][main/scala/cosas/ops/record/Get.scala]
-        + [Denotation.scala][main/scala/cosas/Denotation.scala]
         + [TypeUnion.scala][main/scala/cosas/TypeUnion.scala]
         + [Fn.scala][main/scala/cosas/Fn.scala]
+        + [Types.scala][main/scala/cosas/Types.scala]
+        + csv
+          + [csv.scala][main/scala/cosas/csv/csv.scala]
         + [Property.scala][main/scala/cosas/Property.scala]
         + [TypeSet.scala][main/scala/cosas/TypeSet.scala]
 
 [test/scala/cosas/PropertyTests.scala]: ../../../test/scala/cosas/PropertyTests.scala.md
+[test/scala/cosas/TypeUnionTests.scala]: ../../../test/scala/cosas/TypeUnionTests.scala.md
+[test/scala/cosas/ScalazEquality.scala]: ../../../test/scala/cosas/ScalazEquality.scala.md
 [test/scala/cosas/WrapTests.scala]: ../../../test/scala/cosas/WrapTests.scala.md
 [test/scala/cosas/RecordTests.scala]: ../../../test/scala/cosas/RecordTests.scala.md
 [test/scala/cosas/TypeSetTests.scala]: ../../../test/scala/cosas/TypeSetTests.scala.md
-[main/scala/cosas/Wrap.scala]: Wrap.scala.md
 [main/scala/cosas/PropertiesHolder.scala]: PropertiesHolder.scala.md
 [main/scala/cosas/Record.scala]: Record.scala.md
 [main/scala/cosas/ops/typeSet/Check.scala]: ops/typeSet/Check.scala.md
@@ -130,8 +167,9 @@ object TypeUnion {
 [main/scala/cosas/ops/record/Update.scala]: ops/record/Update.scala.md
 [main/scala/cosas/ops/record/Conversions.scala]: ops/record/Conversions.scala.md
 [main/scala/cosas/ops/record/Get.scala]: ops/record/Get.scala.md
-[main/scala/cosas/Denotation.scala]: Denotation.scala.md
 [main/scala/cosas/TypeUnion.scala]: TypeUnion.scala.md
 [main/scala/cosas/Fn.scala]: Fn.scala.md
+[main/scala/cosas/Types.scala]: Types.scala.md
+[main/scala/cosas/csv/csv.scala]: csv/csv.scala.md
 [main/scala/cosas/Property.scala]: Property.scala.md
 [main/scala/cosas/TypeSet.scala]: TypeSet.scala.md

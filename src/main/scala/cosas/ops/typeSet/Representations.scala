@@ -18,7 +18,7 @@
 
 package ohnosequences.cosas.ops.typeSet
 
-import ohnosequences.cosas._, AnyFn._, AnyType._, AnyTypeSet._
+import ohnosequences.cosas._, AnyFn._, AnyType._, AnyTypeSet._, AnyTypeUnion._
 
 @annotation.implicitNotFound(msg = "Can't construct a set of values for ${S}")
 trait ValuesOf[S <: AnyTypeSet] extends AnyFn with OutBound[AnyTypeSet]
@@ -41,8 +41,8 @@ trait UnionOfRaws[S <: AnyTypeSet] extends AnyFn with OutBound[AnyTypeUnion]
 
 object UnionOfRaws {
 
-  implicit val empty: UnionOfRaws[∅] with Out[TypeUnion.empty] =
-                  new UnionOfRaws[∅] with Out[TypeUnion.empty]
+  implicit val empty: UnionOfRaws[∅] with Out[empty] =
+                  new UnionOfRaws[∅] with Out[empty]
 
   implicit def cons[H <: AnyType, T <: AnyTypeSet, TU <: AnyTypeUnion]
     (implicit 

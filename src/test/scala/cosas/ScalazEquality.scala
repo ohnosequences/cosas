@@ -2,6 +2,7 @@ package ohnosequences.cosas.tests
 
 // NOTE: this is just copied from https://github.com/bvenners/equality-integration-demo
 import scalaz.Equal
+import scalaz.Scalaz.{ToEqualOps => _, _}
 
 import org.scalactic._
 import org.scalatest._

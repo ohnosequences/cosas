@@ -14,8 +14,9 @@ sealed trait AnyTypeSet {
   override def toString = "{" + toStr + "}"
 }
 
-trait EmptySet extends AnyTypeSet
+trait EmptySet extends AnyTypeSet {}
 trait NonEmptySet extends AnyTypeSet {
+
     type Head
     val  head: Head
 
@@ -30,22 +31,22 @@ trait NonEmptySet extends AnyTypeSet {
 private[cosas] object TypeSetImpl {
   import AnyTypeSet._
 
-  trait EmptySetImpl extends AnyTypeSet {
+  trait EmptySetImpl extends AnyTypeSet with EmptySet {
 
-    type Types = TypeUnion.empty
+    type Types = empty
     type Bound = Types#union
 
     def toStr = ""
   }
 
-  object EmptySetImpl extends EmptySetImpl
+  object EmptySetImpl extends EmptySetImpl { override type Types = empty }
 
 
   case class ConsSet[H, T <: AnyTypeSet]
     (val head : H,  val tail : T)(implicit val headIsNew: H ∉ T) extends NonEmptySet {
     type Head = H; type Tail = T
 
-    type Types = TypesOf[Tail]#or[Head]
+    type Types = Head :∨: Tail#Types
     type Bound = Types#union
     
     def toStr = {
@@ -87,6 +88,8 @@ object AnyTypeSet {
   val emptySet : ∅ = TypeSetImpl.EmptySetImpl
 
   final type :~:[E, S <: AnyTypeSet] = TypeSetImpl.ConsSet[E, S]
+
+  final type size[S <: AnyTypeSet] = S#Types#Arity
 
   // it's like KList, but a set
   type Of[T] = AnyTypeSet { type Bound <: just[T] }
@@ -216,7 +219,7 @@ class TypeSetOps[S <: AnyTypeSet](val s: S) {
 Element-related
 
 ```scala
-  def :~:[E](e: E)(implicit check: E ∉ S): (E :~: S) = TypeSetImpl.ConsSet.cons(e, s)
+  def :~:[E](e: E)(implicit check: E ∉ S): (E :~: S) = TypeSetImpl.ConsSet.cons(e, s) : (E :~: S)
 
   def pop[E](implicit pop: S Pop E): pop.Out = pop(s)
 
@@ -294,13 +297,14 @@ class HListOps[L <: HList](l: L) {
     + scala
       + cosas
         + [PropertyTests.scala][test/scala/cosas/PropertyTests.scala]
+        + [TypeUnionTests.scala][test/scala/cosas/TypeUnionTests.scala]
+        + [ScalazEquality.scala][test/scala/cosas/ScalazEquality.scala]
         + [WrapTests.scala][test/scala/cosas/WrapTests.scala]
         + [RecordTests.scala][test/scala/cosas/RecordTests.scala]
         + [TypeSetTests.scala][test/scala/cosas/TypeSetTests.scala]
   + main
     + scala
       + cosas
-        + [Wrap.scala][main/scala/cosas/Wrap.scala]
         + [PropertiesHolder.scala][main/scala/cosas/PropertiesHolder.scala]
         + [Record.scala][main/scala/cosas/Record.scala]
         + ops
@@ -320,17 +324,20 @@ class HListOps[L <: HList](l: L) {
             + [Update.scala][main/scala/cosas/ops/record/Update.scala]
             + [Conversions.scala][main/scala/cosas/ops/record/Conversions.scala]
             + [Get.scala][main/scala/cosas/ops/record/Get.scala]
-        + [Denotation.scala][main/scala/cosas/Denotation.scala]
         + [TypeUnion.scala][main/scala/cosas/TypeUnion.scala]
         + [Fn.scala][main/scala/cosas/Fn.scala]
+        + [Types.scala][main/scala/cosas/Types.scala]
+        + csv
+          + [csv.scala][main/scala/cosas/csv/csv.scala]
         + [Property.scala][main/scala/cosas/Property.scala]
         + [TypeSet.scala][main/scala/cosas/TypeSet.scala]
 
 [test/scala/cosas/PropertyTests.scala]: ../../../test/scala/cosas/PropertyTests.scala.md
+[test/scala/cosas/TypeUnionTests.scala]: ../../../test/scala/cosas/TypeUnionTests.scala.md
+[test/scala/cosas/ScalazEquality.scala]: ../../../test/scala/cosas/ScalazEquality.scala.md
 [test/scala/cosas/WrapTests.scala]: ../../../test/scala/cosas/WrapTests.scala.md
 [test/scala/cosas/RecordTests.scala]: ../../../test/scala/cosas/RecordTests.scala.md
 [test/scala/cosas/TypeSetTests.scala]: ../../../test/scala/cosas/TypeSetTests.scala.md
-[main/scala/cosas/Wrap.scala]: Wrap.scala.md
 [main/scala/cosas/PropertiesHolder.scala]: PropertiesHolder.scala.md
 [main/scala/cosas/Record.scala]: Record.scala.md
 [main/scala/cosas/ops/typeSet/Check.scala]: ops/typeSet/Check.scala.md
@@ -347,8 +354,9 @@ class HListOps[L <: HList](l: L) {
 [main/scala/cosas/ops/record/Update.scala]: ops/record/Update.scala.md
 [main/scala/cosas/ops/record/Conversions.scala]: ops/record/Conversions.scala.md
 [main/scala/cosas/ops/record/Get.scala]: ops/record/Get.scala.md
-[main/scala/cosas/Denotation.scala]: Denotation.scala.md
 [main/scala/cosas/TypeUnion.scala]: TypeUnion.scala.md
 [main/scala/cosas/Fn.scala]: Fn.scala.md
+[main/scala/cosas/Types.scala]: Types.scala.md
+[main/scala/cosas/csv/csv.scala]: csv/csv.scala.md
 [main/scala/cosas/Property.scala]: Property.scala.md
 [main/scala/cosas/TypeSet.scala]: TypeSet.scala.md
