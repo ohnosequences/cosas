@@ -14,12 +14,13 @@ object typeUnions {
     type union // this is like return
     type Arity <: shapeless.Nat
     type PrevBoundNot
+    type intersection
   }
 
   // object AnyTypeUnion {
 
-  private[cosas] type not[T] = (T => Nothing)
-  private[cosas] type just[T] = not[not[T]]
+  private[cosas] type not[-T] = (T => Nothing)
+  private[cosas] type just[+T] = not[not[T]]
 
   type empty = empty.type
   object empty extends AnyTypeUnion {
@@ -29,7 +30,8 @@ object typeUnions {
     type Head = Nothing
 
     type PrevBoundNot = not[Nothing] 
-    type or[Z] = either[Z]
+    type or[Z] = typeUnions.or[empty, Z]
+    type intersection = Any
   }
 
   sealed trait either[X] extends AnyTypeUnion {
@@ -40,18 +42,20 @@ object typeUnions {
 
     type PrevBoundNot = not[X] 
     type or[Z] = typeUnions.or[either[X], Z]
+    type intersection = X
   }
 
   sealed trait or[T <: AnyTypeUnion, S] extends AnyTypeUnion {
 
     type Head = S
     type Arity = shapeless.Succ[T#Arity]
-    type union = not[ T#PrevBoundNot with not[S] ]
-    type PrevBoundNot = T#PrevBoundNot with not[S]
-    type or[Z] = typeUnions.or[T#or[S], Z]
+    type union = not[not[S] with T#PrevBoundNot]
+    type PrevBoundNot = not[S] with T#PrevBoundNot
+    type or[Z] = typeUnions.or[typeUnions.or[T,S], Z]
+    type intersection = T#intersection with S
   }
 
-  type :∨:[S, T <: AnyTypeUnion] = T#or[S]
+  type :∨:[S, T <: AnyTypeUnion] = (T or S)
 
 
   /*

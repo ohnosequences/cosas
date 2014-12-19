@@ -44,5 +44,57 @@ I think that a generic Poly acting over a Map and requiring a conversion from P 
 //   type Header = H
 // }
 
+import types._, typeSets._, properties._
+import scala.collection.GenTraversable
+import shapeless.Nat._
+import shapeless.ops.nat.ToInt
+
+// TODO: E should be a type member
+trait WTraversable[E] extends Wrap[GenTraversable[E]]
+trait AnyRow[E] extends SubsetType[WTraversable[E]] {
+
+  val label = "row"
+  type Size <: Nat
+  val sizeAsInt: ToInt[Size]
+  def predicate(l: GenTraversable[E]) = toInt[Size](sizeAsInt) == l.size
+}
+class row[E, N <: Nat](implicit val sizeAsInt: ToInt[N]) extends AnyRow[E] {
+
+  type Size = N
+}
+
+trait AnyHeader {
+
+  type Properties <: AnyTypeSet.Of[AnyProperty]
+}
+class header[Ps <: AnyTypeSet.Of[AnyProperty]] extends AnyHeader { type Properties = Ps }
+
+trait csv[E] {
+
+  type Header <: AnyHeader
+  type Row <: AnyRow[E] { type Size = typeSets.size[Header#Properties] }
+}
+
+/*
+From here
+
+- parsing is done by taking first property and first value, and requiring an implicit E => P#Raw (Or Option if you're feeling fancy); you should get a record entry for each row
+- serializing is dual
+*/
+
+object example {
+
+  object buh extends row[String, _1]
+  object id extends Property[String]("id")
+  object header extends header[id.type :~: ∅]
+
+  object myCSV extends csv[String] {
+
+    type Header = header.type
+    type Row = buh.type
+  }
+
+}
+
 
 
