@@ -1,7 +1,7 @@
 package ohnosequences.cosas.tests
 
-import ohnosequences.cosas._, AnyTypeSet._, AnyType._, AnyTypeUnion._
-import ops.typeSet._
+import ohnosequences.cosas._, types._, typeUnions._, typeSets._
+import ops.typeSets._
 
 class TypeSetTests extends org.scalatest.FunSuite {
 
@@ -10,7 +10,7 @@ class TypeSetTests extends org.scalatest.FunSuite {
 
   test("set size") {
 
-    import shapeless._, Nat._
+    import shapeless.Nat._
 
     type Two = size[ Int :~: Char :~: ∅ ]
 
@@ -278,6 +278,8 @@ class TypeSetTests extends org.scalatest.FunSuite {
   }
 
   test("parse") {
+    import properties._, records._
+
     case object key extends Property[String]("key")
     case object name extends Property[String]("name")
     case object age extends Property[Integer]("age")
@@ -333,6 +335,8 @@ class TypeSetTests extends org.scalatest.FunSuite {
   }
 
   test("serialize") {
+    import properties._
+
     case object name extends Property[String]("name")
     case object age  extends Property[Integer]("age")
     case object key  extends Property[String]("key")

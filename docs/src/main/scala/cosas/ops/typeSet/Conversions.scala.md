@@ -1,7 +1,7 @@
 ## Conversions to HList and List
 
 ```scala
-package ohnosequences.cosas.ops.typeSet
+package ohnosequences.cosas.ops.typeSets
 
 import ohnosequences.cosas._, AnyFn._, AnyTypeSet._, AnyType._
 import shapeless._, poly._

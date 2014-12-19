@@ -1,9 +1,7 @@
 package ohnosequences.cosas.tests
 
-import shapeless.test.{typed, illTyped}
-import ohnosequences.cosas._
-import AnyType._, AnyProperty._, AnyTypeSet._, AnyRecord._, AnyTypeUnion._
-import ops.typeSet._
+import ohnosequences.cosas._, propertyHolders._, types._, typeSets._, properties._, records._
+import ops.typeSets._
 
 object RecordTestsContext {
 
@@ -34,14 +32,14 @@ object RecordTestsContext {
   // val hasRecordWithId = new HasRecordWithId(id, normalUser)
 
   // creating a record instance is easy and neat:
-  val simpleUserEntry = simpleUser fields (
+  val simpleUserEntry = simpleUser(
     (id(123)) :~: 
     (name("foo")) :~: 
     ∅
   )
  
   // this way the order of properties does not matter
-  val normalUserEntry = normalUser fields (
+  val normalUserEntry = normalUser(
     (name("foo")) :~: 
     (color("orange")) :~:
     (id(123)) :~: 
@@ -56,20 +54,19 @@ class RecordTests extends org.scalatest.FunSuite {
 
   test("record property bound works") {
 
-    illTyped("""
-
+    assertTypeError("""
       val uhoh = Record(id :~: name :~: notProperty :~: ∅)
     """)
   }
 
   test("type level record length") {
 
-    import shapeless._, Nat._
+    import shapeless.Nat._
 
-    type Four = AnyRecord.size[normalUser.type]
+    type Four = records.size[normalUser.type]
 
     implicitly [ Four =:= _4 ]
-    implicitly [ AnyRecord.size[simpleUser.type] =:= _2 ]
+    implicitly [ records.size[simpleUser.type] =:= _2 ]
   }
 
   test("recognizing record value types") {
@@ -82,11 +79,6 @@ class RecordTests extends org.scalatest.FunSuite {
     ]
 
     implicitly [ 
-      RawOf[simpleUser.type] =:= (ValueOf[id.type] :~: ValueOf[name.type] :~: ∅)
-    ]
-
-    implicitly [ 
-      // check the Values alias
       simpleUser.Raw =:= (ValueOf[id.type] :~: ValueOf[name.type] :~: ∅)
     ]
 
@@ -103,12 +95,12 @@ class RecordTests extends org.scalatest.FunSuite {
     ]
 
     // they get reordered
-    val simpleUserV: ValueOf[simpleUser.type] = simpleUser fields {
+    val simpleUserV: ValueOf[simpleUser.type] = simpleUser{
       (name("Antonio")) :~:
       (id(29681)) :~: ∅
     }
 
-    val sameSimpleUserV: ValueOf[simpleUser.type] = simpleUser fields {
+    val sameSimpleUserV: ValueOf[simpleUser.type] = simpleUser{
       (id(29681)) :~:
       (name("Antonio")) :~: ∅
     }
@@ -126,7 +118,7 @@ class RecordTests extends org.scalatest.FunSuite {
 
     // but you still have to present all properties:
     assertTypeError("""
-    val wrongAttrSet = normalUser fields (
+    val wrongAttrSet = normalUser(
       id(123) :~:
       name("foo") :~: 
       ∅
@@ -154,7 +146,7 @@ class RecordTests extends org.scalatest.FunSuite {
 
     assert(
       (normalUserEntry update (color("albero"))) ==
-      (normalUser fields (
+      (normalUser(
         (normalUserEntry get name) :~: 
         (normalUserEntry get id) :~: 
         (normalUserEntry get email) :~:
@@ -165,7 +157,7 @@ class RecordTests extends org.scalatest.FunSuite {
 
     assert(
       (normalUserEntry update ((name("bar")) :~: (id(321)) :~: ∅)) ==
-      (normalUser fields (
+      (normalUser(
         (name("bar")) :~: 
         (color("orange")) :~:
         (id(321)) :~: 

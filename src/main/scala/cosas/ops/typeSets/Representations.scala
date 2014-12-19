@@ -16,9 +16,9 @@
   See examples of usage it for record properties in tests
 */
 
-package ohnosequences.cosas.ops.typeSet
+package ohnosequences.cosas.ops.typeSets
 
-import ohnosequences.cosas._, AnyFn._, AnyType._, AnyTypeSet._, AnyTypeUnion._
+import ohnosequences.cosas._, fns._, types._, typeUnions._, typeSets._
 
 @annotation.implicitNotFound(msg = "Can't construct a set of values for ${S}")
 trait ValuesOf[S <: AnyTypeSet] extends AnyFn with OutBound[AnyTypeSet]
@@ -47,8 +47,8 @@ object UnionOfRaws {
   implicit def cons[H <: AnyType, T <: AnyTypeSet, TU <: AnyTypeUnion]
     (implicit 
       t: UnionOfRaws[T] { type Out = TU }
-    ):  UnionOfRaws[H :~: T] with Out[TU#or[RawOf[H]]] =
-    new UnionOfRaws[H :~: T] with Out[TU#or[RawOf[H]]]
+    ):  UnionOfRaws[H :~: T] with Out[TU#or[H#Raw]] =
+    new UnionOfRaws[H :~: T] with Out[TU#or[H#Raw]]
 }
 
 @annotation.implicitNotFound(msg = "Can't get wraps of the values set ${S}")

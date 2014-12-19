@@ -9,7 +9,7 @@ Note that the type of the result is the same (`S`).
 
 
 ```scala
-package ohnosequences.cosas.ops.typeSet
+package ohnosequences.cosas.ops.typeSets
 
 import ohnosequences.cosas._, AnyFn._, AnyTypeSet._
 

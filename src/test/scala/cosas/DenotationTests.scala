@@ -1,8 +1,8 @@
 package ohnosequences.cosas.tests
 
-import ohnosequences.cosas._, AnyType._, AnySubsetType._
+import ohnosequences.cosas._, types._, AnySubsetType._
 
-object WrapTestsContext {
+object DenotationTestsContext {
 
   case object Color extends Wrap[String]("Color")
   object User extends Type("User")
@@ -35,34 +35,30 @@ object WrapTestsContext {
   }
 }
 
-class WrapTests extends org.scalatest.FunSuite {
+class DenotationTests extends org.scalatest.FunSuite with ScalazEquality {
 
-  import WrapTestsContext._
+  import DenotationTestsContext._
 
   test("creating values") {
 
-    val azul = Color denoteWith "blue"
-    val verde = new ValueOf[Color.type]("green")
-    val amarillo = Color denoteWith "yellow"
+    val azul = Color := "blue"
+    val verde = valueOf(Color)("green")
+    val amarillo = Color := "yellow"
 
     val x1 = "yellow" =: Color
 
     assert{ azul.value == "blue" }
     assert{ verde.value == "green" }
     assert{ amarillo.value == "yellow" }
-    assert{ amarillo === x1 }
+    assert{ amarillo == x1 }
   }
-}
-
-class DenotationTests extends org.scalatest.FunSuite with ScalazEquality {
-  import WrapTestsContext._
 
   test("create denotations") {
 
-    val z = User denoteWith 2423423
+    val z = User := 2423423
 
     /* the right-associative syntax */
-    val uh: userInfo :%: User = userInfo(id = "adqwr32141", name = "Salustiano", age = 143) :%: User
+    val uh: userInfo =: User = userInfo(id = "adqwr32141", name = "Salustiano", age = 143) =: User
     /* or with equals-sign style */
     val oh = userInfo(id = "adqwr32141", name = "Salustiano", age = 143) =: User
     /* or in the other order */
@@ -74,11 +70,11 @@ class DenotationTests extends org.scalatest.FunSuite with ScalazEquality {
     val paco = "Paco"
     val jose = "Jose"
 
-    val u1 = paco :%: User
-    val u1Again = paco :%: User
+    val u1 = paco =: User
+    val u1Again = paco =: User
 
-    val u2 = paco :%: Friend
-    val v = jose :%: Friend
+    val u2 = paco =: Friend
+    val v = jose =: Friend
 
     assert { u1 == u1 }
     assert { u1 == u1Again }
@@ -90,7 +86,7 @@ class DenotationTests extends org.scalatest.FunSuite with ScalazEquality {
 
   test("naive nonempty lists") {
 
-    import WrapTestsContext._
+    import DenotationTestsContext._
 
     import AnySubsetType._
     // this is Some(...) but we don't know at runtime. What about a macro for this? For literals of course

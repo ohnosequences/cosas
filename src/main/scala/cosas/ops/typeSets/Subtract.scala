@@ -1,8 +1,8 @@
 /* ## Subtract one set from another */
 
-package ohnosequences.cosas.ops.typeSet
+package ohnosequences.cosas.ops.typeSets
 
-import ohnosequences.cosas._, AnyFn._, AnyTypeSet._
+import ohnosequences.cosas._, fns._, typeSets._
 
 @annotation.implicitNotFound(msg = "Can't subtract ${Q} from ${S}")
 trait Subtract[S <: AnyTypeSet, Q <: AnyTypeSet] extends Fn2[S, Q] with OutBound[AnyTypeSet]

@@ -6,11 +6,11 @@ It's like `Lookup`, but it removes the element
 
 
 ```scala
-package ohnosequences.cosas.ops.record
+package ohnosequences.cosas.ops.records
 
 import ohnosequences.cosas._
 import AnyFn._, AnyType._, AnyProperty._, AnyTypeSet._, AnyRecord._
-import ops.typeSet._
+import ops.typeSets._
 
 @annotation.implicitNotFound(msg = "Can't transform ${R} to ${Other} with values ${Rest}")
 trait Transform[R <: AnyRecord, Other <: AnyRecord, Rest <: AnyTypeSet] 

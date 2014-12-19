@@ -8,9 +8,9 @@ Note that the type of the result is the same (`S`).
 
 */
 
-package ohnosequences.cosas.ops.typeSet
+package ohnosequences.cosas.ops.typeSets
 
-import ohnosequences.cosas._, AnyFn._, AnyTypeSet._
+import ohnosequences.cosas._, fns._, typeSets._
 
 @annotation.implicitNotFound(msg = "Can't replace elements in ${S} with ${Q}")
 trait Replace[S <: AnyTypeSet, Q <: AnyTypeSet] extends Fn2[S, Q] with Out[S]

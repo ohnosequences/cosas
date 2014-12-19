@@ -3,7 +3,7 @@
 package ohnosequences.cosas
 
 import AnyTypeSet._, AnyProperty._, AnyType._, AnyTypeUnion._, AnyFn._
-import ops.typeSet._
+import ops.typeSets._
 
 
 trait AnyRecord extends AnyType with AnyPropertiesHolder {
@@ -80,7 +80,7 @@ Same as just tagging with `=>>`, but you can pass fields in any order
 
 class RecordRawOps[R <: AnyRecord](val recRaw: RawOf[R]) extends AnyVal {
   
-  import ops.record._
+  import ops.records._
 
   def get[P <: AnyProperty](p: P)
     (implicit get: R Get P): ValueOf[P] = get(recRaw)
