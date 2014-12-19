@@ -48,7 +48,7 @@ object typeSets {
       (val head : H,  val tail : T)(implicit val headIsNew: H ∉ T) extends NonEmptySet {
       type Head = H; type Tail = T
 
-      type Types = Head :∨: Tail#Types
+      type Types = Tail#Types or Head
       type Bound = Types#union
       
       def toStr = {
@@ -68,7 +68,7 @@ object typeSets {
     }
   }
 
-  type size[S <: AnyTypeSet] = S#Types#Arity
+  // type size[S <: AnyTypeSet] = S#Types#Arity
 
   final type ∅ = TypeSetImpl.EmptySetImpl
   val ∅ : ∅ = TypeSetImpl.EmptySetImpl // the space before : is needed

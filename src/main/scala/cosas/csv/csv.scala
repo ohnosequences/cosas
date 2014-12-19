@@ -72,7 +72,7 @@ class header[Ps <: AnyTypeSet.Of[AnyProperty]] extends AnyHeader { type Properti
 trait csv[E] {
 
   type Header <: AnyHeader
-  type Row <: AnyRow[E] { type Size = typeSets.size[Header#Properties] }
+  type Row <: AnyRow[E] // { type Size = typeSets.size[Header#Properties] }
 }
 
 /*

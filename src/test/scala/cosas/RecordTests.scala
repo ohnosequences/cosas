@@ -59,15 +59,15 @@ class RecordTests extends org.scalatest.FunSuite {
     """)
   }
 
-  test("type level record length") {
+  // test("type level record length") {
 
-    import shapeless.Nat._
+  //   import shapeless.Nat._
 
-    type Four = records.size[normalUser.type]
+  //   type Four = records.size[normalUser.type]
 
-    implicitly [ Four =:= _4 ]
-    implicitly [ records.size[simpleUser.type] =:= _2 ]
-  }
+  //   implicitly [ Four =:= _4 ]
+  //   implicitly [ records.size[simpleUser.type] =:= _2 ]
+  // }
 
   test("recognizing record value types") {
 

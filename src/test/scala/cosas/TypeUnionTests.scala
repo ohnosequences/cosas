@@ -6,32 +6,32 @@ import ohnosequences.cosas._, typeUnions._
 class TypeUnionTests extends org.scalatest.FunSuite {
 
 
-  test("check arities") {
+  // test("check arities") {
 
-    type SBS = either[String]#or[Boolean]#or[String]
+  //   type SBS = either[String]#or[Boolean]#or[String]
 
-    type SBS2 = SBS
+  //   type SBS2 = SBS
 
-    type Three = arity[SBS]
-    type Three2 = arity[SBS2]
+  //   type Three = arity[SBS]
+  //   type Three2 = arity[SBS2]
 
 
-    import shapeless.Nat._
+  //   import shapeless.Nat._
     
-    implicitly[ Three =:= _3 ]
-    implicitly[ Three2 =:= _3 ]
-    implicitly[ SBS =:= SBS2 ]
-  }
+  //   implicitly[ Three =:= _3 ]
+  //   implicitly[ Three2 =:= _3 ]
+  //   implicitly[ SBS =:= SBS2 ]
+  // }
 
   test("check bounds") {
 
-    type S = either[String]
-    type SB = either[String]#or[Boolean]
-    type SB2 = either[String] or Boolean
-    type SBI = either[String] or Boolean or Int
+    type S      = either[String]
+    type SB     = either[String] or Boolean
+    type SB2    = either[String] or Boolean
+    type SBI    = either[String] or Boolean or Int
     trait Bar
     type BarBIS = either[String] or Int or Boolean or Bar
-    type Uh = Byte :∨: Int :∨: Boolean :∨: String :∨: either[Nothing]
+    type Uh     = either[Byte] or Int or Boolean or String
 
     implicitly[just[String] <:< Uh#union]
     implicitly[just[Boolean] <:< Uh#union]
@@ -55,12 +55,6 @@ class TypeUnionTests extends org.scalatest.FunSuite {
     implicitly[just[String] <:< SBI#union]
 
     implicitly[just[Bar] <:< BarBIS#union]
-
-    // intersections
-    type J = AnyRef :∨: String :∨: empty
-    implicitly[String <:< J#intersection]
-    implicitly[Int <:!< J#intersection]
-
   }
 
   test("bounds with subtyping") {
@@ -75,14 +69,14 @@ class TypeUnionTests extends org.scalatest.FunSuite {
     trait Dog extends Animal
 
     // everyone fits here
-    type DCA = Dog :∨: Cat :∨: Animal :∨: empty
+    type DCA = either[Dog] or Cat or Animal
     implicitly[Dog isOneOf DCA]
     implicitly[Cat isOneOf DCA]
     implicitly[UglyCat isOneOf DCA]
     implicitly[pipo.type isOneOf DCA]
     implicitly[uglyCat.type isOneOf DCA]
 
-    type DC = Dog :∨: Cat :∨: empty
+    type DC = either[Dog] or Cat
     implicitly[Dog isOneOf DC]
     implicitly[Cat isOneOf DC]
     implicitly[UglyCat isOneOf DC]
@@ -91,7 +85,7 @@ class TypeUnionTests extends org.scalatest.FunSuite {
     // not here
     implicitly[animal.type isNotOneOf DC]
 
-    type DUC = Dog :∨: UglyCat :∨: empty
+    type DUC = either[Dog] or UglyCat
     implicitly[Dog isOneOf DUC]
     implicitly[UglyCat isOneOf DUC]
     implicitly[pipo.type isOneOf DUC]
@@ -101,21 +95,20 @@ class TypeUnionTests extends org.scalatest.FunSuite {
     implicitly[animal.type isNotOneOf DUC]
 
     // this does not work
-    // type ISDUC = String :∨: Int :∨: DUC
-    type ISDUC = String :∨: Int :∨: Dog :∨: UglyCat :∨: empty
-    type DUCIS = Dog :∨: UglyCat :∨: String :∨: Int :∨: empty
+    // type ISDUC = String or Int or DUC
+    type ISDUC = either[String] or Int or Dog or UglyCat
+    type DUCIS = either[Dog] or UglyCat or String or Int
     implicitly[Dog isOneOf ISDUC]
     implicitly[UglyCat isOneOf ISDUC]
     implicitly[pipo.type isOneOf ISDUC]
     implicitly[uglyCat.type isOneOf ISDUC]
     
 
-    // not here; should not work!!
-    implicitly[Cat isOneOf ISDUC]
-    implicitly[animal.type isOneOf ISDUC]
-    implicitly[Cat isOneOf DUCIS]
-    implicitly[animal.type isOneOf DUCIS]
-    implicitly[Byte isOneOf ISDUC]
+    implicitly[Cat isNotOneOf ISDUC]
+    implicitly[animal.type isNotOneOf ISDUC]
+    implicitly[Cat isNotOneOf DUCIS]
+    implicitly[animal.type isNotOneOf DUCIS]
+    implicitly[Byte isNotOneOf ISDUC]
 
 
 
