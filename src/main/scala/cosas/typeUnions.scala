@@ -1,6 +1,6 @@
 package ohnosequences.cosas
 
-object typeUnion {
+object typeUnions {
 
   import shapeless.{ <:!< }
   import shapeless.Nat._
@@ -39,7 +39,7 @@ object typeUnion {
     type Head = X
 
     type PrevBoundNot = not[X] 
-    type or[Z] = typeUnion.or[either[X], Z]
+    type or[Z] = typeUnions.or[either[X], Z]
   }
 
   sealed trait or[T <: AnyTypeUnion, S] extends AnyTypeUnion {
@@ -48,7 +48,7 @@ object typeUnion {
     type Arity = shapeless.Succ[T#Arity]
     type union = not[ T#PrevBoundNot with not[S] ]
     type PrevBoundNot = T#PrevBoundNot with not[S]
-    type or[Z] = typeUnion.or[T#or[S], Z]
+    type or[Z] = typeUnions.or[T#or[S], Z]
   }
 
   type :∨:[S, T <: AnyTypeUnion] = T#or[S]

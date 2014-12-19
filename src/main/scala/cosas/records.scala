@@ -1,10 +1,11 @@
 package ohnosequences.cosas
 
-object record {
+object records {
 
-  import typeSet._, denotation._, propertiesHolder._, property._
-  import ops.typeSet._
-
+  // deps
+  import typeSets._, types._, propertyHolders._, properties._
+  
+  import ops.typeSets._
 
   trait AnyRecord extends AnyType with AnyPropertiesHolder {
 
@@ -28,7 +29,7 @@ object record {
     type Raw = Vals
   }
 
-  type size[R <: AnyRecord] = typeSet.size[R#Raw]
+  type size[R <: AnyRecord] = typeSets.size[R#Raw]
 
   object AnyRecord {
 
@@ -64,7 +65,7 @@ object record {
     new RecordRawOps[R](rec.value)
 
   class RecordRawOps[R <: AnyRecord](val recRaw: R#Raw) extends AnyVal {
-    import ops.record._
+    import ops.records._
 
     def get[P <: AnyProperty](p: P)
       (implicit get: R Get P): ValueOf[P] = get(recRaw)

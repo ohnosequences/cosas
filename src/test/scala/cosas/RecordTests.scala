@@ -1,7 +1,7 @@
 package ohnosequences.cosas.tests
 
-import ohnosequences.cosas._, propertiesHolder._, denotation._, typeSet._, property._, record._
-import ops.typeSet._
+import ohnosequences.cosas._, propertyHolders._, types._, typeSets._, properties._, records._
+import ops.typeSets._
 
 object RecordTestsContext {
 
@@ -63,10 +63,10 @@ class RecordTests extends org.scalatest.FunSuite {
 
     import shapeless.Nat._
 
-    type Four = record.size[normalUser.type]
+    type Four = records.size[normalUser.type]
 
     implicitly [ Four =:= _4 ]
-    implicitly [ record.size[simpleUser.type] =:= _2 ]
+    implicitly [ records.size[simpleUser.type] =:= _2 ]
   }
 
   test("recognizing record value types") {

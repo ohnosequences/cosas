@@ -16,9 +16,9 @@
   See examples of usage it for record properties in tests
 */
 
-package ohnosequences.cosas.ops.typeSet
+package ohnosequences.cosas.ops.typeSets
 
-import ohnosequences.cosas._, fn._, denotation._, typeUnion._, typeSet._
+import ohnosequences.cosas._, fns._, types._, typeUnions._, typeSets._
 
 @annotation.implicitNotFound(msg = "Can't construct a set of values for ${S}")
 trait ValuesOf[S <: AnyTypeSet] extends AnyFn with OutBound[AnyTypeSet]

@@ -5,7 +5,7 @@ Returns the element of the set of the given type and the rest of the set
 
 
 ```scala
-package ohnosequences.cosas.ops.typeSet
+package ohnosequences.cosas.ops.typeSets
 
 import ohnosequences.cosas._, AnyFn._, AnyTypeSet._
 

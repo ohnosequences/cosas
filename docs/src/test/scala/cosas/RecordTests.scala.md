@@ -5,7 +5,7 @@ package ohnosequences.cosas.tests
 import shapeless.test.{typed, illTyped}
 import ohnosequences.cosas._
 import AnyType._, AnyProperty._, AnyTypeSet._, AnyRecord._, AnyTypeUnion._
-import ops.typeSet._
+import ops.typeSets._
 
 object RecordTestsContext {
 

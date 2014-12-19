@@ -3,7 +3,7 @@
 package ohnosequences.cosas
 
 import AnyTypeSet._, AnyProperty._, AnyType._, AnyTypeUnion._, AnyFn._
-import ops.typeSet._
+import ops.typeSets._
 
 
 trait AnyPropertiesHolder {

@@ -213,7 +213,7 @@ One set consists of representations of the types in another
 
 class TypeSetOps[S <: AnyTypeSet](val s: S) {
   import AnyTypeSet._
-  import ops.typeSet._
+  import ops.typeSets._
 ```
 
 Element-related

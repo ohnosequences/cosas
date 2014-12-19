@@ -1,6 +1,6 @@
 package ohnosequences.cosas
 
-object fn {
+object fns {
 
   trait AnyFn { type Out }
 

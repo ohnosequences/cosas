@@ -1,8 +1,8 @@
 /* ## Taking a subset */
 
-package ohnosequences.cosas.ops.typeSet
+package ohnosequences.cosas.ops.typeSets
 
-import ohnosequences.cosas._, fn._, typeSet._
+import ohnosequences.cosas._, fns._, typeSets._
 
 @annotation.implicitNotFound(msg = "Cannot take subset ${Q} from ${S}")
 trait Take[S <: AnyTypeSet, Q <: AnyTypeSet] extends Fn1[S] with Out[Q]

@@ -1,8 +1,8 @@
 /* ## Conversions to HList and List */
 
-package ohnosequences.cosas.ops.typeSet
+package ohnosequences.cosas.ops.typeSets
 
-import ohnosequences.cosas._, fn._, typeSet._, denotation._
+import ohnosequences.cosas._, fns._, typeSets._, types._
 import shapeless._, poly._
 
 case object id extends Poly1 { implicit def default[T] = at[T]((t:T) => t) }

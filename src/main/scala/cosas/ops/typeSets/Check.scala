@@ -1,6 +1,6 @@
-package ohnosequences.cosas.ops.typeSet
+package ohnosequences.cosas.ops.typeSets
 
-import ohnosequences.cosas._, typeSet._
+import ohnosequences.cosas._, typeSets._
 
 
 @annotation.implicitNotFound(msg = "Can't check that predicate ${P} is true for every element of ${S}")

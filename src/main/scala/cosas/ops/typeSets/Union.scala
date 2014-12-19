@@ -1,8 +1,8 @@
 /* ## Sum/union of two type sets */
 
-package ohnosequences.cosas.ops.typeSet
+package ohnosequences.cosas.ops.typeSets
 
-import ohnosequences.cosas._, fn._, typeSet._
+import ohnosequences.cosas._, fns._, typeSets._
 
 @annotation.implicitNotFound(msg = "Can't union ${S} with ${Q}")
 trait Union[S <: AnyTypeSet, Q <: AnyTypeSet] extends Fn2[S, Q] with OutBound[AnyTypeSet]

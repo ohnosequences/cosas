@@ -5,10 +5,10 @@ It's like `Lookup`, but it removes the element
 
 */
 
-package ohnosequences.cosas.ops.record
+package ohnosequences.cosas.ops.records
 
-import ohnosequences.cosas._, fn._, denotation._, typeSet._, record._
-import ops.typeSet._
+import ohnosequences.cosas._, fns._, types._, typeSets._, records._
+import ops.typeSets._
 
 @annotation.implicitNotFound(msg = "Can't transform ${R} to ${Other} with values ${Rest}")
 trait Transform[R <: AnyRecord, Other <: AnyRecord, Rest <: AnyTypeSet] 

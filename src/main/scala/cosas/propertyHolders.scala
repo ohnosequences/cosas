@@ -1,9 +1,11 @@
 package ohnosequences.cosas
 
-object propertiesHolder {
+object propertyHolders {
 
-  import denotation._, typeSet._, property._
-  import ops.typeSet.CheckForAll
+  // deps
+  import types._, typeSets._, properties._
+  
+  import ops.typeSets.CheckForAll
 
 
   trait AnyPropertiesHolder {

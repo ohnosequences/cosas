@@ -17,7 +17,7 @@ See examples of usage it for record properties in tests
 
 
 ```scala
-package ohnosequences.cosas.ops.typeSet
+package ohnosequences.cosas.ops.typeSets
 
 import ohnosequences.cosas._, AnyFn._, AnyType._, AnyTypeSet._, AnyTypeUnion._
 

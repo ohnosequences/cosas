@@ -1,6 +1,6 @@
 package ohnosequences.cosas
 
-object denotation {
+object types {
 
   /* Something super-generic and ultra-abstract */
   trait AnyType {

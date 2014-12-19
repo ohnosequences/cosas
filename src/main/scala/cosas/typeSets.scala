@@ -1,8 +1,9 @@
 package ohnosequences.cosas
 
-object typeSet {
+object typeSets {
 
-  import typeUnion._
+  // deps
+  import typeUnions._
   import shapeless.{ HList, Poly1, <:!<, =:!= }
 
 
@@ -165,16 +166,16 @@ object typeSet {
 
   /* One set consists of representations of the types in another */
   @annotation.implicitNotFound(msg = "Can't prove that ${Vs} are values of ${Ts}")
-  type areValuesOf[Vs <: AnyTypeSet, Ts <: AnyTypeSet] = ops.typeSet.ValuesOf[Ts] { type Out = Vs }
+  type areValuesOf[Vs <: AnyTypeSet, Ts <: AnyTypeSet] = ops.typeSets.ValuesOf[Ts] { type Out = Vs }
 
   @annotation.implicitNotFound(msg = "Can't prove that ${Ts} are types of ${Vs}")
-  type areWrapsOf[Ts <: AnyTypeSet, Vs <: AnyTypeSet] = ops.typeSet.WrapsOf[Ts] { type Out = Vs }
+  type areWrapsOf[Ts <: AnyTypeSet, Vs <: AnyTypeSet] = ops.typeSets.WrapsOf[Ts] { type Out = Vs }
 
-  type \[S <: AnyTypeSet, Q <: AnyTypeSet] = ops.typeSet.Subtract[S, Q]
+  type \[S <: AnyTypeSet, Q <: AnyTypeSet] = ops.typeSets.Subtract[S, Q]
 
-  type ∪[S <: AnyTypeSet, Q <: AnyTypeSet] = ops.typeSet.Union[S, Q]
+  type ∪[S <: AnyTypeSet, Q <: AnyTypeSet] = ops.typeSets.Union[S, Q]
 
-  type ToListOf[S <: AnyTypeSet, T] = ops.typeSet.ToList[S] { type O = T }
+  type ToListOf[S <: AnyTypeSet, T] = ops.typeSets.ToList[S] { type O = T }
 
 
   trait AnyTypePredicate {
@@ -189,7 +190,7 @@ object typeSet {
 
 
   class TypeSetOps[S <: AnyTypeSet](val s: S) {
-    import ops.typeSet._
+    import ops.typeSets._
 
     /* Element-related */
 
@@ -252,7 +253,7 @@ object typeSet {
   implicit def hListOps[L <: HList](l: L): HListOps[L] = new HListOps[L](l)
 
   class HListOps[L <: HList](l: L) {
-    def toTypeSet(implicit fromHList: ops.typeSet.FromHList[L]): fromHList.Out = fromHList(l)
+    def toTypeSet(implicit fromHList: ops.typeSets.FromHList[L]): fromHList.Out = fromHList(l)
   }
 
 }
