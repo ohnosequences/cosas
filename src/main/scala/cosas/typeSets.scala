@@ -181,7 +181,7 @@ object typeSets {
   trait AnyTypePredicate {
 
     type ArgBound
-    type Condition[_ <: ArgBound]
+    type Condition[X <: ArgBound]
   }
 
   trait TypePredicate[B] extends AnyTypePredicate { type ArgBound = B }
@@ -243,6 +243,8 @@ object typeSets {
     def aggregateProperties(implicit aggr: AggregateProperties[S]): aggr.Out = aggr(s)
 
     /* Predicates */
+
+    def filter[P <: AnyTypePredicate](implicit fltr: Filter[S, P]): fltr.Out = fltr(s)
 
     def checkForAll[P <: AnyTypePredicate](implicit prove: CheckForAll[S, P]): CheckForAll[S, P] = prove
 

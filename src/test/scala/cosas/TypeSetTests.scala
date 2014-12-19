@@ -71,9 +71,9 @@ class TypeSetTests extends org.scalatest.FunSuite {
     implicitly[(Boolean :~: Char :~: Int :~: ∅) isNotBoundedByUnion AllowedTypes]
   }
 
-  test("check smth for every element") {
+  test("filtering set by a type predicate") {
 
-    type AllowedTypes = either[Int]#or[Boolean]
+    type AllowedTypes = either[Int] or Boolean
     val s = 1 :~: false :~: ∅
 
     trait isAllowed extends TypePredicate[Any] {
@@ -82,17 +82,35 @@ class TypeSetTests extends org.scalatest.FunSuite {
     implicitly[CheckForAll[Int :~: ∅, isAllowed]]
     implicitly[CheckForAll[Boolean :~: Int :~: ∅, isAllowed]]
 
-    trait isInSet[S <: AnyTypeSet] extends TypePredicate[Any] {
+    assert{ s.filter[isAllowed] == s }
+    assert{ ("foo" :~: 1 :~: 'a' :~: ∅).filter[isAllowed] == (1 :~: ∅) }
+    // assert{ ("foo" :~: 1 :~: 'a' :~: ∅).filter[isAllowed] == (1 :~: ∅) }
+
+    case class isInSet[S <: AnyTypeSet](s: S) extends TypePredicate[Any] {
       type Condition[X] = X ∈ S
     }
     implicitly[CheckForAll[Boolean :~: Int :~: ∅, isInSet[s.type]]]
+
+    assert{ s.filter[isInSet[s.type]] == s }
+
+    val q = "foo" :~: 1 :~: 'a' :~: ∅
+    assert{ q.filter[isInSet[s.type]] == (1 :~: ∅) }
+
+    val isInQ = isInSet(q)
+    // FIXME: this shouldn't work!
+    implicitly[isInQ.type Accepts Boolean]
+    implicitly[isInQ.Condition[Boolean]]
+    // this should, but it doesn't:
+    implicitly[Boolean ∉ q.type]
+    implicitly[Boolean ∉ (String :~: Int :~: Char :~: ∅)]
+
+    // assert{ s.filter[isInSet[q.type]] == (1 :~: ∅) }
 
     s.checkForAll[isAllowed]
     s.checkForAll[isInSet[s.type]]
 
     val q0 = 'a' :~: true :~: "bar" :~: ∅
     q0.checkForAny[isInSet[s.type]]
-
   }
 
   test("subset") {
