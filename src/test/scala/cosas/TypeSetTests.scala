@@ -84,7 +84,6 @@ class TypeSetTests extends org.scalatest.FunSuite {
 
     assert{ s.filter[isAllowed] == s }
     assert{ ("foo" :~: 1 :~: 'a' :~: ∅).filter[isAllowed] == (1 :~: ∅) }
-    // assert{ ("foo" :~: 1 :~: 'a' :~: ∅).filter[isAllowed] == (1 :~: ∅) }
 
     case class isInSet[S <: AnyTypeSet](s: S) extends TypePredicate[Any] {
       type Condition[X] = X ∈ S
@@ -95,16 +94,7 @@ class TypeSetTests extends org.scalatest.FunSuite {
 
     val q = "foo" :~: 1 :~: 'a' :~: ∅
     assert{ q.filter[isInSet[s.type]] == (1 :~: ∅) }
-
-    val isInQ = isInSet(q)
-    // FIXME: this shouldn't work!
-    implicitly[isInQ.type Accepts Boolean]
-    implicitly[isInQ.Condition[Boolean]]
-    // this should, but it doesn't:
-    implicitly[Boolean ∉ q.type]
-    implicitly[Boolean ∉ (String :~: Int :~: Char :~: ∅)]
-
-    // assert{ s.filter[isInSet[q.type]] == (1 :~: ∅) }
+    assert{ s.filter[isInSet[q.type]] == (1 :~: ∅) }
 
     s.checkForAll[isAllowed]
     s.checkForAll[isInSet[s.type]]
