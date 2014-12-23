@@ -29,7 +29,7 @@ object records {
     type Raw = Vals
   }
 
-  // type size[R <: AnyRecord] = typeSets.size[R#Raw]
+  type size[R <: AnyRecord] = typeSets.size[R#Raw]
 
   object AnyRecord {
 

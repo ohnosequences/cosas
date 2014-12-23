@@ -6,6 +6,8 @@ object typeSets {
   import typeUnions._
   import shapeless.{ HList, Poly1, <:!<, =:!= }
 
+  import shapeless.Nat._
+  import shapeless.{Nat, Succ}  
 
   sealed trait AnyTypeSet {
 
@@ -14,11 +16,13 @@ object typeSets {
     type Types <: AnyTypeUnion
     type Bound // should be Types#union, but we can't set it here
 
+    type Size <: Nat
+
     def toStr: String
     override def toString = "{" + toStr + "}"
   }
 
-  trait EmptySet extends AnyTypeSet {}
+  trait EmptySet extends AnyTypeSet { type Size = _0 }
   trait NonEmptySet extends AnyTypeSet {
 
       type Head
@@ -27,6 +31,7 @@ object typeSets {
       type Tail <: AnyTypeSet
       val  tail: Tail
 
+      type Size = Succ[Tail#Size]
       // should be provided implicitly:
       val headIsNew: Head ∉ Tail
   }
@@ -68,7 +73,7 @@ object typeSets {
     }
   }
 
-  // type size[S <: AnyTypeSet] = S#Types#Arity
+  type size[S <: AnyTypeSet] = S#Size
 
   final type ∅ = TypeSetImpl.EmptySetImpl
   val ∅ : ∅ = TypeSetImpl.EmptySetImpl // the space before : is needed

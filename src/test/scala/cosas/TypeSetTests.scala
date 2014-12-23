@@ -8,14 +8,14 @@ class TypeSetTests extends org.scalatest.FunSuite {
   class Bar
   case object bar extends Bar
 
-  // test("set size") {
+  test("set size") {
 
-  //   import shapeless.Nat._
+    import shapeless.Nat._
 
-  //   type Two = size[ Int :~: Char :~: ∅ ]
+    type Two = size[ Int :~: Char :~: ∅ ]
 
-  //   implicitly [ Two =:= _2 ]
-  // }
+    implicitly [ Two =:= _2 ]
+  }
 
   test("empty set") {
 

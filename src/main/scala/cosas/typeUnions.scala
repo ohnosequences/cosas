@@ -125,7 +125,7 @@ trait AnyTypeUnion {
   type isNotSubunionOf[V <: AnyTypeUnion, U <: AnyTypeUnion] = V#union <:!< U#union
 
 
-sealed trait either[X] extends TypeUnion[not[X]]
+sealed trait either[X] extends TypeUnion[not[X]] {}
 
 /* Builder */
 trait TypeUnion[T] extends AnyTypeUnion {
