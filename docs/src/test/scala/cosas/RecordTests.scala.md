@@ -2,9 +2,7 @@
 ```scala
 package ohnosequences.cosas.tests
 
-import shapeless.test.{typed, illTyped}
-import ohnosequences.cosas._
-import AnyType._, AnyProperty._, AnyTypeSet._, AnyRecord._, AnyTypeUnion._
+import ohnosequences.cosas._, propertyHolders._, types._, typeSets._, properties._, records._
 import ops.typeSets._
 
 object RecordTestsContext {
@@ -36,14 +34,14 @@ object RecordTestsContext {
   // val hasRecordWithId = new HasRecordWithId(id, normalUser)
 
   // creating a record instance is easy and neat:
-  val simpleUserEntry = simpleUser fields (
+  val simpleUserEntry = simpleUser(
     (id(123)) :~: 
     (name("foo")) :~: 
     ∅
   )
  
   // this way the order of properties does not matter
-  val normalUserEntry = normalUser fields (
+  val normalUserEntry = normalUser(
     (name("foo")) :~: 
     (color("orange")) :~:
     (id(123)) :~: 
@@ -58,20 +56,19 @@ class RecordTests extends org.scalatest.FunSuite {
 
   test("record property bound works") {
 
-    illTyped("""
-
+    assertTypeError("""
       val uhoh = Record(id :~: name :~: notProperty :~: ∅)
     """)
   }
 
   test("type level record length") {
 
-    import shapeless._, Nat._
+    import shapeless.Nat._
 
-    type Four = AnyRecord.size[normalUser.type]
+    type Four = records.size[normalUser.type]
 
     implicitly [ Four =:= _4 ]
-    implicitly [ AnyRecord.size[simpleUser.type] =:= _2 ]
+    implicitly [ records.size[simpleUser.type] =:= _2 ]
   }
 
   test("recognizing record value types") {
@@ -84,11 +81,6 @@ class RecordTests extends org.scalatest.FunSuite {
     ]
 
     implicitly [ 
-      RawOf[simpleUser.type] =:= (ValueOf[id.type] :~: ValueOf[name.type] :~: ∅)
-    ]
-
-    implicitly [ 
-      // check the Values alias
       simpleUser.Raw =:= (ValueOf[id.type] :~: ValueOf[name.type] :~: ∅)
     ]
 
@@ -105,12 +97,12 @@ class RecordTests extends org.scalatest.FunSuite {
     ]
 
     // they get reordered
-    val simpleUserV: ValueOf[simpleUser.type] = simpleUser fields {
+    val simpleUserV: ValueOf[simpleUser.type] = simpleUser{
       (name("Antonio")) :~:
       (id(29681)) :~: ∅
     }
 
-    val sameSimpleUserV: ValueOf[simpleUser.type] = simpleUser fields {
+    val sameSimpleUserV: ValueOf[simpleUser.type] = simpleUser{
       (id(29681)) :~:
       (name("Antonio")) :~: ∅
     }
@@ -128,7 +120,7 @@ class RecordTests extends org.scalatest.FunSuite {
 
     // but you still have to present all properties:
     assertTypeError("""
-    val wrongAttrSet = normalUser fields (
+    val wrongAttrSet = normalUser(
       id(123) :~:
       name("foo") :~: 
       ∅
@@ -156,7 +148,7 @@ class RecordTests extends org.scalatest.FunSuite {
 
     assert(
       (normalUserEntry update (color("albero"))) ==
-      (normalUser fields (
+      (normalUser(
         (normalUserEntry get name) :~: 
         (normalUserEntry get id) :~: 
         (normalUserEntry get email) :~:
@@ -167,7 +159,7 @@ class RecordTests extends org.scalatest.FunSuite {
 
     assert(
       (normalUserEntry update ((name("bar")) :~: (id(321)) :~: ∅)) ==
-      (normalUser fields (
+      (normalUser(
         (name("bar")) :~: 
         (color("orange")) :~:
         (id(321)) :~: 
@@ -293,64 +285,64 @@ class RecordTests extends org.scalatest.FunSuite {
         + [PropertyTests.scala][test/scala/cosas/PropertyTests.scala]
         + [TypeUnionTests.scala][test/scala/cosas/TypeUnionTests.scala]
         + [ScalazEquality.scala][test/scala/cosas/ScalazEquality.scala]
-        + [WrapTests.scala][test/scala/cosas/WrapTests.scala]
+        + [DenotationTests.scala][test/scala/cosas/DenotationTests.scala]
         + [RecordTests.scala][test/scala/cosas/RecordTests.scala]
         + [TypeSetTests.scala][test/scala/cosas/TypeSetTests.scala]
   + main
     + scala
       + cosas
-        + [PropertiesHolder.scala][main/scala/cosas/PropertiesHolder.scala]
-        + [Record.scala][main/scala/cosas/Record.scala]
+        + [properties.scala][main/scala/cosas/properties.scala]
+        + [typeSets.scala][main/scala/cosas/typeSets.scala]
         + ops
-          + typeSet
-            + [Check.scala][main/scala/cosas/ops/typeSet/Check.scala]
-            + [Reorder.scala][main/scala/cosas/ops/typeSet/Reorder.scala]
-            + [Conversions.scala][main/scala/cosas/ops/typeSet/Conversions.scala]
-            + [AggregateProperties.scala][main/scala/cosas/ops/typeSet/AggregateProperties.scala]
-            + [Subtract.scala][main/scala/cosas/ops/typeSet/Subtract.scala]
-            + [Pop.scala][main/scala/cosas/ops/typeSet/Pop.scala]
-            + [Representations.scala][main/scala/cosas/ops/typeSet/Representations.scala]
-            + [Replace.scala][main/scala/cosas/ops/typeSet/Replace.scala]
-            + [Take.scala][main/scala/cosas/ops/typeSet/Take.scala]
-            + [Union.scala][main/scala/cosas/ops/typeSet/Union.scala]
-            + [Mappers.scala][main/scala/cosas/ops/typeSet/Mappers.scala]
-          + record
-            + [Update.scala][main/scala/cosas/ops/record/Update.scala]
-            + [Conversions.scala][main/scala/cosas/ops/record/Conversions.scala]
-            + [Get.scala][main/scala/cosas/ops/record/Get.scala]
-        + [TypeUnion.scala][main/scala/cosas/TypeUnion.scala]
-        + [Fn.scala][main/scala/cosas/Fn.scala]
-        + [Types.scala][main/scala/cosas/Types.scala]
+          + records
+            + [Update.scala][main/scala/cosas/ops/records/Update.scala]
+            + [Conversions.scala][main/scala/cosas/ops/records/Conversions.scala]
+            + [Get.scala][main/scala/cosas/ops/records/Get.scala]
+          + typeSets
+            + [Filter.scala][main/scala/cosas/ops/typeSets/Filter.scala]
+            + [Reorder.scala][main/scala/cosas/ops/typeSets/Reorder.scala]
+            + [Conversions.scala][main/scala/cosas/ops/typeSets/Conversions.scala]
+            + [AggregateProperties.scala][main/scala/cosas/ops/typeSets/AggregateProperties.scala]
+            + [Subtract.scala][main/scala/cosas/ops/typeSets/Subtract.scala]
+            + [Pop.scala][main/scala/cosas/ops/typeSets/Pop.scala]
+            + [Representations.scala][main/scala/cosas/ops/typeSets/Representations.scala]
+            + [Replace.scala][main/scala/cosas/ops/typeSets/Replace.scala]
+            + [Take.scala][main/scala/cosas/ops/typeSets/Take.scala]
+            + [Union.scala][main/scala/cosas/ops/typeSets/Union.scala]
+            + [Mappers.scala][main/scala/cosas/ops/typeSets/Mappers.scala]
+        + [typeUnions.scala][main/scala/cosas/typeUnions.scala]
+        + [records.scala][main/scala/cosas/records.scala]
         + csv
           + [csv.scala][main/scala/cosas/csv/csv.scala]
-        + [Property.scala][main/scala/cosas/Property.scala]
-        + [TypeSet.scala][main/scala/cosas/TypeSet.scala]
+        + [fns.scala][main/scala/cosas/fns.scala]
+        + [propertyHolders.scala][main/scala/cosas/propertyHolders.scala]
+        + [types.scala][main/scala/cosas/types.scala]
 
 [test/scala/cosas/PropertyTests.scala]: PropertyTests.scala.md
 [test/scala/cosas/TypeUnionTests.scala]: TypeUnionTests.scala.md
 [test/scala/cosas/ScalazEquality.scala]: ScalazEquality.scala.md
-[test/scala/cosas/WrapTests.scala]: WrapTests.scala.md
+[test/scala/cosas/DenotationTests.scala]: DenotationTests.scala.md
 [test/scala/cosas/RecordTests.scala]: RecordTests.scala.md
 [test/scala/cosas/TypeSetTests.scala]: TypeSetTests.scala.md
-[main/scala/cosas/PropertiesHolder.scala]: ../../../main/scala/cosas/PropertiesHolder.scala.md
-[main/scala/cosas/Record.scala]: ../../../main/scala/cosas/Record.scala.md
-[main/scala/cosas/ops/typeSet/Check.scala]: ../../../main/scala/cosas/ops/typeSet/Check.scala.md
-[main/scala/cosas/ops/typeSet/Reorder.scala]: ../../../main/scala/cosas/ops/typeSet/Reorder.scala.md
-[main/scala/cosas/ops/typeSet/Conversions.scala]: ../../../main/scala/cosas/ops/typeSet/Conversions.scala.md
-[main/scala/cosas/ops/typeSet/AggregateProperties.scala]: ../../../main/scala/cosas/ops/typeSet/AggregateProperties.scala.md
-[main/scala/cosas/ops/typeSet/Subtract.scala]: ../../../main/scala/cosas/ops/typeSet/Subtract.scala.md
-[main/scala/cosas/ops/typeSet/Pop.scala]: ../../../main/scala/cosas/ops/typeSet/Pop.scala.md
-[main/scala/cosas/ops/typeSet/Representations.scala]: ../../../main/scala/cosas/ops/typeSet/Representations.scala.md
-[main/scala/cosas/ops/typeSet/Replace.scala]: ../../../main/scala/cosas/ops/typeSet/Replace.scala.md
-[main/scala/cosas/ops/typeSet/Take.scala]: ../../../main/scala/cosas/ops/typeSet/Take.scala.md
-[main/scala/cosas/ops/typeSet/Union.scala]: ../../../main/scala/cosas/ops/typeSet/Union.scala.md
-[main/scala/cosas/ops/typeSet/Mappers.scala]: ../../../main/scala/cosas/ops/typeSet/Mappers.scala.md
-[main/scala/cosas/ops/record/Update.scala]: ../../../main/scala/cosas/ops/record/Update.scala.md
-[main/scala/cosas/ops/record/Conversions.scala]: ../../../main/scala/cosas/ops/record/Conversions.scala.md
-[main/scala/cosas/ops/record/Get.scala]: ../../../main/scala/cosas/ops/record/Get.scala.md
-[main/scala/cosas/TypeUnion.scala]: ../../../main/scala/cosas/TypeUnion.scala.md
-[main/scala/cosas/Fn.scala]: ../../../main/scala/cosas/Fn.scala.md
-[main/scala/cosas/Types.scala]: ../../../main/scala/cosas/Types.scala.md
+[main/scala/cosas/properties.scala]: ../../../main/scala/cosas/properties.scala.md
+[main/scala/cosas/typeSets.scala]: ../../../main/scala/cosas/typeSets.scala.md
+[main/scala/cosas/ops/records/Update.scala]: ../../../main/scala/cosas/ops/records/Update.scala.md
+[main/scala/cosas/ops/records/Conversions.scala]: ../../../main/scala/cosas/ops/records/Conversions.scala.md
+[main/scala/cosas/ops/records/Get.scala]: ../../../main/scala/cosas/ops/records/Get.scala.md
+[main/scala/cosas/ops/typeSets/Filter.scala]: ../../../main/scala/cosas/ops/typeSets/Filter.scala.md
+[main/scala/cosas/ops/typeSets/Reorder.scala]: ../../../main/scala/cosas/ops/typeSets/Reorder.scala.md
+[main/scala/cosas/ops/typeSets/Conversions.scala]: ../../../main/scala/cosas/ops/typeSets/Conversions.scala.md
+[main/scala/cosas/ops/typeSets/AggregateProperties.scala]: ../../../main/scala/cosas/ops/typeSets/AggregateProperties.scala.md
+[main/scala/cosas/ops/typeSets/Subtract.scala]: ../../../main/scala/cosas/ops/typeSets/Subtract.scala.md
+[main/scala/cosas/ops/typeSets/Pop.scala]: ../../../main/scala/cosas/ops/typeSets/Pop.scala.md
+[main/scala/cosas/ops/typeSets/Representations.scala]: ../../../main/scala/cosas/ops/typeSets/Representations.scala.md
+[main/scala/cosas/ops/typeSets/Replace.scala]: ../../../main/scala/cosas/ops/typeSets/Replace.scala.md
+[main/scala/cosas/ops/typeSets/Take.scala]: ../../../main/scala/cosas/ops/typeSets/Take.scala.md
+[main/scala/cosas/ops/typeSets/Union.scala]: ../../../main/scala/cosas/ops/typeSets/Union.scala.md
+[main/scala/cosas/ops/typeSets/Mappers.scala]: ../../../main/scala/cosas/ops/typeSets/Mappers.scala.md
+[main/scala/cosas/typeUnions.scala]: ../../../main/scala/cosas/typeUnions.scala.md
+[main/scala/cosas/records.scala]: ../../../main/scala/cosas/records.scala.md
 [main/scala/cosas/csv/csv.scala]: ../../../main/scala/cosas/csv/csv.scala.md
-[main/scala/cosas/Property.scala]: ../../../main/scala/cosas/Property.scala.md
-[main/scala/cosas/TypeSet.scala]: ../../../main/scala/cosas/TypeSet.scala.md
+[main/scala/cosas/fns.scala]: ../../../main/scala/cosas/fns.scala.md
+[main/scala/cosas/propertyHolders.scala]: ../../../main/scala/cosas/propertyHolders.scala.md
+[main/scala/cosas/types.scala]: ../../../main/scala/cosas/types.scala.md

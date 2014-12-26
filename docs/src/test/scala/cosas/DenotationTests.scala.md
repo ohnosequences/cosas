@@ -2,118 +2,120 @@
 ```scala
 package ohnosequences.cosas.tests
 
-import ohnosequences.cosas._, typeUnions._
+import ohnosequences.cosas._, types._, AnySubsetType._
 
+object DenotationTestsContext {
 
-class TypeUnionTests extends org.scalatest.FunSuite {
+  case object Color extends Wrap[String]("Color")
+  object User extends Type("User")
+  type User = User.type
+  object Friend extends Type("Friend")
+  case class userInfo(id: String, name: String, age: Int)
+```
 
+The NEList stuff
 
-  // test("check arities") {
+```scala
+  final class WrappedList[E] extends Wrap[List[E]]("WrappedList")
 
-  //   type SBS = either[String]#or[Boolean]#or[String]
+  class NEList[E] extends SubsetType[WrappedList[E]] {
 
-  //   type SBS2 = SBS
+    lazy val label = "NEList"
+    def predicate(l: List[E]): Boolean = ! l.isEmpty
 
-  //   type Three = arity[SBS]
-  //   type Three2 = arity[SBS2]
-
-
-  //   import shapeless.Nat._
-    
-  //   implicitly[ Three =:= _3 ]
-  //   implicitly[ Three2 =:= _3 ]
-  //   implicitly[ SBS =:= SBS2 ]
-  // }
-
-  test("check bounds") {
-
-    type S      = either[String]
-    type SB     = either[String] or Boolean
-    type SB2    = either[String] or Boolean
-    type SBI    = either[String] or Boolean or Int
-    trait Bar
-    type BarBIS = either[String] or Int or Boolean or Bar
-    type Uh     = either[Byte] or Int or Boolean or String
-
-    implicitly[just[String] <:< Uh#union]
-    implicitly[just[Boolean] <:< Uh#union]
-    implicitly[just[Int] <:< Uh#union]
-
-    implicitly[S#union =:= just[String]]
-
-    implicitly[just[String] <:< S#union]
-    implicitly[just[Boolean] <:< SB#union]
-    implicitly[just[String] <:< SB#union]
-    implicitly[just[Boolean] <:< SB2#union]
-    implicitly[just[String] <:< SB2#union]
-
-    implicitly[just[String] <:< SBI#union]
-    implicitly[just[Boolean] <:< SBI#union]
-    implicitly[just[Int] <:< SBI#union]
-
-    import shapeless.{ <:!< }
-    implicitly[just[Byte] <:!< SBI#union]
-    implicitly[just[Byte] <:< Uh#union]
-    implicitly[just[String] <:< SBI#union]
-
-    implicitly[just[Bar] <:< BarBIS#union]
+    def apply(e: E): ValueOf[NEList[E]] = new ValueOf[NEList[E]](e :: Nil)
   }
 
-  test("bounds with subtyping") {
+  object NEList {
 
-    // weird issues
-    trait Animal
-    val animal = new Animal {}
-    trait Cat extends Animal
-    trait UglyCat extends Cat
-    object pipo extends UglyCat
-    val uglyCat = new UglyCat {}
-    trait Dog extends Animal
+    implicit def toOps[E](v: ValueOf[NEList[E]]): NEListOps[E] = new NEListOps(v.value)
+    implicit def toSSTops[E](v: NEList[E]): SubSetTypeOps[WrappedList[E], NEList[E]] = new SubSetTypeOps(v)
+  }
 
-    // everyone fits here
-    type DCA = either[Dog] or Cat or Animal
-    implicitly[Dog isOneOf DCA]
-    implicitly[Cat isOneOf DCA]
-    implicitly[UglyCat isOneOf DCA]
-    implicitly[pipo.type isOneOf DCA]
-    implicitly[uglyCat.type isOneOf DCA]
+  def NEListOf[E]: NEList[E] = new NEList()
 
-    type DC = either[Dog] or Cat
-    implicitly[Dog isOneOf DC]
-    implicitly[Cat isOneOf DC]
-    implicitly[UglyCat isOneOf DC]
-    implicitly[pipo.type isOneOf DC]
-    implicitly[uglyCat.type isOneOf DC]
-    // not here
-    implicitly[animal.type isNotOneOf DC]
+  class NEListOps[E](val l: List[E]) extends AnyVal with ValueOfSubsetTypeOps[WrappedList[E], NEList[E]] {
 
-    type DUC = either[Dog] or UglyCat
-    implicitly[Dog isOneOf DUC]
-    implicitly[UglyCat isOneOf DUC]
-    implicitly[pipo.type isOneOf DUC]
-    implicitly[uglyCat.type isOneOf DUC]
-    // not here
-    implicitly[Cat isNotOneOf DUC]
-    implicitly[animal.type isNotOneOf DUC]
+    def ::(x: E): ValueOf[NEList[E]] = unsafeValueOf[NEList[E]](x :: l)
+  }
+}
 
-    // this does not work
-    // type ISDUC = String or Int or DUC
-    type ISDUC = either[String] or Int or Dog or UglyCat
-    type DUCIS = either[Dog] or UglyCat or String or Int
-    implicitly[Dog isOneOf ISDUC]
-    implicitly[UglyCat isOneOf ISDUC]
-    implicitly[pipo.type isOneOf ISDUC]
-    implicitly[uglyCat.type isOneOf ISDUC]
-    
+class DenotationTests extends org.scalatest.FunSuite with ScalazEquality {
 
-    implicitly[Cat isNotOneOf ISDUC]
-    implicitly[animal.type isNotOneOf ISDUC]
-    implicitly[Cat isNotOneOf DUCIS]
-    implicitly[animal.type isNotOneOf DUCIS]
-    implicitly[Byte isNotOneOf ISDUC]
+  import DenotationTestsContext._
 
+  test("creating values") {
 
+    val azul = Color := "blue"
+    val verde = valueOf(Color)("green")
+    val amarillo = Color := "yellow"
 
+    val x1 = "yellow" =: Color
+
+    assert{ azul.value == "blue" }
+    assert{ verde.value == "green" }
+    assert{ amarillo.value == "yellow" }
+    assert{ amarillo == x1 }
+  }
+
+  test("create denotations") {
+
+    val z = User := 2423423
+```
+
+the right-associative syntax
+
+```scala
+    val uh: userInfo =: User = userInfo(id = "adqwr32141", name = "Salustiano", age = 143) =: User
+```
+
+or with equals-sign style
+
+```scala
+    val oh = userInfo(id = "adqwr32141", name = "Salustiano", age = 143) =: User
+```
+
+or in the other order
+
+```scala
+    val ah = User := userInfo(id = "adqwr32141", name = "Salustiano", age = 143)
+  }
+
+  test("type-safe equals") {
+
+    val paco = "Paco"
+    val jose = "Jose"
+
+    val u1 = paco =: User
+    val u1Again = paco =: User
+
+    val u2 = paco =: Friend
+    val v = jose =: Friend
+
+    assert { u1 == u1 }
+    assert { u1 == u1Again }
+    // assert { u2 =/= v } // not there in ScalaTest :-/
+    // assert { u1 === u2 }
+    assertTypeError("u1 === u2")
+    assert{ !( u2 == v ) }
+  }
+
+  test("Denotation show") {
+
+    assert { (User := "hola").show == "User := hola" }
+  }
+
+  test("naive nonempty lists") {
+
+    import DenotationTestsContext._
+
+    import AnySubsetType._
+    // this is Some(...) but we don't know at runtime. What about a macro for this? For literals of course
+    val oh = NEListOf[Int](12 :: 232 :: Nil)
+
+    val nelint = NEListOf(232)
+
+    val u1 = 23 :: nelint
   }
 }
 
