@@ -9,8 +9,6 @@ object types {
     val label: String
 
     final type Me = this.type
-
-    implicit final def meFrom[D <: AnyDenotationOf[Me]](v: D): Me = this
     implicit final val justMe: Me = this
   }
 
