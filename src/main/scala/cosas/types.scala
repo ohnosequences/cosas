@@ -14,7 +14,7 @@ object types {
 
   object AnyType {
 
-    type withRaw[R] = AnyType { type Raw = R }
+    type withRaw[V] = AnyType { type Raw = V }
     
     implicit def typeOps[T <: AnyType](tpe: T): TypeOps[T] = TypeOps(tpe)
   }
@@ -22,7 +22,19 @@ object types {
   class Type(val label: String) extends AnyType { type Raw = Any }
   class Wrap[R](val label: String) extends AnyType { final type Raw = R }
 
-  
+  type =:[V, T <: AnyType] = Denotes[V,T]
+  type :=[T <: AnyType, V] = Denotes[V,T]
+
+  type ValueOf[T <: AnyType] = T#Raw Denotes T
+  def  valueOf[T <: AnyType, V <: T#Raw](t: T)(v: V): ValueOf[T] = v =: t
+
+  final case class TypeOps[T <: AnyType](val tpe: T) extends AnyVal {
+
+    /* For example `user denoteWith (String, String, Int)` _not that this is a good idea_ */
+    final def =:[@specialized V](v: V): V =: T = new (V Denotes T)(v)
+    final def :=[@specialized V](v: V): V =: T = new (V Denotes T)(v)
+  }
+
   /* You denote a `Type` using a `Value` */
   sealed trait AnyDenotation extends Any {
 
@@ -48,20 +60,10 @@ object types {
     final def show(implicit t: T): String = s"(${t.label} := ${value})"
   }
 
-  type =:[V, T <: AnyType] = Denotes[V,T]
-  type :=[T <: AnyType, V] = Denotes[V,T]
 
-  type ValueOf[T <: AnyType] = T#Raw Denotes T
-  def  valueOf[T <: AnyType, V <: T#Raw](t: T)(v: V): ValueOf[T] = v =: t
-
-  final case class TypeOps[T <: AnyType](val tpe: T) extends AnyVal {
-
-    /* For example `user denoteWith (String, String, Int)` _not that this is a good idea_ */
-    final def =:[@specialized V](v: V): V =: T = new (V Denotes T)(v)
-    final def :=[@specialized V](v: V): V =: T = new (V Denotes T)(v)
-  }
-
-
+  /*
+  ### Subset type
+  */
   trait AnySubsetType extends AnyType {
 
     type W <: AnyType

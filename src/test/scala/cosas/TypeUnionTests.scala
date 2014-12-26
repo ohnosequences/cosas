@@ -5,24 +5,6 @@ import ohnosequences.cosas._, typeUnions._
 
 class TypeUnionTests extends org.scalatest.FunSuite {
 
-
-  // test("check arities") {
-
-  //   type SBS = either[String]#or[Boolean]#or[String]
-
-  //   type SBS2 = SBS
-
-  //   type Three = arity[SBS]
-  //   type Three2 = arity[SBS2]
-
-
-  //   import shapeless.Nat._
-    
-  //   implicitly[ Three =:= _3 ]
-  //   implicitly[ Three2 =:= _3 ]
-  //   implicitly[ SBS =:= SBS2 ]
-  // }
-
   test("check bounds") {
 
     type S      = either[String]
@@ -94,8 +76,6 @@ class TypeUnionTests extends org.scalatest.FunSuite {
     implicitly[Cat isNotOneOf DUC]
     implicitly[animal.type isNotOneOf DUC]
 
-    // this does not work
-    // type ISDUC = String or Int or DUC
     type ISDUC = either[String] or Int or Dog or UglyCat
     type DUCIS = either[Dog] or UglyCat or String or Int
     implicitly[Dog isOneOf ISDUC]
@@ -103,14 +83,10 @@ class TypeUnionTests extends org.scalatest.FunSuite {
     implicitly[pipo.type isOneOf ISDUC]
     implicitly[uglyCat.type isOneOf ISDUC]
     
-
     implicitly[Cat isNotOneOf ISDUC]
     implicitly[animal.type isNotOneOf ISDUC]
     implicitly[Cat isNotOneOf DUCIS]
     implicitly[animal.type isNotOneOf DUCIS]
     implicitly[Byte isNotOneOf ISDUC]
-
-
-
   }
 }
