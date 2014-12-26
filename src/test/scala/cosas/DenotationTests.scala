@@ -84,6 +84,11 @@ class DenotationTests extends org.scalatest.FunSuite with ScalazEquality {
     assert{ !( u2 == v ) }
   }
 
+  test("Denotation show") {
+
+    assert { (User := "hola").show == "User := hola" }
+  }
+
   test("naive nonempty lists") {
 
     import DenotationTestsContext._

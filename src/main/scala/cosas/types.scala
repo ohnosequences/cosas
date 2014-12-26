@@ -11,6 +11,8 @@ object types {
     final type Me = this.type
 
     implicit final def meFrom[D <: AnyDenotationOf[Me]](v: D): Me = this
+    implicit final def meFrom2[D <: AnyDenotationOf[Me]]: Me = this
+    // implicit def meFrom[V](v: V Denotes Me): this.type = this
   }
 
   object AnyType {
@@ -44,14 +46,16 @@ object types {
 
   /* Denote T with a `value: V`. Normally you write it as `V Denotes T` thus the name. */
   // NOTE: most likely V won't be specialized here
-  final class Denotes[V, T <: AnyType](val value: V) extends AnyVal with AnyDenotes[V, T] {}
+  final class Denotes[V, T <: AnyType](val value: V) extends AnyVal with AnyDenotes[V, T] {
+
+    final def show(implicit t: T): String = s"${t.label} := ${value}"
+  }
 
   type =:[V, T <: AnyType] = Denotes[V,T]
   type :=[T <: AnyType, V] = Denotes[V,T]
 
   type ValueOf[T <: AnyType] = T#Raw Denotes T
   def  valueOf[T <: AnyType, V <: T#Raw](t: T)(v: V): ValueOf[T] = v =: t
-
 
   final case class TypeOps[T <: AnyType](val tpe: T) extends AnyVal {
 
@@ -101,24 +105,4 @@ object types {
       protected final def unsafeValueOf[ST0 <: ST](other: ST#Raw): ValueOf[ST] = new ValueOf[ST](other)
     }
   }
-
-
-  trait Recurse {
-    type Next <: Recurse
-    // this is the recursive function definition
-    type X[R <: Recurse] <: Any
-  }
-  // implementation
-  // trait RecurseA extends Recurse {
-  //   type Next = RecurseA
-  //   // this is the implementation
-  //   type X[R <: Recurse] = R#X[R#Next]
-  // }
-  // object Recurse {
-  //   // infinite loop
-  //   type C = RecurseA#X[RecurseA]
-  // }
-
-
-
 }
