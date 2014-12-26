@@ -11,8 +11,7 @@ object types {
     final type Me = this.type
 
     implicit final def meFrom[D <: AnyDenotationOf[Me]](v: D): Me = this
-    implicit final def meFrom2[D <: AnyDenotationOf[Me]]: Me = this
-    // implicit def meFrom[V](v: V Denotes Me): this.type = this
+    implicit final val justMe: Me = this
   }
 
   object AnyType {
