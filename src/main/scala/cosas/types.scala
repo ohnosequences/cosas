@@ -47,7 +47,7 @@ object types {
   // NOTE: most likely V won't be specialized here
   final class Denotes[V, T <: AnyType](val value: V) extends AnyVal with AnyDenotes[V, T] {
 
-    final def show(implicit t: T): String = s"${t.label} := ${value}"
+    final def show(implicit t: T): String = s"(${t.label} := ${value})"
   }
 
   type =:[V, T <: AnyType] = Denotes[V,T]
