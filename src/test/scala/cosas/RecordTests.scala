@@ -230,10 +230,15 @@ class RecordTests extends org.scalatest.FunSuite {
   }
 
   test("serialize") {
+
+    import spire.algebra.Monoid
     // Map //
     implicit def anyMapMonoid[X, Y]: Monoid[Map[X, Y]] = new Monoid[Map[X, Y]] {
-      def zero: M = Map[X, Y]()
-      def append(a: M, b: M): M = a ++ b
+
+      type M = Map[X,Y]
+
+      def id: M = Map[X, Y]()
+      def op(a: M, b: M): M = a ++ b
     }
 
     implicit def serializeProperty[P <: AnyProperty](t: ValueOf[P])
@@ -251,8 +256,11 @@ class RecordTests extends org.scalatest.FunSuite {
 
     // List //
     implicit def anyListMonoid[X]: Monoid[List[X]] = new Monoid[List[X]] {
-      def zero: M = List[X]()
-      def append(a: M, b: M): M = a ++ b
+
+      type M = List[X]
+      
+      def id: M = List[X]()
+      def op(a: M, b: M): M = a ++ b
     }
 
     implicit def propertyIntToStr[P <: AnyProperty](t: ValueOf[P])
