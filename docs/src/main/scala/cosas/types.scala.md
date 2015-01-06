@@ -14,21 +14,34 @@ Something super-generic and ultra-abstract
     val label: String
 
     final type Me = this.type
-
-    implicit final def meFrom[D <: AnyDenotationOf[Me]](v: D): Me = this
-    implicit final def meFrom2[D <: AnyDenotationOf[Me]]: Me = this
-    // implicit def meFrom[V](v: V Denotes Me): this.type = this
+    implicit final val justMe: Me = this
   }
 
   object AnyType {
 
-    type withRaw[R] = AnyType { type Raw = R }
+    type withRaw[V] = AnyType { type Raw = V }
     
     implicit def typeOps[T <: AnyType](tpe: T): TypeOps[T] = TypeOps(tpe)
   }
 
   class Type(val label: String) extends AnyType { type Raw = Any }
   class Wrap[R](val label: String) extends AnyType { final type Raw = R }
+
+  type =:[V, T <: AnyType] = Denotes[V,T]
+  type :=[T <: AnyType, V] = Denotes[V,T]
+
+  type ValueOf[T <: AnyType] = T#Raw Denotes T
+  def  valueOf[T <: AnyType, V <: T#Raw](t: T)(v: V): ValueOf[T] = v =: t
+
+  final case class TypeOps[T <: AnyType](val tpe: T) extends AnyVal {
+```
+
+For example `user denoteWith (String, String, Int)` _not that this is a good idea_
+
+```scala
+    final def =:[@specialized V](v: V): V =: T = new (V Denotes T)(v)
+    final def :=[@specialized V](v: V): V =: T = new (V Denotes T)(v)
+  }
 ```
 
 You denote a `Type` using a `Value`
@@ -61,26 +74,15 @@ Denote T with a `value: V`. Normally you write it as `V Denotes T` thus the name
   // NOTE: most likely V won't be specialized here
   final class Denotes[V, T <: AnyType](val value: V) extends AnyVal with AnyDenotes[V, T] {
 
-    final def show(implicit t: T): String = s"${t.label} := ${value}"
+    final def show(implicit t: T): String = s"(${t.label} := ${value})"
   }
-
-  type =:[V, T <: AnyType] = Denotes[V,T]
-  type :=[T <: AnyType, V] = Denotes[V,T]
-
-  type ValueOf[T <: AnyType] = T#Raw Denotes T
-  def  valueOf[T <: AnyType, V <: T#Raw](t: T)(v: V): ValueOf[T] = v =: t
-
-  final case class TypeOps[T <: AnyType](val tpe: T) extends AnyVal {
 ```
 
-For example `user denoteWith (String, String, Int)` _not that this is a good idea_
+
+  ### Subset type
+
 
 ```scala
-    final def =:[@specialized V](v: V): V =: T = new (V Denotes T)(v)
-    final def :=[@specialized V](v: V): V =: T = new (V Denotes T)(v)
-  }
-
-
   trait AnySubsetType extends AnyType {
 
     type W <: AnyType
