@@ -117,14 +117,15 @@ object ParseFrom {
 }
 
 
-trait AnyMonoid {
-  type M
-  def zero: M
-  def append(a: M, b: M): M
-}
+// trait AnyMonoid {
+//   type M
+//   def zero: M
+//   def append(a: M, b: M): M
+// }
 
-trait Monoid[T] extends AnyMonoid { type M = T }
+// trait Monoid[T] extends AnyMonoid { type M = T }
 
+import spire.algebra.Monoid
 
 @annotation.implicitNotFound(msg = "Can't serialize typeset ${S} to ${X}")
 trait SerializeTo[S <: AnyTypeSet, X] extends Fn1[S] with Out[X]
@@ -138,7 +139,7 @@ object SerializeTo {
         (∅ SerializeTo X) = 
     new (∅ SerializeTo X) {
 
-      def apply(r: ∅): Out = m.zero
+      def apply(r: ∅): Out = m.id
     }
 
   implicit def cons[X,
@@ -150,7 +151,7 @@ object SerializeTo {
   ):  ((H :~: T) SerializeTo X) =
   new ((H :~: T) SerializeTo X) {
     
-    def apply(s: H :~: T): Out = m.append(f(s.head), t(s.tail))
+    def apply(s: H :~: T): Out = m.op(f(s.head), t(s.tail))
   }
 
 }
