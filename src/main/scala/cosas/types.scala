@@ -71,8 +71,6 @@ object types {
   For more about this (and its possible uses) see
 
   - [Adam Chlipala CPDT - Subset types](http://adam.chlipala.net/cpdt/html/Subset.html)
-
-
   */
   trait AnySubsetType extends AnyType {
 
