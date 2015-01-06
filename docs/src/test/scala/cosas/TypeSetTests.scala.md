@@ -353,10 +353,13 @@ class TypeSetTests extends org.scalatest.FunSuite {
 
     val s = name("foo") :~: age(12) :~: key("s0dl52f23k") :~: ∅
 
+    import spire.algebra.Monoid
     // Map //
     implicit def anyMapMonoid[X, Y]: Monoid[Map[X, Y]] = new Monoid[Map[X, Y]] {
-      def zero: M = Map[X, Y]()
-      def append(a: M, b: M): M = a ++ b
+
+      type M = Map[X,Y]
+      def id: M = Map[X, Y]()
+      def op(a: M, b: M): M = a ++ b
     }
 
     implicit def serializeProperty[P <: AnyProperty](t: ValueOf[P])
@@ -373,8 +376,11 @@ class TypeSetTests extends org.scalatest.FunSuite {
 
     // List //
     implicit def anyListMonoid[X]: Monoid[List[X]] = new Monoid[List[X]] {
-      def zero: M = List[X]()
-      def append(a: M, b: M): M = a ++ b
+
+      type M = List[X]
+      
+      def id: M = List[X]()
+      def op(a: M, b: M): M = a ++ b
     }
 
     implicit def propertyToStr[P <: AnyProperty](t: ValueOf[P])
@@ -404,6 +410,7 @@ class TypeSetTests extends org.scalatest.FunSuite {
   + test
     + scala
       + cosas
+        + [SubsetTypesTests.scala][test/scala/cosas/SubsetTypesTests.scala]
         + [PropertyTests.scala][test/scala/cosas/PropertyTests.scala]
         + [TypeUnionTests.scala][test/scala/cosas/TypeUnionTests.scala]
         + [ScalazEquality.scala][test/scala/cosas/ScalazEquality.scala]
@@ -434,12 +441,11 @@ class TypeSetTests extends org.scalatest.FunSuite {
             + [Mappers.scala][main/scala/cosas/ops/typeSets/Mappers.scala]
         + [typeUnions.scala][main/scala/cosas/typeUnions.scala]
         + [records.scala][main/scala/cosas/records.scala]
-        + csv
-          + [csv.scala][main/scala/cosas/csv/csv.scala]
         + [fns.scala][main/scala/cosas/fns.scala]
         + [propertyHolders.scala][main/scala/cosas/propertyHolders.scala]
         + [types.scala][main/scala/cosas/types.scala]
 
+[test/scala/cosas/SubsetTypesTests.scala]: SubsetTypesTests.scala.md
 [test/scala/cosas/PropertyTests.scala]: PropertyTests.scala.md
 [test/scala/cosas/TypeUnionTests.scala]: TypeUnionTests.scala.md
 [test/scala/cosas/ScalazEquality.scala]: ScalazEquality.scala.md
@@ -464,7 +470,6 @@ class TypeSetTests extends org.scalatest.FunSuite {
 [main/scala/cosas/ops/typeSets/Mappers.scala]: ../../../main/scala/cosas/ops/typeSets/Mappers.scala.md
 [main/scala/cosas/typeUnions.scala]: ../../../main/scala/cosas/typeUnions.scala.md
 [main/scala/cosas/records.scala]: ../../../main/scala/cosas/records.scala.md
-[main/scala/cosas/csv/csv.scala]: ../../../main/scala/cosas/csv/csv.scala.md
 [main/scala/cosas/fns.scala]: ../../../main/scala/cosas/fns.scala.md
 [main/scala/cosas/propertyHolders.scala]: ../../../main/scala/cosas/propertyHolders.scala.md
 [main/scala/cosas/types.scala]: ../../../main/scala/cosas/types.scala.md

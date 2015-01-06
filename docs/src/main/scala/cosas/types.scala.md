@@ -79,7 +79,15 @@ Denote T with a `value: V`. Normally you write it as `V Denotes T` thus the name
 ```
 
 
-  ### Subset type
+  ### Subset types
+
+  **Warning** _this has nothing to do with the typeSets in this library!_
+
+  The idea of subset types is that you are specifying a type `S` having as values a _subset_ of those of another `W` type; in this case this is modeled as a predicate valued on `W#Raw`.
+
+  For more about this (and its possible uses) see
+
+  - [Adam Chlipala CPDT - Subset types](http://adam.chlipala.net/cpdt/html/Subset.html)
 
 
 ```scala
@@ -88,7 +96,7 @@ Denote T with a `value: V`. Normally you write it as `V Denotes T` thus the name
     type W <: AnyType
     type Raw = W#Raw
 
-    def predicate(raw: W#Raw): Boolean
+    def predicate(raw: W := Raw): Boolean
   }
 
   trait SubsetType[W0 <: AnyType] extends AnySubsetType { type W = W0 }
@@ -98,12 +106,12 @@ Denote T with a `value: V`. Normally you write it as `V Denotes T` thus the name
     implicit def sstops[W <: AnyType, ST <: SubsetType[W]](st: ST): SubSetTypeOps[W,ST] = new SubSetTypeOps(st)
     class SubSetTypeOps[W <: AnyType, ST <: SubsetType[W]](val st: ST) extends AnyVal {
 
-      final def apply(raw: ST#W#Raw): Option[ValueOf[ST]] = {
+      final def apply(raw: W := W#Raw): Option[ValueOf[ST]] = {
 
-        if ( st predicate raw ) None else Some( new ValueOf[ST](raw) )
+        if ( st predicate raw ) None else Some( new ValueOf[ST](raw.value) )
       }
       
-      final def withValue(raw: ST#Raw): Option[ValueOf[ST]] = apply(raw)
+      final def withValue(raw: W := W#Raw): Option[ValueOf[ST]] = apply(raw)
     }
 
     object ValueOfSubsetTypeOps {
@@ -142,6 +150,7 @@ use case: concat of sized has the sum of the two arg sizes; but how do you creat
   + test
     + scala
       + cosas
+        + [SubsetTypesTests.scala][test/scala/cosas/SubsetTypesTests.scala]
         + [PropertyTests.scala][test/scala/cosas/PropertyTests.scala]
         + [TypeUnionTests.scala][test/scala/cosas/TypeUnionTests.scala]
         + [ScalazEquality.scala][test/scala/cosas/ScalazEquality.scala]
@@ -172,12 +181,11 @@ use case: concat of sized has the sum of the two arg sizes; but how do you creat
             + [Mappers.scala][main/scala/cosas/ops/typeSets/Mappers.scala]
         + [typeUnions.scala][main/scala/cosas/typeUnions.scala]
         + [records.scala][main/scala/cosas/records.scala]
-        + csv
-          + [csv.scala][main/scala/cosas/csv/csv.scala]
         + [fns.scala][main/scala/cosas/fns.scala]
         + [propertyHolders.scala][main/scala/cosas/propertyHolders.scala]
         + [types.scala][main/scala/cosas/types.scala]
 
+[test/scala/cosas/SubsetTypesTests.scala]: ../../../test/scala/cosas/SubsetTypesTests.scala.md
 [test/scala/cosas/PropertyTests.scala]: ../../../test/scala/cosas/PropertyTests.scala.md
 [test/scala/cosas/TypeUnionTests.scala]: ../../../test/scala/cosas/TypeUnionTests.scala.md
 [test/scala/cosas/ScalazEquality.scala]: ../../../test/scala/cosas/ScalazEquality.scala.md
@@ -202,7 +210,6 @@ use case: concat of sized has the sum of the two arg sizes; but how do you creat
 [main/scala/cosas/ops/typeSets/Mappers.scala]: ops/typeSets/Mappers.scala.md
 [main/scala/cosas/typeUnions.scala]: typeUnions.scala.md
 [main/scala/cosas/records.scala]: records.scala.md
-[main/scala/cosas/csv/csv.scala]: csv/csv.scala.md
 [main/scala/cosas/fns.scala]: fns.scala.md
 [main/scala/cosas/propertyHolders.scala]: propertyHolders.scala.md
 [main/scala/cosas/types.scala]: types.scala.md

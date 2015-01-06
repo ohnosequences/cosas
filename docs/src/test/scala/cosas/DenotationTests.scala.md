@@ -10,34 +10,7 @@ object DenotationTestsContext {
   object User extends Type("User")
   type User = User.type
   object Friend extends Type("Friend")
-  case class userInfo(id: String, name: String, age: Int)
-```
-
-The NEList stuff
-
-```scala
-  final class WrappedList[E] extends Wrap[List[E]]("WrappedList")
-
-  class NEList[E] extends SubsetType[WrappedList[E]] {
-
-    lazy val label = "NEList"
-    def predicate(l: List[E]): Boolean = ! l.isEmpty
-
-    def apply(e: E): ValueOf[NEList[E]] = new ValueOf[NEList[E]](e :: Nil)
-  }
-
-  object NEList {
-
-    implicit def toOps[E](v: ValueOf[NEList[E]]): NEListOps[E] = new NEListOps(v.value)
-    implicit def toSSTops[E](v: NEList[E]): SubSetTypeOps[WrappedList[E], NEList[E]] = new SubSetTypeOps(v)
-  }
-
-  def NEListOf[E]: NEList[E] = new NEList()
-
-  class NEListOps[E](val l: List[E]) extends AnyVal with ValueOfSubsetTypeOps[WrappedList[E], NEList[E]] {
-
-    def ::(x: E): ValueOf[NEList[E]] = unsafeValueOf[NEList[E]](x :: l)
-  }
+  case class userInfo(id: String, name: String, age: Int)  
 }
 
 class DenotationTests extends org.scalatest.FunSuite with ScalazEquality {
@@ -108,19 +81,6 @@ or in the other order
 
     assert(azul.show == "(Color := blue)")
   }
-
-  test("naive nonempty lists") {
-
-    import DenotationTestsContext._
-
-    import AnySubsetType._
-    // this is Some(...) but we don't know at runtime. What about a macro for this? For literals of course
-    val oh = NEListOf[Int](12 :: 232 :: Nil)
-
-    val nelint = NEListOf(232)
-
-    val u1 = 23 :: nelint
-  }
 }
 
 ```
@@ -134,6 +94,7 @@ or in the other order
   + test
     + scala
       + cosas
+        + [SubsetTypesTests.scala][test/scala/cosas/SubsetTypesTests.scala]
         + [PropertyTests.scala][test/scala/cosas/PropertyTests.scala]
         + [TypeUnionTests.scala][test/scala/cosas/TypeUnionTests.scala]
         + [ScalazEquality.scala][test/scala/cosas/ScalazEquality.scala]
@@ -164,12 +125,11 @@ or in the other order
             + [Mappers.scala][main/scala/cosas/ops/typeSets/Mappers.scala]
         + [typeUnions.scala][main/scala/cosas/typeUnions.scala]
         + [records.scala][main/scala/cosas/records.scala]
-        + csv
-          + [csv.scala][main/scala/cosas/csv/csv.scala]
         + [fns.scala][main/scala/cosas/fns.scala]
         + [propertyHolders.scala][main/scala/cosas/propertyHolders.scala]
         + [types.scala][main/scala/cosas/types.scala]
 
+[test/scala/cosas/SubsetTypesTests.scala]: SubsetTypesTests.scala.md
 [test/scala/cosas/PropertyTests.scala]: PropertyTests.scala.md
 [test/scala/cosas/TypeUnionTests.scala]: TypeUnionTests.scala.md
 [test/scala/cosas/ScalazEquality.scala]: ScalazEquality.scala.md
@@ -194,7 +154,6 @@ or in the other order
 [main/scala/cosas/ops/typeSets/Mappers.scala]: ../../../main/scala/cosas/ops/typeSets/Mappers.scala.md
 [main/scala/cosas/typeUnions.scala]: ../../../main/scala/cosas/typeUnions.scala.md
 [main/scala/cosas/records.scala]: ../../../main/scala/cosas/records.scala.md
-[main/scala/cosas/csv/csv.scala]: ../../../main/scala/cosas/csv/csv.scala.md
 [main/scala/cosas/fns.scala]: ../../../main/scala/cosas/fns.scala.md
 [main/scala/cosas/propertyHolders.scala]: ../../../main/scala/cosas/propertyHolders.scala.md
 [main/scala/cosas/types.scala]: ../../../main/scala/cosas/types.scala.md

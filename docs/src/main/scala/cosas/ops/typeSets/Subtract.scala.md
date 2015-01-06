@@ -68,6 +68,7 @@ trait SubtractSets_3 {
   + test
     + scala
       + cosas
+        + [SubsetTypesTests.scala][test/scala/cosas/SubsetTypesTests.scala]
         + [PropertyTests.scala][test/scala/cosas/PropertyTests.scala]
         + [TypeUnionTests.scala][test/scala/cosas/TypeUnionTests.scala]
         + [ScalazEquality.scala][test/scala/cosas/ScalazEquality.scala]
@@ -98,12 +99,11 @@ trait SubtractSets_3 {
             + [Mappers.scala][main/scala/cosas/ops/typeSets/Mappers.scala]
         + [typeUnions.scala][main/scala/cosas/typeUnions.scala]
         + [records.scala][main/scala/cosas/records.scala]
-        + csv
-          + [csv.scala][main/scala/cosas/csv/csv.scala]
         + [fns.scala][main/scala/cosas/fns.scala]
         + [propertyHolders.scala][main/scala/cosas/propertyHolders.scala]
         + [types.scala][main/scala/cosas/types.scala]
 
+[test/scala/cosas/SubsetTypesTests.scala]: ../../../../../test/scala/cosas/SubsetTypesTests.scala.md
 [test/scala/cosas/PropertyTests.scala]: ../../../../../test/scala/cosas/PropertyTests.scala.md
 [test/scala/cosas/TypeUnionTests.scala]: ../../../../../test/scala/cosas/TypeUnionTests.scala.md
 [test/scala/cosas/ScalazEquality.scala]: ../../../../../test/scala/cosas/ScalazEquality.scala.md
@@ -128,7 +128,6 @@ trait SubtractSets_3 {
 [main/scala/cosas/ops/typeSets/Mappers.scala]: Mappers.scala.md
 [main/scala/cosas/typeUnions.scala]: ../../typeUnions.scala.md
 [main/scala/cosas/records.scala]: ../../records.scala.md
-[main/scala/cosas/csv/csv.scala]: ../../csv/csv.scala.md
 [main/scala/cosas/fns.scala]: ../../fns.scala.md
 [main/scala/cosas/propertyHolders.scala]: ../../propertyHolders.scala.md
 [main/scala/cosas/types.scala]: ../../types.scala.md

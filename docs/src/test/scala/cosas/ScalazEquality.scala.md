@@ -44,6 +44,7 @@ object ScalazEquality extends ScalazEquality
   + test
     + scala
       + cosas
+        + [SubsetTypesTests.scala][test/scala/cosas/SubsetTypesTests.scala]
         + [PropertyTests.scala][test/scala/cosas/PropertyTests.scala]
         + [TypeUnionTests.scala][test/scala/cosas/TypeUnionTests.scala]
         + [ScalazEquality.scala][test/scala/cosas/ScalazEquality.scala]
@@ -74,12 +75,11 @@ object ScalazEquality extends ScalazEquality
             + [Mappers.scala][main/scala/cosas/ops/typeSets/Mappers.scala]
         + [typeUnions.scala][main/scala/cosas/typeUnions.scala]
         + [records.scala][main/scala/cosas/records.scala]
-        + csv
-          + [csv.scala][main/scala/cosas/csv/csv.scala]
         + [fns.scala][main/scala/cosas/fns.scala]
         + [propertyHolders.scala][main/scala/cosas/propertyHolders.scala]
         + [types.scala][main/scala/cosas/types.scala]
 
+[test/scala/cosas/SubsetTypesTests.scala]: SubsetTypesTests.scala.md
 [test/scala/cosas/PropertyTests.scala]: PropertyTests.scala.md
 [test/scala/cosas/TypeUnionTests.scala]: TypeUnionTests.scala.md
 [test/scala/cosas/ScalazEquality.scala]: ScalazEquality.scala.md
@@ -104,7 +104,6 @@ object ScalazEquality extends ScalazEquality
 [main/scala/cosas/ops/typeSets/Mappers.scala]: ../../../main/scala/cosas/ops/typeSets/Mappers.scala.md
 [main/scala/cosas/typeUnions.scala]: ../../../main/scala/cosas/typeUnions.scala.md
 [main/scala/cosas/records.scala]: ../../../main/scala/cosas/records.scala.md
-[main/scala/cosas/csv/csv.scala]: ../../../main/scala/cosas/csv/csv.scala.md
 [main/scala/cosas/fns.scala]: ../../../main/scala/cosas/fns.scala.md
 [main/scala/cosas/propertyHolders.scala]: ../../../main/scala/cosas/propertyHolders.scala.md
 [main/scala/cosas/types.scala]: ../../../main/scala/cosas/types.scala.md

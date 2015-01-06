@@ -1,67 +1,51 @@
 
 ```scala
-package ohnosequences.cosas.test
+package ohnosequences.cosas.tests
 
-import ohnosequences.cosas._, types._, properties._, typeSets._, propertyHolders._
+import ohnosequences.cosas._, types._, AnySubsetType._
 
-object exampleProperties {
-  
-  case object key extends Property[String]("key")
-  case object name extends Property[String]("name")
-  case object age extends Property[Integer]("age")
-  case object valueless extends Property("valueless")
+object nelists {
+
+  final case class WrappedList[E]() extends Wrap[List[E]]("WrappedList")
+
+  class NEList[E] extends SubsetType[WrappedList[E]] {
+
+    lazy val label = "NEList"
+    def predicate(l: WrappedList[E] := List[E]): Boolean = ! l.value.isEmpty
+
+    def apply(e: E): ValueOf[NEList[E]] = new ValueOf[NEList[E]](e :: Nil)
+  }
+
+  object NEList {
+
+    implicit def toOps[E](v: ValueOf[NEList[E]]): NEListOps[E] = new NEListOps(v.value)
+    implicit def toSSTops[E](v: NEList[E]): SubSetTypeOps[WrappedList[E], NEList[E]] = new SubSetTypeOps(v)
+  }
+
+  def NEListOf[E]: NEList[E] = new NEList()
+
+  class NEListOps[E](val l: List[E]) extends AnyVal with ValueOfSubsetTypeOps[WrappedList[E], NEList[E]] {
+
+    def ::(x: E): ValueOf[NEList[E]] = unsafeValueOf[NEList[E]](x :: l)
+  }
 }
 
-class uhoh extends org.scalatest.FunSuite {
-    
-  import exampleProperties._
 
-  test("create property instances") {
+class SubsetTypesTests extends org.scalatest.FunSuite with ScalazEquality {
 
-    val k: ValueOf[key.type] = key := "2aE5Cgo7Gv62"
+  test("naive nonempty lists") {
 
-    val n: ValueOf[name.type] = name := "Rigoberto Smith"
+    import nelists._
+    // this is Some(...) but we don't know at runtime. What about a macro for this? For literals of course
+    val oh = NEListOf[Int](
+      WrappedList[Int] := 12 :: 232 :: Nil
+    )
 
-    val a = age := 13123
-    val a0: ValueOf[age.type] = age := (13123: Integer)
+    val nelint = NEListOf(232)
 
-    assertTypeError("""
-      val z = key(34343)
-    """)
-
-    assertTypeError("""
-      val uhoh = age(true)
-    """)
+    val u1: ValueOf[NEList[Int]] = 23 :: nelint
   }
-
-  test("valueless properties lead to nothing") {
-
-    implicitly[valueless.Raw =:= Nothing]: Unit
-  }
-
-  test("having properties") {
-
-    object foo
-    implicit val foo_name = foo has name
-    implicit val foo_age = foo has age
-
-    implicitly[foo.type HasProperty name.type]
-    implicitly[foo.type HasProperty age.type]
-
-    implicitly[foo.type HasProperties ∅]
-    implicitly[foo.type HasProperties (name.type :~: ∅)]
-    implicitly[foo.type HasProperties (age.type :~: name.type :~: ∅)]
-
-    implicit val foo_key = foo has key
-
-    implicitly[foo.type HasProperty key.type]
-    implicitly[foo.type HasProperties (key.type :~: ∅)]
-    implicitly[foo.type HasProperties (age.type :~: key.type :~: ∅)]
-    implicitly[foo.type HasProperties (age.type :~: key.type :~: name.type :~: ∅)]
-  }
-
 }
-
 ```
 
 
