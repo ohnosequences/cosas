@@ -62,14 +62,22 @@ object types {
 
 
   /*
-  ### Subset type
+  ### Subset types
+
+  **Warning** _this has nothing to do with the typeSets in this library!_
+
+  The idea of subset types is that you are specifying a type `S` having as values a _subset_ of those of another `W` type; in this case this is modeled as a predicate valued on `W#Raw`.
+
+  For more about this (and its possible uses) see
+
+  - [Adam Chlipala CPDT - Subset types](http://adam.chlipala.net/cpdt/html/Subset.html)
   */
   trait AnySubsetType extends AnyType {
 
     type W <: AnyType
     type Raw = W#Raw
 
-    def predicate(raw: W#Raw): Boolean
+    def predicate(raw: W := Raw): Boolean
   }
 
   trait SubsetType[W0 <: AnyType] extends AnySubsetType { type W = W0 }
@@ -79,12 +87,12 @@ object types {
     implicit def sstops[W <: AnyType, ST <: SubsetType[W]](st: ST): SubSetTypeOps[W,ST] = new SubSetTypeOps(st)
     class SubSetTypeOps[W <: AnyType, ST <: SubsetType[W]](val st: ST) extends AnyVal {
 
-      final def apply(raw: ST#W#Raw): Option[ValueOf[ST]] = {
+      final def apply(raw: W := W#Raw): Option[ValueOf[ST]] = {
 
-        if ( st predicate raw ) None else Some( new ValueOf[ST](raw) )
+        if ( st predicate raw ) None else Some( new ValueOf[ST](raw.value) )
       }
       
-      final def withValue(raw: ST#Raw): Option[ValueOf[ST]] = apply(raw)
+      final def withValue(raw: W := W#Raw): Option[ValueOf[ST]] = apply(raw)
     }
 
     object ValueOfSubsetTypeOps {
