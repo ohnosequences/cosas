@@ -36,7 +36,7 @@ object types {
   }
 
   /* You denote a `Type` using a `Value` */
-  sealed trait AnyDenotation extends Any {
+  trait AnyDenotation extends Any {
 
     type Tpe <: AnyType
 
