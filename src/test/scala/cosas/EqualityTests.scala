@@ -19,7 +19,8 @@ object eqStuff {
 
   val x: String = doSomething("buh", "boh")
 
-  val z: String = doSomethingElse(doSomething(doSomethingDifferently("buh","boh"), doSomething("boh","buh")), "oh")
+  // I cannot remove the return type (cyclic blahblah); why?
+  def uh: String = doSomethingElse(doSomething(doSomethingDifferently("buh","boh"), doSomething("boh","buh")), "oh")
 }
 
 final class EqualityTests extends org.scalatest.FunSuite {
