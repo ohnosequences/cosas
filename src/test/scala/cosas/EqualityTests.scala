@@ -25,11 +25,18 @@ object eqStuff {
 
   final case class XList[A](xs: List[A]) {
 
-    def sum(implicit ev: List[A] Equality List[Int]): Int = {
+    def sum(implicit ev: List[Int] Equality List[A]): Int = {
 
       import ev._
 
-      swap(xs).foldLeft(0)(_ + _)
+      (xs:List[Int]).foldLeft(0)(_ + _)
+    }
+
+    def sum2(implicit ev: List[A] Equality List[Int]): Int = {
+
+      import ev._
+
+      (xs:List[Int]).foldLeft(0)(_ + _)
     }
       
   }

@@ -18,10 +18,8 @@ object equality extends LowPrior {
     implicit def inL(a: A): Out
     implicit def inR(b: B): Out
 
-    implicit def swap(a:A): B
-
-    final def left(o: Out): A = o
-    final def right(o: Out): B = o
+    final implicit def left(o: Out): A = o
+    final implicit def right(o: Out): B = o
   }
   type EqualityContext[X, Y] = (X,Y)
   type ?≃[A, B] = EqualityContext[A,B] => (A Equality B)
