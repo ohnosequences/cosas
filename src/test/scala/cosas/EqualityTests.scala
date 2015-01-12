@@ -21,6 +21,22 @@ object eqStuff {
 
   // I cannot remove the return type (cyclic blahblah); why?
   def uh: String = doSomethingElse(doSomething(doSomethingDifferently("buh","boh"), doSomething("boh","buh")), "oh")
+
+
+  final case class XList[A](xs: List[A]) {
+
+    def sum(implicit ev: List[A] Equality List[Int]): Int = {
+
+      import ev._
+
+      swap(xs).foldLeft(0)(_ + _)
+    }
+      
+  }
+
+  val xl = XList(List(1,2))
+
+  val z = xl.sum
 }
 
 final class EqualityTests extends org.scalatest.FunSuite {
