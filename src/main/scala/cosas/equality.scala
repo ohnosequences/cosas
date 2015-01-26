@@ -21,19 +21,24 @@ object equals {
 
     final implicit def elimL(o: Out): A = o
     final implicit def elimR(o: Out): B = o
+
+    def sym: ≃[B, A]
   }
 
   final case class Refl[A]() extends (A ≃ A) { 
 
-    type Out = A
+    final type Out = A
 
     final implicit def inL(a: A): Out = a
     final implicit def inR(b: A): Out = b
+
+    final def sym = this
   } 
 
   type ?≃[X, Y] = Either[X,Y]
   type <≃>[A, B] = (A ?≃ B) => (A ≃ B)
 
   implicit def refl[A >: B <: B, B]: (A <≃> B) = x => Refl[B]()
+  implicit def sym[A, B](implicit p: B <≃> A): A <≃> B = x => (p(x.swap).sym)
   implicit def reflInst[B]: B ≃ B = Refl[B]()
 }

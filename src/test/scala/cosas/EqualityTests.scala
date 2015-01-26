@@ -28,6 +28,9 @@ final class EqualsTests extends org.scalatest.FunSuite {
     object two
     val y = two
     implicitly[two.type <≃> y.type]
+  }
+
+  test("using type equality at the instance level") {
 
     def doSomething[X,Y](x: X, y: Y)(implicit id: X ≃ Y): Y = id.inL(x)
     def doSomethingDifferently[X,Y](x: X, y: Y)(implicit id: X <≃> Y): X = x
@@ -56,42 +59,5 @@ final class EqualsTests extends org.scalatest.FunSuite {
     val z2 = xl.sum2
 
     assert(z === z2)
-
-    object gadt {
-
-      object AnyFoo {
-
-        type Foo[A0,B0] = AnyFoo { type A = A0; type B = B0 }
-      }
-      sealed trait AnyFoo {
-
-        type A
-        type B
-      }
-
-      final case class X[A0]() extends AnyFoo {
-
-        type A = A0
-        type B = A
-      }
-
-      final case class Y[A0, B0](a: A0, b: B0) extends AnyFoo {
-
-        type A = A0
-        type B = B0
-      }
-
-      import AnyFoo.Foo
-
-      def hoge1[F[_, _], A, B, C](foo: Foo[A,B], bar: F[A, C]): F[B, C] = foo match {
-
-        case X() => bar
-      }
-
-      val x = X[Int]
-
-      val z = hoge1(x, Y(123, "hola")) 
-      assert(z === "hola")
-    }
   }
 }
