@@ -68,12 +68,14 @@ Fns with different number of arguments
         + [PropertyTests.scala][test/scala/cosas/PropertyTests.scala]
         + [TypeUnionTests.scala][test/scala/cosas/TypeUnionTests.scala]
         + [ScalazEquality.scala][test/scala/cosas/ScalazEquality.scala]
+        + [EqualityTests.scala][test/scala/cosas/EqualityTests.scala]
         + [DenotationTests.scala][test/scala/cosas/DenotationTests.scala]
         + [RecordTests.scala][test/scala/cosas/RecordTests.scala]
         + [TypeSetTests.scala][test/scala/cosas/TypeSetTests.scala]
   + main
     + scala
       + cosas
+        + [equality.scala][main/scala/cosas/equality.scala]
         + [properties.scala][main/scala/cosas/properties.scala]
         + [typeSets.scala][main/scala/cosas/typeSets.scala]
         + ops
@@ -95,6 +97,7 @@ Fns with different number of arguments
             + [Mappers.scala][main/scala/cosas/ops/typeSets/Mappers.scala]
         + [typeUnions.scala][main/scala/cosas/typeUnions.scala]
         + [records.scala][main/scala/cosas/records.scala]
+        + [subsetTypes.scala][main/scala/cosas/subsetTypes.scala]
         + [fns.scala][main/scala/cosas/fns.scala]
         + [propertyHolders.scala][main/scala/cosas/propertyHolders.scala]
         + [types.scala][main/scala/cosas/types.scala]
@@ -103,9 +106,11 @@ Fns with different number of arguments
 [test/scala/cosas/PropertyTests.scala]: ../../../test/scala/cosas/PropertyTests.scala.md
 [test/scala/cosas/TypeUnionTests.scala]: ../../../test/scala/cosas/TypeUnionTests.scala.md
 [test/scala/cosas/ScalazEquality.scala]: ../../../test/scala/cosas/ScalazEquality.scala.md
+[test/scala/cosas/EqualityTests.scala]: ../../../test/scala/cosas/EqualityTests.scala.md
 [test/scala/cosas/DenotationTests.scala]: ../../../test/scala/cosas/DenotationTests.scala.md
 [test/scala/cosas/RecordTests.scala]: ../../../test/scala/cosas/RecordTests.scala.md
 [test/scala/cosas/TypeSetTests.scala]: ../../../test/scala/cosas/TypeSetTests.scala.md
+[main/scala/cosas/equality.scala]: equality.scala.md
 [main/scala/cosas/properties.scala]: properties.scala.md
 [main/scala/cosas/typeSets.scala]: typeSets.scala.md
 [main/scala/cosas/ops/records/Update.scala]: ops/records/Update.scala.md
@@ -124,6 +129,7 @@ Fns with different number of arguments
 [main/scala/cosas/ops/typeSets/Mappers.scala]: ops/typeSets/Mappers.scala.md
 [main/scala/cosas/typeUnions.scala]: typeUnions.scala.md
 [main/scala/cosas/records.scala]: records.scala.md
+[main/scala/cosas/subsetTypes.scala]: subsetTypes.scala.md
 [main/scala/cosas/fns.scala]: fns.scala.md
 [main/scala/cosas/propertyHolders.scala]: propertyHolders.scala.md
 [main/scala/cosas/types.scala]: types.scala.md

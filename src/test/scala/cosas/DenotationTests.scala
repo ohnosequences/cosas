@@ -1,6 +1,6 @@
 package ohnosequences.cosas.tests
 
-import ohnosequences.cosas._, types._, AnySubsetType._
+import ohnosequences.cosas._, types._
 
 object DenotationTestsContext {
 

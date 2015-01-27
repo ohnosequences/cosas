@@ -2,29 +2,48 @@
 ```scala
 package ohnosequences.cosas
 
-object properties {
+object equals {
+  
+  @annotation.implicitNotFound( msg = 
+  """
+  No proof of equality found for types:  
 
-  // deps
-  import types._
+    ${A}
 
-  trait AnyProperty extends AnyType {}
+    ${B}
+  """)
+  sealed trait ≃[A, B] { 
 
-  class Property[V](val label: String) extends AnyProperty { type Raw = V }
+    type Left = A
+    type Right = B
+    type Out >: A with B <: A with B 
 
-  object AnyProperty {
+    implicit def inL(a: A): Out
+    implicit def inR(b: B): Out
 
-    type ofType[T] = AnyProperty { type Raw = T }
+    final implicit def elimL(o: Out): A = o
+    final implicit def elimR(o: Out): B = o
 
-    implicit def propertyOps[P <: AnyProperty](p: P): PropertyOps[P] = new PropertyOps[P](p)
+    def sym: ≃[B, A]
   }
 
-  class PropertyOps[P <: AnyProperty](val p: P) extends AnyVal {
+  final case class Refl[A]() extends (A ≃ A) { 
 
-    def apply(v: P#Raw): ValueOf[P] = valueOf(p)(v)
-  }
+    final type Out = A
 
+    final implicit def inL(a: A): Out = a
+    final implicit def inR(b: A): Out = b
+
+    final def sym = this
+  } 
+
+  type ?≃[X, Y] = Either[X,Y]
+  type <≃>[A, B] = (A ?≃ B) => (A ≃ B)
+
+  implicit def refl[A >: B <: B, B]: (A <≃> B) = x => Refl[B]()
+  implicit def sym[A, B](implicit p: B <≃> A): A <≃> B = x => (p(x.swap).sym)
+  implicit def reflInst[B]: B ≃ B = Refl[B]()
 }
-
 ```
 
 
