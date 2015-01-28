@@ -2,7 +2,7 @@
 ```scala
 package ohnosequences.cosas.tests
 
-import ohnosequences.cosas._, types._, AnySubsetType._
+import ohnosequences.cosas._, types._, subsetTypes._
 
 object nelists {
 
@@ -61,12 +61,14 @@ class SubsetTypesTests extends org.scalatest.FunSuite with ScalazEquality {
         + [PropertyTests.scala][test/scala/cosas/PropertyTests.scala]
         + [TypeUnionTests.scala][test/scala/cosas/TypeUnionTests.scala]
         + [ScalazEquality.scala][test/scala/cosas/ScalazEquality.scala]
+        + [EqualityTests.scala][test/scala/cosas/EqualityTests.scala]
         + [DenotationTests.scala][test/scala/cosas/DenotationTests.scala]
         + [RecordTests.scala][test/scala/cosas/RecordTests.scala]
         + [TypeSetTests.scala][test/scala/cosas/TypeSetTests.scala]
   + main
     + scala
       + cosas
+        + [equality.scala][main/scala/cosas/equality.scala]
         + [properties.scala][main/scala/cosas/properties.scala]
         + [typeSets.scala][main/scala/cosas/typeSets.scala]
         + ops
@@ -88,6 +90,7 @@ class SubsetTypesTests extends org.scalatest.FunSuite with ScalazEquality {
             + [Mappers.scala][main/scala/cosas/ops/typeSets/Mappers.scala]
         + [typeUnions.scala][main/scala/cosas/typeUnions.scala]
         + [records.scala][main/scala/cosas/records.scala]
+        + [subsetTypes.scala][main/scala/cosas/subsetTypes.scala]
         + [fns.scala][main/scala/cosas/fns.scala]
         + [propertyHolders.scala][main/scala/cosas/propertyHolders.scala]
         + [types.scala][main/scala/cosas/types.scala]
@@ -96,9 +99,11 @@ class SubsetTypesTests extends org.scalatest.FunSuite with ScalazEquality {
 [test/scala/cosas/PropertyTests.scala]: PropertyTests.scala.md
 [test/scala/cosas/TypeUnionTests.scala]: TypeUnionTests.scala.md
 [test/scala/cosas/ScalazEquality.scala]: ScalazEquality.scala.md
+[test/scala/cosas/EqualityTests.scala]: EqualityTests.scala.md
 [test/scala/cosas/DenotationTests.scala]: DenotationTests.scala.md
 [test/scala/cosas/RecordTests.scala]: RecordTests.scala.md
 [test/scala/cosas/TypeSetTests.scala]: TypeSetTests.scala.md
+[main/scala/cosas/equality.scala]: ../../../main/scala/cosas/equality.scala.md
 [main/scala/cosas/properties.scala]: ../../../main/scala/cosas/properties.scala.md
 [main/scala/cosas/typeSets.scala]: ../../../main/scala/cosas/typeSets.scala.md
 [main/scala/cosas/ops/records/Update.scala]: ../../../main/scala/cosas/ops/records/Update.scala.md
@@ -117,6 +122,7 @@ class SubsetTypesTests extends org.scalatest.FunSuite with ScalazEquality {
 [main/scala/cosas/ops/typeSets/Mappers.scala]: ../../../main/scala/cosas/ops/typeSets/Mappers.scala.md
 [main/scala/cosas/typeUnions.scala]: ../../../main/scala/cosas/typeUnions.scala.md
 [main/scala/cosas/records.scala]: ../../../main/scala/cosas/records.scala.md
+[main/scala/cosas/subsetTypes.scala]: ../../../main/scala/cosas/subsetTypes.scala.md
 [main/scala/cosas/fns.scala]: ../../../main/scala/cosas/fns.scala.md
 [main/scala/cosas/propertyHolders.scala]: ../../../main/scala/cosas/propertyHolders.scala.md
 [main/scala/cosas/types.scala]: ../../../main/scala/cosas/types.scala.md
