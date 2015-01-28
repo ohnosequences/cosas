@@ -27,7 +27,13 @@ object types {
   }
 
   class Type(val label: String) extends AnyType { type Raw = Any }
-  class Wrap[R](val label: String) extends AnyType { final type Raw = R }
+  trait AnyWrap extends AnyType
+  class Wrap[R](val label: String) extends AnyWrap { final type Raw = R }
+  object Wrap {
+
+    implicit def wrapOps[W <: AnyWrap](tpe: W): WrapOps[W] = WrapOps(tpe)
+    implicit def asRaw[T <: AnyType](d: ValueOf[T]): T#Raw = d.value
+  }
 
   /*
   ### Denotations
@@ -40,6 +46,7 @@ object types {
 
   type ValueOf[T <: AnyType] = T#Raw Denotes T
   def  valueOf[T <: AnyType, V <: T#Raw](t: T)(v: V): ValueOf[T] = t := v
+  def  valueOf[T <: AnyType](v: T#Raw): ValueOf[T] = new (T#Raw Denotes T)(v)
 
   trait AnyDenotation extends Any {
 
@@ -78,4 +85,11 @@ object types {
     final def =:[@specialized V](v: V): V =: T = new (V Denotes T)(v)
     final def :=[@specialized V](v: V): T := V = new (V Denotes T)(v)
   }
+
+  final case class WrapOps[T <: AnyWrap](val tpe: T) extends AnyVal {
+
+    final def =:[@specialized V <: T#Raw](v: V): ValueOf[T] = new ValueOf[T](v)
+    final def :=[@specialized V <: T#Raw](v: V): ValueOf[T] = new ValueOf[T](v)
+  }
+
 }

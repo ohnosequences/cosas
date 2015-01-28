@@ -5,6 +5,7 @@ import ohnosequences.cosas._, types._
 object DenotationTestsContext {
 
   case object Color extends Wrap[String]("Color")
+  type Color = Color.type
   object User extends Type("User")
   type User = User.type
   object Friend extends Type("Friend")
@@ -67,5 +68,15 @@ class DenotationTests extends org.scalatest.FunSuite with ScalazEquality {
     val azul = Color := "blue"
 
     assert(azul.show == "(Color := blue)")
+  }
+
+  test("Denotation / ValueOf conversions") {
+
+    val z: ValueOf[Color] = (Color := "green")
+    val zs: String = z
+
+    // without specific type annotation
+    val x = (Color := "green")
+    val xs: String = x
   }
 }
