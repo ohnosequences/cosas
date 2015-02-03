@@ -2,11 +2,14 @@ package ohnosequences.cosas
 
 object functors {
 
+  type ==>[A,B] = Function1[A,B]
+
   import typeConstructors._
   
   trait AnyFunctor {
 
     type TypeConstructor <: AnyTypeConstructor
+    val typeConstructor: TypeConstructor
 
     // just for clarity, not essential
     type F[X] = TypeConstructor#of[X]
@@ -16,7 +19,7 @@ object functors {
     final def apply[X,Y](f: X => Y): F[X] => F[Y] = { fx => map(fx)(f) }
   }
 
-  trait Functor[TC <: AnyTypeConstructor] extends AnyFunctor {
+  abstract class Functor[TC <: AnyTypeConstructor](val typeConstructor: TC) extends AnyFunctor {
 
     type TypeConstructor = TC
   }
@@ -33,6 +36,9 @@ object functors {
     val Fx: TC#of[X]
 
     final def map[Funct <: AnyFunctor.For[TC], Y](f: X => Y)(implicit functor: Funct): Funct#F[Y] = functor.map(Fx)(f)
+
+    // for testing
+    final def mapp[Funct <: AnyFunctor.For[TC], Y](f: X => Y)(implicit functor: Funct): Funct#F[Y] = map(f)
   }
 
   final case class FunctorSyntax[TC0 <: AnyTypeConstructor, X0](val Fx: TC0#of[X0]) 
@@ -59,23 +65,22 @@ object functors {
     implicit val functInst: Funct = funct
   }
 
-
   // TODO: move to a separate module. Decide on names.
 
-  object SListFunctor extends Functor[SList] {
+  object SListFunctor extends Functor(SList) {
 
     final def map[X,Y](Fx: F[X])(f: X => Y): F[Y] = Fx map f
   }
   // modules with camel case
   object listFunctor extends FunctorModule(SListFunctor)
 
-  object IdFunctor extends Functor[Id] {
+  object IdFunctor extends Functor(Id) {
 
     final def map[X,Y](Fx: F[X])(f: X => Y): F[Y] = f(Fx)
   }
   object idFunctor extends FunctorModule(IdFunctor)
 
-  object MaybeFunctor extends Functor[Maybe] {
+  object MaybeFunctor extends Functor(Maybe) {
 
     final def map[X,Y](Fx: F[X])(f: X => Y): F[Y] = Fx map f
   }

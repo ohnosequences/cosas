@@ -8,7 +8,7 @@ final class FunctorsTests extends org.scalatest.FunSuite {
 
     import listFunctor._
 
-    val x: List[String] = List(1,2,3) map { x => x.toString }
+    val x: List[String] = List(1,2,3) mapp { x => x.toString }
   }
 
   test("default identity functor") {
@@ -22,9 +22,8 @@ final class FunctorsTests extends org.scalatest.FunSuite {
 
     import maybeFunctor._
 
-    val x = Some(3) map { x => x.toString }
+    val x = Some(3) mapp { x => x.toString }
   }
-
 }
 
   
