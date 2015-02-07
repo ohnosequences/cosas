@@ -24,6 +24,20 @@ final class FunctorsTests extends org.scalatest.FunSuite {
 
     val x = Some(3) mapp { x => x.toString }
   }
+
+  test("basic functor composition") {
+
+    import maybeFunctor._, listFunctor._
+
+    implicit object lm extends FunctorComposition(SListFunctor, MaybeFunctor)
+
+    val x = lm.map( Some(List(3)) )( { x: Int => x.toString } )
+
+    println(x)
+
+    // should work after adding modules for composition (without type Annots I mean)
+    val x0: Option[List[String]] = FunctorSyntax[lm.TypeConstructor,Int]( Some(List(3)) ).mapp( { x: Int => x.toString } )
+  }
 }
 
   

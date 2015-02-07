@@ -29,16 +29,39 @@ object functors {
     type For[TC <: AnyTypeConstructor] = AnyFunctor { type TypeConstructor = TC }
   }
 
+  trait AnyFunctorComposition extends AnyFunctor { composition =>
+
+    type First <: AnyFunctor
+    val first: First
+    type Second <: AnyFunctor //{ type TypeConstructor = First# }
+    val second: Second
+
+    implicit object SFTC extends AnyTypeConstructor {
+
+      type of[X] = second.TypeConstructor#of[first.TypeConstructor#of[X]]
+    }
+    type TypeConstructor = SFTC.type
+    lazy val typeConstructor: TypeConstructor = SFTC
+
+    final def map[X,Y](Fx: F[X])(f: X => Y): F[Y] = second.map(Fx)(first(f))
+  }
+
+  class FunctorComposition[F0 <: AnyFunctor, S0 <: AnyFunctor](val first: F0, val second: S0) extends AnyFunctorComposition {
+
+    type First = F0
+    type Second = S0
+  }
+
   trait AnyFunctorSyntax extends Any {
 
     type TC <: AnyTypeConstructor
     type X
     val Fx: TC#of[X]
 
-    final def map[Funct <: AnyFunctor.For[TC], Y](f: X => Y)(implicit functor: Funct): Funct#F[Y] = functor.map(Fx)(f)
+    final def map[Fnctr <: AnyFunctor.For[TC], Y](f: X => Y)(implicit functor: Fnctr): Fnctr#F[Y] = functor.map(Fx)(f)
 
     // for testing
-    final def mapp[Funct <: AnyFunctor.For[TC], Y](f: X => Y)(implicit functor: Funct): Funct#F[Y] = map(f)
+    final def mapp[Fnctr <: AnyFunctor.For[TC], Y](f: X => Y)(implicit functor: Fnctr): Fnctr#F[Y] = map(f)
   }
 
   final case class FunctorSyntax[TC0 <: AnyTypeConstructor, X0](val Fx: TC0#of[X0]) 
@@ -52,17 +75,17 @@ object functors {
 
   trait AnyFunctorModule {
 
-    type Funct <: AnyFunctor
+    type Fnctr <: AnyFunctor
 
-    implicit def functorSyntax[X](x: Funct#F[X]): FunctorSyntax[Funct#TypeConstructor,X] = FunctorSyntax(x)
+    implicit def functorSyntax[X](x: Fnctr#F[X]): FunctorSyntax[Fnctr#TypeConstructor,X] = FunctorSyntax(x)
 
-    implicit val functInst: Funct
+    implicit val functInst: Fnctr
   }
 
   class FunctorModule[Funct0 <: AnyFunctor](val funct: Funct0) extends AnyFunctorModule { 
 
-    type Funct = Funct0 
-    implicit val functInst: Funct = funct
+    type Fnctr = Funct0 
+    implicit val functInst: Fnctr = funct
   }
 
   // TODO: move to a separate module. Decide on names.

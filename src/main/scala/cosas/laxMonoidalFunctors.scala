@@ -22,6 +22,23 @@ object laxMonoidalFunctors {
     type Functor = Fnctr
   }
 
+  import monads._
+
+  trait AnyLaxMonoidalFunctorFromMonad extends AnyLaxMonoidalFunctor {
+
+    type Monad <: AnyMonad
+    val monad: Monad
+
+    type Functor = Monad#Functor
+    val functor = monad.functor
+    
+
+    def η: F[Unit] = monad.unit( () )
+
+    // def μ[X,Y](Fx: F[X], Fy: F[Y]): F[(X,Y)] = 
+  }
+
+
   // TODO: syntax
 
   // TODO: again, move to a better place
