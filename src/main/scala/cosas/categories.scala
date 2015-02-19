@@ -97,4 +97,20 @@ object categories {
 
     type of[X <: Domain] <: Codomain
   }
+
+  trait AnyF { functor =>
+
+    type TypeConstructor <: AnyBoundedTypeConstructor with Singleton { 
+      type Domain >: functor.Source#Obj 
+      type Codomain <: functor.Target#Obj
+    }
+    val typeConstructor: TypeConstructor
+
+    type F[Z <: Source#Obj] = TypeConstructor#of[Z]
+
+    type Source <: AnyCategory with Singleton
+    type Target <: AnyCategory with Singleton
+
+    def map[X <: Source#Obj, Y <: Source#Obj](f: Source#C[X,Y]): Target#C[F[X], F[Y]]
+  }
 }
