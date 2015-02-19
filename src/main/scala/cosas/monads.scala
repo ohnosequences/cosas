@@ -113,6 +113,9 @@ object monads {
     type η = LUnit.type
     val η = LUnit
 
+    type μ = SListMult.type
+    val μ = SListMult
+
     // final def unit[X](x: X): M[X] = List(x)
 
     final def flatMap[X,Y](x: M[X], f: X => M[Y]): M[Y] = x flatMap f

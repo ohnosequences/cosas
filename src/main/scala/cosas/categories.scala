@@ -87,4 +87,14 @@ object categories {
 
   So for objects we use a bound X <: Any, and for morphisms assuming something is an object
   */
+
+
+
+  trait AnyBoundedTypeConstructor {
+
+    type Domain
+    type Codomain
+
+    type of[X <: Domain] <: Codomain
+  }
 }

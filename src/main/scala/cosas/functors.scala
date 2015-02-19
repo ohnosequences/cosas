@@ -46,7 +46,7 @@ object functors {
     final def map[X,Y](Fx: F[X])(f: X => Y): F[Y] = second.map(Fx)(first(f))
   }
 
-  class FunctorComposition[F0 <: AnyFunctor, S0 <: AnyFunctor](val first: F0, val second: S0) extends AnyFunctorComposition {
+  case class FunctorComposition[F0 <: AnyFunctor, S0 <: AnyFunctor](val first: F0, val second: S0) extends AnyFunctorComposition {
 
     type First = F0
     type Second = S0

@@ -89,4 +89,10 @@ object naturalTransformations {
 
     final def at[X](x: X): List[X] = List(x)
   }
+
+
+  object SListMult extends NaturalTransformation(FunctorComposition(SListFunctor,SListFunctor), SListFunctor) {
+
+    final def at[X](x: List[List[X]]): List[X] = x flatMap identity
+  }
 }
