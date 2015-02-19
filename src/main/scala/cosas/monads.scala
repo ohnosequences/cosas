@@ -4,6 +4,7 @@ object monads {
 
   import typeConstructors._
   import functors._
+  import naturalTransformations._
   
   trait AnyMonad {
 
@@ -15,9 +16,16 @@ object monads {
     // just for clarity, not essential
     type M[Z] = Functor#F[Z]
 
-    def unit[X](x: X): M[X]
+    type η <: IdFunctor ~> Functor
+    val η: η
 
-    def flatMap[X,Y](x: M[X])(f: X => M[Y]): M[Y]
+    // this is actually syntax
+    final def unit[X](x: X): M[X] = η.at(x)
+
+    type μ <: (Functor ∘ Functor) ~> Functor
+    val μ: μ
+
+    def flatMap[X,Y](x: Functor#F[X], f: X => M[Y]): M[Y]
   }
 
   abstract class Monad[Fnctr <: AnyFunctor](val functor: Fnctr) extends AnyMonad {
@@ -39,7 +47,8 @@ object monads {
     type X
     val Mx: Fnctr#F[X]
 
-    final def flatMap[Mnd <: AnyMonad.For[Fnctr], Y](f: X => Mnd#M[Y])(implicit monad: Mnd): Mnd#M[Y] = monad.flatMap(Mx)(f)
+    final def flatMap[Mnd <: AnyMonad.For[Fnctr], Y](f: X => Mnd#M[Y])(implicit monad: Mnd): Mnd#M[Y] = 
+      monad.flatMap(Mx, f)
   }
 
   final case class MonadSyntax[Fnctr0 <: AnyFunctor, X0](val Mx: Fnctr0#F[X0]) 
@@ -74,17 +83,39 @@ object monads {
 
   object IdMonad extends Monad(IdFunctor) {
 
-    final def unit[X](x: X): M[X] = x
+    type η = naturalTransformations.Id[IdFunctor]
+    val η = new naturalTransformations.Id(IdFunctor)
 
-    final def flatMap[X,Y](x: M[X])(f: X => M[Y]): M[Y] = f(x)
+    object idMult extends NaturalTransformation[
+      FunctorComposition[IdFunctor,IdFunctor],
+      IdFunctor
+    ](new FunctorComposition(IdFunctor,IdFunctor), IdFunctor) {
+
+      final def at[X](x: X) = x
+    }
+
+    type μ = idMult.type
+    val μ = idMult
+
+    // final def unit[X](x: X): M[X] = x
+
+    final def flatMap[X,Y](x: M[X], f: X => M[Y]): M[Y] = f(x)
   }
   object idMonad extends MonadModule(IdMonad)
 
   object SListMonad extends Monad(SListFunctor) {
 
-    final def unit[X](x: X): M[X] = List(x)
+    object LUnit extends NaturalTransformation(IdFunctor, SListFunctor) {
 
-    final def flatMap[X,Y](x: M[X])(f: X => M[Y]): M[Y] = x flatMap f
+      final def at[X](x: X): M[X] = List(x)
+    }
+
+    type η = LUnit.type
+    val η = LUnit
+
+    // final def unit[X](x: X): M[X] = List(x)
+
+    final def flatMap[X,Y](x: M[X], f: X => M[Y]): M[Y] = x flatMap f
   }
   object listMonad extends MonadModule(SListMonad)
 }

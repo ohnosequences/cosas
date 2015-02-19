@@ -52,6 +52,8 @@ object functors {
     type Second = S0
   }
 
+  type ∘[G0 <: AnyFunctor, F0 <: AnyFunctor] = FunctorComposition[F0, G0]
+
   trait AnyFunctorSyntax extends Any {
 
     type TC <: AnyTypeConstructor
@@ -101,6 +103,7 @@ object functors {
 
     final def map[X,Y](Fx: F[X])(f: X => Y): F[Y] = f(Fx)
   }
+  type IdFunctor = IdFunctor.type
   object idFunctor extends FunctorModule(IdFunctor)
 
   object MaybeFunctor extends Functor(Maybe) {

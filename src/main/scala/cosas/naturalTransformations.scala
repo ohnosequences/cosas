@@ -29,7 +29,7 @@ object naturalTransformations {
     type Target = T
   }
 
-  type ~>[S <: AnyFunctor, T <: AnyFunctor] = NaturalTransformation[S,T]
+  type ~>[S <: AnyFunctor, T <: AnyFunctor] = AnyNaturalTransformation { type Source = S; type Target = T }
 
   trait AnyId extends AnyNaturalTransformation {
 
