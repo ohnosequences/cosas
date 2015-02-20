@@ -23,7 +23,7 @@ object records {
       val valuesOfProperties: Vals areValuesOf Props
     ) extends AnyRecord {
 
-    val label = this.toString
+    lazy val label = this.toString
 
     type Properties = Props
     type Raw = Vals

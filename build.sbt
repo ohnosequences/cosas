@@ -1,16 +1,11 @@
 Nice.scalaProject
 
-name := "cosas"
+name          := "cosas"
+description   := "esas cosas raras con muchos tipos"
+organization  := "ohnosequences"
 
-description := "esas cosas raras con muchos tipos"
-
-organization := "ohnosequences"
-
-bucketSuffix := "era7.com"
-
-scalaVersion := "2.11.4"
-
-crossScalaVersions := Seq("2.10.4")
+scalaVersion        := "2.11.5"
+crossScalaVersions  := Seq("2.10.4", "2.11.4")
 
 libraryDependencies += {
   CrossVersion.partialVersion(scalaVersion.value) match {
@@ -26,9 +21,13 @@ libraryDependencies ++= Seq (
   "org.scalatest"  %% "scalatest"   % "2.2.2" % Test
 )
 
+bucketSuffix := "era7.com"
+
 // wartremoverWarnings ++= Warts.all
 
 // wartremoverExcluded ++= Seq("ohnosequences.cosas.test")
 
 // shows time for each test:
 testOptions in Test += Tests.Argument("-oD")
+
+incOptions := incOptions.value.withNameHashing(false)
