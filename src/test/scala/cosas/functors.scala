@@ -36,7 +36,7 @@ final class FunctorsTests extends org.scalatest.FunSuite {
     println(x)
 
     // should work after adding modules for composition (without type Annots I mean)
-    // actually I'm not so sure
+    // actually I'm not so sure; functor composition should be explicit
     val x0: Option[List[String]] = FunctorSyntax[lm.TC,Int]( Some(List(3)) ).mapp( { x: Int => x.toString } )
   }
 }
