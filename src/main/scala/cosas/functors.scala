@@ -56,6 +56,7 @@ object functors {
 
     type FTC <: AnyTypeConstructor
     type X
+    // TODO: in principle this is not allowed, and should be a def
     val Fx: FTC#of[X]
 
     final def map[Fnctr <: AnyFunctor.For[FTC], Y](f: X => Y)(implicit functor: Fnctr): Fnctr#F[Y] = functor.map(Fx)(f)
@@ -106,7 +107,6 @@ object functors {
 
 
 
-  
 
 
 
@@ -118,7 +118,8 @@ object functors {
 
 
 
-  
+
+
 
 
 
