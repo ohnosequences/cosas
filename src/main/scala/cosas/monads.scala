@@ -79,6 +79,65 @@ object monads {
     implicit val monadInstance: Monad = monad
   }
 
+  /*
+  Eilenberg-Moore algebras. I need to add the laws here, once I have a good way of specifying laws.
+  */
+  trait AnyEMAlgebra {
+
+    type Mnd <: AnyMonad
+    val monad: Mnd
+
+    type X
+
+    def structure(mx: Mnd#M[X]): X
+  }
+
+  abstract class EMAlgebra[Mnd0 <: AnyMonad, X0](val monad: Mnd0) extends AnyEMAlgebra {
+
+    type Mnd = Mnd0
+    type X = X0
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   // TODO: move it somewhere else
 
   object IdMonad extends Monad(IdFunctor) {

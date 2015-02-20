@@ -90,6 +90,27 @@ object functors {
     implicit val functInst: Fnctr = funct
   }
 
+  trait AnyFunctorLaws {
+
+    type TC <: AnyTypeConstructor
+    // TODO
+    type Fnctr <: AnyFunctor { type TypeConstructor = TC }
+    type F[Z] = TC#of[Z] 
+    val functor: Fnctr
+
+    def preservesIdentities[X]: (F[X] => F[X], F[X] => F[X]) = 
+      ( identity, (functor: Fnctr)(identity[X]) )
+
+  }
+
+
+
+
+
+
+
+
+
   // TODO: move to a separate module. Decide on names.
 
   object SListFunctor extends Functor(SList) {

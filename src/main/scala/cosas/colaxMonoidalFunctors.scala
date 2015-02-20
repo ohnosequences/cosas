@@ -3,14 +3,16 @@ package ohnosequences.cosas
 object colaxMonoidalFunctors {
 
   import functors._
+  import typeConstructors._
 
   trait AnyLaxMonoidalFunctor {
 
-    type Functor <: AnyFunctor
+    type TC <: AnyTypeConstructor
+    type Functor <: AnyFunctor { type TypeConstructor = TC }
     val functor: Functor
 
-    // The need for this . here is a compiler bug
-    type C[X] = functor.F[X]
+    // The need for this is a compiler bug. Ah val _32 I love you!
+    type C[X] = TC#of[X]
 
     // the unit type here for the cartesian struct is suppposed to be Unit; there's just (in theory) one function to unit: f(x) = ()
     final def ε(u: C[Unit]): Unit = ()
