@@ -2,46 +2,44 @@ package ohnosequences.cosas
 
 object functors {
 
-  type ==>[A,B] = Function1[A,B]
-
   import typeConstructors._
   
   trait AnyFunctor {
 
-    type TypeConstructor <: AnyTypeConstructor
-    val typeConstructor: TypeConstructor
+    type TC <: AnyTypeConstructor
+    val typeConstructor: TC
 
     // just for clarity, not essential
-    type F[X] = TypeConstructor#of[X]
+    type F[Z] = TC#of[Z]
 
-    def map[X,Y](Fx: F[X])(f: X => Y): F[Y]
+    def map[X,Y](Fx: TC#of[X])(f: X => Y): F[Y]
 
     final def apply[X,Y](f: X => Y): F[X] => F[Y] = { fx => map(fx)(f) }
   }
 
-  abstract class Functor[TC <: AnyTypeConstructor](val typeConstructor: TC) extends AnyFunctor {
+  abstract class Functor[TC0 <: AnyTypeConstructor](val typeConstructor: TC0) extends AnyFunctor {
 
-    type TypeConstructor = TC
+    type TC = TC0
   }
 
   object AnyFunctor {
 
-    type For[TC <: AnyTypeConstructor] = AnyFunctor { type TypeConstructor = TC }
+    type For[TC0 <: AnyTypeConstructor] = AnyFunctor { type TC = TC0 }
   }
 
   trait AnyFunctorComposition extends AnyFunctor { composition =>
 
     type First <: AnyFunctor
     val first: First
-    type Second <: AnyFunctor //{ type TypeConstructor = First# }
+    type Second <: AnyFunctor //{ type TC = First# }
     val second: Second
 
     implicit object SFTC extends AnyTypeConstructor {
 
-      type of[X] = second.TypeConstructor#of[first.TypeConstructor#of[X]]
+      type of[X] = second.TC#of[first.TC#of[X]]
     }
-    type TypeConstructor = SFTC.type
-    lazy val typeConstructor: TypeConstructor = SFTC
+    type TC = SFTC.type
+    lazy val typeConstructor: TC = SFTC
 
     final def map[X,Y](Fx: F[X])(f: X => Y): F[Y] = second.map(Fx)(first(f))
   }
@@ -56,14 +54,14 @@ object functors {
 
   trait AnyFunctorSyntax extends Any {
 
-    type TC <: AnyTypeConstructor
+    type FTC <: AnyTypeConstructor
     type X
-    val Fx: TC#of[X]
+    val Fx: FTC#of[X]
 
-    final def map[Fnctr <: AnyFunctor.For[TC], Y](f: X => Y)(implicit functor: Fnctr): Fnctr#F[Y] = functor.map(Fx)(f)
+    final def map[Fnctr <: AnyFunctor.For[FTC], Y](f: X => Y)(implicit functor: Fnctr): Fnctr#F[Y] = functor.map(Fx)(f)
 
     // for testing
-    final def mapp[Fnctr <: AnyFunctor.For[TC], Y](f: X => Y)(implicit functor: Fnctr): Fnctr#F[Y] = map(f)
+    final def mapp[Fnctr <: AnyFunctor.For[FTC], Y](f: X => Y)(implicit functor: Fnctr): Fnctr#F[Y] = map(f)
   }
 
   final case class FunctorSyntax[TC0 <: AnyTypeConstructor, X0](val Fx: TC0#of[X0]) 
@@ -71,7 +69,7 @@ object functors {
       AnyVal with 
       AnyFunctorSyntax 
   {  
-    type TC = TC0
+    type FTC = TC0
     type X = X0
   }
 
@@ -79,7 +77,7 @@ object functors {
 
     type Fnctr <: AnyFunctor
 
-    implicit def functorSyntax[X](x: Fnctr#F[X]): FunctorSyntax[Fnctr#TypeConstructor,X] = FunctorSyntax(x)
+    implicit def functorSyntax[X](x: Fnctr#F[X]): FunctorSyntax[Fnctr#TC,X] = FunctorSyntax(x)
 
     implicit val functInst: Fnctr
   }
@@ -92,16 +90,35 @@ object functors {
 
   trait AnyFunctorLaws {
 
-    type TC <: AnyTypeConstructor
+    type FTC <: AnyTypeConstructor
     // TODO
-    type Fnctr <: AnyFunctor { type TypeConstructor = TC }
-    type F[Z] = TC#of[Z] 
+    type Fnctr <: AnyFunctor { type TC = FTC }
+    type F[Z] = FTC#of[Z] 
     val functor: Fnctr
 
     def preservesIdentities[X]: (F[X] => F[X], F[X] => F[X]) = 
       ( identity, (functor: Fnctr)(identity[X]) )
 
   }
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
 
 
 

@@ -64,7 +64,7 @@ object monads {
 
     type Monad <: AnyMonad
 
-    implicit final def functorSyntax[X](x: Monad#M[X]): FunctorSyntax[Monad#Functor#TypeConstructor,X] = FunctorSyntax(x)
+    implicit final def functorSyntax[X](x: Monad#M[X]): FunctorSyntax[Monad#Functor#TC,X] = FunctorSyntax(x)
     implicit val functorInstance: Monad#Functor
 
     implicit final def monadSyntax[X](x: Monad#M[X]): MonadSyntax[Monad#Functor, X] = MonadSyntax(x)

@@ -29,3 +29,5 @@ bucketSuffix := "era7.com"
 
 // shows time for each test:
 testOptions in Test += Tests.Argument("-oD")
+
+incOptions := incOptions.value.withNameHashing(false)

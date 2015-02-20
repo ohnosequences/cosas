@@ -2,7 +2,7 @@ package ohnosequences.cosas
 
 object typeConstructors {
   
-  trait AnyTypeConstructor { type of[X] }
+  trait AnyTypeConstructor { type of[_] }
 
   trait AnyTypeConstructorComposition extends AnyTypeConstructor {
 
@@ -11,7 +11,7 @@ object typeConstructors {
     type Second <: AnyTypeConstructor
     val second: Second
 
-    type of[X] = Second#of[First#of[X]]
+    type of[V] = Second#of[First#of[V]]
   }
 
   case class TypeConstructorComposition[F0 <: AnyTypeConstructor, S0 <: AnyTypeConstructor](val first: F0, val second: S0) extends AnyTypeConstructorComposition {
