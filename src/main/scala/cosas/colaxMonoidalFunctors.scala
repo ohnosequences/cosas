@@ -24,6 +24,19 @@ object colaxMonoidalFunctors {
     )
 
   }
+
+  class colaxMonoidalFunctor[
+    TC0 <: AnyTypeConstructor,
+    Fnctr <: AnyFunctor { type TypeConstructor = TC0 }
+  ](val functor: Fnctr) extends AnyColaxMonoidalFunctor {
+
+    type TC = Fnctr#TypeConstructor
+    type Functor = Fnctr
+  }
+
+
+
+  object colaxList extends colaxMonoidalFunctor[SListFunctor.TypeConstructor, SListFunctor.type](SListFunctor)
 }
 
 
