@@ -5,7 +5,7 @@ object colaxMonoidalFunctors {
   import functors._
   import typeConstructors._
 
-  trait AnyLaxMonoidalFunctor {
+  trait AnyColaxMonoidalFunctor {
 
     type TC <: AnyTypeConstructor
     type Functor <: AnyFunctor { type TypeConstructor = TC }
