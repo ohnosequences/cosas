@@ -48,12 +48,14 @@ object ScalazEquality extends ScalazEquality
         + [PropertyTests.scala][test/scala/cosas/PropertyTests.scala]
         + [TypeUnionTests.scala][test/scala/cosas/TypeUnionTests.scala]
         + [ScalazEquality.scala][test/scala/cosas/ScalazEquality.scala]
+        + [EqualityTests.scala][test/scala/cosas/EqualityTests.scala]
         + [DenotationTests.scala][test/scala/cosas/DenotationTests.scala]
         + [RecordTests.scala][test/scala/cosas/RecordTests.scala]
         + [TypeSetTests.scala][test/scala/cosas/TypeSetTests.scala]
   + main
     + scala
       + cosas
+        + [equality.scala][main/scala/cosas/equality.scala]
         + [properties.scala][main/scala/cosas/properties.scala]
         + [typeSets.scala][main/scala/cosas/typeSets.scala]
         + ops
@@ -83,9 +85,11 @@ object ScalazEquality extends ScalazEquality
 [test/scala/cosas/PropertyTests.scala]: PropertyTests.scala.md
 [test/scala/cosas/TypeUnionTests.scala]: TypeUnionTests.scala.md
 [test/scala/cosas/ScalazEquality.scala]: ScalazEquality.scala.md
+[test/scala/cosas/EqualityTests.scala]: EqualityTests.scala.md
 [test/scala/cosas/DenotationTests.scala]: DenotationTests.scala.md
 [test/scala/cosas/RecordTests.scala]: RecordTests.scala.md
 [test/scala/cosas/TypeSetTests.scala]: TypeSetTests.scala.md
+[main/scala/cosas/equality.scala]: ../../../main/scala/cosas/equality.scala.md
 [main/scala/cosas/properties.scala]: ../../../main/scala/cosas/properties.scala.md
 [main/scala/cosas/typeSets.scala]: ../../../main/scala/cosas/typeSets.scala.md
 [main/scala/cosas/ops/records/Update.scala]: ../../../main/scala/cosas/ops/records/Update.scala.md
