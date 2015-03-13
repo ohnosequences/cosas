@@ -1,6 +1,6 @@
 package ohnosequences.scala.tests
 
-import ohnosequences.cosas._, equals._
+import ohnosequences.cosas._, equalities._
 
 final class EqualsTests extends org.scalatest.FunSuite {
 
