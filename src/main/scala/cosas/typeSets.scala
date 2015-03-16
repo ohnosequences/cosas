@@ -11,8 +11,6 @@ object typeSets {
 
   sealed trait AnyTypeSet {
 
-    type Head
-    type Tail <: AnyTypeSet
     type Types <: AnyTypeUnion
     type Bound // should be Types#union, but we can't set it here
 
