@@ -1,6 +1,6 @@
 package ohnosequences.cosas
 
-object equals {
+object equalities {
   
   @annotation.implicitNotFound( msg = 
   """

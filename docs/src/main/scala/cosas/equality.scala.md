@@ -2,66 +2,48 @@
 ```scala
 package ohnosequences.cosas
 
-object propertyHolders {
-
-  // deps
-  import types._, typeSets._, properties._
+object equalities {
   
-  import ops.typeSets.CheckForAll
+  @annotation.implicitNotFound( msg = 
+  """
+  No proof of equality found for types:  
 
+    ${A}
 
-  trait AnyPropertiesHolder {
-    type This = this.type
+    ${B}
+  """)
+  sealed trait ≃[A, B] { 
 
-    type Properties <: AnyTypeSet.Of[AnyProperty]
-    val  properties: Properties
+    type Left = A
+    type Right = B
+    type Out >: A with B <: A with B 
+
+    implicit def inL(a: A): Out
+    implicit def inR(b: B): Out
+
+    final implicit def elimL(o: Out): A = o
+    final implicit def elimR(o: Out): B = o
+
+    def sym: ≃[B, A]
   }
 
-  trait Properties[Props <: AnyTypeSet.Of[AnyProperty]]
-    extends AnyPropertiesHolder { type Properties = Props }
+  final case class Refl[A]() extends (A ≃ A) { 
 
-  type PropertiesOf[H <: AnyPropertiesHolder] = H#Properties 
+    final type Out = A
 
-  implicit def hasPropertiesOps[T](t: T): HasPropertiesOps[T] = new HasPropertiesOps[T](t)
+    final implicit def inL(a: A): Out = a
+    final implicit def inR(b: A): Out = b
 
-  class HasPropertiesOps[Smth](val smth: Smth) {
+    final def sym = this
+  } 
 
-    // sorry, only one property a time
-    def has[P <: AnyProperty](p: P): 
-           Smth HasProperty P = 
-      new (Smth HasProperty P)
-  }
+  type ?≃[X, Y] = Either[X,Y]
+  type <≃>[A, B] = (A ?≃ B) => (A ≃ B)
 
-
-  @annotation.implicitNotFound(msg = "Can't prove that ${Smth} has property ${P}")
-  sealed class HasProperty[Smth, P <: AnyProperty]
-
-  object HasProperty {
-
-    implicit def holderProps[H <: AnyPropertiesHolder, P <: AnyProperty]
-      (implicit in: P ∈ H#Properties):
-          (H HasProperty P) =
-      new (H HasProperty P)
-  }
-
-
-  @annotation.implicitNotFound(msg = "Can't prove that ${Smth} has properties ${Ps}")
-  sealed class HasProperties[Smth, Ps <: AnyTypeSet.Of[AnyProperty]]
-
-  object HasProperties {
-
-    trait BelongsTo[T] extends TypePredicate[AnyProperty] {
-      type Condition[P <: AnyProperty] = T HasProperty P
-    }
-
-    implicit def hasProps[T, Ps <: AnyTypeSet.Of[AnyProperty]]
-      (implicit check: CheckForAll[Ps, BelongsTo[T]]):
-          (T HasProperties Ps) =
-      new (T HasProperties Ps)
-  }
-
+  implicit def refl[A >: B <: B, B]: (A <≃> B) = x => Refl[B]()
+  implicit def sym[A, B](implicit p: B <≃> A): A <≃> B = x => (p(x.swap).sym)
+  implicit def reflInst[B]: B ≃ B = Refl[B]()
 }
-
 ```
 
 

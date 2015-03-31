@@ -1,98 +1,68 @@
 
 ```scala
-package ohnosequences.cosas.tests
+package ohnosequences.scala.tests
 
-import ohnosequences.cosas._, typeUnions._
+import ohnosequences.cosas._, equalities._
 
+final class EqualsTests extends org.scalatest.FunSuite {
 
-class TypeUnionTests extends org.scalatest.FunSuite {
+  test("basic type equality") {
 
-  test("check bounds") {
+    type string = String
+    type stringAgain = String
+    type lstring = List[String]
+    type llstring = List[List[String]]
+    type llstringAgain = List[lstring]
+    // import coercion._  
+    
+    implicitly[string <≃> stringAgain]
+    implicitly[stringAgain <≃> string]
+    implicitly[string <≃> string]
+    implicitly[stringAgain <≃> stringAgain]
 
-    type S      = either[String]
-    type SB     = either[String] or Boolean
-    type SB2    = either[String] or Boolean
-    type SBI    = either[String] or Boolean or Int
-    trait Bar
-    type BarBIS = either[String] or Int or Boolean or Bar
-    type Uh     = either[Byte] or Int or Boolean or String
-
-    implicitly[just[String] <:< Uh#union]
-    implicitly[just[Boolean] <:< Uh#union]
-    implicitly[just[Int] <:< Uh#union]
-
-    implicitly[S#union =:= just[String]]
-
-    implicitly[just[String] <:< S#union]
-    implicitly[just[Boolean] <:< SB#union]
-    implicitly[just[String] <:< SB#union]
-    implicitly[just[Boolean] <:< SB2#union]
-    implicitly[just[String] <:< SB2#union]
-
-    implicitly[just[String] <:< SBI#union]
-    implicitly[just[Boolean] <:< SBI#union]
-    implicitly[just[Int] <:< SBI#union]
-
-    import shapeless.{ <:!< }
-    implicitly[just[Byte] <:!< SBI#union]
-    implicitly[just[Byte] <:< Uh#union]
-    implicitly[just[String] <:< SBI#union]
-
-    implicitly[just[Bar] <:< BarBIS#union]
+    implicitly[lstring <≃> List[String]]
+    implicitly[List[String] <≃> lstring]
+    implicitly[llstring <≃> llstringAgain]
+    implicitly[llstringAgain <≃> llstring]
+    implicitly[List[llstringAgain] <≃> List[List[List[String]]]]
+    implicitly[Map[String,Boolean] <≃> Map[String,Boolean] ]
+    implicitly[Map[_,_] <≃> Map[_,_]]
+    object two
+    val y = two
+    implicitly[two.type <≃> y.type]
   }
 
-  test("bounds with subtyping") {
+  test("using type equality at the instance level") {
 
-    // weird issues
-    trait Animal
-    val animal = new Animal {}
-    trait Cat extends Animal
-    trait UglyCat extends Cat
-    object pipo extends UglyCat
-    val uglyCat = new UglyCat {}
-    trait Dog extends Animal
+    def doSomething[X,Y](x: X, y: Y)(implicit id: X ≃ Y): Y = id.inL(x)
+    def doSomethingDifferently[X,Y](x: X, y: Y)(implicit id: X <≃> Y): X = x
+    def doSomethingElse[X,Y](x: X, y: Y)(implicit ev: Y <≃> X): Y = y
 
-    // everyone fits here
-    type DCA = either[Dog] or Cat or Animal
-    implicitly[Dog isOneOf DCA]
-    implicitly[Cat isOneOf DCA]
-    implicitly[UglyCat isOneOf DCA]
-    implicitly[pipo.type isOneOf DCA]
-    implicitly[uglyCat.type isOneOf DCA]
+    val x: String = doSomething("buh", "boh")
+    def uh = doSomethingElse(doSomething(doSomethingDifferently("buh","boh"), doSomething("boh","buh")), "oh")
 
-    type DC = either[Dog] or Cat
-    implicitly[Dog isOneOf DC]
-    implicitly[Cat isOneOf DC]
-    implicitly[UglyCat isOneOf DC]
-    implicitly[pipo.type isOneOf DC]
-    implicitly[uglyCat.type isOneOf DC]
-    // not here
-    implicitly[animal.type isNotOneOf DC]
+    final case class XList[A](xs: List[A]) {
 
-    type DUC = either[Dog] or UglyCat
-    implicitly[Dog isOneOf DUC]
-    implicitly[UglyCat isOneOf DUC]
-    implicitly[pipo.type isOneOf DUC]
-    implicitly[uglyCat.type isOneOf DUC]
-    // not here
-    implicitly[Cat isNotOneOf DUC]
-    implicitly[animal.type isNotOneOf DUC]
+      def sum(implicit ev: List[Int] ≃ List[A]): Int = {
 
-    type ISDUC = either[String] or Int or Dog or UglyCat
-    type DUCIS = either[Dog] or UglyCat or String or Int
-    implicitly[Dog isOneOf ISDUC]
-    implicitly[UglyCat isOneOf ISDUC]
-    implicitly[pipo.type isOneOf ISDUC]
-    implicitly[uglyCat.type isOneOf ISDUC]
-    
-    implicitly[Cat isNotOneOf ISDUC]
-    implicitly[animal.type isNotOneOf ISDUC]
-    implicitly[Cat isNotOneOf DUCIS]
-    implicitly[animal.type isNotOneOf DUCIS]
-    implicitly[Byte isNotOneOf ISDUC]
+        import ev._
+        (xs:List[Int]).foldLeft(0)(_ + _)
+      }
+
+      def sum2(implicit ev: List[A] ≃ List[Int]): Int = {
+
+        import ev._
+        (xs:List[Int]).foldLeft(0)(_ + _)
+      }      
+    }
+
+    val xl = XList(List(1,2))
+    val z = xl.sum
+    val z2 = xl.sum2
+
+    assert(z === z2)
   }
 }
-
 ```
 
 

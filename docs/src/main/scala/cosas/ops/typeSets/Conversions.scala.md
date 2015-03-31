@@ -172,12 +172,14 @@ object SerializeTo {
         + [PropertyTests.scala][test/scala/cosas/PropertyTests.scala]
         + [TypeUnionTests.scala][test/scala/cosas/TypeUnionTests.scala]
         + [ScalazEquality.scala][test/scala/cosas/ScalazEquality.scala]
+        + [EqualityTests.scala][test/scala/cosas/EqualityTests.scala]
         + [DenotationTests.scala][test/scala/cosas/DenotationTests.scala]
         + [RecordTests.scala][test/scala/cosas/RecordTests.scala]
         + [TypeSetTests.scala][test/scala/cosas/TypeSetTests.scala]
   + main
     + scala
       + cosas
+        + [equality.scala][main/scala/cosas/equality.scala]
         + [properties.scala][main/scala/cosas/properties.scala]
         + [typeSets.scala][main/scala/cosas/typeSets.scala]
         + ops
@@ -207,9 +209,11 @@ object SerializeTo {
 [test/scala/cosas/PropertyTests.scala]: ../../../../../test/scala/cosas/PropertyTests.scala.md
 [test/scala/cosas/TypeUnionTests.scala]: ../../../../../test/scala/cosas/TypeUnionTests.scala.md
 [test/scala/cosas/ScalazEquality.scala]: ../../../../../test/scala/cosas/ScalazEquality.scala.md
+[test/scala/cosas/EqualityTests.scala]: ../../../../../test/scala/cosas/EqualityTests.scala.md
 [test/scala/cosas/DenotationTests.scala]: ../../../../../test/scala/cosas/DenotationTests.scala.md
 [test/scala/cosas/RecordTests.scala]: ../../../../../test/scala/cosas/RecordTests.scala.md
 [test/scala/cosas/TypeSetTests.scala]: ../../../../../test/scala/cosas/TypeSetTests.scala.md
+[main/scala/cosas/equality.scala]: ../../equality.scala.md
 [main/scala/cosas/properties.scala]: ../../properties.scala.md
 [main/scala/cosas/typeSets.scala]: ../../typeSets.scala.md
 [main/scala/cosas/ops/records/Update.scala]: ../records/Update.scala.md
