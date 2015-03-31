@@ -1,0 +1,5 @@
+This is essentially a bugfix release.
+
+### Bugs fixed
+
+- #43 `AnyTypeSet` had `Head` and `Tail` type members, which should only be present in `NonEmptyTypeSet`
