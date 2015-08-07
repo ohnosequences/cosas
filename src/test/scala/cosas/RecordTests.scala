@@ -33,16 +33,16 @@ object RecordTestsContext {
 
   // creating a record instance is easy and neat:
   val simpleUserEntry = simpleUser(
-    (id(123)) :~: 
-    (name("foo")) :~: 
+    (id(123)) :~:
+    (name("foo")) :~:
     ∅
   )
- 
+
   // this way the order of properties does not matter
   val normalUserEntry = normalUser(
-    (name("foo")) :~: 
+    (name("foo")) :~:
     (color("orange")) :~:
-    (id(123)) :~: 
+    (id(123)) :~:
     (email("foo@bar.qux")) :~:
     ∅
   )
@@ -78,7 +78,7 @@ class RecordTests extends org.scalatest.FunSuite {
       (ValueOf[id.type] :~: ValueOf[name.type] :~: ∅) areValuesOf (id.type :~: name.type :~: ∅)
     ]
 
-    implicitly [ 
+    implicitly [
       simpleUser.Raw =:= (ValueOf[id.type] :~: ValueOf[name.type] :~: ∅)
     ]
 
@@ -89,7 +89,7 @@ class RecordTests extends org.scalatest.FunSuite {
 
   test("can provide properties in different order") {
 
-    implicitly [ 
+    implicitly [
       // the declared property order
       simpleUser.Raw =:= (ValueOf[id.type] :~: ValueOf[name.type] :~: ∅)
     ]
@@ -120,7 +120,7 @@ class RecordTests extends org.scalatest.FunSuite {
     assertTypeError("""
     val wrongAttrSet = normalUser(
       id(123) :~:
-      name("foo") :~: 
+      name("foo") :~:
       ∅
     )
     """)
@@ -147,8 +147,8 @@ class RecordTests extends org.scalatest.FunSuite {
     assert(
       (normalUserEntry update (color("albero"))) ==
       (normalUser(
-        (normalUserEntry get name) :~: 
-        (normalUserEntry get id) :~: 
+        (normalUserEntry get name) :~:
+        (normalUserEntry get id) :~:
         (normalUserEntry get email) :~:
         (color("albero")) :~:
         ∅
@@ -158,9 +158,9 @@ class RecordTests extends org.scalatest.FunSuite {
     assert(
       (normalUserEntry update ((name("bar")) :~: (id(321)) :~: ∅)) ==
       (normalUser(
-        (name("bar")) :~: 
+        (name("bar")) :~:
         (color("orange")) :~:
-        (id(321)) :~: 
+        (id(321)) :~:
         (email("foo@bar.qux")) :~:
         ∅
       ))
@@ -242,36 +242,36 @@ class RecordTests extends org.scalatest.FunSuite {
     }
 
     implicit def serializeProperty[P <: AnyProperty](t: ValueOf[P])
-      (implicit getP: ValueOf[P] => P): Map[String, String] = Map(getP(t).label -> t.toString)
+      (implicit p: P): Map[String, String] = Map(p.label -> t.value.toString)
 
-    // assert(
-    //   normalUserEntry.serializeTo[Map[String, String]] == 
-    //   Map(
-    //     "name" -> "foo",
-    //     "color" -> "orange",
-    //     "id" -> "123",
-    //     "email" -> "foo@bar.qux"
-    //   )
-    // )
+    assert(
+      normalUserEntry.serializeTo[Map[String, String]] ==
+      Map(
+        "name" -> "foo",
+        "color" -> "orange",
+        "id" -> "123",
+        "email" -> "foo@bar.qux"
+      )
+    )
 
     // List //
     implicit def anyListMonoid[X]: Monoid[List[X]] = new Monoid[List[X]] {
 
       type M = List[X]
-      
+
       def id: M = List[X]()
       def op(a: M, b: M): M = a ++ b
     }
 
     implicit def propertyIntToStr[P <: AnyProperty](t: ValueOf[P])
-      (implicit getP: ValueOf[P] => P): List[String] = List(getP(t).label + " -> " + t.toString)
+      (implicit p: P): List[String] = List(t.show(p))
 
-    // implicit def toStr[P](p: P): List[String] = List(p.toString)
+    implicit def toStr[P](p: P): List[String] = List(p.toString)
 
-    // assert(
-    //   normalUserEntry.serializeTo[List[String]] ==
-    //   List("id -> 123", "name -> foo", "email -> foo@bar.qux", "color -> orange")
-    // )
+    assert(
+      normalUserEntry.serializeTo[List[String]] ===
+      List("(id := 123)", "(name := foo)", "(email := foo@bar.qux)", "(color := orange)")
+    )
 
   }
 
