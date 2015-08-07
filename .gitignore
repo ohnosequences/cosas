@@ -19,5 +19,7 @@ project/plugins/project/
 data/in/
 data/out/
 
-credentials.sbt
-*credentials*
+.atom*
+.ensime*
+.tags*
+tags

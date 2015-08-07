@@ -224,7 +224,7 @@ class TypeSetTests extends org.scalatest.FunSuite {
 
     object id extends Poly1 { implicit def default[T] = at[T]((t:T) => t) }
     object toStr extends (Any -> String)(_.toString)
-    object rev extends Poly1 { 
+    object rev extends Poly1 {
       implicit val str = at[String](t => t.reverse)
       implicit def list[T] = at[List[T]](t => t.reverse)
       implicit def default[T] = at[T](t => t)
@@ -296,9 +296,9 @@ class TypeSetTests extends org.scalatest.FunSuite {
     object rec extends Record(name :~: age :~: key :~: ∅)
 
     val recEntry = rec(
-      name("foo") :~: 
-      age(12) :~: 
-      key("s0dl52f23k") :~: 
+      name("foo") :~:
+      age(12) :~:
+      key("s0dl52f23k") :~:
       ∅
     )
 
@@ -316,7 +316,7 @@ class TypeSetTests extends org.scalatest.FunSuite {
 
       rec.properties parseFrom Map(
         "age" -> "12",
-        "name" -> "foo", 
+        "name" -> "foo",
         "key" -> "s0dl52f23k"
       )
     }
@@ -376,7 +376,7 @@ class TypeSetTests extends org.scalatest.FunSuite {
     implicit def anyListMonoid[X]: Monoid[List[X]] = new Monoid[List[X]] {
 
       type M = List[X]
-      
+
       def id: M = List[X]()
       def op(a: M, b: M): M = a ++ b
     }
@@ -393,6 +393,18 @@ class TypeSetTests extends org.scalatest.FunSuite {
       ∅.serializeTo[List[String]] == List()
     )
 
+  }
+
+  test("getting types of a set of denotations") {
+
+    object foo extends Type("foo")
+    object bar extends Type("bar")
+
+    val denots = (foo := 1) :~: (bar := "buh") :~: ∅
+
+    // val typesOf = implicitly[TypesOf[Denotes[Int, foo.type] :~: Denotes[String, bar.type] :~: ∅]]
+
+    assertResult(foo :~: bar :~: ∅) { denots.getTypes }
   }
 
 }
