@@ -80,13 +80,13 @@ object TypesOf {
         TypesOf[∅] with Out[∅] =
     new TypesOf[∅] with Out[∅] { def apply(s: ∅): Out = ∅ }
 
-  implicit def cons[H <: AnyType, V, T <: AnyTypeSet, TO <: AnyTypeSet]
+  implicit def cons[D <: AnyDenotation, H <: D#Tpe, T <: AnyTypeSet, TO <: AnyTypeSet]
     (implicit
       getH: H,
       rest: TypesOf[T] { type Out = TO }
-    ):  TypesOf[Denotes[V, H] :~: T] with Out[H :~: TO] =
-    new TypesOf[Denotes[V, H] :~: T] with Out[H :~: TO] {
+    ):  TypesOf[D :~: T] with Out[H :~: TO] =
+    new TypesOf[D :~: T] with Out[H :~: TO] {
 
-      def apply(s: Denotes[V, H] :~: T): Out = getH :~: rest(s.tail)
+      def apply(s: D :~: T): Out = getH :~: rest(s.tail)
     }
 }
