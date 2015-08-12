@@ -22,7 +22,6 @@ libraryDependencies += {
 
 libraryDependencies ++= Seq (
   "org.scalaz"     %% "scalaz-core" % "7.1.0",
-  "org.spire-math" %% "spire"       % "0.9.0",
   "org.scalatest"  %% "scalatest"   % "2.2.2" % Test
 )
 

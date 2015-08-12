@@ -351,15 +351,7 @@ class TypeSetTests extends org.scalatest.FunSuite {
 
     val s = name("foo") :~: age(12) :~: key("s0dl52f23k") :~: ∅
 
-    import spire.algebra.Monoid
     // Map //
-    implicit def anyMapMonoid[X, Y]: Monoid[Map[X, Y]] = new Monoid[Map[X, Y]] {
-
-      type M = Map[X,Y]
-      def id: M = Map[X, Y]()
-      def op(a: M, b: M): M = a ++ b
-    }
-
     implicit def serializeProperty[P <: AnyProperty](t: ValueOf[P])
       (implicit getP: ValueOf[P] => P): Map[String, String] = Map(getP(t).label -> t.toString)
 
@@ -373,14 +365,6 @@ class TypeSetTests extends org.scalatest.FunSuite {
     // )
 
     // List //
-    implicit def anyListMonoid[X]: Monoid[List[X]] = new Monoid[List[X]] {
-
-      type M = List[X]
-
-      def id: M = List[X]()
-      def op(a: M, b: M): M = a ++ b
-    }
-
     implicit def propertyToStr[P <: AnyProperty](t: ValueOf[P])
       (implicit getP: ValueOf[P] => P): List[String] = List(getP(t).label + " -> " + t.toString)
 
