@@ -1,6 +1,7 @@
 package ohnosequences.cosas.tests
 
 import ohnosequences.cosas._, types._, AnySubsetType._
+import ohnosequences.cosas.tests.asserts._
 
 object nelists {
 
@@ -29,7 +30,7 @@ object nelists {
 }
 
 
-class SubsetTypesTests extends org.scalatest.FunSuite with ScalazEquality {
+class SubsetTypesTests extends org.scalatest.FunSuite {
 
   test("naive nonempty lists") {
 
