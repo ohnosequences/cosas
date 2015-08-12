@@ -7,7 +7,7 @@ object typeSets {
   import shapeless.{ HList, Poly1, <:!<, =:!= }
 
   import shapeless.Nat._
-  import shapeless.{Nat, Succ}  
+  import shapeless.{Nat, Succ}
 
   sealed trait AnyTypeSet {
 
@@ -53,7 +53,7 @@ object typeSets {
 
       type Types = Tail#Types or Head
       type Bound = Types#union
-      
+
       def toStr = {
         val h = head match {
           case _: String => "\""+head+"\""
@@ -67,7 +67,7 @@ object typeSets {
 
     /* This method covers constructor to check that you are not adding a duplicate */
     object ConsSet {
-      def cons[E, S <: AnyTypeSet](e: E, set: S)(implicit check: E ∉ S): ConsSet[E,S] = ConsSet(e, set) 
+      def cons[E, S <: AnyTypeSet](e: E, set: S)(implicit check: E ∉ S): ConsSet[E,S] = ConsSet(e, set)
     }
   }
 
@@ -114,7 +114,7 @@ object typeSets {
 
   /* One set is a subset of another */
   @annotation.implicitNotFound(msg = "Can't prove that ${S} is a subset of ${Q}")
-  type isSubsetOf[S <: AnyTypeSet, Q <: AnyTypeSet] = S#Bound <:< Q#Bound 
+  type isSubsetOf[S <: AnyTypeSet, Q <: AnyTypeSet] = S#Bound <:< Q#Bound
   @annotation.implicitNotFound(msg = "Can't prove that ${S} is a subset of ${Q}")
   final type ⊂[S <: AnyTypeSet, Q <: AnyTypeSet] = S isSubsetOf Q
 
@@ -234,6 +234,8 @@ object typeSets {
 
     def serializeTo[X](implicit serializer: S SerializeTo X): X = serializer(s)
 
+    def getTypes[X](implicit types: TypesOf[S] { type Out = X }): X = types(s)
+
     /* Mappers */
 
     def mapToHList[F <: Poly1](f: F)(implicit mapF: F MapToHList S): mapF.Out = mapF(s)
@@ -244,7 +246,7 @@ object typeSets {
 
     def mapFold[F <: Poly1, R](f: F)(r: R)(op: (R, R) => R)(implicit mapFold: MapFoldSet[F, S, R]): mapFold.Out = mapFold(s, r, op)
 
-    
+
     def aggregateProperties(implicit aggr: AggregateProperties[S]): aggr.Out = aggr(s)
 
     /* Predicates */
