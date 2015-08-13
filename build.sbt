@@ -8,9 +8,9 @@ organization := "ohnosequences"
 
 bucketSuffix := "era7.com"
 
-scalaVersion := "2.11.5"
+scalaVersion := "2.11.7"
 
-crossScalaVersions := Seq("2.10.4")
+crossScalaVersions := Seq("2.10.5")
 
 libraryDependencies += {
   CrossVersion.partialVersion(scalaVersion.value) match {
@@ -21,9 +21,7 @@ libraryDependencies += {
 }
 
 libraryDependencies ++= Seq (
-  "org.scalaz"     %% "scalaz-core" % "7.1.0",
-  "org.spire-math" %% "spire"       % "0.9.0",
-  "org.scalatest"  %% "scalatest"   % "2.2.2" % Test
+  "org.scalatest"  %% "scalatest" % "2.2.5" % Test
 )
 
 // wartremoverWarnings ++= Warts.all
