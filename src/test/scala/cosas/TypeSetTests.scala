@@ -353,25 +353,25 @@ class TypeSetTests extends org.scalatest.FunSuite {
 
     // Map //
     implicit def serializeProperty[P <: AnyProperty](t: ValueOf[P])
-      (implicit getP: ValueOf[P] => P): Map[String, String] = Map(getP(t).label -> t.toString)
+      (implicit p: P): Map[String, String] = Map(p.label -> t.value.toString)
 
-    // assert(
-    //   s.serializeTo[Map[String, String]] ==
-    //   Map("age" -> "12", "name" -> "foo", "key" -> "s0dl52f23k")
-    // )
+    assert(
+      s.serializeTo[Map[String, String]] ==
+      Map("age" -> "12", "name" -> "foo", "key" -> "s0dl52f23k")
+    )
 
-    // assert(
-    //   ∅.serializeTo[Map[String, String]] == Map()
-    // )
+    assert(
+      ∅.serializeTo[Map[String, String]] == Map()
+    )
 
     // List //
     implicit def propertyToStr[P <: AnyProperty](t: ValueOf[P])
-      (implicit getP: ValueOf[P] => P): List[String] = List(getP(t).label + " -> " + t.toString)
+      (implicit p: P): List[String] = List(s"${p.label} -> ${t.value.toString}")
 
-    // assert(
-    //   s.serializeTo[List[String]] ==
-    //   List("name -> foo", "age -> 12", "key -> s0dl52f23k")
-    // )
+    assert(
+      s.serializeTo[List[String]] ==
+      List("name -> foo", "age -> 12", "key -> s0dl52f23k")
+    )
 
     assert(
       ∅.serializeTo[List[String]] == List()
