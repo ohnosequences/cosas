@@ -46,17 +46,18 @@ trait ParseRecordFrom[Ps <: AnyTypeSet, X] extends Fn2[Ps, Map[String,X]] {
   type Out = Either[AnyPropertyParsingError, Vs]
 }
 
-object ParseFrom {
+object ParseRecordFrom {
 
-  // def apply[S <: AnyTypeSet, X]
-  //   (implicit parser: ParseFrom[S, X]): ParseFrom[S, X] = parser
-  //
-  // implicit def empty[X]:
-  //       (∅ ParseFrom X) with Out[∅] =
-  //   new (∅ ParseFrom X) with Out[∅] {
-  //
-  //     def apply(s: ∅, x: X): Out = ∅
-  //   }
+  def apply[Ps <: AnyTypeSet, V]
+    (implicit parser: ParseRecordFrom[Ps, V]): ParseRecordFrom[Ps, V] = parser
+
+  implicit def empty[V]:
+        (∅ ParseRecordFrom V) { type Vs = ∅ }  =
+    new (∅ ParseRecordFrom V) {
+
+      type Vs = ∅
+      def apply(s: ∅, map: Map[String,V]): Out = Right(∅)
+    }
 
   implicit def cons[
     V,
