@@ -4,7 +4,7 @@ object records {
 
   // deps
   import typeSets._, types._, propertyHolders._, properties._
-  
+
   import ops.typeSets._
 
   trait AnyRecord extends AnyType with AnyPropertiesHolder {
@@ -19,7 +19,7 @@ object records {
 
   class Record[Props <: AnyTypeSet.Of[AnyProperty], Vals <: AnyTypeSet]
     (val properties: Props)
-    (implicit 
+    (implicit
       val valuesOfProperties: Vals areValuesOf Props
     ) extends AnyRecord {
 
@@ -37,8 +37,8 @@ object records {
     type withProperties[Ps <: AnyTypeSet.Of[AnyProperty]] = AnyRecord { type Properties = Ps }
     type withRaw[R <: AnyTypeSet] = AnyRecord { type Raw = R }
 
-    implicit def recordOps[R <: AnyRecord](rec: R): 
-          RecordOps[R] = 
+    implicit def recordOps[R <: AnyRecord](rec: R):
+          RecordOps[R] =
       new RecordOps[R](rec)
   }
 
@@ -52,16 +52,20 @@ object records {
         reorder: Vs ReorderTo R#Raw
       ): ValueOf[R] = rec := reorder(values)
 
-    def parseFrom[X](x: X)(implicit 
+    def parseFrom[X](x: X)(implicit
       parseSet: (R#Properties ParseFrom X) { type Out = R#Raw }
     ): ValueOf[R] = rec := parseSet(rec.properties, x)
+
+    def parseMap[RV](map: Map[String,RV])(implicit
+        parseSet: (R#Properties ParseFrom Map[String,RV]) { type Out = R#Raw }
+    ): ValueOf[R] = rec := parseSet(rec.properties, map)
 
   }
 
   // NOTE: you'll only get record ops _if_ you have a ValueOf[R]. From that point, you don't need the wrapper at all, just use `rec.value`. This lets you make RecordRawOps a value class itself!
   // see https://stackoverflow.com/questions/14861862/how-do-you-enrich-value-classes-without-overhead/
-  implicit def recordRawOps[R <: AnyRecord](rec: ValueOf[R]): 
-        RecordRawOps[R] = 
+  implicit def recordRawOps[R <: AnyRecord](rec: ValueOf[R]):
+        RecordRawOps[R] =
     new RecordRawOps[R](rec.value)
 
   class RecordRawOps[R <: AnyRecord](val recRaw: R#Raw) extends AnyVal {
@@ -73,7 +77,7 @@ object records {
 
 
     def update[P <: AnyProperty](propRep: ValueOf[P])
-      (implicit check: (ValueOf[P] :~: ∅) ⊂ R#Raw, 
+      (implicit check: (ValueOf[P] :~: ∅) ⊂ R#Raw,
                 upd: R Update (ValueOf[P] :~: ∅)
       ): ValueOf[R] = upd(recRaw, propRep :~: ∅)
 
