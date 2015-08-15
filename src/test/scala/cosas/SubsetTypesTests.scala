@@ -18,7 +18,7 @@ object nelists {
   object NEList {
 
     implicit def toOps[E](v: ValueOf[NEList[E]]): NEListOps[E] = new NEListOps(v.value)
-    implicit def toSSTops[E](v: NEList[E]): SubSetTypeOps[WrappedList[E], NEList[E]] = new SubSetTypeOps(v)
+    implicit def toSSTops[E](v: NEList[E]): SubsetTypeOps[WrappedList[E], NEList[E]] = new SubsetTypeOps(v)
   }
 
   def NEListOf[E]: NEList[E] = new NEList()
