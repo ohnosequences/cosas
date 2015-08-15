@@ -1,6 +1,6 @@
 package ohnosequences.cosas
 
-object types {
+case object types {
 
   /* Something super-generic and ultra-abstract */
   trait AnyType {

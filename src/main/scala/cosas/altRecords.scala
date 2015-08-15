@@ -2,15 +2,23 @@ package ohnosequences.cosas
 
 import types._, typeSets._, properties._
 
-object altRecords {
+case object altRecords {
 
   trait AnyRecord {
 
-    type Properties <: AnyTypeSet
+    type Properties <: AnyTypeSet // of AnyProperty's
     val properties: Properties
 
     type Values <: AnyTypeSet
   }
+
+  case object AnyRecord {
+
+    /* Refiners */
+    type withProperties[Ps <: AnyTypeSet.Of[AnyProperty]] = AnyRecord { type Properties = Ps }
+    type withValues[Vs <: AnyTypeSet] = AnyRecord { type Values = Vs }
+  }
+
 
   case object EmptyRecord extends AnyRecord {
 
