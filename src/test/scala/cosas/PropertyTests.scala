@@ -3,15 +3,15 @@ package ohnosequences.cosas.test
 import ohnosequences.cosas._, types._, properties._, typeSets._, propertyHolders._
 
 object exampleProperties {
-  
+
   case object key extends Property[String]("key")
   case object name extends Property[String]("name")
-  case object age extends Property[Integer]("age")
+  case object age extends Property[Int]("age")
   case object valueless extends Property("valueless")
 }
 
 class uhoh extends org.scalatest.FunSuite {
-    
+
   import exampleProperties._
 
   test("create property instances") {
