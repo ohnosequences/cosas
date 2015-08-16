@@ -10,10 +10,11 @@ object recordTestsContext {
   case object email extends Property[String]("email")
   case object color extends Property[String]("color")
 
-  case object simpleUser extends RecordType(id :@: name :@: EmptyRecord)
-  case object normalUser extends RecordType(id :@: name :@: email :@: color :@: EmptyRecord)
-  val vProps  = email :@: color :@: EmptyRecord
-  val vRecord = new RecordType(vProps)
+  // funny square ins an option too
+  case object simpleUser extends Record(id :&: name :&: □)
+  case object normalUser extends Record(id :&: name :&: email :&: color :&: FNil)
+  val vProps  = email :&: color :&: FNil
+  val vRecord = new Record(vProps)
   val vEmail = "oh@buh.com"
 
   val vRecordEntry = vRecord (
@@ -123,15 +124,15 @@ class RecordTests extends org.scalatest.FunSuite {
 
   test("can check if record has properties") {
 
-    implicitly[simpleUser.Record HasProperties (id.type :~: name.type :~: ∅)]
-    implicitly[simpleUser.Record HasProperties (name.type :~: id.type :~: ∅)]
-    implicitly[simpleUser.Record HasProperties (name.type :~: ∅)]
-    implicitly[simpleUser.Record HasProperties (id.type :~: ∅)]
+    implicitly[simpleUser.Fields HasProperties (id.type :~: name.type :~: ∅)]
+    implicitly[simpleUser.Fields HasProperties (name.type :~: id.type :~: ∅)]
+    implicitly[simpleUser.Fields HasProperties (name.type :~: ∅)]
+    implicitly[simpleUser.Fields HasProperties (id.type :~: ∅)]
 
-    implicitly[simpleUser.Record HasProperty name.type]
-    implicitly[simpleUser.Record HasProperty id.type]
+    implicitly[simpleUser.Fields HasProperty name.type]
+    implicitly[simpleUser.Fields HasProperty id.type]
 
-    assertTypeError { """implicitly[simpleUser.Record HasProperties (email.type :~: id.type :~: ∅)]""" }
-    assertTypeError { """implicitly[simpleUser.Record HasProperties (email.type :~: name.type :~: color.type :~: ∅)]""" }
+    assertTypeError { """implicitly[simpleUser.Fields HasProperties (email.type :~: id.type :~: ∅)]""" }
+    assertTypeError { """implicitly[simpleUser.Fields HasProperties (email.type :~: name.type :~: color.type :~: ∅)]""" }
   }
 }

@@ -10,7 +10,7 @@ case object records {
 
     Records wrap a typeset of properties, constructing along the way the typeset of their `ValueOf`s: `Values`.
   */
-  trait AnyRecord {
+  trait AnyFields {
 
     type Properties <: AnyTypeSet // of AnyProperty's
     val properties: Properties
@@ -19,7 +19,9 @@ case object records {
   }
 
   // TODO aliases for matching etc
-  case object EmptyRecord extends AnyRecord {
+  type □  = FNil.type
+  val □ : □ = FNil
+  case object FNil extends AnyFields {
 
     type Properties = ∅
     val properties = ∅
@@ -28,8 +30,8 @@ case object records {
   }
 
   // TODO review this symbol; I'm fine with any other
-  case class :@:[P <: AnyProperty, T <: AnyRecord]
-  (val head: P, val tail: T)(implicit val headIsNew: P ∉ T#Properties) extends AnyRecord {
+  case class :&:[P <: AnyProperty, T <: AnyFields]
+  (val head: P, val tail: T)(implicit val headIsNew: P ∉ T#Properties) extends AnyFields {
 
     type Properties = P :~: T#Properties
     val properties: Properties = head :~: (tail.properties: T#Properties)
@@ -37,89 +39,89 @@ case object records {
     type Values = ValueOf[P] :~: T#Values
   }
 
-  case object AnyRecord {
+  case object AnyFields {
 
     /* Refiners */
-    type withProperties[Ps <: AnyTypeSet.Of[AnyProperty]] = AnyRecord { type Properties = Ps }
-    type withValues[Vs <: AnyTypeSet] = AnyRecord { type Values = Vs }
+    type withProperties[Ps <: AnyTypeSet.Of[AnyProperty]] = AnyFields { type Properties = Ps }
+    type withValues[Vs <: AnyTypeSet] = AnyFields { type Values = Vs }
 
-    type size[R <: AnyRecord] = typeSets.size[R#Properties]
+    type size[R <: AnyFields] = typeSets.size[R#Properties]
 
-    implicit def getRecordOps[R <: AnyRecord](record: R): RecordOps[R] =
-      RecordOps(record)
+    implicit def getFieldsOps[R <: AnyFields](record: R): FieldsOps[R] =
+      FieldsOps(record)
   }
 
-  case class RecordOps[R <: AnyRecord](val record: R) extends AnyVal {
+  case class FieldsOps[R <: AnyFields](val fields: R) extends AnyVal {
 
-    def :@:[P <: AnyProperty](p: P)(implicit check: P ∉ R#Properties): (P :@: R) = records.:@:(p,record)
+    def :&:[P <: AnyProperty](p: P)(implicit check: P ∉ R#Properties): (P :&: R) = records.:&:(p,fields)
   }
 
   import ops.typeSets.CheckForAll
-  
+
   @annotation.implicitNotFound(msg = "Cannot prove that ${R} has property ${P}")
-  sealed class HasProperty[R <: AnyRecord, P <: AnyProperty]
+  sealed class HasProperty[R <: AnyFields, P <: AnyProperty]
 
   case object HasProperty {
 
-    implicit def pIsInProperties[R <: AnyRecord, P <: AnyProperty]
+    implicit def pIsInProperties[R <: AnyFields, P <: AnyProperty]
       (implicit in: P ∈ R#Properties):
           (R HasProperty P) =
       new (R HasProperty P)
   }
 
   @annotation.implicitNotFound(msg = "Cannot prove that ${R} has properties ${Ps}")
-  sealed class HasProperties[R <: AnyRecord, Ps <: AnyTypeSet.Of[AnyProperty]]
+  sealed class HasProperties[R <: AnyFields, Ps <: AnyTypeSet.Of[AnyProperty]]
 
   object HasProperties {
 
-    trait BelongsTo[R <: AnyRecord] extends TypePredicate[AnyProperty] {
+    trait BelongsTo[R <: AnyFields] extends TypePredicate[AnyProperty] {
       type Condition[P <: AnyProperty] = R HasProperty P
     }
 
-    implicit def recordHasPs[R <: AnyRecord, Ps <: AnyTypeSet.Of[AnyProperty]]
+    implicit def recordHasPs[R <: AnyFields, Ps <: AnyTypeSet.Of[AnyProperty]]
       (implicit check: CheckForAll[Ps, BelongsTo[R]]):
           (R HasProperties Ps) =
       new (R HasProperties Ps)
   }
 
   /*
-    ## Record types
+    ## Records
 
-    Record types are `AnyType`s wrapping a `Record` from which they take their `Raw` type: entries for that  record.
+    Records are `AnyType`s wrapping a `Fields` from which they take their `Raw` type: entries for that set of fields.
   */
-  trait AnyRecordType extends AnyType {
+  trait AnyRecord extends AnyType {
 
-    type Record <: AnyRecord
-    val record: Record
-    type Raw <: Record#Values
+    type Fields <: AnyFields
+    val fields: Fields
+    type Raw <: Fields#Values
   }
 
-  class RecordType[R <: AnyRecord](val record: R) extends AnyRecordType {
+  class Record[R <: AnyFields](val fields: R) extends AnyRecord {
 
-    type Record = R
-    type Raw = Record#Values
+    type Fields = R
+    type Raw = Fields#Values
 
     lazy val label = toString
   }
 
-  case object AnyRecordType {
+  case object AnyRecord {
 
-    type withRecord[R <: AnyRecord] = AnyRecordType { type Record = R }
-    type withFields[E <: AnyTypeSet] = AnyRecordType { type Raw = E }
+    type withRecord[R <: AnyFields] = AnyRecord { type Fields = R }
+    type withFields[E <: AnyTypeSet] = AnyRecord { type Raw = E }
 
-    implicit def getRecordTypeOps[RT <: AnyRecordType](recType: RT): RecordTypeOps[RT] =
-      RecordTypeOps(recType)
+    implicit def getRecordOps[RT <: AnyRecord](recType: RT): RecordOps[RT] =
+      RecordOps(recType)
 
-    implicit def getRecordEntryOps[RT <: AnyRecordType](entry: ValueOf[RT]): RecordEntryOps[RT] =
+    implicit def getRecordEntryOps[RT <: AnyRecord](entry: ValueOf[RT]): RecordEntryOps[RT] =
       RecordEntryOps(entry.value)
   }
 
   /*
-    ### RecordType ops
+    ### Record ops
 
     An `apply` method for building denotations of this record type, overloaded so that the fields can be provided in any order.
   */
-  case class RecordTypeOps[RT <: AnyRecordType](val recType: RT) extends AnyVal {
+  case class RecordOps[RT <: AnyRecord](val recType: RT) extends AnyVal {
 
     def apply(recEntry: RT#Raw): ValueOf[RT] = recType := recEntry
 
@@ -130,11 +132,11 @@ case object records {
   }
 
   /*
-    ### RecordType entry ops
+    ### Record entry ops
 
     Operations on `ValueOf`s a record type. As usual with value classes, parameter is of the wrapped type, with the implicits providing them only for value class instances.
   */
-  case class RecordEntryOps[RT <: AnyRecordType](val entryRaw: RT#Raw) extends AnyVal {
+  case class RecordEntryOps[RT <: AnyRecord](val entryRaw: RT#Raw) extends AnyVal {
 
     def get[P <: AnyProperty](p: P)(implicit
       get: RT Get P
@@ -149,11 +151,11 @@ case object records {
       update: RT Update Ps
     ): ValueOf[RT] = update(entryRaw, fields)
 
-    def as[Other <: AnyRecordType, Rest <: AnyTypeSet](other: Other, rest: Rest)(implicit
+    def as[Other <: AnyRecord, Rest <: AnyTypeSet](other: Other, rest: Rest)(implicit
       transform: Transform[RT, Other, Rest]
     ): ValueOf[Other] = transform(entryRaw, other, rest)
 
-    def as[Other <: AnyRecordType { type Raw = RT#Raw }](otherEntry: ValueOf[Other]): ValueOf[RT] =
+    def as[Other <: AnyRecord { type Raw = RT#Raw }](otherEntry: ValueOf[Other]): ValueOf[RT] =
       new ValueOf[RT](otherEntry.value)
   }
 
@@ -162,12 +164,12 @@ case object records {
   import fns._, ops.typeSets._
 
   @annotation.implicitNotFound(msg = "Cannot get property ${P} from record of type ${RT}")
-  trait Get[RT <: AnyRecordType, P <: AnyProperty]
+  trait Get[RT <: AnyRecord, P <: AnyProperty]
     extends Fn1[RT#Raw] with Out[P#Raw]
 
   case object Get {
 
-    implicit def getter[R <: AnyRecordType, P <: AnyProperty]
+    implicit def getter[R <: AnyRecord, P <: AnyProperty]
       (implicit
         lookup: R#Raw Lookup ValueOf[P]
       ):  Get[R, P] =
@@ -176,12 +178,12 @@ case object records {
 
 
   @annotation.implicitNotFound(msg = "Cannot update property values ${Ps} from record of type ${RT}")
-  trait Update[RT <: AnyRecordType, Ps <: AnyTypeSet]
+  trait Update[RT <: AnyRecord, Ps <: AnyTypeSet]
     extends Fn2[RT#Raw, Ps] with Out[ValueOf[RT]]
 
   case object Update {
 
-    implicit def update[RT <: AnyRecordType, Ps <: AnyTypeSet]
+    implicit def update[RT <: AnyRecord, Ps <: AnyTypeSet]
       (implicit
         check: Ps ⊂ RT#Raw,
         replace: Replace[RT#Raw, Ps]
@@ -194,14 +196,14 @@ case object records {
 
 
   @annotation.implicitNotFound(msg = "Cannot transform record of type ${RT} to ${Other} with values ${Rest}")
-  trait Transform[RT <: AnyRecordType, Other <: AnyRecordType, Rest]
+  trait Transform[RT <: AnyRecord, Other <: AnyRecord, Rest]
     extends Fn3[RT#Raw, Other, Rest] with Out[ValueOf[Other]]
 
   case object Transform {
 
     implicit def transform[
-        RT <: AnyRecordType,
-        Other <: AnyRecordType,
+        RT <: AnyRecord,
+        Other <: AnyRecord,
         Rest <: AnyTypeSet,
         Uni <: AnyTypeSet,
         Missing <: AnyTypeSet
