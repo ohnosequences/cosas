@@ -246,9 +246,6 @@ object typeSets {
 
     def mapFold[F <: Poly1, R](f: F)(r: R)(op: (R, R) => R)(implicit mapFold: MapFoldSet[F, S, R]): mapFold.Out = mapFold(s, r, op)
 
-
-    def aggregateProperties(implicit aggr: AggregateProperties[S]): aggr.Out = aggr(s)
-
     /* Predicates */
 
     def filter[P <: AnyTypePredicate](implicit fltr: Filter[S, P]): fltr.Out = fltr(s)
