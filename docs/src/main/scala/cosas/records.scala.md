@@ -24,7 +24,9 @@ Records wrap a typeset of properties, constructing along the way the typeset of 
   }
 
   // TODO aliases for matching etc
-  case object EmptyRecord extends AnyFields {
+  type □  = FNil.type
+  val □ : □ = FNil
+  case object FNil extends AnyFields {
 
     type Properties = ∅
     val properties = ∅

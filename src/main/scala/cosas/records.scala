@@ -19,7 +19,9 @@ case object records {
   }
 
   // TODO aliases for matching etc
-  case object EmptyRecord extends AnyFields {
+  type □  = FNil.type
+  val □ : □ = FNil
+  case object FNil extends AnyFields {
 
     type Properties = ∅
     val properties = ∅

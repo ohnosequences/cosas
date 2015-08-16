@@ -293,7 +293,7 @@ class TypeSetTests extends org.scalatest.FunSuite {
     case object age   extends Property[Integer]("age")
 
     // using record here just for convenience
-    case object rec extends Record(name :&: age :&: key :&: EmptyRecord)
+    case object rec extends Record(name :&: age :&: key :&: FNil)
 
     val recEntry = rec(
       name("foo") :~:

@@ -10,9 +10,10 @@ object recordTestsContext {
   case object email extends Property[String]("email")
   case object color extends Property[String]("color")
 
-  case object simpleUser extends Record(id :&: name :&: EmptyRecord)
-  case object normalUser extends Record(id :&: name :&: email :&: color :&: EmptyRecord)
-  val vProps  = email :&: color :&: EmptyRecord
+  // funny square ins an option too
+  case object simpleUser extends Record(id :&: name :&: □)
+  case object normalUser extends Record(id :&: name :&: email :&: color :&: FNil)
+  val vProps  = email :&: color :&: FNil
   val vRecord = new Record(vProps)
   val vEmail = "oh@buh.com"
 
