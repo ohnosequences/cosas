@@ -42,6 +42,8 @@ case object records {
   case object AnyFields {
 
     /* Refiners */
+    type withBound[B <: AnyProperty] = AnyFields { type Properties <: AnyTypeSet.Of[B] }
+
     type withProperties[Ps <: AnyTypeSet.Of[AnyProperty]] = AnyFields { type Properties = Ps }
     type withValues[Vs <: AnyTypeSet] = AnyFields { type Values = Vs }
 
