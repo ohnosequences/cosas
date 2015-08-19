@@ -230,6 +230,8 @@ object typeSets {
 
     def toListOf[T](implicit toListOf: S ToListOf T): List[T] = toListOf(s)
 
+    def toMap[K, V](implicit toMap: ToMap[S, K, V]): Map[K, V] = toMap(s)
+
     def parseFrom[X](x: X)(implicit parser: S ParseFrom X): parser.Out = parser(s, x)
 
     def serializeTo[X](implicit serializer: S SerializeTo X): X = serializer(s)

@@ -1,1 +1,1 @@
-version in ThisBuild := "0.7.0-simpler-records-SNAPSHOT"
+version in ThisBuild := "0.7.0-set-to-map-SNAPSHOT"
