@@ -1,6 +1,6 @@
 package ohnosequences.cosas
 
-object types {
+case object types {
 
   /* Something super-generic and ultra-abstract */
   trait AnyType {
@@ -15,15 +15,15 @@ object types {
   object AnyType {
 
     type withRaw[V] = AnyType { type Raw = V }
-    
+
     implicit def typeOps[T <: AnyType](tpe: T): TypeOps[T] = TypeOps(tpe)
   }
 
   class Type(val label: String) extends AnyType { type Raw = Any }
   class Wrap[R](val label: String) extends AnyType { final type Raw = R }
 
-  type =:[V, T <: AnyType] = Denotes[V,T]
-  type :=[T <: AnyType, V] = Denotes[V,T]
+  type =:[V <: T#Raw, T <: AnyType] = Denotes[V,T]
+  type :=[T <: AnyType, V <: T#Raw] = Denotes[V,T]
 
   type ValueOf[T <: AnyType] = T#Raw Denotes T
   def  valueOf[T <: AnyType, V <: T#Raw](t: T)(v: V): ValueOf[T] = v =: t
@@ -31,8 +31,8 @@ object types {
   final case class TypeOps[T <: AnyType](val tpe: T) extends AnyVal {
 
     /* For example `user denoteWith (String, String, Int)` _not that this is a good idea_ */
-    final def =:[@specialized V](v: V): V =: T = new (V Denotes T)(v)
-    final def :=[@specialized V](v: V): V =: T = new (V Denotes T)(v)
+    final def =:[@specialized V <: T#Raw](v: V): V =: T = new (V Denotes T)(v)
+    final def :=[@specialized V <: T#Raw](v: V): V =: T = new (V Denotes T)(v)
   }
 
   /* You denote a `Type` using a `Value` */
@@ -49,7 +49,7 @@ object types {
 
   // TODO: who knows what's going on here wrt specialization (http://axel22.github.io/2013/11/03/specialization-quirks.html)
   trait AnyDenotes[@specialized V, T <: AnyType] extends Any with AnyDenotationOf[T] {
-    
+
     final type Value = V
   }
 
@@ -84,14 +84,15 @@ object types {
 
   object AnySubsetType {
 
-    implicit def sstops[W <: AnyType, ST <: SubsetType[W]](st: ST): SubSetTypeOps[W,ST] = new SubSetTypeOps(st)
-    class SubSetTypeOps[W <: AnyType, ST <: SubsetType[W]](val st: ST) extends AnyVal {
+    implicit def getSubsetTypeOps[W <: AnyType, ST <: SubsetType[W]](st: ST): SubsetTypeOps[W,ST] =
+      SubsetTypeOps(st)
+    case class SubsetTypeOps[W <: AnyType, ST <: SubsetType[W]](val st: ST) extends AnyVal {
 
       final def apply(raw: W := W#Raw): Option[ValueOf[ST]] = {
 
         if ( st predicate raw ) None else Some( new ValueOf[ST](raw.value) )
       }
-      
+
       final def withValue(raw: W := W#Raw): Option[ValueOf[ST]] = apply(raw)
     }
 

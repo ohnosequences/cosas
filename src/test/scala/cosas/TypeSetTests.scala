@@ -288,12 +288,12 @@ class TypeSetTests extends org.scalatest.FunSuite {
   test("parse") {
     import properties._, records._
 
-    case object key extends Property[String]("key")
-    case object name extends Property[String]("name")
-    case object age extends Property[Integer]("age")
+    case object key   extends Property[String]("key")
+    case object name  extends Property[String]("name")
+    case object age   extends Property[Integer]("age")
 
     // using record here just for convenience
-    object rec extends Record(name :~: age :~: key :~: ∅)
+    case object rec extends Record(name :&: age :&: key :&: FNil)
 
     val recEntry = rec(
       name("foo") :~:
@@ -314,7 +314,7 @@ class TypeSetTests extends org.scalatest.FunSuite {
     assertResult(recEntry.value) {
       import MapParser._
 
-      rec.properties parseFrom Map(
+      rec.fields.properties parseFrom Map(
         "age" -> "12",
         "name" -> "foo",
         "key" -> "s0dl52f23k"
@@ -333,7 +333,7 @@ class TypeSetTests extends org.scalatest.FunSuite {
     assertResult(recEntry.value) {
       import ListParser._
 
-      rec.properties parseFrom List(
+      rec.fields.properties parseFrom List(
         "foo",
         "12",
         "s0dl52f23k"

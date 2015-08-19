@@ -2,104 +2,243 @@
 ```scala
 package ohnosequences.cosas
 
-object records {
+import types._, typeSets._, properties._
+import ops.typeSets.ReorderTo
 
-  // deps
-  import typeSets._, types._, propertyHolders._, properties._
-  
-  import ops.typeSets._
-
-  trait AnyRecord extends AnyType with AnyPropertiesHolder {
-
-    val label: String
+case object records {
 ```
 
-Record wraps a set of values of it's properties
+
+## Records
+
+Records wrap a typeset of properties, constructing along the way the typeset of their `ValueOf`s: `Values`.
+
 
 ```scala
-    type Raw <: AnyTypeSet
-    // should be provided implicitly:
-    implicit val valuesOfProperties: Raw areValuesOf Properties
+  trait AnyFields {
+
+    type Properties <: AnyTypeSet // of AnyProperty's
+    val properties: Properties
+
+    type Values <: AnyTypeSet
   }
 
-  class Record[Props <: AnyTypeSet.Of[AnyProperty], Vals <: AnyTypeSet]
-    (val properties: Props)
-    (implicit 
-      val valuesOfProperties: Vals areValuesOf Props
-    ) extends AnyRecord {
+  // TODO aliases for matching etc
+  type □  = FNil.type
+  val □ : □ = FNil
+  case object FNil extends AnyFields {
 
-    val label = this.toString
+    type Properties = ∅
+    val properties = ∅
 
-    type Properties = Props
-    type Raw = Vals
+    type Values = ∅
   }
 
-  type size[R <: AnyRecord] = typeSets.size[R#Raw]
+  // TODO review this symbol; I'm fine with any other
+  case class :&:[P <: AnyProperty, T <: AnyFields]
+  (val head: P, val tail: T)(implicit val headIsNew: P ∉ T#Properties) extends AnyFields {
 
-  object AnyRecord {
+    type Properties = P :~: T#Properties
+    val properties: Properties = head :~: (tail.properties: T#Properties)
+
+    type Values = ValueOf[P] :~: T#Values
+  }
+
+  case object AnyFields {
 ```
 
 Refiners
 
 ```scala
-    type withProperties[Ps <: AnyTypeSet.Of[AnyProperty]] = AnyRecord { type Properties = Ps }
-    type withRaw[R <: AnyTypeSet] = AnyRecord { type Raw = R }
+    type withProperties[Ps <: AnyTypeSet.Of[AnyProperty]] = AnyFields { type Properties = Ps }
+    type withValues[Vs <: AnyTypeSet] = AnyFields { type Values = Vs }
 
-    implicit def recordOps[R <: AnyRecord](rec: R): 
-          RecordOps[R] = 
-      new RecordOps[R](rec)
+    type size[R <: AnyFields] = typeSets.size[R#Properties]
+
+    implicit def getFieldsOps[R <: AnyFields](record: R): FieldsOps[R] =
+      FieldsOps(record)
   }
 
-  // class RecordOps[R <: AnyRecord](val rec: R) extends WrapOps[R](rec) {
-  class RecordOps[R <: AnyRecord](val rec: R) extends AnyVal {
+  case class FieldsOps[R <: AnyFields](val fields: R) extends AnyVal {
 
-    def apply(v: R#Raw): ValueOf[R] = new ValueOf[R](v)
+    def :&:[P <: AnyProperty](p: P)(implicit check: P ∉ R#Properties): (P :&: R) = records.:&:(p,fields)
+  }
+
+  import ops.typeSets.CheckForAll
+
+  @annotation.implicitNotFound(msg = "Cannot prove that ${R} has property ${P}")
+  sealed class HasProperty[R <: AnyFields, P <: AnyProperty]
+
+  case object HasProperty {
+
+    implicit def pIsInProperties[R <: AnyFields, P <: AnyProperty]
+      (implicit in: P ∈ R#Properties):
+          (R HasProperty P) =
+      new (R HasProperty P)
+  }
+
+  @annotation.implicitNotFound(msg = "Cannot prove that ${R} has properties ${Ps}")
+  sealed class HasProperties[R <: AnyFields, Ps <: AnyTypeSet.Of[AnyProperty]]
+
+  object HasProperties {
+
+    trait BelongsTo[R <: AnyFields] extends TypePredicate[AnyProperty] {
+      type Condition[P <: AnyProperty] = R HasProperty P
+    }
+
+    implicit def recordHasPs[R <: AnyFields, Ps <: AnyTypeSet.Of[AnyProperty]]
+      (implicit check: CheckForAll[Ps, BelongsTo[R]]):
+          (R HasProperties Ps) =
+      new (R HasProperties Ps)
+  }
+```
+
+
+## Records
+
+Records are `AnyType`s wrapping a `Fields` from which they take their `Raw` type: entries for that set of fields.
+
+
+```scala
+  trait AnyRecord extends AnyType {
+
+    type Fields <: AnyFields
+    val fields: Fields
+    type Raw <: Fields#Values
+  }
+
+  class Record[R <: AnyFields](val fields: R) extends AnyRecord {
+
+    type Fields = R
+    type Raw = Fields#Values
+
+    lazy val label = toString
+  }
+
+  case object AnyRecord {
+
+    type withRecord[R <: AnyFields] = AnyRecord { type Fields = R }
+    type withFields[E <: AnyTypeSet] = AnyRecord { type Raw = E }
+
+    implicit def getRecordOps[RT <: AnyRecord](recType: RT): RecordOps[RT] =
+      RecordOps(recType)
+
+    implicit def getRecordEntryOps[RT <: AnyRecord](entry: ValueOf[RT]): RecordEntryOps[RT] =
+      RecordEntryOps(entry.value)
+  }
+```
+
+
+### Record ops
+
+An `apply` method for building denotations of this record type, overloaded so that the fields can be provided in any order.
+
+
+```scala
+  case class RecordOps[RT <: AnyRecord](val recType: RT) extends AnyVal {
+
+    def apply(recEntry: RT#Raw): ValueOf[RT] = recType := recEntry
 ```
 
 Same as apply, but you can pass fields in any order
 
 ```scala
     def apply[Vs <: AnyTypeSet](values: Vs)(implicit
-        reorder: Vs ReorderTo R#Raw
-      ): ValueOf[R] = rec := reorder(values)
+        reorder: Vs ReorderTo RT#Raw
+      ): ValueOf[RT] = recType := reorder(values)
+  }
+```
 
-    def parseFrom[X](x: X)(implicit 
-      parseSet: (R#Properties ParseFrom X) { type Out = R#Raw }
-    ): ValueOf[R] = rec := parseSet(rec.properties, x)
 
+### Record entry ops
+
+Operations on `ValueOf`s a record type. As usual with value classes, parameter is of the wrapped type, with the implicits providing them only for value class instances.
+
+
+```scala
+  case class RecordEntryOps[RT <: AnyRecord](val entryRaw: RT#Raw) extends AnyVal {
+
+    def get[P <: AnyProperty](p: P)(implicit
+      get: RT Get P
+    ): ValueOf[P] = p := get(entryRaw)
+
+    def update[P <: AnyProperty](field: ValueOf[P])(implicit
+      check: (ValueOf[P] :~: ∅) ⊂ RT#Raw,
+      update: RT Update (ValueOf[P] :~: ∅)
+    ): ValueOf[RT] = update(entryRaw, field :~: ∅)
+
+    def update[Ps <: AnyTypeSet](fields: Ps)(implicit
+      update: RT Update Ps
+    ): ValueOf[RT] = update(entryRaw, fields)
+
+    def as[Other <: AnyRecord, Rest <: AnyTypeSet](other: Other, rest: Rest)(implicit
+      transform: Transform[RT, Other, Rest]
+    ): ValueOf[Other] = transform(entryRaw, other, rest)
+
+    def as[Other <: AnyRecord { type Raw = RT#Raw }](otherEntry: ValueOf[Other]): ValueOf[RT] =
+      new ValueOf[RT](otherEntry.value)
   }
 
-  // NOTE: you'll only get record ops _if_ you have a ValueOf[R]. From that point, you don't need the wrapper at all, just use `rec.value`. This lets you make RecordRawOps a value class itself!
-  // see https://stackoverflow.com/questions/14861862/how-do-you-enrich-value-classes-without-overhead/
-  implicit def recordRawOps[R <: AnyRecord](rec: ValueOf[R]): 
-        RecordRawOps[R] = 
-    new RecordRawOps[R](rec.value)
 
-  class RecordRawOps[R <: AnyRecord](val recRaw: R#Raw) extends AnyVal {
-    import ops.records._
+  // ops
+  import fns._, ops.typeSets._
 
-    def get[P <: AnyProperty](p: P)
-      (implicit get: R Get P): ValueOf[P] = get(recRaw)
-      // (implicit lookup: R#Raw Lookup ValueOf[P]): ValueOf[P] = lookup(recRaw.raw)
+  @annotation.implicitNotFound(msg = "Cannot get property ${P} from record of type ${RT}")
+  trait Get[RT <: AnyRecord, P <: AnyProperty]
+    extends Fn1[RT#Raw] with Out[P#Raw]
 
+  case object Get {
 
-    def update[P <: AnyProperty](propRep: ValueOf[P])
-      (implicit check: (ValueOf[P] :~: ∅) ⊂ R#Raw, 
-                upd: R Update (ValueOf[P] :~: ∅)
-      ): ValueOf[R] = upd(recRaw, propRep :~: ∅)
-
-    def update[Ps <: AnyTypeSet](propReps: Ps)
-      (implicit upd: R Update Ps): ValueOf[R] = upd(recRaw, propReps)
+    implicit def getter[R <: AnyRecord, P <: AnyProperty]
+      (implicit
+        lookup: R#Raw Lookup ValueOf[P]
+      ):  Get[R, P] =
+      new Get[R, P] { def apply(recEntry: R#Raw): Out = lookup(recEntry).value }
+  }
 
 
-    def as[Other <: AnyRecord](other: Other)
-      (implicit project: Take[R#Raw, Other#Raw]): ValueOf[Other] = other := project(recRaw)
+  @annotation.implicitNotFound(msg = "Cannot update property values ${Ps} from record of type ${RT}")
+  trait Update[RT <: AnyRecord, Ps <: AnyTypeSet]
+    extends Fn2[RT#Raw, Ps] with Out[ValueOf[RT]]
 
-    def as[Other <: AnyRecord, Rest <: AnyTypeSet](other: Other, rest: Rest)
-      (implicit transform: Transform[R, Other, Rest]): ValueOf[Other] = transform(recRaw, other, rest)
+  case object Update {
+
+    implicit def update[RT <: AnyRecord, Ps <: AnyTypeSet]
+      (implicit
+        check: Ps ⊂ RT#Raw,
+        replace: Replace[RT#Raw, Ps]
+      ):  Update[RT, Ps] =
+      new Update[RT, Ps] {
+
+        def apply(recRaw: RT#Raw, propReps: Ps): Out = new ValueOf[RT](replace(recRaw, propReps))
+      }
+  }
 
 
-    def serializeTo[X](implicit serializer: R#Raw SerializeTo X): X = serializer(recRaw)
+  @annotation.implicitNotFound(msg = "Cannot transform record of type ${RT} to ${Other} with values ${Rest}")
+  trait Transform[RT <: AnyRecord, Other <: AnyRecord, Rest]
+    extends Fn3[RT#Raw, Other, Rest] with Out[ValueOf[Other]]
+
+  case object Transform {
+
+    implicit def transform[
+        RT <: AnyRecord,
+        Other <: AnyRecord,
+        Rest <: AnyTypeSet,
+        Uni <: AnyTypeSet,
+        Missing <: AnyTypeSet
+      ](implicit
+        missing: (Other#Raw \ RT#Raw) { type Out = Missing },
+        allMissing: Rest ~:~ Missing,
+        uni: (RT#Raw ∪ Rest) { type Out = Uni },
+        project: Take[Uni, Other#Raw]
+      ):  Transform[RT, Other, Rest] =
+      new Transform[RT, Other, Rest] {
+
+        def apply(recRaw: RT#Raw, other: Other, rest: Rest): Out =
+          other := project(uni(recRaw, rest))
+      }
+
   }
 
 }
@@ -107,78 +246,30 @@ Same as apply, but you can pass fields in any order
 ```
 
 
-------
 
-### Index
 
-+ src
-  + test
-    + scala
-      + cosas
-        + [SubsetTypesTests.scala][test/scala/cosas/SubsetTypesTests.scala]
-        + [PropertyTests.scala][test/scala/cosas/PropertyTests.scala]
-        + [TypeUnionTests.scala][test/scala/cosas/TypeUnionTests.scala]
-        + [ScalazEquality.scala][test/scala/cosas/ScalazEquality.scala]
-        + [EqualityTests.scala][test/scala/cosas/EqualityTests.scala]
-        + [DenotationTests.scala][test/scala/cosas/DenotationTests.scala]
-        + [RecordTests.scala][test/scala/cosas/RecordTests.scala]
-        + [TypeSetTests.scala][test/scala/cosas/TypeSetTests.scala]
-  + main
-    + scala
-      + cosas
-        + [equality.scala][main/scala/cosas/equality.scala]
-        + [properties.scala][main/scala/cosas/properties.scala]
-        + [typeSets.scala][main/scala/cosas/typeSets.scala]
-        + ops
-          + records
-            + [Update.scala][main/scala/cosas/ops/records/Update.scala]
-            + [Conversions.scala][main/scala/cosas/ops/records/Conversions.scala]
-            + [Get.scala][main/scala/cosas/ops/records/Get.scala]
-          + typeSets
-            + [Filter.scala][main/scala/cosas/ops/typeSets/Filter.scala]
-            + [Reorder.scala][main/scala/cosas/ops/typeSets/Reorder.scala]
-            + [Conversions.scala][main/scala/cosas/ops/typeSets/Conversions.scala]
-            + [AggregateProperties.scala][main/scala/cosas/ops/typeSets/AggregateProperties.scala]
-            + [Subtract.scala][main/scala/cosas/ops/typeSets/Subtract.scala]
-            + [Pop.scala][main/scala/cosas/ops/typeSets/Pop.scala]
-            + [Representations.scala][main/scala/cosas/ops/typeSets/Representations.scala]
-            + [Replace.scala][main/scala/cosas/ops/typeSets/Replace.scala]
-            + [Take.scala][main/scala/cosas/ops/typeSets/Take.scala]
-            + [Union.scala][main/scala/cosas/ops/typeSets/Union.scala]
-            + [Mappers.scala][main/scala/cosas/ops/typeSets/Mappers.scala]
-        + [typeUnions.scala][main/scala/cosas/typeUnions.scala]
-        + [records.scala][main/scala/cosas/records.scala]
-        + [fns.scala][main/scala/cosas/fns.scala]
-        + [propertyHolders.scala][main/scala/cosas/propertyHolders.scala]
-        + [types.scala][main/scala/cosas/types.scala]
-
-[test/scala/cosas/SubsetTypesTests.scala]: ../../../test/scala/cosas/SubsetTypesTests.scala.md
-[test/scala/cosas/PropertyTests.scala]: ../../../test/scala/cosas/PropertyTests.scala.md
-[test/scala/cosas/TypeUnionTests.scala]: ../../../test/scala/cosas/TypeUnionTests.scala.md
-[test/scala/cosas/ScalazEquality.scala]: ../../../test/scala/cosas/ScalazEquality.scala.md
-[test/scala/cosas/EqualityTests.scala]: ../../../test/scala/cosas/EqualityTests.scala.md
+[test/scala/cosas/asserts.scala]: ../../../test/scala/cosas/asserts.scala.md
 [test/scala/cosas/DenotationTests.scala]: ../../../test/scala/cosas/DenotationTests.scala.md
+[test/scala/cosas/SubsetTypesTests.scala]: ../../../test/scala/cosas/SubsetTypesTests.scala.md
+[test/scala/cosas/EqualityTests.scala]: ../../../test/scala/cosas/EqualityTests.scala.md
+[test/scala/cosas/PropertyTests.scala]: ../../../test/scala/cosas/PropertyTests.scala.md
 [test/scala/cosas/RecordTests.scala]: ../../../test/scala/cosas/RecordTests.scala.md
 [test/scala/cosas/TypeSetTests.scala]: ../../../test/scala/cosas/TypeSetTests.scala.md
-[main/scala/cosas/equality.scala]: equality.scala.md
-[main/scala/cosas/properties.scala]: properties.scala.md
-[main/scala/cosas/typeSets.scala]: typeSets.scala.md
-[main/scala/cosas/ops/records/Update.scala]: ops/records/Update.scala.md
-[main/scala/cosas/ops/records/Conversions.scala]: ops/records/Conversions.scala.md
-[main/scala/cosas/ops/records/Get.scala]: ops/records/Get.scala.md
-[main/scala/cosas/ops/typeSets/Filter.scala]: ops/typeSets/Filter.scala.md
-[main/scala/cosas/ops/typeSets/Reorder.scala]: ops/typeSets/Reorder.scala.md
-[main/scala/cosas/ops/typeSets/Conversions.scala]: ops/typeSets/Conversions.scala.md
-[main/scala/cosas/ops/typeSets/AggregateProperties.scala]: ops/typeSets/AggregateProperties.scala.md
-[main/scala/cosas/ops/typeSets/Subtract.scala]: ops/typeSets/Subtract.scala.md
-[main/scala/cosas/ops/typeSets/Pop.scala]: ops/typeSets/Pop.scala.md
-[main/scala/cosas/ops/typeSets/Representations.scala]: ops/typeSets/Representations.scala.md
-[main/scala/cosas/ops/typeSets/Replace.scala]: ops/typeSets/Replace.scala.md
-[main/scala/cosas/ops/typeSets/Take.scala]: ops/typeSets/Take.scala.md
-[main/scala/cosas/ops/typeSets/Union.scala]: ops/typeSets/Union.scala.md
-[main/scala/cosas/ops/typeSets/Mappers.scala]: ops/typeSets/Mappers.scala.md
+[test/scala/cosas/TypeUnionTests.scala]: ../../../test/scala/cosas/TypeUnionTests.scala.md
 [main/scala/cosas/typeUnions.scala]: typeUnions.scala.md
+[main/scala/cosas/properties.scala]: properties.scala.md
 [main/scala/cosas/records.scala]: records.scala.md
 [main/scala/cosas/fns.scala]: fns.scala.md
-[main/scala/cosas/propertyHolders.scala]: propertyHolders.scala.md
 [main/scala/cosas/types.scala]: types.scala.md
+[main/scala/cosas/typeSets.scala]: typeSets.scala.md
+[main/scala/cosas/ops/typeSets/Conversions.scala]: ops/typeSets/Conversions.scala.md
+[main/scala/cosas/ops/typeSets/Filter.scala]: ops/typeSets/Filter.scala.md
+[main/scala/cosas/ops/typeSets/Subtract.scala]: ops/typeSets/Subtract.scala.md
+[main/scala/cosas/ops/typeSets/Mappers.scala]: ops/typeSets/Mappers.scala.md
+[main/scala/cosas/ops/typeSets/Union.scala]: ops/typeSets/Union.scala.md
+[main/scala/cosas/ops/typeSets/Reorder.scala]: ops/typeSets/Reorder.scala.md
+[main/scala/cosas/ops/typeSets/Take.scala]: ops/typeSets/Take.scala.md
+[main/scala/cosas/ops/typeSets/Representations.scala]: ops/typeSets/Representations.scala.md
+[main/scala/cosas/ops/typeSets/Pop.scala]: ops/typeSets/Pop.scala.md
+[main/scala/cosas/ops/typeSets/Replace.scala]: ops/typeSets/Replace.scala.md
+[main/scala/cosas/equality.scala]: equality.scala.md

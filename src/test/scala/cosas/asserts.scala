@@ -8,19 +8,19 @@ case object asserts {
   // not only compares the values, but also check the types equality (essential for tagged values)
   def checkTypedEq[A, B](a: A, b: B)(implicit typesEq: A ≃ B): Boolean = a == b
 
-  implicit def taggedOps[T <: AnyType, V](v: T := V):
+  implicit def taggedOps[T <: AnyType, V <: T#Raw](v: T := V):
     TaggedOps[T, V] =
     TaggedOps[T, V](v)
 
-  case class TaggedOps[T <: AnyType, V](v: T := V) {
+  case class TaggedOps[T <: AnyType, V <: T#Raw](v: T := V) {
 
-    def =~=[W](w: T := W)(implicit typesEq: V ≃ W): Boolean = v.value == w.value
+    def =~=[W <: T#Raw](w: T := W)(implicit typesEq: V ≃ W): Boolean = v.value == w.value
   }
 
   def assertTypedEq[A, B](a: A, b: B)(implicit typesEq: A ≃ B): Unit =
     assert(a == b)
 
-  def assertTaggedEq[TA <: AnyType, A, TB <: AnyType, B](a: TA := A, b: TB := B)
+  def assertTaggedEq[TA <: AnyType, A <: TA#Raw, TB <: AnyType, B <: TB#Raw](a: TA := A, b: TB := B)
     (implicit
       tagsEq: TA ≃ TB,
       valsEq: A ≃ B
