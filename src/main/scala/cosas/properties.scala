@@ -16,32 +16,6 @@ object properties {
     implicit def propertyOps[P <: AnyProperty](p: P): PropertyOps[P] = PropertyOps(p)
   }
 
-  trait AnyPropertyValueParser {
-
-    type Property <: AnyProperty
-    type Value
-
-    val parseValue: Value => Option[Property#Raw]
-  }
-  case class PropertyValueParser[Vl, P <: AnyProperty](val parseValue: Vl => Option[P#Raw])
-  extends AnyPropertyValueParser {
-
-    type Property = P
-    type Value = Vl
-  }
-
-  trait AnyKeyRep {
-
-    type Property <: AnyProperty
-    val property: Property
-
-    val rep: String
-  }
-  case class KeyRep[P <: AnyProperty](val property: P, val rep: String) {
-
-    type Property = P
-  }
-
   trait AnyPropertyParser { parser =>
 
     type Property <: AnyProperty
@@ -50,29 +24,31 @@ object properties {
     type Value
     type From = Map[String, Value]
 
-    type PropertyValueParser <: AnyPropertyValueParser {
+    val propertyValueParser: Value => Option[Property#Raw]
 
-      type Property = parser.Property
-      type Value = parser.Value
-    }
-    val propertyValueParser: PropertyValueParser
-
-    // normally property.name
-    type KeyRep <: AnyKeyRep { type Property = parser.Property }
-    val keyRep: KeyRep
+    val keyRep: String
 
     val parse: From => (Either[AnyPropertyParsingError, ValueOf[Property]], From) =
-      map => map get keyRep.rep match {
+      map => map get keyRep match {
 
         case None => ( Left(KeyNotFound(property)), map )
 
-        case Some(v) => propertyValueParser.parseValue(v) match {
+        case Some(v) => propertyValueParser(v) match {
 
           case None => (Left(ErrorParsingValue(property,v)), map)
 
           case Some(pv) => (Right(property(pv)), map)
         }
       }
+  }
+  case class PropertyParser[P <: AnyProperty,V](
+    val property: P,
+    val keyRep: String,
+    val propertyValueParser: V => Option[P#Raw]
+  ) extends AnyPropertyParser {
+
+    type Property = P
+    type Value = V
   }
 
   sealed trait AnyPropertyParsingError {

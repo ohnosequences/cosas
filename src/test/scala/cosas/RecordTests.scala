@@ -135,4 +135,23 @@ class RecordTests extends org.scalatest.FunSuite {
     assertTypeError { """implicitly[simpleUser.Fields HasProperties (email.type :~: id.type :~: ∅)]""" }
     assertTypeError { """implicitly[simpleUser.Fields HasProperties (email.type :~: name.type :~: color.type :~: ∅)]""" }
   }
+
+  test("can parse records from Maps") {
+
+    val idVParser: String => Option[Integer] = str => {
+        import scala.util.control.Exception._
+        catching(classOf[NumberFormatException]) opt str.toInt
+      }
+    implicit val idParser = PropertyParser[id.type, String](id, id.label, idVParser)
+
+    implicit val nameParser = PropertyParser[name.type, String](name, name.label, { str: String => Some(str) } )
+
+    val uhoh = simpleUser parseFrom Map(
+      "id" -> "29681",
+      "name" -> "Antonio"
+    )
+
+    assert{ uhoh === Right(simpleUser(id(29681) :~: name("Antonio") :~: ∅)) }
+
+  }
 }
