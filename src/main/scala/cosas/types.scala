@@ -1,6 +1,6 @@
 package ohnosequences.cosas
 
-object types {
+case object types {
 
   /* Something super-generic and ultra-abstract */
   trait AnyType {
@@ -55,7 +55,7 @@ object types {
 
   /* Denote T with a `value: V`. Normally you write it as `V Denotes T` thus the name. */
   // NOTE: most likely V won't be specialized here
-  final class Denotes[V <: T#Raw, T <: AnyType](val value: V) extends AnyVal with AnyDenotes[V, T] {
+  final class Denotes[V, T <: AnyType](val value: V) extends AnyVal with AnyDenotes[V, T] {
 
     final def show(implicit t: T): String = s"(${t.label} := ${value})"
   }
