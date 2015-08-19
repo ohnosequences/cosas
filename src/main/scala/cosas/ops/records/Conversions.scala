@@ -5,38 +5,34 @@ import ops.typeSets._
 
 @annotation.implicitNotFound(msg = "oh no pigeons!")
 // NOTE: it should be restricted to AnyTypeSet.Of[AnyType], when :~: is known to return the same thing
-trait ParseRecordFrom[Ps <: AnyTypeSet, X] extends Fn2[Ps, Map[String,X]] {
+trait ParseFieldsFrom[Fs <: AnyFields, V] extends Fn2[Fs#Values, Map[String,V]] {
 
-  type Vs <: AnyTypeSet
-  type Out = Either[AnyPropertyParsingError, Vs]
+  type Out = Either[AnyPropertyParsingError, Fs#Values]
 }
 
-object ParseRecordFrom {
+object ParseFieldsFrom {
 
-  def apply[Ps <: AnyTypeSet, V]
-    (implicit parser: ParseRecordFrom[Ps, V]): ParseRecordFrom[Ps, V] = parser
+  def apply[F <: AnyFields, V]
+    (implicit parser: ParseFieldsFrom[F, V]): ParseFieldsFrom[F, V] = parser
 
   implicit def empty[V]:
-        (∅ ParseRecordFrom V) { type Vs = ∅ }  =
-    new (∅ ParseRecordFrom V) {
+        (□ ParseFieldsFrom V)  =
+    new (□ ParseFieldsFrom V) {
 
-      type Vs = ∅
       def apply(s: ∅, map: Map[String,V]): Out = Right(∅)
     }
 
   implicit def cons[
     V,
-    P <: AnyProperty, PsT <: AnyTypeSet, VsT <: AnyTypeSet,
-    PP <: AnyPropertyParser { type Property = P; type Value = V }
+    H <: AnyProperty, T <: AnyFields,
+    PH <: AnyPropertyParser { type Property = H; type Value = V }
   ](implicit
-    parseP: PP,
-    parseT: ParseRecordFrom[PsT, V] { type Vs = VsT }
-  ):  ( (P :~: PsT) ParseRecordFrom V ) { type Vs = ValueOf[P] :~: VsT } =
-  new ( (P :~: PsT) ParseRecordFrom V ) {
+    parseP: PH,
+    parseT: ParseFieldsFrom[T, V]
+  ):  ( (H :&: T) ParseFieldsFrom V ) =
+  new ( (H :&: T) ParseFieldsFrom V ) {
 
-    type Vs = ValueOf[P] :~: VsT
-
-    def apply(pvs: P :~: PsT, map: Map[String,V]): Out = {
+    def apply(pvs: ValueOf[H] :~: T#Values, map: Map[String,V]): Out = {
 
       val (errOrP, restMap) = parseP.parse(map)
 
