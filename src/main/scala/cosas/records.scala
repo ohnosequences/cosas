@@ -95,13 +95,12 @@ case object records {
 
     type Fields <: AnyFields
     val fields: Fields
-    type Raw <: Fields#Values
+    type Raw = Fields#Values
   }
 
   class Record[R <: AnyFields](val fields: R) extends AnyRecord {
 
     type Fields = R
-    type Raw = Fields#Values
 
     lazy val label = toString
   }
@@ -123,6 +122,7 @@ case object records {
 
     An `apply` method for building denotations of this record type, overloaded so that the fields can be provided in any order.
   */
+  import ops.records.ParseFieldsFrom
   case class RecordOps[RT <: AnyRecord](val recType: RT) extends AnyVal {
 
     def apply(recEntry: RT#Raw): ValueOf[RT] = recType := recEntry
@@ -131,6 +131,15 @@ case object records {
     def apply[Vs <: AnyTypeSet](values: Vs)(implicit
         reorder: Vs ReorderTo RT#Raw
       ): ValueOf[RT] = recType := reorder(values)
+
+    def parseFrom[V](map: Map[String,V])(implicit
+      parseFieldsFrom: RT#Fields ParseFieldsFrom V
+    ): Either[AnyPropertyParsingError, ValueOf[RT]] =
+      parseFieldsFrom(map) match {
+
+        case Left(err)  => Left(err)
+        case Right(v)   => Right(new ValueOf[RT](v))
+      }
   }
 
   /*

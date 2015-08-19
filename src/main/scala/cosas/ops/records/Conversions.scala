@@ -5,7 +5,7 @@ import ops.typeSets._
 
 @annotation.implicitNotFound(msg = "oh no pigeons!")
 // NOTE: it should be restricted to AnyTypeSet.Of[AnyType], when :~: is known to return the same thing
-trait ParseFieldsFrom[Fs <: AnyFields, V] extends Fn2[Fs#Values, Map[String,V]] {
+trait ParseFieldsFrom[Fs <: AnyFields, V] extends Fn1[Map[String,V]] {
 
   type Out = Either[AnyPropertyParsingError, Fs#Values]
 }
@@ -19,7 +19,7 @@ object ParseFieldsFrom {
         (□ ParseFieldsFrom V)  =
     new (□ ParseFieldsFrom V) {
 
-      def apply(s: ∅, map: Map[String,V]): Out = Right(∅)
+      def apply(map: Map[String,V]): Out = Right(∅)
     }
 
   implicit def cons[
@@ -32,7 +32,7 @@ object ParseFieldsFrom {
   ):  ( (H :&: T) ParseFieldsFrom V ) =
   new ( (H :&: T) ParseFieldsFrom V ) {
 
-    def apply(pvs: ValueOf[H] :~: T#Values, map: Map[String,V]): Out = {
+    def apply(map: Map[String,V]): Out = {
 
       val (errOrP, restMap) = parseP.parse(map)
 
@@ -40,7 +40,7 @@ object ParseFieldsFrom {
 
         case Left(err) => Left(err)
 
-        case Right(pv) => parseT(pvs.tail, restMap) match {
+        case Right(pv) => parseT(restMap) match {
 
           case Left(err) => Left(err)
 
