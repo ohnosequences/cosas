@@ -146,12 +146,22 @@ class RecordTests extends org.scalatest.FunSuite {
 
     implicit val nameParser = PropertyParser[name.type, String](name, name.label, { str: String => Some(str) } )
 
-    val uhoh = simpleUser parseFrom Map(
+    val simpleUserEntryMap =  Map(
       "id" -> "29681",
       "name" -> "Antonio"
     )
+    val wrongKeyMap = Map(
+      "idd" -> "29681",
+      "name" -> "Antonio"
+    )
 
-    assert{ uhoh === Right(simpleUser(id(29681) :~: name("Antonio") :~: ∅)) }
+    val notIntValueMap = Map(
+      "name" -> "Antonio",
+      "id" -> "twenty-two"
+    )
 
+    assert { ( simpleUser parseFrom simpleUserEntryMap ) === Right(simpleUser(id(29681) :~: name("Antonio") :~: ∅)) }
+    assert { ( simpleUser parseFrom wrongKeyMap ) === Left(KeyNotFound(id)) }
+    assert { ( simpleUser parseFrom notIntValueMap ) === Left(ErrorParsingValue(id,"twenty-two")) }
   }
 }
