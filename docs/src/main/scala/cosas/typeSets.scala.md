@@ -76,8 +76,6 @@ This method covers constructor to check that you are not adding a duplicate
     }
   }
 
-  type size[S <: AnyTypeSet] = S#Size
-
   final type ∅ = TypeSetImpl.EmptySetImpl
   val ∅ : ∅ = TypeSetImpl.EmptySetImpl // the space before : is needed
   val emptySet : ∅ = TypeSetImpl.EmptySetImpl
@@ -254,6 +252,8 @@ Conversions
 
     def toListOf[T](implicit toListOf: S ToListOf T): List[T] = toListOf(s)
 
+    def toMap[K, V](implicit toMap: ToMap[S, K, V]): Map[K, V] = toMap(s)
+
     def parseFrom[X](x: X)(implicit parser: S ParseFrom X): parser.Out = parser(s, x)
 
     def serializeTo[X](implicit serializer: S SerializeTo X): X = serializer(s)
@@ -311,6 +311,10 @@ Predicates
 [main/scala/cosas/fns.scala]: fns.scala.md
 [main/scala/cosas/types.scala]: types.scala.md
 [main/scala/cosas/typeSets.scala]: typeSets.scala.md
+[main/scala/cosas/ops/records/Conversions.scala]: ops/records/Conversions.scala.md
+[main/scala/cosas/ops/records/Update.scala]: ops/records/Update.scala.md
+[main/scala/cosas/ops/records/Transform.scala]: ops/records/Transform.scala.md
+[main/scala/cosas/ops/records/Get.scala]: ops/records/Get.scala.md
 [main/scala/cosas/ops/typeSets/Conversions.scala]: ops/typeSets/Conversions.scala.md
 [main/scala/cosas/ops/typeSets/Filter.scala]: ops/typeSets/Filter.scala.md
 [main/scala/cosas/ops/typeSets/Subtract.scala]: ops/typeSets/Subtract.scala.md

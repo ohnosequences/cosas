@@ -14,7 +14,7 @@ class TypeSetTests extends org.scalatest.FunSuite {
 
     import shapeless.Nat._
 
-    type Two = size[ Int :~: Char :~: ∅ ]
+    type Two = ( Int :~: Char :~: ∅ )#Size
 
     implicitly [ Two =:= _2 ]
   }
@@ -295,7 +295,7 @@ class TypeSetTests extends org.scalatest.FunSuite {
     case object age   extends Property[Integer]("age")
 
     // using record here just for convenience
-    case object rec extends Record(name :&: age :&: key :&: FNil)
+    case object rec extends Record(name :&: age :&: key :&: □)
 
     val recEntry = rec(
       name("foo") :~:
@@ -316,7 +316,7 @@ class TypeSetTests extends org.scalatest.FunSuite {
     assertResult(recEntry.value) {
       import MapParser._
 
-      rec.fields.properties parseFrom Map(
+      rec.properties parseFrom Map(
         "age" -> "12",
         "name" -> "foo",
         "key" -> "s0dl52f23k"
@@ -335,7 +335,7 @@ class TypeSetTests extends org.scalatest.FunSuite {
     assertResult(recEntry.value) {
       import ListParser._
 
-      rec.fields.properties parseFrom List(
+      rec.properties parseFrom List(
         "foo",
         "12",
         "s0dl52f23k"
@@ -393,6 +393,28 @@ class TypeSetTests extends org.scalatest.FunSuite {
     assertResult(foo :~: bar :~: ∅) { denots.getTypes }
   }
 
+  test("conversion to a Map") {
+    import properties._
+
+    assert{ ∅.toMap[AnyType, Int] == Map() }
+
+    case object key  extends Property[String]("key")
+    case object name extends Property[String]("name")
+
+    val set = key("foo") :~: name("bob") :~: ∅
+
+    assert{ set.toMap[AnyProperty, String] == Map(key -> "foo", name -> "bob") }
+
+
+    // now something different
+    case object age extends Wrap[Int]("age")
+
+    assert{
+      ((age := 12) :~: set).toMap[AnyType, Any] == 
+      Map(key -> "foo", name -> "bob", age -> 12)
+    }
+  }
+
 }
 
 ```
@@ -414,6 +436,10 @@ class TypeSetTests extends org.scalatest.FunSuite {
 [main/scala/cosas/fns.scala]: ../../../main/scala/cosas/fns.scala.md
 [main/scala/cosas/types.scala]: ../../../main/scala/cosas/types.scala.md
 [main/scala/cosas/typeSets.scala]: ../../../main/scala/cosas/typeSets.scala.md
+[main/scala/cosas/ops/records/Conversions.scala]: ../../../main/scala/cosas/ops/records/Conversions.scala.md
+[main/scala/cosas/ops/records/Update.scala]: ../../../main/scala/cosas/ops/records/Update.scala.md
+[main/scala/cosas/ops/records/Transform.scala]: ../../../main/scala/cosas/ops/records/Transform.scala.md
+[main/scala/cosas/ops/records/Get.scala]: ../../../main/scala/cosas/ops/records/Get.scala.md
 [main/scala/cosas/ops/typeSets/Conversions.scala]: ../../../main/scala/cosas/ops/typeSets/Conversions.scala.md
 [main/scala/cosas/ops/typeSets/Filter.scala]: ../../../main/scala/cosas/ops/typeSets/Filter.scala.md
 [main/scala/cosas/ops/typeSets/Subtract.scala]: ../../../main/scala/cosas/ops/typeSets/Subtract.scala.md
