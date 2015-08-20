@@ -72,7 +72,7 @@ Denote T with a `value: V`. Normally you write it as `V Denotes T` thus the name
 
 ```scala
   // NOTE: most likely V won't be specialized here
-  final class Denotes[V <: T#Raw, T <: AnyType](val value: V) extends AnyVal with AnyDenotes[V, T] {
+  final class Denotes[V, T <: AnyType](val value: V) extends AnyVal with AnyDenotes[V, T] {
 
     final def show(implicit t: T): String = s"(${t.label} := ${value})"
   }
@@ -159,6 +159,10 @@ use case: concat of sized has the sum of the two arg sizes; but how do you creat
 [main/scala/cosas/fns.scala]: fns.scala.md
 [main/scala/cosas/types.scala]: types.scala.md
 [main/scala/cosas/typeSets.scala]: typeSets.scala.md
+[main/scala/cosas/ops/records/Conversions.scala]: ops/records/Conversions.scala.md
+[main/scala/cosas/ops/records/Update.scala]: ops/records/Update.scala.md
+[main/scala/cosas/ops/records/Transform.scala]: ops/records/Transform.scala.md
+[main/scala/cosas/ops/records/Get.scala]: ops/records/Get.scala.md
 [main/scala/cosas/ops/typeSets/Conversions.scala]: ops/typeSets/Conversions.scala.md
 [main/scala/cosas/ops/typeSets/Filter.scala]: ops/typeSets/Filter.scala.md
 [main/scala/cosas/ops/typeSets/Subtract.scala]: ops/typeSets/Subtract.scala.md

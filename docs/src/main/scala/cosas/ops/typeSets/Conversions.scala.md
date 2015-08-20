@@ -86,6 +86,30 @@ object ToList {
 }
 
 
+@annotation.implicitNotFound(msg = "Can't convert ${S} to Map[${K}, ${V}]. Note that a set of denotations is expected")
+trait ToMap[S <: AnyTypeSet, K, V] extends Fn1[S] with Out[Map[K, V]]
+
+object ToMap {
+
+  implicit def empty[K, V]:
+        ToMap[∅, K, V] =
+    new ToMap[∅, K, V] { def apply(s: ∅): Out = Map[K, V]() }
+
+  implicit def cons[
+    K <: AnyType, V,
+    D <: AnyDenotation { type Tpe <: K; type Value <: V },
+    T <: AnyTypeSet
+  ](implicit
+    rest: ToMap[T, K, V],
+    key: D#Tpe
+  ):  ToMap[D :~: T, K, V] =
+  new ToMap[D :~: T, K, V] {
+
+    def apply(s: D :~: T): Out =  rest(s.tail) + (key -> s.head.value)
+  }
+}
+
+
 @annotation.implicitNotFound(msg = "Can't parse typeset ${S} from ${X}")
 // NOTE: it should be restricted to AnyTypeSet.Of[AnyType], when :~: is known to return the same thing
 trait ParseFrom[S <: AnyTypeSet, X] extends Fn2[S, X] with OutBound[AnyTypeSet]
@@ -189,6 +213,10 @@ object AnyMonoid {
 [main/scala/cosas/fns.scala]: ../../fns.scala.md
 [main/scala/cosas/types.scala]: ../../types.scala.md
 [main/scala/cosas/typeSets.scala]: ../../typeSets.scala.md
+[main/scala/cosas/ops/records/Conversions.scala]: ../records/Conversions.scala.md
+[main/scala/cosas/ops/records/Update.scala]: ../records/Update.scala.md
+[main/scala/cosas/ops/records/Transform.scala]: ../records/Transform.scala.md
+[main/scala/cosas/ops/records/Get.scala]: ../records/Get.scala.md
 [main/scala/cosas/ops/typeSets/Conversions.scala]: Conversions.scala.md
 [main/scala/cosas/ops/typeSets/Filter.scala]: Filter.scala.md
 [main/scala/cosas/ops/typeSets/Subtract.scala]: Subtract.scala.md

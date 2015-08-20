@@ -76,6 +76,10 @@ trait SubtractSets_3 {
 [main/scala/cosas/fns.scala]: ../../fns.scala.md
 [main/scala/cosas/types.scala]: ../../types.scala.md
 [main/scala/cosas/typeSets.scala]: ../../typeSets.scala.md
+[main/scala/cosas/ops/records/Conversions.scala]: ../records/Conversions.scala.md
+[main/scala/cosas/ops/records/Update.scala]: ../records/Update.scala.md
+[main/scala/cosas/ops/records/Transform.scala]: ../records/Transform.scala.md
+[main/scala/cosas/ops/records/Get.scala]: ../records/Get.scala.md
 [main/scala/cosas/ops/typeSets/Conversions.scala]: Conversions.scala.md
 [main/scala/cosas/ops/typeSets/Filter.scala]: Filter.scala.md
 [main/scala/cosas/ops/typeSets/Subtract.scala]: Subtract.scala.md

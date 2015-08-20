@@ -112,6 +112,10 @@ class TypeUnionTests extends org.scalatest.FunSuite {
 [main/scala/cosas/fns.scala]: ../../../main/scala/cosas/fns.scala.md
 [main/scala/cosas/types.scala]: ../../../main/scala/cosas/types.scala.md
 [main/scala/cosas/typeSets.scala]: ../../../main/scala/cosas/typeSets.scala.md
+[main/scala/cosas/ops/records/Conversions.scala]: ../../../main/scala/cosas/ops/records/Conversions.scala.md
+[main/scala/cosas/ops/records/Update.scala]: ../../../main/scala/cosas/ops/records/Update.scala.md
+[main/scala/cosas/ops/records/Transform.scala]: ../../../main/scala/cosas/ops/records/Transform.scala.md
+[main/scala/cosas/ops/records/Get.scala]: ../../../main/scala/cosas/ops/records/Get.scala.md
 [main/scala/cosas/ops/typeSets/Conversions.scala]: ../../../main/scala/cosas/ops/typeSets/Conversions.scala.md
 [main/scala/cosas/ops/typeSets/Filter.scala]: ../../../main/scala/cosas/ops/typeSets/Filter.scala.md
 [main/scala/cosas/ops/typeSets/Subtract.scala]: ../../../main/scala/cosas/ops/typeSets/Subtract.scala.md

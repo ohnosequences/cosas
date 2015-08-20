@@ -72,6 +72,10 @@ Fns with different number of arguments
 [main/scala/cosas/fns.scala]: fns.scala.md
 [main/scala/cosas/types.scala]: types.scala.md
 [main/scala/cosas/typeSets.scala]: typeSets.scala.md
+[main/scala/cosas/ops/records/Conversions.scala]: ops/records/Conversions.scala.md
+[main/scala/cosas/ops/records/Update.scala]: ops/records/Update.scala.md
+[main/scala/cosas/ops/records/Transform.scala]: ops/records/Transform.scala.md
+[main/scala/cosas/ops/records/Get.scala]: ops/records/Get.scala.md
 [main/scala/cosas/ops/typeSets/Conversions.scala]: ops/typeSets/Conversions.scala.md
 [main/scala/cosas/ops/typeSets/Filter.scala]: ops/typeSets/Filter.scala.md
 [main/scala/cosas/ops/typeSets/Subtract.scala]: ops/typeSets/Subtract.scala.md
