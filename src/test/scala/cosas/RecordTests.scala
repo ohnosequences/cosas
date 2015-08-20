@@ -123,6 +123,7 @@ class RecordTests extends org.scalatest.FunSuite {
   }
 
   test("can check if record has properties") {
+    import ops.records._
 
     implicitly[simpleUser.Fields HasProperties (id.type :~: name.type :~: ∅)]
     implicitly[simpleUser.Fields HasProperties (name.type :~: id.type :~: ∅)]

@@ -71,8 +71,6 @@ object typeSets {
     }
   }
 
-  type size[S <: AnyTypeSet] = S#Size
-
   final type ∅ = TypeSetImpl.EmptySetImpl
   val ∅ : ∅ = TypeSetImpl.EmptySetImpl // the space before : is needed
   val emptySet : ∅ = TypeSetImpl.EmptySetImpl

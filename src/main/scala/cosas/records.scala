@@ -16,20 +16,22 @@ case object records {
     val  properties: Properties
 
     type Values <: AnyTypeSet
+
+    type Size = Properties#Size
   }
 
   // TODO aliases for matching etc
   case object FNil extends AnyFields {
 
     type Properties = ∅
-    val properties = ∅
+    val  properties = ∅
 
     type Values = ∅
   }
   type FNil = FNil.type
 
   /* An alias for unicode-lovers */
-  type □  = FNil
+  type  □  = FNil
   val □ : □ = FNil
 
   // TODO review this symbol; I'm fine with any other
@@ -37,7 +39,7 @@ case object records {
   (val head: P, val tail: T)(implicit val headIsNew: P ∉ T#Properties) extends AnyFields {
 
     type Properties = P :~: T#Properties
-    val properties: Properties = head :~: (tail.properties: T#Properties)
+    val  properties: Properties = head :~: (tail.properties: T#Properties)
 
     type Values = ValueOf[P] :~: T#Values
   }
@@ -49,8 +51,6 @@ case object records {
 
     type withProperties[Ps <: AnyTypeSet.Of[AnyProperty]] = AnyFields { type Properties = Ps }
     type withValues[Vs <: AnyTypeSet] = AnyFields { type Values = Vs }
-
-    type size[Fs <: AnyFields] = typeSets.size[Fs#Properties]
 
     implicit def getFieldsOps[R <: AnyFields](record: R): FieldsOps[R] =
       FieldsOps(record)
@@ -93,39 +93,14 @@ case object records {
       RecordEntryOps(entry.value)
   }
 
-  @annotation.implicitNotFound(msg = "Cannot prove that ${Fs} has property ${P}")
-  sealed class HasProperty[Fs <: AnyFields, P <: AnyProperty]
-
-  case object HasProperty {
-
-    implicit def pIsInProperties[Fs <: AnyFields, P <: AnyProperty]
-      (implicit in: P ∈ Fs#Properties):
-          (Fs HasProperty P) =
-      new (Fs HasProperty P)
-  }
-
-  @annotation.implicitNotFound(msg = "Cannot prove that ${Fs} has properties ${Ps}")
-  sealed class HasProperties[Fs <: AnyFields, Ps <: AnyTypeSet.Of[AnyProperty]]
-
-  object HasProperties {
-
-    trait PropertyIsIn[Fs <: AnyFields] extends TypePredicate[AnyProperty] {
-      type Condition[P <: AnyProperty] = Fs HasProperty P
-    }
-
-    implicit def recordHasPs[Fs <: AnyFields, Ps <: AnyTypeSet.Of[AnyProperty]]
-      (implicit check: CheckForAll[Ps, PropertyIsIn[Fs]]):
-          (Fs HasProperties Ps) =
-      new (Fs HasProperties Ps)
-  }
-
 
   /*
     ### Record ops
 
     An `apply` method for building denotations of this record type, overloaded so that the fields can be provided in any order.
   */
-  import ops.records.ParseFieldsFrom
+  import ops.records._
+
   case class RecordOps[RT <: AnyRecord](val recType: RT) extends AnyVal {
 
     def apply(recEntry: RT#Raw): ValueOf[RT] = recType := recEntry
@@ -145,7 +120,6 @@ case object records {
       }
   }
 
-  import ops.records._
   /*
     ### Record entry ops
 

@@ -12,7 +12,7 @@ class TypeSetTests extends org.scalatest.FunSuite {
 
     import shapeless.Nat._
 
-    type Two = size[ Int :~: Char :~: ∅ ]
+    type Two = ( Int :~: Char :~: ∅ )#Size
 
     implicitly [ Two =:= _2 ]
   }
