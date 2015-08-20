@@ -6,21 +6,19 @@ import ops.typeSets.{ReorderTo, CheckForAll}
 case object records {
 
   /*
-    ## Records
+    ## Fields
 
-    Records wrap a typeset of properties, constructing along the way the typeset of their `ValueOf`s: `Values`.
+    Fields wrap a typeset of properties, constructing along the way the typeset of their `ValueOf`s.
   */
   trait AnyFields {
 
     type Properties <: AnyTypeSet // of AnyProperty's
-    val properties: Properties
+    val  properties: Properties
 
     type Values <: AnyTypeSet
   }
 
   // TODO aliases for matching etc
-  type □  = FNil.type
-  val □ : □ = FNil
   case object FNil extends AnyFields {
 
     type Properties = ∅
@@ -28,6 +26,11 @@ case object records {
 
     type Values = ∅
   }
+  type FNil = FNil.type
+
+  /* An alias for unicode-lovers */
+  type □  = FNil
+  val □ : □ = FNil
 
   // TODO review this symbol; I'm fine with any other
   case class :&:[P <: AnyProperty, T <: AnyFields]
@@ -47,7 +50,7 @@ case object records {
     type withProperties[Ps <: AnyTypeSet.Of[AnyProperty]] = AnyFields { type Properties = Ps }
     type withValues[Vs <: AnyTypeSet] = AnyFields { type Values = Vs }
 
-    type size[R <: AnyFields] = typeSets.size[R#Properties]
+    type size[Fs <: AnyFields] = typeSets.size[Fs#Properties]
 
     implicit def getFieldsOps[R <: AnyFields](record: R): FieldsOps[R] =
       FieldsOps(record)
@@ -57,6 +60,7 @@ case object records {
 
     def :&:[P <: AnyProperty](p: P)(implicit check: P ∉ R#Properties): (P :&: R) = records.:&:(p,fields)
   }
+
   /*
     ## Records
 
@@ -65,20 +69,21 @@ case object records {
   trait AnyRecord extends AnyType {
 
     type Fields <: AnyFields
-    val fields: Fields
+    val  fields: Fields
+
     type Raw = Fields#Values
   }
 
-  class Record[R <: AnyFields](val fields: R) extends AnyRecord {
+  class Record[Fs <: AnyFields](val fields: Fs) extends AnyRecord {
 
-    type Fields = R
+    type Fields = Fs
 
     lazy val label = toString
   }
 
   case object AnyRecord {
 
-    type withRecord[R <: AnyFields] = AnyRecord { type Fields = R }
+    type withRecord[Fs <: AnyFields] = AnyRecord { type Fields = Fs }
     type withFields[E <: AnyTypeSet] = AnyRecord { type Raw = E }
 
     implicit def getRecordOps[RT <: AnyRecord](recType: RT): RecordOps[RT] =
@@ -88,30 +93,30 @@ case object records {
       RecordEntryOps(entry.value)
   }
 
-  @annotation.implicitNotFound(msg = "Cannot prove that ${R} has property ${P}")
-  sealed class HasProperty[R <: AnyFields, P <: AnyProperty]
+  @annotation.implicitNotFound(msg = "Cannot prove that ${Fs} has property ${P}")
+  sealed class HasProperty[Fs <: AnyFields, P <: AnyProperty]
 
   case object HasProperty {
 
-    implicit def pIsInProperties[R <: AnyFields, P <: AnyProperty]
-      (implicit in: P ∈ R#Properties):
-          (R HasProperty P) =
-      new (R HasProperty P)
+    implicit def pIsInProperties[Fs <: AnyFields, P <: AnyProperty]
+      (implicit in: P ∈ Fs#Properties):
+          (Fs HasProperty P) =
+      new (Fs HasProperty P)
   }
 
-  @annotation.implicitNotFound(msg = "Cannot prove that ${R} has properties ${Ps}")
-  sealed class HasProperties[R <: AnyFields, Ps <: AnyTypeSet.Of[AnyProperty]]
+  @annotation.implicitNotFound(msg = "Cannot prove that ${Fs} has properties ${Ps}")
+  sealed class HasProperties[Fs <: AnyFields, Ps <: AnyTypeSet.Of[AnyProperty]]
 
   object HasProperties {
 
-    trait PropertyIsIn[R <: AnyFields] extends TypePredicate[AnyProperty] {
-      type Condition[P <: AnyProperty] = R HasProperty P
+    trait PropertyIsIn[Fs <: AnyFields] extends TypePredicate[AnyProperty] {
+      type Condition[P <: AnyProperty] = Fs HasProperty P
     }
 
-    implicit def recordHasPs[R <: AnyFields, Ps <: AnyTypeSet.Of[AnyProperty]]
-      (implicit check: CheckForAll[Ps, PropertyIsIn[R]]):
-          (R HasProperties Ps) =
-      new (R HasProperties Ps)
+    implicit def recordHasPs[Fs <: AnyFields, Ps <: AnyTypeSet.Of[AnyProperty]]
+      (implicit check: CheckForAll[Ps, PropertyIsIn[Fs]]):
+          (Fs HasProperties Ps) =
+      new (Fs HasProperties Ps)
   }
 
 

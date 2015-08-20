@@ -3,12 +3,12 @@ package ohnosequences.cosas.ops.records
 import ohnosequences.cosas._, types._, typeSets._, records._, fns._
 import ops.typeSets.Replace
 
-@annotation.implicitNotFound(msg =
-  """|Cannot update property values
-     |  ${Ps}
-     |from record of type
-     |  ${RT}
-     |""".stripMargin)
+@annotation.implicitNotFound(msg = """
+  Cannot update property values
+    ${Ps}
+  from record of type
+    ${RT}
+""")
 trait Update[RT <: AnyRecord, Ps <: AnyTypeSet]
   extends Fn2[RT#Raw, Ps] with Out[ValueOf[RT]]
 
