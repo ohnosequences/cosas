@@ -1,7 +1,7 @@
 package ohnosequences.cosas
 
 import types._, typeSets._, properties._
-import ops.typeSets.ReorderTo
+import ops.typeSets.{ReorderTo, CheckForAll}
 
 case object records {
 
@@ -57,35 +57,6 @@ case object records {
 
     def :&:[P <: AnyProperty](p: P)(implicit check: P ∉ R#Properties): (P :&: R) = records.:&:(p,fields)
   }
-
-  import ops.typeSets.CheckForAll
-
-  @annotation.implicitNotFound(msg = "Cannot prove that ${R} has property ${P}")
-  sealed class HasProperty[R <: AnyFields, P <: AnyProperty]
-
-  case object HasProperty {
-
-    implicit def pIsInProperties[R <: AnyFields, P <: AnyProperty]
-      (implicit in: P ∈ R#Properties):
-          (R HasProperty P) =
-      new (R HasProperty P)
-  }
-
-  @annotation.implicitNotFound(msg = "Cannot prove that ${R} has properties ${Ps}")
-  sealed class HasProperties[R <: AnyFields, Ps <: AnyTypeSet.Of[AnyProperty]]
-
-  object HasProperties {
-
-    trait BelongsTo[R <: AnyFields] extends TypePredicate[AnyProperty] {
-      type Condition[P <: AnyProperty] = R HasProperty P
-    }
-
-    implicit def recordHasPs[R <: AnyFields, Ps <: AnyTypeSet.Of[AnyProperty]]
-      (implicit check: CheckForAll[Ps, BelongsTo[R]]):
-          (R HasProperties Ps) =
-      new (R HasProperties Ps)
-  }
-
   /*
     ## Records
 
@@ -117,6 +88,33 @@ case object records {
       RecordEntryOps(entry.value)
   }
 
+  @annotation.implicitNotFound(msg = "Cannot prove that ${R} has property ${P}")
+  sealed class HasProperty[R <: AnyFields, P <: AnyProperty]
+
+  case object HasProperty {
+
+    implicit def pIsInProperties[R <: AnyFields, P <: AnyProperty]
+      (implicit in: P ∈ R#Properties):
+          (R HasProperty P) =
+      new (R HasProperty P)
+  }
+
+  @annotation.implicitNotFound(msg = "Cannot prove that ${R} has properties ${Ps}")
+  sealed class HasProperties[R <: AnyFields, Ps <: AnyTypeSet.Of[AnyProperty]]
+
+  object HasProperties {
+
+    trait PropertyIsIn[R <: AnyFields] extends TypePredicate[AnyProperty] {
+      type Condition[P <: AnyProperty] = R HasProperty P
+    }
+
+    implicit def recordHasPs[R <: AnyFields, Ps <: AnyTypeSet.Of[AnyProperty]]
+      (implicit check: CheckForAll[Ps, PropertyIsIn[R]]):
+          (R HasProperties Ps) =
+      new (R HasProperties Ps)
+  }
+
+
   /*
     ### Record ops
 
@@ -142,6 +140,7 @@ case object records {
       }
   }
 
+  import ops.records._
   /*
     ### Record entry ops
 
@@ -169,67 +168,4 @@ case object records {
     def as[Other <: AnyRecord { type Raw = RT#Raw }](otherEntry: ValueOf[Other]): ValueOf[RT] =
       new ValueOf[RT](otherEntry.value)
   }
-
-
-  // ops
-  import fns._, ops.typeSets._
-
-  @annotation.implicitNotFound(msg = "Cannot get property ${P} from record of type ${RT}")
-  trait Get[RT <: AnyRecord, P <: AnyProperty]
-    extends Fn1[RT#Raw] with Out[P#Raw]
-
-  case object Get {
-
-    implicit def getter[R <: AnyRecord, P <: AnyProperty]
-      (implicit
-        lookup: R#Raw Lookup ValueOf[P]
-      ):  Get[R, P] =
-      new Get[R, P] { def apply(recEntry: R#Raw): Out = lookup(recEntry).value }
-  }
-
-
-  @annotation.implicitNotFound(msg = "Cannot update property values ${Ps} from record of type ${RT}")
-  trait Update[RT <: AnyRecord, Ps <: AnyTypeSet]
-    extends Fn2[RT#Raw, Ps] with Out[ValueOf[RT]]
-
-  case object Update {
-
-    implicit def update[RT <: AnyRecord, Ps <: AnyTypeSet]
-      (implicit
-        check: Ps ⊂ RT#Raw,
-        replace: Replace[RT#Raw, Ps]
-      ):  Update[RT, Ps] =
-      new Update[RT, Ps] {
-
-        def apply(recRaw: RT#Raw, propReps: Ps): Out = new ValueOf[RT](replace(recRaw, propReps))
-      }
-  }
-
-
-  @annotation.implicitNotFound(msg = "Cannot transform record of type ${RT} to ${Other} with values ${Rest}")
-  trait Transform[RT <: AnyRecord, Other <: AnyRecord, Rest]
-    extends Fn3[RT#Raw, Other, Rest] with Out[ValueOf[Other]]
-
-  case object Transform {
-
-    implicit def transform[
-        RT <: AnyRecord,
-        Other <: AnyRecord,
-        Rest <: AnyTypeSet,
-        Uni <: AnyTypeSet,
-        Missing <: AnyTypeSet
-      ](implicit
-        missing: (Other#Raw \ RT#Raw) { type Out = Missing },
-        allMissing: Rest ~:~ Missing,
-        uni: (RT#Raw ∪ Rest) { type Out = Uni },
-        project: Take[Uni, Other#Raw]
-      ):  Transform[RT, Other, Rest] =
-      new Transform[RT, Other, Rest] {
-
-        def apply(recRaw: RT#Raw, other: Other, rest: Rest): Out =
-          other := project(uni(recRaw, rest))
-      }
-
-  }
-
 }
