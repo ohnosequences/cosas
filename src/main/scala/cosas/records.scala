@@ -33,12 +33,6 @@ case object records {
   case object AnyRecord {
 
     type withProperties[PS <: AnyPropertySet] = AnyRecord { type Properties = PS }
-
-    implicit def getRecordOps[RT <: AnyRecord](recType: RT): RecordOps[RT] =
-      RecordOps(recType)
-
-    implicit def getRecordEntryOps[RT <: AnyRecord](entry: ValueOf[RT]): RecordEntryOps[RT] =
-      RecordEntryOps(entry.value)
   }
 
 
@@ -49,6 +43,8 @@ case object records {
   */
   import ops.records._
 
+  implicit def getRecordOps[RT <: AnyRecord](recType: RT): RecordOps[RT] =
+    RecordOps(recType)
   case class RecordOps[RT <: AnyRecord](val recType: RT) extends AnyVal {
 
     def apply(recEntry: RT#Raw): ValueOf[RT] = recType := recEntry
@@ -73,6 +69,8 @@ case object records {
 
     Operations on `ValueOf`s a record type. As usual with value classes, parameter is of the wrapped type, with the implicits providing them only for value class instances.
   */
+  implicit def getRecordEntryOps[RT <: AnyRecord](entry: ValueOf[RT]): RecordEntryOps[RT] =
+    RecordEntryOps(entry.value)
   case class RecordEntryOps[RT <: AnyRecord](val entryRaw: RT#Raw) extends AnyVal {
 
     def get[P <: AnyProperty](p: P)(implicit
