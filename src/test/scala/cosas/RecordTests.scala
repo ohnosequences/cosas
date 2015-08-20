@@ -12,8 +12,8 @@ object recordTestsContext {
 
   // funny square ins an option too
   case object simpleUser extends Record(id :&: name :&: □)
-  case object normalUser extends Record(id :&: name :&: email :&: color :&: FNil)
-  val vProps  = email :&: color :&: FNil
+  case object normalUser extends Record(id :&: name :&: email :&: color :&: □)
+  val vProps  = email :&: color :&: □
   val vRecord = new Record(vProps)
   val vEmail = "oh@buh.com"
 
@@ -123,16 +123,46 @@ class RecordTests extends org.scalatest.FunSuite {
   }
 
   test("can check if record has properties") {
+    import ops.records._
 
-    implicitly[simpleUser.Fields HasProperties (id.type :~: name.type :~: ∅)]
-    implicitly[simpleUser.Fields HasProperties (name.type :~: id.type :~: ∅)]
-    implicitly[simpleUser.Fields HasProperties (name.type :~: ∅)]
-    implicitly[simpleUser.Fields HasProperties (id.type :~: ∅)]
+    implicitly[simpleUser.PropertySet HasProperties (id.type :~: name.type :~: ∅)]
+    implicitly[simpleUser.PropertySet HasProperties (name.type :~: id.type :~: ∅)]
+    implicitly[simpleUser.PropertySet HasProperties (name.type :~: ∅)]
+    implicitly[simpleUser.PropertySet HasProperties (id.type :~: ∅)]
 
-    implicitly[simpleUser.Fields HasProperty name.type]
-    implicitly[simpleUser.Fields HasProperty id.type]
+    implicitly[simpleUser.PropertySet HasProperty name.type]
+    implicitly[simpleUser.PropertySet HasProperty id.type]
 
-    assertTypeError { """implicitly[simpleUser.Fields HasProperties (email.type :~: id.type :~: ∅)]""" }
-    assertTypeError { """implicitly[simpleUser.Fields HasProperties (email.type :~: name.type :~: color.type :~: ∅)]""" }
+    assertTypeError { """implicitly[simpleUser.PropertySet HasProperties (email.type :~: id.type :~: ∅)]""" }
+    assertTypeError { """implicitly[simpleUser.PropertySet HasProperties (email.type :~: name.type :~: color.type :~: ∅)]""" }
+  }
+
+  test("can parse records from Maps") {
+
+    val idVParser: String => Option[Integer] = str => {
+        import scala.util.control.Exception._
+        catching(classOf[NumberFormatException]) opt str.toInt
+      }
+    implicit val idParser = PropertyParser[id.type, String](id, id.label, idVParser)
+
+    implicit val nameParser = PropertyParser[name.type, String](name, name.label, { str: String => Some(str) } )
+
+    val simpleUserEntryMap =  Map(
+      "id" -> "29681",
+      "name" -> "Antonio"
+    )
+    val wrongKeyMap = Map(
+      "idd" -> "29681",
+      "name" -> "Antonio"
+    )
+
+    val notIntValueMap = Map(
+      "name" -> "Antonio",
+      "id" -> "twenty-two"
+    )
+
+    assert { ( simpleUser parseFrom simpleUserEntryMap ) === Right(simpleUser(id(29681) :~: name("Antonio") :~: ∅)) }
+    assert { ( simpleUser parseFrom wrongKeyMap ) === Left(KeyNotFound(id)) }
+    assert { ( simpleUser parseFrom notIntValueMap ) === Left(ErrorParsingValue(id,"twenty-two")) }
   }
 }
