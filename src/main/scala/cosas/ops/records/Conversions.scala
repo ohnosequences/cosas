@@ -5,36 +5,34 @@ import ops.typeSets._
 
 @annotation.implicitNotFound(msg = """
   Cannot parse fields
-    ${Fs}
+    ${PS}
   from a Map[String, ${V}].
   Probably you haven't provided property parsers for all properties involved.
 """)
-trait ParseFieldsFrom[Fs <: AnyFields, V] extends Fn1[Map[String,V]] {
+trait ParsePropertiesFrom[PS <: AnyPropertySet, V] extends Fn1[Map[String,V]]
+  with Out[ Either[AnyPropertyParsingError, PS#Raw] ]
 
-  type Out = Either[AnyPropertyParsingError, Fs#Values]
-}
+object ParsePropertiesFrom {
 
-object ParseFieldsFrom {
-
-  def apply[F <: AnyFields, V]
-    (implicit parser: ParseFieldsFrom[F, V]): ParseFieldsFrom[F, V] = parser
+  def apply[F <: AnyPropertySet, V]
+    (implicit parser: ParsePropertiesFrom[F, V]): ParsePropertiesFrom[F, V] = parser
 
   implicit def empty[V]:
-        (□ ParseFieldsFrom V)  =
-    new (□ ParseFieldsFrom V) {
+        (□ ParsePropertiesFrom V)  =
+    new (□ ParsePropertiesFrom V) {
 
       def apply(map: Map[String,V]): Out = Right(∅)
     }
 
   implicit def cons[
     V,
-    H <: AnyProperty, T <: AnyFields,
+    H <: AnyProperty, T <: AnyPropertySet,
     PH <: AnyPropertyParser { type Property = H; type Value = V }
   ](implicit
     parseP: PH,
-    parseT: ParseFieldsFrom[T, V]
-  ):  ( (H :&: T) ParseFieldsFrom V ) =
-  new ( (H :&: T) ParseFieldsFrom V ) {
+    parseT: ParsePropertiesFrom[T, V]
+  ):  ( (H :&: T) ParsePropertiesFrom V ) =
+  new ( (H :&: T) ParsePropertiesFrom V ) {
 
     def apply(map: Map[String,V]): Out = {
 

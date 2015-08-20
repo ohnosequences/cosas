@@ -12,8 +12,8 @@ object recordTestsContext {
 
   // funny square ins an option too
   case object simpleUser extends Record(id :&: name :&: □)
-  case object normalUser extends Record(id :&: name :&: email :&: color :&: FNil)
-  val vProps  = email :&: color :&: FNil
+  case object normalUser extends Record(id :&: name :&: email :&: color :&: □)
+  val vProps  = email :&: color :&: □
   val vRecord = new Record(vProps)
   val vEmail = "oh@buh.com"
 
@@ -125,16 +125,16 @@ class RecordTests extends org.scalatest.FunSuite {
   test("can check if record has properties") {
     import ops.records._
 
-    implicitly[simpleUser.Fields HasProperties (id.type :~: name.type :~: ∅)]
-    implicitly[simpleUser.Fields HasProperties (name.type :~: id.type :~: ∅)]
-    implicitly[simpleUser.Fields HasProperties (name.type :~: ∅)]
-    implicitly[simpleUser.Fields HasProperties (id.type :~: ∅)]
+    implicitly[simpleUser.PropertySet HasProperties (id.type :~: name.type :~: ∅)]
+    implicitly[simpleUser.PropertySet HasProperties (name.type :~: id.type :~: ∅)]
+    implicitly[simpleUser.PropertySet HasProperties (name.type :~: ∅)]
+    implicitly[simpleUser.PropertySet HasProperties (id.type :~: ∅)]
 
-    implicitly[simpleUser.Fields HasProperty name.type]
-    implicitly[simpleUser.Fields HasProperty id.type]
+    implicitly[simpleUser.PropertySet HasProperty name.type]
+    implicitly[simpleUser.PropertySet HasProperty id.type]
 
-    assertTypeError { """implicitly[simpleUser.Fields HasProperties (email.type :~: id.type :~: ∅)]""" }
-    assertTypeError { """implicitly[simpleUser.Fields HasProperties (email.type :~: name.type :~: color.type :~: ∅)]""" }
+    assertTypeError { """implicitly[simpleUser.PropertySet HasProperties (email.type :~: id.type :~: ∅)]""" }
+    assertTypeError { """implicitly[simpleUser.PropertySet HasProperties (email.type :~: name.type :~: color.type :~: ∅)]""" }
   }
 
   test("can parse records from Maps") {
