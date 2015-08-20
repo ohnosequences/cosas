@@ -73,6 +73,10 @@ case object records {
     RecordEntryOps(entry.value)
   case class RecordEntryOps[RT <: AnyRecord](val entryRaw: RT#Raw) extends AnyVal {
 
+    def serializeTo[V](implicit
+      serialize: RT#PropertySet SerializePropertiesTo V
+    ): Either[AnyPropertySerializationError, Map[String,V]] = serialize(Map(), entryRaw)
+
     def get[P <: AnyProperty](p: P)(implicit
       get: RT Get P
     ): ValueOf[P] = p := get(entryRaw)

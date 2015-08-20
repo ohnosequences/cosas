@@ -144,7 +144,6 @@ class RecordTests extends org.scalatest.FunSuite {
         catching(classOf[NumberFormatException]) opt str.toInt
       }
     implicit val idParser = PropertyParser[id.type, String](id, id.label, idVParser)
-
     implicit val nameParser = PropertyParser[name.type, String](name, name.label, { str: String => Some(str) } )
 
     val simpleUserEntryMap =  Map(
@@ -164,5 +163,18 @@ class RecordTests extends org.scalatest.FunSuite {
     assert { ( simpleUser parseFrom simpleUserEntryMap ) === Right(simpleUser(id(29681) :~: name("Antonio") :~: ∅)) }
     assert { ( simpleUser parseFrom wrongKeyMap ) === Left(KeyNotFound(id)) }
     assert { ( simpleUser parseFrom notIntValueMap ) === Left(ErrorParsingValue(id,"twenty-two")) }
+  }
+
+  test("can serialize records to Maps") {
+
+    implicit val idSerializer   = PropertySerializer(id, id.label)({ x => Some(x.toString) })
+    implicit val nameSerializer = PropertySerializer(name, name.label)({ x => Some(x) })
+
+    val simpleUserEntryMap =  Map(
+      "id" -> "29681",
+      "name" -> "Antonio"
+    )
+
+    assert { Right(simpleUserEntryMap) === simpleUser(id(29681) :~: name("Antonio") :~: ∅).serializeTo[String] }
   }
 }
