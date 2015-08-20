@@ -3,8 +3,12 @@ package ohnosequences.cosas.ops.records
 import ohnosequences.cosas._, fns._, types._, typeSets._, records._, properties._
 import ops.typeSets._
 
-@annotation.implicitNotFound(msg = "oh no pigeons!")
-// NOTE: it should be restricted to AnyTypeSet.Of[AnyType], when :~: is known to return the same thing
+@annotation.implicitNotFound(msg =
+  """|Cannot parse fields
+     |  ${Fs}
+     |from a Map[String, ${V}].
+     |Probably you haven't provided property parsers for all properties involved.
+     |""".stripMargin)
 trait ParseFieldsFrom[Fs <: AnyFields, V] extends Fn1[Map[String,V]] {
 
   type Out = Either[AnyPropertyParsingError, Fs#Values]

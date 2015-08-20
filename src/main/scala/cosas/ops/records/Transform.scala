@@ -3,7 +3,15 @@ package ohnosequences.cosas.ops.records
 import ohnosequences.cosas._, types._, fns._, records._, typeSets._
 import ops.typeSets.Take
 
-@annotation.implicitNotFound(msg = "Cannot transform record of type ${RT} to ${Other} with values ${Rest}")
+@annotation.implicitNotFound(msg =
+  """|Cannot transform record of type
+     |  ${RT}
+     |to
+     |  ${Other}
+     |with values
+     |  ${Rest}
+     |Probably you haven't provided values for all missing properties.
+     |""".stripMargin)
 trait Transform[RT <: AnyRecord, Other <: AnyRecord, Rest]
   extends Fn3[RT#Raw, Other, Rest] with Out[ValueOf[Other]]
 
