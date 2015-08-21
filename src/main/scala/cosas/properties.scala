@@ -101,7 +101,7 @@ object properties {
   }
   case class PropertyParser[P <: AnyProperty,V](
     val property: P,
-    val keyRep: String,
+    val keyRep: String)(
     val propertyValueParser: V => Option[P#Raw]
   ) extends AnyPropertyParser {
 
