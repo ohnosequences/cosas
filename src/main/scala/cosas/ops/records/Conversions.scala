@@ -7,7 +7,7 @@ import ops.typeSets._
   Cannot parse fields
     ${PS}
   from a Map[String, ${V}].
-  Probably you haven't provided property parsers for all properties involved.
+  Probably you haven't provided property parsers for all properties in ${PS}.
 """)
 trait ParsePropertiesFrom[PS <: AnyPropertySet, V] extends Fn1[Map[String,V]]
   with Out[ Either[AnyPropertyParsingError, PS#Raw] ]
@@ -53,6 +53,12 @@ object ParsePropertiesFrom {
   }
 }
 
+@annotation.implicitNotFound(msg = """
+  Cannot serialize fields
+    ${PS}
+  to a Map[String, ${V}].
+  Probably you haven't provided property serializers for all properties in ${PS}.
+""")
 trait SerializePropertiesTo[PS <: AnyPropertySet, V] extends Fn2[Map[String,V], PS#Raw]
   with Out[ Either[AnyPropertySerializationError, Map[String,V]] ]
 
