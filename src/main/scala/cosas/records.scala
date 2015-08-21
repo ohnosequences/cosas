@@ -77,6 +77,11 @@ case object records {
       serialize: RT#PropertySet SerializePropertiesTo V
     ): Either[AnyPropertySerializationError, Map[String,V]] = serialize(Map(), entryRaw)
 
+    def serializeTo[V](map: Map[String,V])(implicit
+      serialize: RT#PropertySet SerializePropertiesTo V
+    ): Either[AnyPropertySerializationError, Map[String,V]] = serialize(map, entryRaw)
+
+
     def get[P <: AnyProperty](p: P)(implicit
       get: RT Get P
     ): ValueOf[P] = p := get(entryRaw)

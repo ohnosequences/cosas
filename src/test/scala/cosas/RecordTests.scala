@@ -168,9 +168,12 @@ class RecordTests extends org.scalatest.FunSuite {
       "id" -> "twenty-two"
     )
 
+    val mapWithOtherStuff = simpleUserEntryMap + ("other" -> "stuff")
+
     assert { ( simpleUser parseFrom simpleUserEntryMap ) === Right(simpleUser(id(29681) :~: name("Antonio") :~: ∅)) }
     assert { ( simpleUser parseFrom wrongKeyMap ) === Left(KeyNotFound(id)) }
     assert { ( simpleUser parseFrom notIntValueMap ) === Left(ErrorParsingValue(id,"twenty-two")) }
+    assert { ( simpleUser parseFrom mapWithOtherStuff ) === Right(simpleUser(id(29681) :~: name("Antonio") :~: ∅)) }
   }
 
   test("can serialize records to Maps") {
@@ -182,5 +185,19 @@ class RecordTests extends org.scalatest.FunSuite {
       "name" -> "Antonio"
     )
     assert { Right(simpleUserEntryMap) === simpleUser(id(29681) :~: name("Antonio") :~: ∅).serializeTo[String] }
+
+    val unrelatedMap = Map(
+      "lala" -> "hola!",
+      "ohno" -> "pigeons"
+    )
+
+    val mapWithKey = unrelatedMap + ("id" -> "1321")
+
+    assert {
+      Right(simpleUserEntryMap ++ unrelatedMap) ===
+        ( simpleUser(id(29681) :~: name("Antonio") :~: ∅) serializeTo unrelatedMap )
+    }
+
+    assert { Left(KeyPresent(id, id.label)) === ( simpleUser(id(29681) :~: name("Antonio") :~: ∅) serializeTo mapWithKey ) }
   }
 }
