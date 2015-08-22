@@ -4,10 +4,14 @@ import ohnosequences.cosas._, fns._, types._, typeSets._, records._, properties.
 import ops.typeSets._
 
 @annotation.implicitNotFound(msg = """
-  Cannot parse fields
+  Cannot parse fields:
+
     ${PS}
+
   from a Map[String, ${V}].
-  Probably you haven't provided property parsers for all properties in ${PS}.
+  Probably you haven't provided property parsers for all properties in
+
+    ${PS}
 """)
 trait ParsePropertiesFrom[PS <: AnyPropertySet, V] extends Fn1[Map[String,V]]
   with Out[ Either[AnyPropertyParsingError, PS#Raw] ]
@@ -54,10 +58,14 @@ object ParsePropertiesFrom {
 }
 
 @annotation.implicitNotFound(msg = """
-  Cannot serialize fields
+  Cannot serialize fields:
+
     ${PS}
+
   to a Map[String, ${V}].
-  Probably you haven't provided property serializers for all properties in ${PS}.
+  Probably you haven't provided property serializers for all properties in:
+
+    ${PS}
 """)
 trait SerializePropertiesTo[PS <: AnyPropertySet, V] extends Fn2[Map[String,V], PS#Raw]
   with Out[ Either[AnyPropertySerializationError, Map[String,V]] ]
