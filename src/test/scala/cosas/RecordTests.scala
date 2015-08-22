@@ -137,15 +137,22 @@ class RecordTests extends org.scalatest.FunSuite {
     assertTypeError { """implicitly[simpleUser.PropertySet HasProperties (email.type :~: name.type :~: color.type :~: ∅)]""" }
   }
 
-  test("can parse records from Maps") {
+  object propertyConverters {
 
     val idVParser: String => Option[Integer] = str => {
-        import scala.util.control.Exception._
-        catching(classOf[NumberFormatException]) opt str.toInt
-      }
-    implicit val idParser = PropertyParser[id.type, String](id, id.label, idVParser)
+      import scala.util.control.Exception._
+      catching(classOf[NumberFormatException]) opt str.toInt
+    }
+    implicit val idParser   = PropertyParser(id, id.label)(idVParser)
+    implicit val nameParser = PropertyParser(name, name.label){ str: String => Some(str) }
 
-    implicit val nameParser = PropertyParser[name.type, String](name, name.label, { str: String => Some(str) } )
+    implicit val idSerializer   = PropertySerializer(id, id.label)( x => Some(x.toString) )
+    implicit val nameSerializer = PropertySerializer(name, name.label){ x: String => Some(x) }
+  }
+
+  test("can parse records from Maps") {
+
+    import propertyConverters._
 
     val simpleUserEntryMap =  Map(
       "id" -> "29681",
@@ -161,8 +168,36 @@ class RecordTests extends org.scalatest.FunSuite {
       "id" -> "twenty-two"
     )
 
+    val mapWithOtherStuff = simpleUserEntryMap + ("other" -> "stuff")
+
     assert { ( simpleUser parseFrom simpleUserEntryMap ) === Right(simpleUser(id(29681) :~: name("Antonio") :~: ∅)) }
     assert { ( simpleUser parseFrom wrongKeyMap ) === Left(KeyNotFound(id)) }
     assert { ( simpleUser parseFrom notIntValueMap ) === Left(ErrorParsingValue(id,"twenty-two")) }
+    assert { ( simpleUser parseFrom mapWithOtherStuff ) === Right(simpleUser(id(29681) :~: name("Antonio") :~: ∅)) }
+  }
+
+  test("can serialize records to Maps") {
+
+    import propertyConverters._
+
+    val simpleUserEntryMap =  Map(
+      "id" -> "29681",
+      "name" -> "Antonio"
+    )
+    assert { Right(simpleUserEntryMap) === simpleUser(id(29681) :~: name("Antonio") :~: ∅).serializeTo[String] }
+
+    val unrelatedMap = Map(
+      "lala" -> "hola!",
+      "ohno" -> "pigeons"
+    )
+
+    val mapWithKey = unrelatedMap + ("id" -> "1321")
+
+    assert {
+      Right(simpleUserEntryMap ++ unrelatedMap) ===
+        ( simpleUser(id(29681) :~: name("Antonio") :~: ∅) serializeTo unrelatedMap )
+    }
+
+    assert { Left(KeyPresent(id, id.label)) === ( simpleUser(id(29681) :~: name("Antonio") :~: ∅) serializeTo mapWithKey ) }
   }
 }
