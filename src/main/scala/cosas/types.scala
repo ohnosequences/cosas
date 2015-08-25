@@ -35,6 +35,11 @@ case object types {
     final def :=[@specialized V <: T#Raw](v: V): V =: T = new (V Denotes T)(v)
   }
 
+  case object typeLabel extends shapeless.Poly1 {
+
+    implicit def labelOf[T <: AnyType] = at[T]{ t: T => t.label }
+  }
+
   /* You denote a `Type` using a `Value` */
   trait AnyDenotation extends Any {
 
