@@ -24,24 +24,24 @@ case object ParseDenotations {
     }
 
   implicit def cons[
-    V0,
+    V,
     H <: AnyType, TD <: AnyTypeSet,
     HR <: H#Raw,
-    PH <: AnyTypeParser { type Type = H; type V = V0; type D = HR },
-    PT <: ParseDenotations[TD,V0]
+    PH <: AnyDenotationParser { type Type = H; type Value = V; type D = HR },
+    PT <: ParseDenotations[TD,V]
   ](implicit
     parseH: PH,
     parseT: PT
-  ): ParseDenotations[(H := HR) :~: TD, V0] = new ParseDenotations[(H := HR) :~: TD, V0] {
+  ): ParseDenotations[(H := HR) :~: TD, V] = new ParseDenotations[(H := HR) :~: TD, V] {
 
 
-    def apply(map: Map[String,V0]): Out = parseT(map) match {
+    def apply(map: Map[String,V]): Out = parseT(map) match {
 
       case (Right(td), map) => (map get parseH.labelRep) match {
 
         case None => (Left(KeyNotFound(parseH.labelRep, map)), map)
 
-        case Some(v) => ( parseH parse (parseH.labelRep, v) ).fold[Out](
+        case Some(v) => ( parseH.parse((parseH.labelRep, v)) ).fold[Out](
           err => ( Left(ErrorParsing(err)), map ),
           { hd: PH#Type := PH#D => (Right[AnyDenotationsParsingError, (H := HR) :~: TD]( hd :~: (td: TD) ), map) }
         )

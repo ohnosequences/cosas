@@ -6,9 +6,9 @@ import ohnosequences.cosas.ops.types._
 class ParsingDenotations extends org.scalatest.FunSuite {
 
   case object buh extends Wrap[String]("buh")
-  implicit val parseBuh = new TypeParser(buh, buh.label)({ x: String => Some(x) })
+  implicit val parseBuh = new DenotationParser(buh, buh.label)({ x: String => Some(x) })
   case object bah extends Wrap[String]("bah")
-  implicit val parseBah = new TypeParser(bah, bah.label)({ x: String => Some(x) })
+  implicit val parseBah = new DenotationParser(bah, bah.label)({ x: String => Some(x) })
 
   type BuhBah = ValueOf[buh.type] :~: ValueOf[bah.type] :~: ∅
   // val buhbah: BuhBah = buh :~: bah :~: ∅

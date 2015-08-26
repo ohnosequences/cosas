@@ -74,19 +74,19 @@ object properties {
     type Value = Vl
   }
 
-  trait AnyPropertyParser extends AnyTypeParser { parser =>
+  trait AnyPropertyParser extends AnyDenotationParser { parser =>
 
     type Type <: AnyProperty
     type D = Type#Raw
   }
-  case class PropertyParser[P <: AnyProperty,V0](
+  case class PropertyParser[P <: AnyProperty,V](
     val tpe: P,
     val labelRep: String)(
-    val denotationParser: V0 => Option[P#Raw]
+    val denotationParser: V => Option[P#Raw]
   ) extends AnyPropertyParser {
 
     type Type = P
-    type V = V0
+    type Value = V
   }
 
   case class PropertyOps[P <: AnyProperty](val p: P) extends AnyVal {

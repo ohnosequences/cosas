@@ -63,12 +63,7 @@ case object types {
   /*
     ### Type parsing and serialization
   */
-
-  object AnyTypeParser {
-
-    // type is[]
-  }
-  trait AnyTypeParser { parser =>
+  trait AnyDenotationParser { parser =>
 
     type Type <: AnyType
     val tpe: Type
@@ -76,14 +71,14 @@ case object types {
     // the type used to denote Type
     type D <: Type#Raw
 
-    type V
-    type From = (String, V)
+    type Value
+    type From = (String, Value)
 
-    val denotationParser: V => Option[D]
+    val denotationParser: Value => Option[D]
 
     val labelRep: String
 
-    val parse: From => Either[AnyTypeParsingError, Type := D] = {
+    def parse(kv: From): Either[AnyTypeParsingError, Type := D] = kv match {
 
       case (k,v) => k match {
 
@@ -99,24 +94,24 @@ case object types {
   }
 
   sealed trait AnyTypeParsingError
-  case class ErrorParsingValue[Tpe <: AnyType, From](val tpe: Tpe)(val from: From)
+  case class ErrorParsingValue[Tpe <: AnyType, Value](val tpe: Tpe)(val from: Value)
   extends AnyTypeParsingError
   case class WrongKey[Tpe <: AnyType](val tpe: Tpe, val got: String, val expected: String)
   extends AnyTypeParsingError
 
 
-  class TypeParser[T <: AnyType, V0, D0 <: T#Raw](
-    val tpe: T, val labelRep: String)(
-    val denotationParser: V0 => Option[D0]
-  ) extends AnyTypeParser {
+  class DenotationParser[T <: AnyType, V, D0 <: T#Raw](
+    val tpe: T,
+    val labelRep: String
+  )(
+    val denotationParser: V => Option[D0]
+  )
+  extends AnyDenotationParser {
 
     type Type = T
-    type V = V0
+    type Value = V
     type D = D0
   }
-
-
-
 
   /*
   ### Subset types
