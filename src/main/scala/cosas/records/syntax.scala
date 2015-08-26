@@ -1,0 +1,68 @@
+package ohnosequences.cosas.records
+
+import ohnosequences.cosas._, types._, typeSets._, properties._
+import ohnosequences.cosas.ops.typeSets.ReorderTo
+
+case object syntax {
+
+  /*
+    ### Record ops
+
+    An `apply` method for building denotations of this record type, overloaded so that the properties can be provided in any order.
+  */
+  case class RecordOps[RT <: AnyRecord](val recType: RT) extends AnyVal {
+
+    def apply(recEntry: RT#Raw): ValueOf[RT] = recType := recEntry
+
+    /* Same as apply, but you can pass properties in any order */
+    def apply[Vs <: AnyTypeSet](values: Vs)(implicit
+        reorder: Vs ReorderTo RT#Raw
+      ): ValueOf[RT] = recType := reorder(values)
+
+    def parseFrom[V](map: Map[String,V])(implicit
+      parse: RT#PropertySet ParsePropertiesFrom V
+    ): Either[AnyPropertyParsingError, ValueOf[RT]] =
+      parse(map) match {
+
+        case Left(err)  => Left(err)
+        case Right(v)   => Right(new ValueOf[RT](v))
+      }
+  }
+
+  /*
+    ### Record entry ops
+
+    Operations on `ValueOf`s a record type. As usual with value classes, parameter is of the wrapped type, with the implicits providing them only for value class instances.
+  */
+  case class RecordEntryOps[RT <: AnyRecord](val entryRaw: RT#Raw) extends AnyVal {
+
+    def serializeTo[V](implicit
+      serialize: RT#PropertySet SerializePropertiesTo V
+    ): Either[AnyPropertySerializationError, Map[String,V]] = serialize(Map(), entryRaw)
+
+    def serializeTo[V](map: Map[String,V])(implicit
+      serialize: RT#PropertySet SerializePropertiesTo V
+    ): Either[AnyPropertySerializationError, Map[String,V]] = serialize(map, entryRaw)
+
+
+    def get[P <: AnyProperty](p: P)(implicit
+      get: RT Get P
+    ): ValueOf[P] = p := get(entryRaw)
+
+    def update[P <: AnyProperty](field: ValueOf[P])(implicit
+      check: (ValueOf[P] :~: ∅) ⊂ RT#Raw,
+      update: RT Update (ValueOf[P] :~: ∅)
+    ): ValueOf[RT] = update(entryRaw, field :~: ∅)
+
+    def update[Ps <: AnyTypeSet](properties: Ps)(implicit
+      update: RT Update Ps
+    ): ValueOf[RT] = update(entryRaw, properties)
+
+    def as[Other <: AnyRecord, Rest <: AnyTypeSet](other: Other, rest: Rest)(implicit
+      transform: Transform[RT, Other, Rest]
+    ): ValueOf[Other] = transform(entryRaw, other, rest)
+
+    def as[Other <: AnyRecord { type Raw = RT#Raw }](otherEntry: ValueOf[Other]): ValueOf[RT] =
+      new ValueOf[RT](otherEntry.value)
+  }
+}

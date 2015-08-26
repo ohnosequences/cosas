@@ -10,7 +10,7 @@ object recordTestsContext {
   case object email extends Property[String]("email")
   case object color extends Property[String]("color")
 
-  // funny square ins an option too
+  // funny square is an option too
   case object simpleUser extends Record(id :&: name :&: □)
   case object normalUser extends Record(id :&: name :&: email :&: color :&: □)
   val vProps  = email :&: color :&: □
@@ -123,7 +123,6 @@ class RecordTests extends org.scalatest.FunSuite {
   }
 
   test("can check if record has properties") {
-    import ops.records._
 
     implicitly[simpleUser.PropertySet HasProperties (id.type :~: name.type :~: ∅)]
     implicitly[simpleUser.PropertySet HasProperties (name.type :~: id.type :~: ∅)]

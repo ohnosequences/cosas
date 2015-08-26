@@ -1,4 +1,4 @@
-package ohnosequences.cosas.ops.records
+package ohnosequences.cosas.records
 
 import ohnosequences.cosas._, fns._, types._, typeSets._, records._, properties._
 import ops.typeSets._

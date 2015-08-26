@@ -1,4 +1,4 @@
-package ohnosequences.cosas.ops.records
+package ohnosequences.cosas.records
 
 import ohnosequences.cosas._, types._, typeSets._, records._, fns._
 import ops.typeSets.Replace
