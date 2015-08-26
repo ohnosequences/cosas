@@ -60,6 +60,59 @@ case object types {
     final def show(implicit t: T): String = s"(${t.label} := ${value})"
   }
 
+  /*
+    ### Type parsing and serialization
+  */
+
+  trait AnyTypeParser { parser =>
+
+    type Type <: AnyType
+    val tpe: Type
+
+    // the type used to denote Type
+    type D <: Type#Raw
+
+    type V
+    type From = (String, V)
+
+    val denotationParser: V => Option[D]
+
+    val labelRep: String
+
+    val parse: From => Either[AnyTypeParsingError, Type := D] = {
+
+      case (k,v) => k match {
+
+        case `labelRep` => denotationParser(v).fold[Either[AnyTypeParsingError, Type := D]](
+            Left(ErrorParsingValue(tpe)(v))
+          )(
+            d => Right(tpe := d)
+          )
+
+        case _ => Left(WrongKey(tpe, k, labelRep))
+      }
+    }
+  }
+
+  sealed trait AnyTypeParsingError
+  case class ErrorParsingValue[Tpe <: AnyType, From](val tpe: Tpe)(val from: From)
+  extends AnyTypeParsingError
+  case class WrongKey[Tpe <: AnyType](val tpe: Tpe, val got: String, val expected: String)
+  extends AnyTypeParsingError
+
+
+  class TypeParser[T <: AnyType, V0, D0 <: T#Raw](
+    val tpe: T, val labelRep: String)(
+    val denotationParser: V0 => Option[D0]
+  ) extends AnyTypeParser {
+
+    type Type = T
+    type V = V0
+    type D = D0
+  }
+
+
+
 
   /*
   ### Subset types

@@ -1,6 +1,6 @@
 package ohnosequences.cosas.tests
 
-import ohnosequences.cosas._, types._, typeSets._, properties._, records._
+import ohnosequences.cosas._, types.{ErrorParsingValue => zzzz, _}, typeSets._, properties._, records._
 
 object recordTestsContext {
 
