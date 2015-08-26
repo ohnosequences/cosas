@@ -10,8 +10,8 @@ class ParsingDenotations extends org.scalatest.FunSuite {
   case object bah extends Wrap[String]("bah")
   implicit val parseBah = new TypeParser(bah, bah.label)({ x: String => Some(x) })
 
-  type BuhBah = buh.type :~: bah.type :~: ∅
-  val buhbah: BuhBah = buh :~: bah :~: ∅
+  type BuhBah = ValueOf[buh.type] :~: ValueOf[bah.type] :~: ∅
+  // val buhbah: BuhBah = buh :~: bah :~: ∅
 
   val map = Map(
     "buh" -> "hola buh!",

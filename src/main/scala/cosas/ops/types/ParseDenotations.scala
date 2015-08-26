@@ -2,10 +2,9 @@ package ohnosequences.cosas.ops.types
 
 import ohnosequences.cosas._, types._, typeSets._, fns._
 
-trait ParseDenotations[Types <: AnyTypeSet, V]
+trait ParseDenotations[Denotations <: AnyTypeSet, V]
 extends Fn1[Map[String,V]] {
 
-  type Denotations <: AnyTypeSet
   type Out = (Either[AnyDenotationsParsingError, Denotations], Map[String,V])
 }
 
@@ -18,25 +17,23 @@ case object ParseDenotations {
   // def apply[Types <: AnyTypeSet, V]
   //   (implicit parser: ParsePropertiesFrom[F, V]): ParsePropertiesFrom[F, V] = parser
 
-  implicit def empty[Types <: AnyTypeSet, V]: ParseDenotations[Types,V] =
-    new ParseDenotations[Types,V] {
+  implicit def empty[V]: ParseDenotations[∅,V] =
+    new ParseDenotations[∅,V] {
 
-      type Denotations = ∅
       def apply(map: Map[String,V]): Out = (Right(∅), map)
     }
 
   implicit def cons[
     V0,
-    D0 <: H#Raw,
-    H <: AnyType, T <: AnyTypeSet,
-    PH <: AnyTypeParser { type Type = H; type V = V0; type D = D0 },
-    PT <: ParseDenotations[T,V0]
+    H <: AnyType, TD <: AnyTypeSet,
+    HR <: H#Raw,
+    PH <: AnyTypeParser { type Type = H; type V = V0; type D = HR },
+    PT <: ParseDenotations[TD,V0]
   ](implicit
     parseH: PH,
     parseT: PT
-  ): ParseDenotations[(H :~: T), V0] = new ParseDenotations[(H :~: T), V0] {
+  ): ParseDenotations[(H := HR) :~: TD, V0] = new ParseDenotations[(H := HR) :~: TD, V0] {
 
-    type Denotations = (PH#Type := PH#D) :~: PT#Denotations
 
     def apply(map: Map[String,V0]): Out = parseT(map) match {
 
@@ -46,11 +43,44 @@ case object ParseDenotations {
 
         case Some(v) => ( parseH parse (parseH.labelRep, v) ).fold[Out](
           err => ( Left(ErrorParsing(err)), map ),
-          { hd: PH#Type := PH#D => (Right( hd :~: (td: PT#Denotations) ), map) }
+          { hd: PH#Type := PH#D => (Right[AnyDenotationsParsingError, (H := HR) :~: TD]( hd :~: (td: TD) ), map) }
         )
       }
 
       case (Left(err), map) => (Left(err), map)
     }
+
+    //   val errOrTM: (Either[AnyDenotationsParsingError, PT#Denotations], Map[String,V0]) =
+    //     parseT(map)
+    //
+    //   errOrTM._1.fold(
+    //     err => (Left(err), errOrTM._1),
+    //     td  => (map get parseH.labelRep) match {
+    //
+    //         case None => (Left(KeyNotFound(parseH.labelRep, map)), map)
+    //
+    //         case Some(v) => ( ( (parseH:PH).parse(parseH.labelRep, v: PH#V) ): Either[AnyTypeParsingError, PH#Type := PH#D] ).fold[Out](
+    //           err => ( Left(ErrorParsing(err)), map ),
+    //           { hd: PH#Type := PH#D => (Right[AnyDenotationsParsingError, Denotations]( hd :~: (td: PT#Denotations) ), map) }
+    //         )
+    //       }
+    //   )
+    //   ???
+    // }
+
+    // parseT(map) match {
+    //
+    //   case (Right(td), map) => (map get parseH.labelRep) match {
+    //
+    //     case None => (Left(KeyNotFound(parseH.labelRep, map)), map)
+    //
+    //     case Some(v) => ( parseH parse (parseH.labelRep, v) ).fold[Out](
+    //       err => ( Left(ErrorParsing(err)), map ),
+    //       { hd: PH#Type := PH#D => (Right[AnyDenotationsParsingError, Denotations]( hd :~: (td: PT#Denotations) ), map) }
+    //     )
+    //   }
+    //
+    //   case (Left(err), map) => (Left(err), map)
+    // }
   }
 }

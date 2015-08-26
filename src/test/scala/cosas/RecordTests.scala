@@ -153,6 +153,8 @@ class RecordTests extends org.scalatest.FunSuite {
   test("can parse records from Maps") {
 
     import propertyConverters._
+    import types._
+    import ops.types._
 
     val simpleUserEntryMap =  Map(
       "id" -> "29681",
@@ -170,9 +172,10 @@ class RecordTests extends org.scalatest.FunSuite {
 
     val mapWithOtherStuff = simpleUserEntryMap + ("other" -> "stuff")
 
+
     assert { ( simpleUser parseFrom simpleUserEntryMap ) === Right(simpleUser(id(29681) :~: name("Antonio") :~: ∅)) }
-    assert { ( simpleUser parseFrom wrongKeyMap ) === Left(KeyNotFound(id)) }
-    assert { ( simpleUser parseFrom notIntValueMap ) === Left(ErrorParsingValue(id,"twenty-two")) }
+    assert { ( simpleUser parseFrom wrongKeyMap ) === Left(KeyNotFound(id.label, wrongKeyMap)) }
+    assert { ( simpleUser parseFrom notIntValueMap ) === Left(ErrorParsing(ErrorParsingValue(id)("twenty-two"))) }
     assert { ( simpleUser parseFrom mapWithOtherStuff ) === Right(simpleUser(id(29681) :~: name("Antonio") :~: ∅)) }
   }
 

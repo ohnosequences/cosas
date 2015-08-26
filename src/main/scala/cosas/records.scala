@@ -54,13 +54,15 @@ case object records {
         reorder: Vs ReorderTo RT#Raw
       ): ValueOf[RT] = recType := reorder(values)
 
-    def parseFrom[V](map: Map[String,V])(implicit
-      parse: RT#PropertySet ParsePropertiesFrom V
-    ): Either[AnyPropertyParsingError, ValueOf[RT]] =
+    import ops.types._
+    def parseFrom[
+      V0,
+      PD <: ParseDenotations[RT#PropertySet#Raw, V0]
+    ](map: Map[String,V0])(implicit parse: PD): Either[AnyDenotationsParsingError, ValueOf[RT]] =
       parse(map) match {
 
-        case Left(err)  => Left(err)
-        case Right(v)   => Right(new ValueOf[RT](v))
+        case (Left(err), map)  => Left(err)
+        case (Right(v), map)   => Right(new ValueOf[RT](v))
       }
   }
 

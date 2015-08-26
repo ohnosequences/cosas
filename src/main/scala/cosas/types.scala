@@ -64,6 +64,10 @@ case object types {
     ### Type parsing and serialization
   */
 
+  object AnyTypeParser {
+
+    // type is[]
+  }
   trait AnyTypeParser { parser =>
 
     type Type <: AnyType
