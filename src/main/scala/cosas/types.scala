@@ -63,7 +63,7 @@ case object types {
   /*
     ### Type parsing and serialization
   */
-  trait AnyDenotationParser { parser =>
+  trait AnyDenotationParser {
 
     type Type <: AnyType
     val tpe: Type
@@ -74,22 +74,19 @@ case object types {
     type Value
     type From = (String, Value)
 
-    val denotationParser: Value => Option[D]
+    val parser: Value => Option[D]
 
     val labelRep: String
 
-    def parse(kv: From): Either[AnyTypeParsingError, Type := D] = kv match {
+    def apply(k: String, v: Value): Either[AnyTypeParsingError, Type := D] = k match {
 
-      case (k,v) => k match {
+      case `labelRep` => parser(v).fold[Either[AnyTypeParsingError, Type := D]](
+          Left(ErrorParsingValue(tpe)(v))
+        )(
+          d => Right(tpe := d)
+        )
 
-        case `labelRep` => denotationParser(v).fold[Either[AnyTypeParsingError, Type := D]](
-            Left(ErrorParsingValue(tpe)(v))
-          )(
-            d => Right(tpe := d)
-          )
-
-        case _ => Left(WrongKey(tpe, k, labelRep))
-      }
+      case _ => Left(WrongKey(tpe, k, labelRep))
     }
   }
 
@@ -104,7 +101,7 @@ case object types {
     val tpe: T,
     val labelRep: String
   )(
-    val denotationParser: V => Option[D0]
+    val parser: V => Option[D0]
   )
   extends AnyDenotationParser {
 
@@ -112,6 +109,32 @@ case object types {
     type Value = V
     type D = D0
   }
+
+  trait AnyDenotationSerializer {
+
+    type Type <: AnyType
+    val tpe: Type
+
+    // the type used to denote Type
+    type D <: Type#Raw
+
+    type Value
+    type To = (String, Value)
+
+    val serializer: D => Option[Value]
+
+    val labelRep: String
+
+    def apply(d: Type := D): Either[AnyTypeSerializationError, To] = serializer(d.value)
+      .fold[Either[AnyTypeSerializationError, To]](
+        Left(ErrorSerializingValue(d))
+      )(
+        v => Right(labelRep -> v)
+      )
+  }
+
+  sealed trait AnyTypeSerializationError
+  case class ErrorSerializingValue[T <: AnyType, D <: T#Raw](d: T := D) extends AnyTypeSerializationError
 
   /*
   ### Subset types

@@ -182,6 +182,7 @@ class RecordTests extends org.scalatest.FunSuite {
   test("can serialize records to Maps") {
 
     import propertyConverters._
+    import ops.types._
 
     val simpleUserEntryMap =  Map(
       "id" -> "29681",
@@ -201,6 +202,9 @@ class RecordTests extends org.scalatest.FunSuite {
         ( simpleUser(id(29681) :~: name("Antonio") :~: ∅) serializeTo unrelatedMap )
     }
 
-    assert { Left(KeyPresent(id, id.label)) === ( simpleUser(id(29681) :~: name("Antonio") :~: ∅) serializeTo mapWithKey ) }
+    assert {
+      Left(KeyPresent(id.label, mapWithKey + ("name" -> "Antonio"))) ===
+        ( simpleUser(id(29681) :~: name("Antonio") :~: ∅) serializeTo mapWithKey ) 
+    }
   }
 }

@@ -16,62 +16,21 @@ object properties {
     implicit def propertyOps[P <: AnyProperty](p: P): PropertyOps[P] = PropertyOps(p)
   }
 
-  trait AnyPropertySerializer { serializer =>
+  trait AnyPropertySerializer extends AnyDenotationSerializer {
 
-    type Property <: AnyProperty
-    val property: Property
-
-    type Value
-    type To = Map[String, Value]
-
-    val propertyValueSerializer: Property#Raw => Option[Value]
-
-    val keyRep: String
-
-    val serialize: (To, Property#Raw) => Either[AnyPropertySerializationError, To] =
-      (map, value) => map get keyRep match {
-
-        case Some(v) => Left(KeyPresent(property, keyRep))
-
-        case None => propertyValueSerializer(value) match {
-
-          case None => Left(ErrorSerializingValue(property, property(value)))
-
-          case Some(pv) => Right(map + (keyRep -> pv) )
-        }
-      }
+    type Type <: AnyProperty
+    type D = Type#Raw
   }
 
   case class PropertySerializer[P <: AnyProperty,V](
-    val property: P,
-    val keyRep: String)(
-    val propertyValueSerializer: P#Raw => Option[V]
+    val tpe: P,
+    val labelRep: String
+  )(
+    val serializer: P#Raw => Option[V]
   ) extends AnyPropertySerializer {
 
-    type Property = P
+    type Type = P
     type Value = V
-  }
-
-
-
-  sealed trait AnyPropertySerializationError {
-
-    type Property <: AnyProperty
-    type Value
-    type To = Map[String, Value]
-  }
-  case class KeyPresent[P <: AnyProperty, Vl](val p: P, val keyRep: String)
-  extends AnyPropertySerializationError {
-
-    type Property = P
-    type Value = Vl
-  }
-
-  case class ErrorSerializingValue[P <: AnyProperty, Vl](val p: P, val value: ValueOf[P])
-  extends AnyPropertySerializationError {
-
-    type Property = P
-    type Value = Vl
   }
 
   trait AnyPropertyParser extends AnyDenotationParser { parser =>
@@ -82,7 +41,7 @@ object properties {
   case class PropertyParser[P <: AnyProperty,V](
     val tpe: P,
     val labelRep: String)(
-    val denotationParser: V => Option[P#Raw]
+    val parser: V => Option[P#Raw]
   ) extends AnyPropertyParser {
 
     type Type = P

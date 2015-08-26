@@ -75,13 +75,15 @@ case object records {
     RecordEntryOps(entry.value)
   case class RecordEntryOps[RT <: AnyRecord](val entryRaw: RT#Raw) extends AnyVal {
 
+    import ops.types._
+
     def serializeTo[V](implicit
-      serialize: RT#PropertySet SerializePropertiesTo V
-    ): Either[AnyPropertySerializationError, Map[String,V]] = serialize(Map(), entryRaw)
+      serialize: RT#PropertySet#Raw SerializeDenotations V
+    ): Either[AnySerializeDenotationsError, Map[String,V]] = serialize(entryRaw, Map())
 
     def serializeTo[V](map: Map[String,V])(implicit
-      serialize: RT#PropertySet SerializePropertiesTo V
-    ): Either[AnyPropertySerializationError, Map[String,V]] = serialize(map, entryRaw)
+      serialize: RT#PropertySet#Raw SerializeDenotations V
+    ): Either[AnySerializeDenotationsError, Map[String,V]] = serialize(entryRaw, map)
 
 
     def get[P <: AnyProperty](p: P)(implicit
