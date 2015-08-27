@@ -154,7 +154,7 @@ class RecordTests extends org.scalatest.FunSuite {
 
     import propertyConverters._
     import types._
-    import ops.types._
+    import ops.typeSets.{ParseDenotations, ParseDenotationsError, KeyNotFound, ErrorParsing}
 
     val simpleUserEntryMap =  Map(
       "id" -> "29681",
@@ -182,7 +182,8 @@ class RecordTests extends org.scalatest.FunSuite {
   test("can serialize records to Maps") {
 
     import propertyConverters._
-    import ops.types._
+    import ops.typeSets.{SerializeDenotations, SerializeDenotationsError, KeyPresent}
+
 
     val simpleUserEntryMap =  Map(
       "id" -> "29681",

@@ -1,4 +1,4 @@
-package ohnosequences.cosas.ops.types
+package ohnosequences.cosas.ops.typeSets
 
 import ohnosequences.cosas._, types._, typeSets._, fns._
 

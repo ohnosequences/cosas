@@ -4,6 +4,8 @@ case object records {
 
   import types._, typeSets._, properties._
   import ops.typeSets.{ReorderTo, CheckForAll}
+  import ops.typeSets.{SerializeDenotations, SerializeDenotationsError}
+  import ops.typeSets.{ParseDenotations, ParseDenotationsError}
 
   /*
     ## Records
@@ -54,7 +56,6 @@ case object records {
         reorder: Vs ReorderTo RT#Raw
       ): ValueOf[RT] = recType := reorder(values)
 
-    import ops.types._
     def parseFrom[
       V0,
       PD <: ParseDenotations[RT#PropertySet#Raw, V0]
@@ -74,8 +75,6 @@ case object records {
   implicit def getRecordEntryOps[RT <: AnyRecord](entry: ValueOf[RT]): RecordEntryOps[RT] =
     RecordEntryOps(entry.value)
   case class RecordEntryOps[RT <: AnyRecord](val entryRaw: RT#Raw) extends AnyVal {
-
-    import ops.types._
 
     def serializeTo[V](implicit
       serialize: RT#PropertySet#Raw SerializeDenotations V
