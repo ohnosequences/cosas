@@ -285,100 +285,6 @@ class TypeSetTests extends org.scalatest.FunSuite {
 
   }
 
-  test("parse") {
-    import properties._, records._
-
-    case object key   extends Property[String]("key")
-    case object name  extends Property[String]("name")
-    case object age   extends Property[Integer]("age")
-
-    // using record here just for convenience
-    case object rec extends Record(name :&: age :&: key :&: □)
-
-    val recEntry = rec(
-      name("foo") :~:
-      age(12) :~:
-      key("s0dl52f23k") :~:
-      ∅
-    )
-
-    // Map parser get's values from map by key, which is the property label
-    object MapParser {
-      implicit def caseInteger[P <: AnyProperty.ofType[Integer]](p: P, m: Map[String, String]):
-        (ValueOf[P], Map[String, String]) = (p(m(p.label).toInt), m)
-
-      implicit def caseString[P <: AnyProperty.ofType[String]](p: P, m: Map[String, String]):
-        (ValueOf[P], Map[String, String]) = (p(m(p.label).toString), m)
-    }
-
-    assertResult(recEntry.value) {
-      import MapParser._
-
-      rec.properties parseFrom Map(
-        "age" -> "12",
-        "name" -> "foo",
-        "key" -> "s0dl52f23k"
-      )
-    }
-
-    // List parser just takes the values sequentially, so the order must correspond the order of properties
-    object ListParser {
-      implicit def caseInteger[P <: AnyProperty.ofType[Integer]](p: P, l: List[String]):
-        (ValueOf[P], List[String]) = (p(l.head.toInt), l.tail)
-
-      implicit def caseString[P <: AnyProperty.ofType[String]](p: P, l: List[String]):
-        (ValueOf[P], List[String]) = (p(l.head.toString), l.tail)
-    }
-
-    assertResult(recEntry.value) {
-      import ListParser._
-
-      rec.properties parseFrom List(
-        "foo",
-        "12",
-        "s0dl52f23k"
-      )
-    }
-
-  }
-
-  test("serialize") {
-    import properties._
-
-    case object name extends Property[String]("name")
-    case object age  extends Property[Integer]("age")
-    case object key  extends Property[String]("key")
-
-    val s = name("foo") :~: age(12) :~: key("s0dl52f23k") :~: ∅
-
-    // Map //
-    implicit def serializeProperty[P <: AnyProperty](t: ValueOf[P])
-      (implicit p: P): Map[String, String] = Map(p.label -> t.value.toString)
-
-    assert(
-      s.serializeTo[Map[String, String]] ==
-      Map("age" -> "12", "name" -> "foo", "key" -> "s0dl52f23k")
-    )
-
-    assert(
-      ∅.serializeTo[Map[String, String]] == Map()
-    )
-
-    // List //
-    implicit def propertyToStr[P <: AnyProperty](t: ValueOf[P])
-      (implicit p: P): List[String] = List(s"${p.label} -> ${t.value.toString}")
-
-    assert(
-      s.serializeTo[List[String]] ==
-      List("name -> foo", "age -> 12", "key -> s0dl52f23k")
-    )
-
-    assert(
-      ∅.serializeTo[List[String]] == List()
-    )
-
-  }
-
   test("getting types of a set of denotations") {
 
     object foo extends Type("foo")
@@ -394,23 +300,14 @@ class TypeSetTests extends org.scalatest.FunSuite {
   test("conversion to a Map") {
     import properties._
 
-    assert{ ∅.toMap[AnyType, Int] == Map() }
+    assert{ ∅.toMapOf[Int] == Right( Map() ) }
 
     case object key  extends Property[String]("key")
     case object name extends Property[String]("name")
 
     val set = key("foo") :~: name("bob") :~: ∅
 
-    assert{ set.toMap[AnyProperty, String] == Map(key -> "foo", name -> "bob") }
-
-
-    // now something different
-    case object age extends Wrap[Int]("age")
-
-    assert{
-      ((age := 12) :~: set).toMap[AnyType, Any] == 
-      Map(key -> "foo", name -> "bob", age -> 12)
-    }
+    assert{ set.toMapOf[String] === Right( Map("key" -> "foo", "name" -> "bob") ) }
   }
 
 }

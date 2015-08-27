@@ -2,7 +2,7 @@ package ohnosequences.cosas.tests
 
 import ohnosequences.cosas._, types._, typeSets._, properties._, records._
 
-object recordTestsContext {
+case object recordTestsContext {
 
   case object id    extends Property[Integer]("id")
   case object name  extends Property[String]("name")
@@ -153,6 +153,8 @@ class RecordTests extends org.scalatest.FunSuite {
   test("can parse records from Maps") {
 
     import propertyConverters._
+    import types._
+    import ops.typeSets.{ParseDenotations, ParseDenotationsError, KeyNotFound, ErrorParsing}
 
     val simpleUserEntryMap =  Map(
       "id" -> "29681",
@@ -170,21 +172,24 @@ class RecordTests extends org.scalatest.FunSuite {
 
     val mapWithOtherStuff = simpleUserEntryMap + ("other" -> "stuff")
 
-    assert { ( simpleUser parseFrom simpleUserEntryMap ) === Right(simpleUser(id(29681) :~: name("Antonio") :~: ∅)) }
-    assert { ( simpleUser parseFrom wrongKeyMap ) === Left(KeyNotFound(id)) }
-    assert { ( simpleUser parseFrom notIntValueMap ) === Left(ErrorParsingValue(id,"twenty-two")) }
-    assert { ( simpleUser parseFrom mapWithOtherStuff ) === Right(simpleUser(id(29681) :~: name("Antonio") :~: ∅)) }
+
+    assert { ( simpleUser parse simpleUserEntryMap ) === Right(simpleUser(id(29681) :~: name("Antonio") :~: ∅)) }
+    assert { ( simpleUser parse wrongKeyMap ) === Left(KeyNotFound(id.label, wrongKeyMap)) }
+    assert { ( simpleUser parse notIntValueMap ) === Left(ErrorParsing(ErrorParsingValue(id)("twenty-two"))) }
+    assert { ( simpleUser parse mapWithOtherStuff ) === Right(simpleUser(id(29681) :~: name("Antonio") :~: ∅)) }
   }
 
   test("can serialize records to Maps") {
 
     import propertyConverters._
+    import ops.typeSets.{SerializeDenotations, SerializeDenotationsError, KeyPresent}
+
 
     val simpleUserEntryMap =  Map(
       "id" -> "29681",
       "name" -> "Antonio"
     )
-    assert { Right(simpleUserEntryMap) === simpleUser(id(29681) :~: name("Antonio") :~: ∅).serializeTo[String] }
+    assert { Right(simpleUserEntryMap) === simpleUser(id(29681) :~: name("Antonio") :~: ∅).serialize[String] }
 
     val unrelatedMap = Map(
       "lala" -> "hola!",
@@ -195,9 +200,12 @@ class RecordTests extends org.scalatest.FunSuite {
 
     assert {
       Right(simpleUserEntryMap ++ unrelatedMap) ===
-        ( simpleUser(id(29681) :~: name("Antonio") :~: ∅) serializeTo unrelatedMap )
+        ( simpleUser(id(29681) :~: name("Antonio") :~: ∅) serializeUsing unrelatedMap )
     }
 
-    assert { Left(KeyPresent(id, id.label)) === ( simpleUser(id(29681) :~: name("Antonio") :~: ∅) serializeTo mapWithKey ) }
+    assert {
+      Left(KeyPresent(id.label, mapWithKey)) ===
+        ( simpleUser(id(29681) :~: name("Antonio") :~: ∅) serializeUsing mapWithKey )
+    }
   }
 }
