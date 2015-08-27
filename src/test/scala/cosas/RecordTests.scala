@@ -203,8 +203,8 @@ class RecordTests extends org.scalatest.FunSuite {
     }
 
     assert {
-      Left(KeyPresent(id.label, mapWithKey + ("name" -> "Antonio"))) ===
-        ( simpleUser(id(29681) :~: name("Antonio") :~: ∅) serializeTo mapWithKey ) 
+      Left(KeyPresent(id.label, mapWithKey)) ===
+        ( simpleUser(id(29681) :~: name("Antonio") :~: ∅) serializeTo mapWithKey )
     }
   }
 }

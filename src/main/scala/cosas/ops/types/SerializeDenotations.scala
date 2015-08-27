@@ -2,24 +2,26 @@ package ohnosequences.cosas.ops.types
 
 import ohnosequences.cosas._, types._, typeSets._, fns._
 
+// TODO msg not found
 trait SerializeDenotations[Denotations <: AnyTypeSet, V]
 extends Fn2[Denotations, Map[String,V]] {
 
-  type Out = Either[AnySerializeDenotationsError, Map[String,V]]
+  type Out = Either[SerializeDenotationsError, Map[String,V]]
 }
 
-trait AnySerializeDenotationsError
-case class KeyPresent[V](val key: String, val map: Map[String,V]) extends AnySerializeDenotationsError
-case class ErrorSerializing[SE <: AnyTypeSerializationError](val err: SE) extends AnySerializeDenotationsError
+// errors should be named with the same name + error
+trait SerializeDenotationsError
+case class KeyPresent[V](val key: String, val map: Map[String,V]) extends SerializeDenotationsError
+case class ErrorSerializing[SE <: DenotationSerializerError](val err: SE) extends SerializeDenotationsError
 
 case object SerializeDenotations {
 
-  implicit def empty[V]: SerializeDenotations[∅,V] = new SerializeDenotations[∅,V] {
+  implicit def atEmpty[V]: SerializeDenotations[∅,V] = new SerializeDenotations[∅,V] {
 
     def apply(nil: ∅, map: Map[String,V]): Out = Right(map)
   }
 
-  implicit def cons[
+  implicit def atCons[
     V,
     H <: AnyType, TD <: AnyTypeSet,
     HR <: H#Raw,
@@ -30,15 +32,15 @@ case object SerializeDenotations {
     serializeT: ST
   ): SerializeDenotations[(H := HR) :~: TD, V] = new SerializeDenotations[(H := HR) :~: TD, V] {
 
-    def apply(denotations: (H := HR) :~: TD, map: Map[String,V]): Out = serializeT(denotations.tail, map).fold(
-      l => Left(l),
-      tmap => serializeH(denotations.head).fold(
+    def apply(denotations: (H := HR) :~: TD, map: Map[String,V]): Out = {
+
+      serializeH(denotations.head).fold(
         l => Left(ErrorSerializing(l)),
-        kv => (tmap get kv._1) match {
-          case Some(_)  => Left(KeyPresent(kv._1, tmap))
-          case None     => Right(tmap + kv)
+        kv => (map get kv._1) match {
+          case Some(_)  => Left(KeyPresent(kv._1, map))
+          case None     => serializeT(denotations.tail, map + kv)
         }
       )
-    )
+    }
   }
 }

@@ -78,9 +78,9 @@ case object types {
 
     val labelRep: String
 
-    def apply(k: String, v: Value): Either[AnyTypeParsingError, Type := D] = k match {
+    def apply(k: String, v: Value): Either[DenotationParserError, Type := D] = k match {
 
-      case `labelRep` => parser(v).fold[Either[AnyTypeParsingError, Type := D]](
+      case `labelRep` => parser(v).fold[Either[DenotationParserError, Type := D]](
           Left(ErrorParsingValue(tpe)(v))
         )(
           d => Right(tpe := d)
@@ -90,11 +90,11 @@ case object types {
     }
   }
 
-  sealed trait AnyTypeParsingError
+  sealed trait DenotationParserError
   case class ErrorParsingValue[Tpe <: AnyType, Value](val tpe: Tpe)(val from: Value)
-  extends AnyTypeParsingError
+  extends DenotationParserError
   case class WrongKey[Tpe <: AnyType](val tpe: Tpe, val got: String, val expected: String)
-  extends AnyTypeParsingError
+  extends DenotationParserError
 
 
   class DenotationParser[T <: AnyType, V, D0 <: T#Raw](
@@ -125,16 +125,16 @@ case object types {
 
     val labelRep: String
 
-    def apply(d: Type := D): Either[AnyTypeSerializationError, To] = serializer(d.value)
-      .fold[Either[AnyTypeSerializationError, To]](
+    def apply(d: Type := D): Either[DenotationSerializerError, To] = serializer(d.value)
+      .fold[Either[DenotationSerializerError, To]](
         Left(ErrorSerializingValue(d))
       )(
         v => Right(labelRep -> v)
       )
   }
 
-  sealed trait AnyTypeSerializationError
-  case class ErrorSerializingValue[T <: AnyType, D <: T#Raw](d: T := D) extends AnyTypeSerializationError
+  sealed trait DenotationSerializerError
+  case class ErrorSerializingValue[T <: AnyType, D <: T#Raw](d: T := D) extends DenotationSerializerError
 
   /*
   ### Subset types

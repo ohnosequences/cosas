@@ -58,7 +58,7 @@ case object records {
     def parseFrom[
       V0,
       PD <: ParseDenotations[RT#PropertySet#Raw, V0]
-    ](map: Map[String,V0])(implicit parse: PD): Either[AnyDenotationsParsingError, ValueOf[RT]] =
+    ](map: Map[String,V0])(implicit parse: PD): Either[ParseDenotationsError, ValueOf[RT]] =
       parse(map) match {
 
         case (Left(err), map)  => Left(err)
@@ -79,11 +79,11 @@ case object records {
 
     def serializeTo[V](implicit
       serialize: RT#PropertySet#Raw SerializeDenotations V
-    ): Either[AnySerializeDenotationsError, Map[String,V]] = serialize(entryRaw, Map())
+    ): Either[SerializeDenotationsError, Map[String,V]] = serialize(entryRaw, Map())
 
     def serializeTo[V](map: Map[String,V])(implicit
       serialize: RT#PropertySet#Raw SerializeDenotations V
-    ): Either[AnySerializeDenotationsError, Map[String,V]] = serialize(entryRaw, map)
+    ): Either[SerializeDenotationsError, Map[String,V]] = serialize(entryRaw, map)
 
 
     def get[P <: AnyProperty](p: P)(implicit
