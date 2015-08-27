@@ -4,7 +4,7 @@ import ohnosequences.cosas._, types._, typeSets._, properties._, records._
 
 case object recordTestsContext {
 
-  case object id    extends Property[Integer]("id")
+  case object id    extends Property[Int]("id")
   case object name  extends Property[String]("name")
   case object notProperty
   case object email extends Property[String]("email")
@@ -22,6 +22,7 @@ case object recordTestsContext {
     color("blue") :~:
     ∅
   )
+
   // creating a record instance is easy and neat:
   val simpleUserEntry = simpleUser (
     id(123)     :~:
@@ -38,7 +39,6 @@ case object recordTestsContext {
     ∅
   )
 }
-
 
 class RecordTests extends org.scalatest.FunSuite {
 
@@ -139,7 +139,7 @@ class RecordTests extends org.scalatest.FunSuite {
 
   object propertyConverters {
 
-    val idVParser: String => Option[Integer] = str => {
+    val idVParser: String => Option[Int] = str => {
       import scala.util.control.Exception._
       catching(classOf[NumberFormatException]) opt str.toInt
     }
@@ -207,5 +207,12 @@ class RecordTests extends org.scalatest.FunSuite {
       Left(KeyPresent(id.label, mapWithKey)) ===
         ( simpleUser(id(29681) :~: name("Antonio") :~: ∅) serializeUsing mapWithKey )
     }
+  }
+
+  test("can get values from records as lists and typesets") {
+
+    val vRecordEntryValues: List[String] = vRecordEntry.value mapToList denotationValue
+
+    val simpleUserValues: Int :~: String :~: ∅ = simpleUserEntry.value map denotationValue
   }
 }
