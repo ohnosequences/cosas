@@ -4,6 +4,8 @@ case object records {
 
   import types._, typeSets._, properties._
   import ops.typeSets.{ReorderTo, CheckForAll}
+  import ops.typeSets.{SerializeDenotations, SerializeDenotationsError}
+  import ops.typeSets.{ParseDenotations, ParseDenotationsError}
 
   /*
     ## Records
@@ -54,14 +56,14 @@ case object records {
         reorder: Vs ReorderTo RT#Raw
       ): ValueOf[RT] = recType := reorder(values)
 
-    def parseFrom[V](map: Map[String,V])(implicit
-      parse: RT#PropertySet ParsePropertiesFrom V
-    ): Either[AnyPropertyParsingError, ValueOf[RT]] =
-      parse(map) match {
-
-        case Left(err)  => Left(err)
-        case Right(v)   => Right(new ValueOf[RT](v))
-      }
+    def parse[
+      V0,
+      PD <: ParseDenotations[RT#PropertySet#Raw, V0]
+    ](map: Map[String,V0])(implicit parse: PD): Either[ParseDenotationsError, ValueOf[RT]] =
+      parse(map).fold[Either[ParseDenotationsError, ValueOf[RT]]](
+        l => Left(l),
+        v => Right(new ValueOf[RT](v))
+      )
   }
 
   /*
@@ -73,13 +75,13 @@ case object records {
     RecordEntryOps(entry.value)
   case class RecordEntryOps[RT <: AnyRecord](val entryRaw: RT#Raw) extends AnyVal {
 
-    def serializeTo[V](implicit
-      serialize: RT#PropertySet SerializePropertiesTo V
-    ): Either[AnyPropertySerializationError, Map[String,V]] = serialize(Map(), entryRaw)
+    def serialize[V](implicit
+      serialize: RT#PropertySet#Raw SerializeDenotations V
+    ): Either[SerializeDenotationsError, Map[String,V]] = serialize(entryRaw)
 
-    def serializeTo[V](map: Map[String,V])(implicit
-      serialize: RT#PropertySet SerializePropertiesTo V
-    ): Either[AnyPropertySerializationError, Map[String,V]] = serialize(map, entryRaw)
+    def serializeUsing[V](map: Map[String,V])(implicit
+      serialize: RT#PropertySet#Raw SerializeDenotations V
+    ): Either[SerializeDenotationsError, Map[String,V]] = serialize(entryRaw, map)
 
 
     def get[P <: AnyProperty](p: P)(implicit
