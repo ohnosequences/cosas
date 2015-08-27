@@ -258,6 +258,9 @@ object typeSets {
 
     def toMapOf[V](implicit serialize: SerializeDenotations[DS,V]): Either[SerializeDenotationsError, Map[String,V]] =
       serialize(ds, Map())
+
+    def toMapOf[V](map: Map[String,V])(implicit serialize: SerializeDenotations[DS,V]): Either[SerializeDenotationsError, Map[String,V]] =
+      serialize(ds, map)
   }
 
 
