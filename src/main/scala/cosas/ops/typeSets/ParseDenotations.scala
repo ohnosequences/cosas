@@ -2,6 +2,14 @@ package ohnosequences.cosas.ops.typeSets
 
 import ohnosequences.cosas._, types._, typeSets._, fns._
 
+@annotation.implicitNotFound(msg = """
+  Cannot parse typeset of denotations
+    ${Denotations}
+  from a map of type
+    Map[String, ${V}]
+
+  Probably some denotation parsers are missing.
+""")
 trait ParseDenotations[Denotations <: AnyTypeSet, V]
 extends Fn1[Map[String,V]] with
         Out[(Either[ParseDenotationsError, Denotations], Map[String,V])]

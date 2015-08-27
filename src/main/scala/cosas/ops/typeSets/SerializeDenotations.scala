@@ -2,7 +2,14 @@ package ohnosequences.cosas.ops.typeSets
 
 import ohnosequences.cosas._, types._, typeSets._, fns._
 
-// TODO msg not found
+@annotation.implicitNotFound(msg = """
+  Cannot serialize typeset of denotations
+    ${Denotations}
+  to a map of type
+    Map[String, ${V}]
+
+  Probably some denotation serializers are missing.
+""")
 trait SerializeDenotations[Denotations <: AnyTypeSet, V]
 extends Fn2[Denotations, Map[String,V]] with
         Out[Either[SerializeDenotationsError, Map[String,V]]]
