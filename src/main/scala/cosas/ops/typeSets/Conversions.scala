@@ -86,11 +86,11 @@ object ToList {
 
 
 @annotation.implicitNotFound(msg = "Can't convert ${S} to Map[${K}, ${V}]. Note that a set of denotations is expected")
-trait ToMap[S <: AnyTypeSet, K, V] extends Fn1[S] with Out[Map[K, V]]
+trait ToMap[S <: AnyTypeSet, K <: AnyType, V] extends Fn1[S] with Out[Map[K, V]]
 
 object ToMap {
 
-  implicit def empty[K, V]:
+  implicit def empty[K <: AnyType, V]:
         ToMap[∅, K, V] =
     new ToMap[∅, K, V] { def apply(s: ∅): Out = Map[K, V]() }
 

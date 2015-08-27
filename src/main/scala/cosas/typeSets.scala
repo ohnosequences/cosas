@@ -249,14 +249,14 @@ object typeSets {
     def checkForAny[P <: AnyTypePredicate](implicit prove: CheckForAny[S, P]): CheckForAny[S, P] = prove
   }
 
-  import types.AnyDenotation
+  import types.{AnyType, AnyDenotation}
   import ops.typeSets.{ToMap, SerializeDenotations, SerializeDenotationsError}
   implicit def denotationsSetOps[DS <: AnyTypeSet.Of[AnyDenotation]](ds: DS): DenotationsSetOps[DS] =
     DenotationsSetOps(ds)
 
   case class DenotationsSetOps[DS <: AnyTypeSet.Of[AnyDenotation]](val ds: DS) extends AnyVal {
 
-    def toMap[K, V](implicit toMap: ToMap[DS, K, V]): Map[K, V] = toMap(ds)
+    def toMap[T <: AnyType, V](implicit toMap: ToMap[DS, T, V]): Map[T, V] = toMap(ds)
 
     def serialize[V](implicit serialize: SerializeDenotations[DS, V]): Either[SerializeDenotationsError, Map[String,V]] =
       serialize(ds, Map())
