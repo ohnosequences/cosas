@@ -3,7 +3,7 @@ package ohnosequences.cosas.tests
 import ohnosequences.cosas._, types._, AnySubsetType._
 import ohnosequences.cosas.tests.asserts._
 
-object DenotationTestsContext {
+case object DenotationTestsContext {
 
   case object Color extends Wrap[String]("Color")
   object User extends Type("User")
@@ -16,7 +16,7 @@ class DenotationTests extends org.scalatest.FunSuite {
 
   import DenotationTestsContext._
 
-  test("creating values") {
+  test("can create denotations of types") {
 
     val azul = Color := "blue"
     val verde = valueOf(Color)("green")
@@ -30,7 +30,7 @@ class DenotationTests extends org.scalatest.FunSuite {
     assertTaggedEq(amarillo, x1)
   }
 
-  test("create denotations") {
+  test("can use syntax for creating denotations") {
 
     val z = User := 2423423
 
@@ -42,7 +42,7 @@ class DenotationTests extends org.scalatest.FunSuite {
     val ah = User := userInfo(id = "adqwr32141", name = "Salustiano", age = 143)
   }
 
-  test("type-safe equals") {
+  test("Equality is type-safe for denotations") {
 
     val paco = "Paco"
     val jose = "Jose"
@@ -61,7 +61,7 @@ class DenotationTests extends org.scalatest.FunSuite {
     assert{ !(v =~= u2) }
   }
 
-  test("Denotation show") {
+  test("Can use show for denotations") {
 
     assert{ (User := "hola").show == "(User := hola)" }
 
