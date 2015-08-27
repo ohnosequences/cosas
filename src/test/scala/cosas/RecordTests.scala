@@ -173,10 +173,10 @@ class RecordTests extends org.scalatest.FunSuite {
     val mapWithOtherStuff = simpleUserEntryMap + ("other" -> "stuff")
 
 
-    assert { ( simpleUser parseFrom simpleUserEntryMap ) === Right(simpleUser(id(29681) :~: name("Antonio") :~: ∅)) }
-    assert { ( simpleUser parseFrom wrongKeyMap ) === Left(KeyNotFound(id.label, wrongKeyMap)) }
-    assert { ( simpleUser parseFrom notIntValueMap ) === Left(ErrorParsing(ErrorParsingValue(id)("twenty-two"))) }
-    assert { ( simpleUser parseFrom mapWithOtherStuff ) === Right(simpleUser(id(29681) :~: name("Antonio") :~: ∅)) }
+    assert { ( simpleUser parse simpleUserEntryMap ) === Right(simpleUser(id(29681) :~: name("Antonio") :~: ∅)) }
+    assert { ( simpleUser parse wrongKeyMap ) === Left(KeyNotFound(id.label, wrongKeyMap)) }
+    assert { ( simpleUser parse notIntValueMap ) === Left(ErrorParsing(ErrorParsingValue(id)("twenty-two"))) }
+    assert { ( simpleUser parse mapWithOtherStuff ) === Right(simpleUser(id(29681) :~: name("Antonio") :~: ∅)) }
   }
 
   test("can serialize records to Maps") {
@@ -189,7 +189,7 @@ class RecordTests extends org.scalatest.FunSuite {
       "id" -> "29681",
       "name" -> "Antonio"
     )
-    assert { Right(simpleUserEntryMap) === simpleUser(id(29681) :~: name("Antonio") :~: ∅).serializeTo[String] }
+    assert { Right(simpleUserEntryMap) === simpleUser(id(29681) :~: name("Antonio") :~: ∅).serialize[String] }
 
     val unrelatedMap = Map(
       "lala" -> "hola!",
@@ -200,12 +200,12 @@ class RecordTests extends org.scalatest.FunSuite {
 
     assert {
       Right(simpleUserEntryMap ++ unrelatedMap) ===
-        ( simpleUser(id(29681) :~: name("Antonio") :~: ∅) serializeTo unrelatedMap )
+        ( simpleUser(id(29681) :~: name("Antonio") :~: ∅) serializeUsing unrelatedMap )
     }
 
     assert {
       Left(KeyPresent(id.label, mapWithKey)) ===
-        ( simpleUser(id(29681) :~: name("Antonio") :~: ∅) serializeTo mapWithKey )
+        ( simpleUser(id(29681) :~: name("Antonio") :~: ∅) serializeUsing mapWithKey )
     }
   }
 }

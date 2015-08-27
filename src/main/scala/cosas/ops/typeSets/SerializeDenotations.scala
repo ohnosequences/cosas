@@ -12,7 +12,10 @@ import ohnosequences.cosas._, types._, typeSets._, fns._
 """)
 trait SerializeDenotations[Denotations <: AnyTypeSet, V]
 extends Fn2[Denotations, Map[String,V]] with
-        Out[Either[SerializeDenotationsError, Map[String,V]]]
+        Out[Either[SerializeDenotationsError, Map[String,V]]] {
+
+  final def apply(d: Denotations): Out = apply(d, Map[String,V]())
+}
 
 // errors should be named with the same name + error
 trait SerializeDenotationsError

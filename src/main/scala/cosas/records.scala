@@ -56,15 +56,14 @@ case object records {
         reorder: Vs ReorderTo RT#Raw
       ): ValueOf[RT] = recType := reorder(values)
 
-    def parseFrom[
+    def parse[
       V0,
       PD <: ParseDenotations[RT#PropertySet#Raw, V0]
     ](map: Map[String,V0])(implicit parse: PD): Either[ParseDenotationsError, ValueOf[RT]] =
-      parse(map) match {
-
-        case (Left(err), map)  => Left(err)
-        case (Right(v), map)   => Right(new ValueOf[RT](v))
-      }
+      parse(map).fold[Either[ParseDenotationsError, ValueOf[RT]]](
+        l => Left(l),
+        v => Right(new ValueOf[RT](v))
+      )
   }
 
   /*
@@ -76,11 +75,11 @@ case object records {
     RecordEntryOps(entry.value)
   case class RecordEntryOps[RT <: AnyRecord](val entryRaw: RT#Raw) extends AnyVal {
 
-    def serializeTo[V](implicit
+    def serialize[V](implicit
       serialize: RT#PropertySet#Raw SerializeDenotations V
-    ): Either[SerializeDenotationsError, Map[String,V]] = serialize(entryRaw, Map())
+    ): Either[SerializeDenotationsError, Map[String,V]] = serialize(entryRaw)
 
-    def serializeTo[V](map: Map[String,V])(implicit
+    def serializeUsing[V](map: Map[String,V])(implicit
       serialize: RT#PropertySet#Raw SerializeDenotations V
     ): Either[SerializeDenotationsError, Map[String,V]] = serialize(entryRaw, map)
 
