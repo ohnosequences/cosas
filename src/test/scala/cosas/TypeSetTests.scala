@@ -300,14 +300,16 @@ class TypeSetTests extends org.scalatest.FunSuite {
   test("conversion to a Map") {
     import properties._
 
-    assert{ ∅.toMapOf[Int] == Right( Map() ) }
+    assert{ ∅.serialize[Int] === Right( Map() ) }
+    assert{ ∅.toMap[AnyType, Int] === Map() }
 
     case object key  extends Property[String]("key")
     case object name extends Property[String]("name")
 
     val set = key("foo") :~: name("bob") :~: ∅
 
-    assert{ set.toMapOf[String] === Right( Map("key" -> "foo", "name" -> "bob") ) }
+    assert{ set.serialize[String] === Right( Map("key" -> "foo", "name" -> "bob") ) }
+    assert{ set.toMap[AnyProperty, String] === Map(key -> "foo", name -> "bob") }
   }
 
 }
