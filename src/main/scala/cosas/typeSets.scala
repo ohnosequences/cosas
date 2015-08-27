@@ -228,8 +228,6 @@ object typeSets {
 
     def toListOf[T](implicit toListOf: S ToListOf T): List[T] = toListOf(s)
 
-    def toMap[K, V](implicit toMap: ToMap[S, K, V]): Map[K, V] = toMap(s)
-
     def getTypes[X](implicit types: TypesOf[S] { type Out = X }): X = types(s)
 
     /* Mappers */
@@ -249,6 +247,17 @@ object typeSets {
     def checkForAll[P <: AnyTypePredicate](implicit prove: CheckForAll[S, P]): CheckForAll[S, P] = prove
 
     def checkForAny[P <: AnyTypePredicate](implicit prove: CheckForAny[S, P]): CheckForAny[S, P] = prove
+  }
+
+  import types.AnyDenotation
+  import ops.typeSets.{SerializeDenotations, SerializeDenotationsError}
+  implicit def denotationsSetOps[DS <: AnyTypeSet.Of[AnyDenotation]](ds: DS): DenotationsSetOps[DS] =
+    DenotationsSetOps(ds)
+
+  case class DenotationsSetOps[DS <: AnyTypeSet.Of[AnyDenotation]](val ds: DS) extends AnyVal {
+
+    def toMapOf[V](implicit serialize: SerializeDenotations[DS,V]): Either[SerializeDenotationsError, Map[String,V]] =
+      serialize(ds, Map())
   }
 
 
