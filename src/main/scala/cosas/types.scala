@@ -32,7 +32,12 @@ case object types {
 
     /* For example `user denoteWith (String, String, Int)` _not that this is a good idea_ */
     final def =:[@specialized V <: T#Raw](v: V): V =: T = new (V Denotes T)(v)
-    final def :=[@specialized V <: T#Raw](v: V): V =: T = new (V Denotes T)(v)
+    final def :=[@specialized V <: T#Raw](v: V): T := V = new (V Denotes T)(v)
+  }
+
+  case object typeLabel extends shapeless.Poly1 {
+
+    implicit def labelOf[T <: AnyType] = at[T]{ t: T => t.label }
   }
 
   /* You denote a `Type` using a `Value` */
@@ -42,6 +47,12 @@ case object types {
 
     type Value
     def  value: Value
+  }
+
+  case object denotationValue extends shapeless.Poly1 {
+
+    implicit def value2[T <: AnyType, V <: T#Raw] = at[V Denotes T]( v => v.value: V )
+    implicit def value[D <: AnyDenotation] = at[D](v => v.value: D#Value)
   }
 
   /* Bound the denoted type */
