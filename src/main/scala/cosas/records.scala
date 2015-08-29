@@ -83,6 +83,8 @@ case object records {
       serialize: RT#PropertySet#Raw SerializeDenotations V
     ): Either[SerializeDenotationsError, Map[String,V]] = serialize(entryRaw, map)
 
+    def getV[P <: AnyProperty](p: P)(implicit get: RT Get P): P#Raw =
+      get(entryRaw)
 
     def get[P <: AnyProperty](p: P)(implicit
       get: RT Get P

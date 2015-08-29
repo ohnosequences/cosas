@@ -60,10 +60,13 @@ class RecordTests extends org.scalatest.FunSuite {
     """)
   }
 
-  test("can access fields") {
+  test("can access fields and field values") {
 
     assert { (simpleUserEntry get id)   === id(123)     }
     assert { (simpleUserEntry get name) === name("foo") }
+
+    assert { (simpleUserEntry getV id) === 123 }
+    assert { (simpleUserEntry getV name) === "foo" }
   }
 
   test("can access fields from vals and volatile vals") {
