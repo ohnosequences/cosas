@@ -1,0 +1,8 @@
+The main changes in this release are
+
+- remove property holders and related abstractions
+- better parsing and serialization support for typesets of denotations (including records)
+- better support for invariant equality
+- reducing dependencies
+
+Highlights are #50, #53, #55, #56, #48.
