@@ -252,12 +252,6 @@ Conversions
 
     def toListOf[T](implicit toListOf: S ToListOf T): List[T] = toListOf(s)
 
-    def toMap[K, V](implicit toMap: ToMap[S, K, V]): Map[K, V] = toMap(s)
-
-    def parseFrom[X](x: X)(implicit parser: S ParseFrom X): parser.Out = parser(s, x)
-
-    def serializeTo[X](implicit serializer: S SerializeTo X): X = serializer(s)
-
     def getTypes[X](implicit types: TypesOf[S] { type Out = X }): X = types(s)
 ```
 
@@ -281,6 +275,22 @@ Predicates
     def checkForAll[P <: AnyTypePredicate](implicit prove: CheckForAll[S, P]): CheckForAll[S, P] = prove
 
     def checkForAny[P <: AnyTypePredicate](implicit prove: CheckForAny[S, P]): CheckForAny[S, P] = prove
+  }
+
+  import types.{AnyType, AnyDenotation}
+  import ops.typeSets.{ToMap, SerializeDenotations, SerializeDenotationsError}
+  implicit def denotationsSetOps[DS <: AnyTypeSet.Of[AnyDenotation]](ds: DS): DenotationsSetOps[DS] =
+    DenotationsSetOps(ds)
+
+  case class DenotationsSetOps[DS <: AnyTypeSet.Of[AnyDenotation]](val ds: DS) extends AnyVal {
+
+    def toMap[T <: AnyType, V](implicit toMap: ToMap[DS, T, V]): Map[T, V] = toMap(ds)
+
+    def serialize[V](implicit serialize: SerializeDenotations[DS, V]): Either[SerializeDenotationsError, Map[String,V]] =
+      serialize(ds, Map())
+
+    def serialize[V](map: Map[String,V])(implicit serialize: SerializeDenotations[DS, V]): Either[SerializeDenotationsError, Map[String,V]] =
+      serialize(ds, map)
   }
 
 
@@ -311,10 +321,11 @@ Predicates
 [main/scala/cosas/fns.scala]: fns.scala.md
 [main/scala/cosas/types.scala]: types.scala.md
 [main/scala/cosas/typeSets.scala]: typeSets.scala.md
-[main/scala/cosas/ops/records/Conversions.scala]: ops/records/Conversions.scala.md
 [main/scala/cosas/ops/records/Update.scala]: ops/records/Update.scala.md
 [main/scala/cosas/ops/records/Transform.scala]: ops/records/Transform.scala.md
 [main/scala/cosas/ops/records/Get.scala]: ops/records/Get.scala.md
+[main/scala/cosas/ops/typeSets/SerializeDenotations.scala]: ops/typeSets/SerializeDenotations.scala.md
+[main/scala/cosas/ops/typeSets/ParseDenotations.scala]: ops/typeSets/ParseDenotations.scala.md
 [main/scala/cosas/ops/typeSets/Conversions.scala]: ops/typeSets/Conversions.scala.md
 [main/scala/cosas/ops/typeSets/Filter.scala]: ops/typeSets/Filter.scala.md
 [main/scala/cosas/ops/typeSets/Subtract.scala]: ops/typeSets/Subtract.scala.md

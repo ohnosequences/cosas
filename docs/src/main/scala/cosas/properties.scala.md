@@ -18,59 +18,36 @@ object properties {
     implicit def propertyOps[P <: AnyProperty](p: P): PropertyOps[P] = PropertyOps(p)
   }
 
-  trait AnyPropertyParser { parser =>
+  trait AnyPropertySerializer extends AnyDenotationSerializer {
 
-    type Property <: AnyProperty
-    val property: Property
-
-    type Value
-    type From = Map[String, Value]
-
-    val propertyValueParser: Value => Option[Property#Raw]
-
-    val keyRep: String
-
-    val parse: From => (Either[AnyPropertyParsingError, ValueOf[Property]], From) =
-      map => map get keyRep match {
-
-        case None => ( Left(KeyNotFound(property)), map )
-
-        case Some(v) => propertyValueParser(v) match {
-
-          case None => (Left(ErrorParsingValue(property,v)), map)
-
-          case Some(pv) => (Right(property(pv)), map)
-        }
-      }
+    type Type <: AnyProperty
+    type D = Type#Raw
   }
-  case class PropertyParser[P <: AnyProperty,V](
-    val property: P,
-    val keyRep: String,
-    val propertyValueParser: V => Option[P#Raw]
-  ) extends AnyPropertyParser {
 
-    type Property = P
+  case class PropertySerializer[P <: AnyProperty,V](
+    val tpe: P,
+    val labelRep: String
+  )(
+    val serializer: P#Raw => Option[V]
+  ) extends AnyPropertySerializer {
+
+    type Type = P
     type Value = V
   }
 
-  sealed trait AnyPropertyParsingError {
+  trait AnyPropertyParser extends AnyDenotationParser { parser =>
 
-    type Property <: AnyProperty
-    type Value
-    type From = Map[String, Value]
+    type Type <: AnyProperty
+    type D = Type#Raw
   }
-  case class KeyNotFound[P <: AnyProperty, Vl](val p: P)
-  extends AnyPropertyParsingError {
+  case class PropertyParser[P <: AnyProperty,V](
+    val tpe: P,
+    val labelRep: String)(
+    val parser: V => Option[P#Raw]
+  ) extends AnyPropertyParser {
 
-    type Property = P
-    type Value = Vl
-  }
-
-  case class ErrorParsingValue[P <: AnyProperty, Vl](val p: P, val value: Vl)
-  extends AnyPropertyParsingError {
-
-    type Property = P
-    type Value = Vl
+    type Type = P
+    type Value = V
   }
 
   case class PropertyOps[P <: AnyProperty](val p: P) extends AnyVal {
@@ -206,10 +183,11 @@ Refiners
 [main/scala/cosas/fns.scala]: fns.scala.md
 [main/scala/cosas/types.scala]: types.scala.md
 [main/scala/cosas/typeSets.scala]: typeSets.scala.md
-[main/scala/cosas/ops/records/Conversions.scala]: ops/records/Conversions.scala.md
 [main/scala/cosas/ops/records/Update.scala]: ops/records/Update.scala.md
 [main/scala/cosas/ops/records/Transform.scala]: ops/records/Transform.scala.md
 [main/scala/cosas/ops/records/Get.scala]: ops/records/Get.scala.md
+[main/scala/cosas/ops/typeSets/SerializeDenotations.scala]: ops/typeSets/SerializeDenotations.scala.md
+[main/scala/cosas/ops/typeSets/ParseDenotations.scala]: ops/typeSets/ParseDenotations.scala.md
 [main/scala/cosas/ops/typeSets/Conversions.scala]: ops/typeSets/Conversions.scala.md
 [main/scala/cosas/ops/typeSets/Filter.scala]: ops/typeSets/Filter.scala.md
 [main/scala/cosas/ops/typeSets/Subtract.scala]: ops/typeSets/Subtract.scala.md

@@ -5,7 +5,7 @@ package ohnosequences.cosas.tests
 import ohnosequences.cosas._, types._, AnySubsetType._
 import ohnosequences.cosas.tests.asserts._
 
-object DenotationTestsContext {
+case object DenotationTestsContext {
 
   case object Color extends Wrap[String]("Color")
   object User extends Type("User")
@@ -18,7 +18,7 @@ class DenotationTests extends org.scalatest.FunSuite {
 
   import DenotationTestsContext._
 
-  test("creating values") {
+  test("can create denotations of types") {
 
     val azul = Color := "blue"
     val verde = valueOf(Color)("green")
@@ -32,7 +32,7 @@ class DenotationTests extends org.scalatest.FunSuite {
     assertTaggedEq(amarillo, x1)
   }
 
-  test("create denotations") {
+  test("can use syntax for creating denotations") {
 
     val z = User := 2423423
 ```
@@ -55,7 +55,7 @@ or in the other order
     val ah = User := userInfo(id = "adqwr32141", name = "Salustiano", age = 143)
   }
 
-  test("type-safe equals") {
+  test("Equality is type-safe for denotations") {
 
     val paco = "Paco"
     val jose = "Jose"
@@ -74,13 +74,18 @@ or in the other order
     assert{ !(v =~= u2) }
   }
 
-  test("Denotation show") {
+  test("Can use show for denotations") {
 
     assert{ (User := "hola").show == "(User := hola)" }
 
     val azul = Color := "blue"
 
     assert{ azul.show == "(Color := blue)" }
+  }
+
+  test("can get poly values of denotations") {
+
+    assert { "blue" === denotationValue(User := "blue") }
   }
 }
 
@@ -103,10 +108,11 @@ or in the other order
 [main/scala/cosas/fns.scala]: ../../../main/scala/cosas/fns.scala.md
 [main/scala/cosas/types.scala]: ../../../main/scala/cosas/types.scala.md
 [main/scala/cosas/typeSets.scala]: ../../../main/scala/cosas/typeSets.scala.md
-[main/scala/cosas/ops/records/Conversions.scala]: ../../../main/scala/cosas/ops/records/Conversions.scala.md
 [main/scala/cosas/ops/records/Update.scala]: ../../../main/scala/cosas/ops/records/Update.scala.md
 [main/scala/cosas/ops/records/Transform.scala]: ../../../main/scala/cosas/ops/records/Transform.scala.md
 [main/scala/cosas/ops/records/Get.scala]: ../../../main/scala/cosas/ops/records/Get.scala.md
+[main/scala/cosas/ops/typeSets/SerializeDenotations.scala]: ../../../main/scala/cosas/ops/typeSets/SerializeDenotations.scala.md
+[main/scala/cosas/ops/typeSets/ParseDenotations.scala]: ../../../main/scala/cosas/ops/typeSets/ParseDenotations.scala.md
 [main/scala/cosas/ops/typeSets/Conversions.scala]: ../../../main/scala/cosas/ops/typeSets/Conversions.scala.md
 [main/scala/cosas/ops/typeSets/Filter.scala]: ../../../main/scala/cosas/ops/typeSets/Filter.scala.md
 [main/scala/cosas/ops/typeSets/Subtract.scala]: ../../../main/scala/cosas/ops/typeSets/Subtract.scala.md

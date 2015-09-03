@@ -40,7 +40,12 @@ For example `user denoteWith (String, String, Int)` _not that this is a good ide
 
 ```scala
     final def =:[@specialized V <: T#Raw](v: V): V =: T = new (V Denotes T)(v)
-    final def :=[@specialized V <: T#Raw](v: V): V =: T = new (V Denotes T)(v)
+    final def :=[@specialized V <: T#Raw](v: V): T := V = new (V Denotes T)(v)
+  }
+
+  case object typeLabel extends shapeless.Poly1 {
+
+    implicit def labelOf[T <: AnyType] = at[T]{ t: T => t.label }
   }
 ```
 
@@ -53,6 +58,12 @@ You denote a `Type` using a `Value`
 
     type Value
     def  value: Value
+  }
+
+  case object denotationValue extends shapeless.Poly1 {
+
+    implicit def value2[T <: AnyType, V <: T#Raw] = at[V Denotes T]( v => v.value: V )
+    implicit def value[D <: AnyDenotation] = at[D](v => v.value: D#Value)
   }
 ```
 
@@ -75,6 +86,109 @@ Denote T with a `value: V`. Normally you write it as `V Denotes T` thus the name
   final class Denotes[V, T <: AnyType](val value: V) extends AnyVal with AnyDenotes[V, T] {
 
     final def show(implicit t: T): String = s"(${t.label} := ${value})"
+  }
+```
+
+
+### Type parsing and serialization
+
+
+```scala
+  trait AnyDenotationParser {
+
+    type Type <: AnyType
+    val tpe: Type
+
+    // the type used to denote Type
+    type D <: Type#Raw
+
+    type Value
+    type From = (String, Value)
+
+    val parser: Value => Option[D]
+
+    val labelRep: String
+
+    def apply(k: String, v: Value): Either[DenotationParserError, Type := D] = k match {
+
+      case `labelRep` => parser(v).fold[Either[DenotationParserError, Type := D]](
+          Left(ErrorParsingValue(tpe)(v))
+        )(
+          d => Right(tpe := d)
+        )
+
+      case _ => Left(WrongKey(tpe, k, labelRep))
+    }
+  }
+
+  sealed trait DenotationParserError
+  case class ErrorParsingValue[Tpe <: AnyType, Value](val tpe: Tpe)(val from: Value)
+  extends DenotationParserError
+  case class WrongKey[Tpe <: AnyType](val tpe: Tpe, val got: String, val expected: String)
+  extends DenotationParserError
+
+  class DenotationParser[T <: AnyType, D0 <: T#Raw, V](
+    val tpe: T,
+    val labelRep: String
+  )(
+    val parser: V => Option[D0]
+  )
+  extends AnyDenotationParser {
+
+    type Type = T
+    type Value = V
+    type D = D0
+  }
+
+  case object AnyDenotationParser {
+
+    implicit def genericParser[T <: AnyType, D <: T#Raw](implicit tpe: T): DenotationParser[T,D,D] =
+      new DenotationParser(tpe, tpe.label)(d => Some(d))
+  }
+
+  trait AnyDenotationSerializer {
+
+    type Type <: AnyType
+    val tpe: Type
+
+    // the type used to denote Type
+    type D <: Type#Raw
+
+    type Value
+    type To = (String, Value)
+
+    val serializer: D => Option[Value]
+
+    val labelRep: String
+
+    def apply(d: Type := D): Either[DenotationSerializerError, To] = serializer(d.value)
+      .fold[Either[DenotationSerializerError, To]](
+        Left(ErrorSerializingValue(d))
+      )(
+        v => Right(labelRep -> v)
+      )
+  }
+
+  sealed trait DenotationSerializerError
+  case class ErrorSerializingValue[T <: AnyType, D <: T#Raw](d: T := D) extends DenotationSerializerError
+
+  class DenotationSerializer[T <: AnyType, D0 <: T#Raw, V](
+    val tpe: T,
+    val labelRep: String
+  )(
+    val serializer: D0 => Option[V]
+  )
+  extends AnyDenotationSerializer {
+
+    type Type = T
+    type D = D0
+    type Value = V
+  }
+
+  case object AnyDenotationSerializer {
+
+    implicit def genericSerializer[T <: AnyType, D <: T#Raw](implicit tpe: T): DenotationSerializer[T,D,D] =
+      new DenotationSerializer(tpe, tpe.label)(d => Some(d))
   }
 ```
 
@@ -159,10 +273,11 @@ use case: concat of sized has the sum of the two arg sizes; but how do you creat
 [main/scala/cosas/fns.scala]: fns.scala.md
 [main/scala/cosas/types.scala]: types.scala.md
 [main/scala/cosas/typeSets.scala]: typeSets.scala.md
-[main/scala/cosas/ops/records/Conversions.scala]: ops/records/Conversions.scala.md
 [main/scala/cosas/ops/records/Update.scala]: ops/records/Update.scala.md
 [main/scala/cosas/ops/records/Transform.scala]: ops/records/Transform.scala.md
 [main/scala/cosas/ops/records/Get.scala]: ops/records/Get.scala.md
+[main/scala/cosas/ops/typeSets/SerializeDenotations.scala]: ops/typeSets/SerializeDenotations.scala.md
+[main/scala/cosas/ops/typeSets/ParseDenotations.scala]: ops/typeSets/ParseDenotations.scala.md
 [main/scala/cosas/ops/typeSets/Conversions.scala]: ops/typeSets/Conversions.scala.md
 [main/scala/cosas/ops/typeSets/Filter.scala]: ops/typeSets/Filter.scala.md
 [main/scala/cosas/ops/typeSets/Subtract.scala]: ops/typeSets/Subtract.scala.md
