@@ -16,6 +16,9 @@ class DependentFunctionsTests extends org.scalatest.FunSuite {
 
   import sampleFunctions._
 
-  val z: Int = size(2)
+  test("can apply dependent functions") {
 
+    assert { 2 === size(size(2)) }
+    assert { size(4) === size("four") }
+  }
 }
