@@ -50,21 +50,56 @@ object fns {
 
 
   /* Dependent functions aka dependent products */
-  trait AnyDepFn
-  trait DepFn1 extends AnyDepFn
-  trait DepFn2 extends AnyDepFn
-  trait DepFn3 extends AnyDepFn
+  trait AnyDepFn { type Out }
+  trait AnyDepFn0 extends AnyDepFn
+  trait AnyDepFn1 extends AnyDepFn { type In1 }
+  trait DepFn1[I,O] extends AnyDepFn1 { type In1 = I; type Out = O }
+  trait AnyDepFn2 extends AnyDepFn {
+    type In1; type In2
+  }
+  trait DepFn2[I1,I2,O] extends AnyDepFn2 { type In1 = I1; type In2 = I2; type Out = O }
+  trait AnyDepFn3 extends AnyDepFn { type In1; }
 
-  implicit final def depFn1Ops[DF <: DepFn1](df: DF): DepFn1Ops[DF] =
-    DepFn1Ops(df)
-  case class DepFn1Ops[DF <: DepFn1](df: DF) extends AnyVal {
+  implicit final def depFn1Ops[DF <: AnyDepFn1](df: DF): AnyDepFn1Ops[DF] =
+    AnyDepFn1Ops(df)
+  case class AnyDepFn1Ops[DF <: AnyDepFn1](df: DF) extends AnyVal {
 
-    def apply[X, Y](x: X)(implicit at: At1[DF] { type In = X; type Out = Y }): Y =
+    def apply[X <: DF#In1, Y <: DF#Out](x: X)(implicit at: App1[DF,X] { type Out = Y }): Y =
       at(x)
 
-    def at[X,Y](f: X => Y): At1[DF] { type In = X; type Out = Y } =
+
+    def at[X <: DF#In1, Y <: DF#Out](f: X => Y): app1[DF,X,Y] =
       app1[DF,X,Y](f)
   }
+
+  implicit final def depFn2Ops[DF <: AnyDepFn2](df: DF): AnyDepFn2Ops[DF] =
+    AnyDepFn2Ops(df)
+  case class AnyDepFn2Ops[DF <: AnyDepFn2](df: DF) extends AnyVal {
+
+    def apply[X1 <: DF#In1, X2 <: DF#In2, Y <: DF#Out](x1: X1, x2: X2)(implicit at: App2[DF,X1,X2] { type Out = Y }): Y =
+      at(x1,x2)
+
+    def at[X1 <: DF#In1, X2 <: DF#In2, Y <: DF#Out](f: (X1,X2) => Y): app2[DF, X1, X2, Y] =
+      app2[DF,X1,X2,Y](f)
+  }
+
+  implicit def getMoarDepFn2Ops[DF <: AnyDepFn2, X1 <: DF#In1, X2 <: DF#In2](df: DF): moarDepFn2Ops[DF,X1,X2] =
+    moarDepFn2Ops(df)
+
+  case class moarDepFn2Ops[DF <: AnyDepFn2, X1 <: DF#In1, X2 <: DF#In2](val df: DF) {
+
+    def aply(x1: X1, x2: X2)(implicit app: App2[DF,X1,X2]): app.Out = app(x1,x2)
+  }
+
+
+
+
+
+
+
+
+
+
 
   trait AnyAt {
 
@@ -72,25 +107,40 @@ object fns {
   }
   trait At[P0 <: AnyDepFn] extends AnyAt {  type DepFn = P0  }
 
-  trait At1[DF1 <: DepFn1] extends At[DF1] {
+  trait At1[DF1 <: AnyDepFn1] extends At[DF1] {
 
-    type In
-    type Out
+    type In1 <: DepFn#In1
+    type Out <: DepFn#Out
 
-    def apply(in: In): Out
+    def apply(in: In1): Out
   }
 
-  case class app1[DF <: DepFn1,I,O](val does: I => O) extends At1[DF] {
+  trait At2[DF2 <: AnyDepFn2] extends At[DF2] {
 
-    type In = I
+    type In1 <: DepFn#In1
+    type In2 <: DepFn#In2
+    type Out <: DepFn#Out
+
+    def apply(in1: In1, in2: In2): Out
+
+  }
+
+  trait App1[DF <: AnyDepFn1, I <: DF#In1] extends At1[DF] { type In1 = I }
+  case class app1[DF <: AnyDepFn1, I <: DF#In1,O <: DF#Out](val does: I => O) extends App1[DF,I] {
+
+    // type In1 = I
     type Out = O
 
-    final def apply(in: In): Out = does(in)
+    final def apply(in: In1): Out = does(in)
   }
 
-  case class app2[P <: DepFn2, I1,I2,O](val does: (I1,I2) => O) {
+  trait App2[P <: AnyDepFn2, I1 <: P#In1,I2 <: P#In2] extends At2[P] {
 
     type In1 = I1; type In2 = I2
+  }
+  case class app2[P <: AnyDepFn2, I1 <: P#In1,I2 <: P#In2, O <: P#Out](val does: (I1,I2) => O) extends App2[P,I1,I2] {
+
+    // type In1 = I1; type In2 = I2
     type Out = O
 
     final def apply(in1: In1, in2: In2): Out = does(in1,in2)
