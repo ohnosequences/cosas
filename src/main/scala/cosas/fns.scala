@@ -74,21 +74,22 @@ object fns {
 
   implicit final def depFn2Ops[DF <: AnyDepFn2](df: DF): AnyDepFn2Ops[DF] =
     AnyDepFn2Ops(df)
+
   case class AnyDepFn2Ops[DF <: AnyDepFn2](df: DF) extends AnyVal {
 
-    def apply[X1 <: DF#In1, X2 <: DF#In2, Y <: DF#Out](x1: X1, x2: X2)(implicit at: App2[DF,X1,X2] { type Out = Y }): Y =
-      at(x1,x2)
+    // def apply[X1 <: DF#In1, X2 <: DF#In2, Y <: DF#Out](x1: X1, x2: X2)(implicit at: App2[DF,X1,X2] { type Out = Y }): Y =
+      // at(x1,x2)
 
     def at[X1 <: DF#In1, X2 <: DF#In2, Y <: DF#Out](f: (X1,X2) => Y): app2[DF, X1, X2, Y] =
       app2[DF,X1,X2,Y](f)
   }
 
-  implicit def getMoarDepFn2Ops[DF <: AnyDepFn2, X1 <: DF#In1, X2 <: DF#In2](df: DF): moarDepFn2Ops[DF,X1,X2] =
-    moarDepFn2Ops(df)
+  implicit def getDepFn2ApplyOps[DF <: AnyDepFn2, X1 <: DF#In1, X2 <: DF#In2](df: DF): DepFn2ApplyOps[DF,X1,X2] =
+    DepFn2ApplyOps(df)
 
-  case class moarDepFn2Ops[DF <: AnyDepFn2, X1 <: DF#In1, X2 <: DF#In2](val df: DF) {
+  case class DepFn2ApplyOps[DF <: AnyDepFn2, X1 <: DF#In1, X2 <: DF#In2](val df: DF) {
 
-    def aply(x1: X1, x2: X2)(implicit app: App2[DF,X1,X2]): app.Out = app(x1,x2)
+    def apply(x1: X1, x2: X2)(implicit app: App2[DF,X1,X2]): app.Out = app(x1,x2)
   }
 
 

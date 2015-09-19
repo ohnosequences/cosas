@@ -55,6 +55,6 @@ class DependentFunctionsTests extends org.scalatest.FunSuite {
     val b = "lala" :~: 'a' :~: 2 :~: ∅
     import MapToHList._
     import size._
-    val bl = MapToHList.aply(size,b)//(cons(size.sizeForStr,empty))
+    val bl = MapToHList(size,b)//(cons(size.sizeForStr,empty))
   }
 }
