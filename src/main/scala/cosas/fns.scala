@@ -80,7 +80,7 @@ object fns {
 
   implicit final def depFn1Ops[DF <: AnyDepFn1](df: DF): DepFn1Ops[DF] =
     DepFn1Ops(df)
-  case class DepFn1Ops[DF <: AnyDepFn1](df: DF) extends AnyVal {
+  case class DepFn1Ops[DF <: AnyDepFn1](val df: DF) extends AnyVal {
 
     def at[X <: DF#In1, Y <: DF#Out](f: X => Y): app1[DF,X,Y] =
       app1[DF,X,Y](f)
@@ -88,7 +88,7 @@ object fns {
 
   implicit final def depFn2Ops[DF <: AnyDepFn2](df: DF): DepFn2Ops[DF] =
     DepFn2Ops(df)
-  case class DepFn2Ops[DF <: AnyDepFn2](df: DF) extends AnyVal {
+  case class DepFn2Ops[DF <: AnyDepFn2](val df: DF) extends AnyVal {
 
     def at[X1 <: DF#In1, X2 <: DF#In2, Y <: DF#Out](f: (X1,X2) => Y): app2[DF,X1,X2,Y] =
       app2(f)
