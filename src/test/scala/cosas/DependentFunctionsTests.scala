@@ -6,36 +6,38 @@ object sampleFunctions {
 
   case object size extends DepFn1[Any,Int] {
 
-    implicit val sizeForStr: App1[size.type,String] { type Out = Int } = this at { x: String => x.length }
+    implicit val sizeForStr   = this at { x: String => x.length }
     implicit val sizeForChar  = this at { x: Char   => 1 }
     implicit val sizeForInt   = this at { x: Int    => x }
   }
 
+  case object print extends DepFn1[Any,String] {
+
+    implicit val atInt = this at { n: Int => s"${n}: Int" }
+    implicit val atString = this at { str: String => s"""'${str}': String""" }
+  }
+
   import typeSets._
 
-  // alternative mapping
-
+  // alternative mapping over typeSets
   case object MapToHList extends DepFn2[AnyDepFn1, AnyTypeSet, shapeless.HList] {
 
-    // def apply[F <: Poly1, S <: AnyTypeSet]
-    //   (implicit mapper: MapToHList[F, S]): MapToHList[F, S] = mapper
     import shapeless._
 
-    implicit def empty[F <: AnyDepFn1]: App2[MapToHList.type,F,∅] { type Out = HNil } =
-      this at { (f:F, e: ∅) => HNil }
+    implicit def empty[F <: AnyDepFn1] = this at { (f: F, e: ∅) => HNil }
 
     implicit def cons[
       F <: AnyDepFn1,
       H <: F#In1, T <: AnyTypeSet,
-      OutH <: F#Out, OutT <: HList
+      OutH, OutT <: HList
     ](implicit
-      h: App1[F,H],
-      t: App2[this.type,F,T]
-    ): App2[MapToHList.type, F,H :~: T] =
-      this at { (f: F, ht: H :~: T) => h(ht.head) :: t(f,ht.tail) }
+      evF: App1[F,H] { type Out = OutH },
+      evThis: App2[this.type,F,T] { type Out = OutT }
+    )
+    : App2[this.type, F,H :~: T] { type Out = OutH :: OutT } =
+      this at { (f: F, ht: H :~: T) => f(ht.head) :: this(f,ht.tail) }
   }
 
-  // trait MapToHList[F <: Poly1, S <: AnyTypeSet] extends Fn1[S] with OutBound[HList]
 }
 
 class DependentFunctionsTests extends org.scalatest.FunSuite {
@@ -49,12 +51,14 @@ class DependentFunctionsTests extends org.scalatest.FunSuite {
     assert { 2 === size(size(2)) }
     assert { size(4) === size("four") }
 
-
-    // val buh = "lalala" :~: 'b' :~: 2323 :~: ∅
-    // val buhlengths = MapToHList[size.type, String :~: Char :~: Int :~: ∅, Int :: Int :: Int :: HNil](size,buh)
     val b = "lala" :~: 'a' :~: 2 :~: ∅
-    import MapToHList._
-    import size._
-    val bl = MapToHList(size,b)//(cons(size.sizeForStr,empty))
+
+    assert { 4 :: 1 :: 2 :: HNil === MapToHList(size,b) }
+  }
+
+  test("can compose and apply dependent functions") {
+
+    assert { "1: Int" === Composition(size,print)(1) }
+    assert { Composition(size,print)(1) === Composition(size,print)(1) }
   }
 }
