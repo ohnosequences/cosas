@@ -76,6 +76,15 @@ object fns {
     type In1 = First#In1
     type Second = S
     type Out = Second#Out
+
+    implicit def appForMe[
+      X1 <: F#In1,
+      M <: S#In1,
+      O <: S#Out
+    ](implicit
+      appF: App1[F,X1] { type Out = M },
+      appS: App1[S,M] { type Out = O }
+    ): App1[this.type,X1] { type Out = O } = app1 { x1: X1 => appS(appF(x1)) }
   }
 
   implicit final def depFn1Ops[DF <: AnyDepFn1](df: DF): DepFn1Ops[DF] =

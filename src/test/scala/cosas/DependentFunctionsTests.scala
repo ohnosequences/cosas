@@ -111,7 +111,17 @@ class DependentFunctionsTests extends org.scalatest.FunSuite {
 
   test("can compose and apply dependent functions") {
 
+    object sp extends Composition(print,size)
+    object psp extends Composition(sp,print)
+
     assert { "1: Int" === Composition(size,print)(1) }
     assert { Composition(size,print)(1) === Composition(size,print)(1) }
+
+    val uh = sp(2)
+    val uhoh = psp(2)
+
+    val zzz = Composition(Composition(print,size),print)
+    // does not work!
+    // zzz(2)
   }
 }
