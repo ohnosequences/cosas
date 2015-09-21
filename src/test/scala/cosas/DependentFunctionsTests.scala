@@ -38,6 +38,30 @@ object sampleFunctions {
       this at { (f: F, ht: H :~: T) => f(ht.head) :: this(f,ht.tail) }
   }
 
+
+  // pop
+  class Pop[E] extends DepFn1[AnyTypeSet, (E, AnyTypeSet)]
+
+  object Pop extends Pop_2 {
+    // def apply[S <: AnyTypeSet, E](implicit pop: Pop[S, E]): Pop[S, E] = pop
+
+    implicit def foundInHead[E, H <: E, T <: AnyTypeSet]: App1[Pop[E], H :~: T, (E, T)] =
+      App1 { (s: H :~: T) => (s.head, s.tail) }
+  }
+
+  trait Pop_2  {
+
+    implicit def foundInTail[H, T <: AnyTypeSet, E, TO <: AnyTypeSet](implicit
+      e: E ∈ T,
+      l: App1[Pop[E], T, (E, TO)]
+    )
+    : App1[Pop[E], H :~: T, (E, H :~: TO)] =
+      App1 { (s: H :~: T) => val (e, t) = l(s.tail); (e, s.head :~: t) }
+  }
+
+
+
+
   // union
   import typeSets._
   trait union_5 extends DepFn2[AnyTypeSet, AnyTypeSet, AnyTypeSet] {
@@ -99,6 +123,12 @@ class DependentFunctionsTests extends org.scalatest.FunSuite {
     val a = "ohoho" :~: 'c' :~: ∅
     val b = "lala" :~: 'a' :~: 2 :~: ∅
     val c = "lololo" :~: true :~: ∅
+
+    val popStr = new Pop[String]
+    val popBoolean = new Pop[Boolean]
+
+    assert { ("ohoho", 'c' :~: ∅) === popStr(a) }
+    assert { (true, "lololo" :~: ∅) === popBoolean(c) }
 
     assert { 4 :: 1 :: 2 :: HNil === MapToHList(size,b) }
 
