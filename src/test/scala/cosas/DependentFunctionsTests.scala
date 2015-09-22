@@ -16,8 +16,8 @@ object sampleFunctions {
 
   case object print extends DepFn1[Any,String] {
 
-    implicit val atInt = this at { n: Int => s"${n}: Int" }
-    implicit val atString = this at { str: String => s"""'${str}': String""" }
+    implicit val atInt    : App1[print.type,Int,String]     = print at { n: Int => s"${n}: Int" }
+    implicit val atString : App1[print.type,String,String]  = print at { str: String => s"""'${str}': String""" }
   }
 
 
