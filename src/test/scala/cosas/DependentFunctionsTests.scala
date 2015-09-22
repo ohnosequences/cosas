@@ -1,13 +1,16 @@
 package ohnosequences.cosas.tests
 
 import ohnosequences.cosas._, fns._
+import typeSets._
+import sampleFunctions._
+import shapeless.{union => _, DepFn1 => _, DepFn2 => _, _ }
 
 object sampleFunctions {
 
   case object size extends DepFn1[Any,Int] {
 
-    implicit val sizeForInt: App1[this.type,Int,Int]  = this at { x: Int    => x }
-    implicit val sizeForStr: App1[this.type,String,Int]   = this at { x: String => x.length }
+    implicit val sizeForInt: App1[this.type,Int,Int]   = this at { x: Int    => x }
+    implicit val sizeForStr: App1[this.type,String,Int] = this at { _.length }
     implicit val sizeForChar: App1[this.type,Char,Int]  = this at { x: Char   => 1 }
   }
 
@@ -17,19 +20,16 @@ object sampleFunctions {
     implicit val atString = this at { str: String => s"""'${str}': String""" }
   }
 
-  import typeSets._
 
   // alternative mapping over typeSets
   case object MapToHList extends DepFn2[AnyDepFn1, AnyTypeSet, shapeless.HList] {
 
-    import shapeless._
-
-    implicit def empty[F <: AnyDepFn1] = this at { (f: F, e: ∅) => HNil }
+    implicit def empty[F <: In1]: App2[this.type,F,∅,HNil] = this at { (f: F, e: ∅) => HNil }
 
     implicit def cons[
-      F <: AnyDepFn1 { type Out >: OutH },
-      H <: F#In1, T <: AnyTypeSet,
-      OutH, OutT <: HList
+      F <: In1,
+      H <: F#In1, T <: In2,
+      OutH <: F#Out, OutT <: Out
     ](implicit
       evF: App1[F,H,OutH],
       evThis: App2[this.type,F,T,OutT]
@@ -61,7 +61,6 @@ object sampleFunctions {
   }
 
   // union
-  import typeSets._
   trait union_5 extends DepFn2[AnyTypeSet, AnyTypeSet, AnyTypeSet] {
 
     // use this, bound it at the end
@@ -108,10 +107,6 @@ object sampleFunctions {
 
 class DependentFunctionsTests extends org.scalatest.FunSuite {
 
-  import sampleFunctions._
-  import shapeless.{union => ppf, _ }
-  import typeSets._
-
   test("can apply dependent functions") {
 
     val uh = print(2)
@@ -125,7 +120,16 @@ class DependentFunctionsTests extends org.scalatest.FunSuite {
     assert { ("ohoho", 'c' :~: ∅) === pop[String](a) }
     assert { (true, "lololo" :~: ∅) === pop[Boolean](c) }
 
-    assert { 4 :: 1 :: 2 :: HNil === MapToHList(size,b) }
+    val zzz = depFn2ApplyOps[
+      MapToHList.type,
+      size.type,
+      String :~: Char :~: Int :~: ∅,
+      Int :: Int :: Int :: HNil
+    ](MapToHList).apply(size,b)
+
+    depFn2ApplyOps[MapToHList.type, size.type, Int :~: ∅, Int :: HNil](MapToHList).apply(size,2 :~: ∅)
+
+    // assert { 4 :: 1 :: 2 :: HNil === MapToHList(size,b) }
 
     val ab = union(union(a,b),a)
     val ba = union(b,a)
