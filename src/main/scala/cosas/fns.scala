@@ -61,9 +61,9 @@ object fns {
 
   trait AnyDepFn1Composition extends AnyDepFn1 {
 
-    type First <: AnyDepFn1
+    type First <: AnyDepFn1 { type Out <: Second#In1 }
     val first: First
-    type Second <: AnyDepFn1 { type In1 >: First#Out }
+    type Second <: AnyDepFn1
     val second: Second
 
     type In1 = First#In1
@@ -71,75 +71,74 @@ object fns {
   }
 
   class Composition[
-    F <: AnyDepFn1,
-    S <: AnyDepFn1 { type In1 >: F#Out }
+    F <: AnyDepFn1 { type Out <: S#In1 },
+    S <: AnyDepFn1
   ]
   (val first: F, val second: S) extends AnyDepFn1Composition {
 
     type First = F
     type Second = S
 
-    // implicit def appForMe[
-    //   X1 <: F#In1,
-    //   M <: F#Out,
-    //   O <: S#Out
-    // ](implicit
-    //   appF: App1[F,X1,M],
-    //   appS: App1[S,M,O]
-    // ): App1[this.type,X1,O] = App1 { x1: X1 => appS(appF(x1)) }
+    implicit def appForMe[
+      X1 <: First#In1,
+      M <: First#Out,
+      O <: Second#Out
+    ](implicit
+      appF: App1[F,X1,M],
+      appS: App1[S,M,O]
+    ): App1[this.type,X1,O] = App1 { x1: X1 => appS(appF(x1)) }
   }
 
-  implicit final def depFn1Ops[DF <: AnyDepFn1, I0 <: DF#In1, O0 <: DF#Out](df: DF): DepFn1Ops[DF,I0,O0] =
+  implicit def depFn1Ops[DF <: AnyDepFn1](df: DF): DepFn1Ops[DF] =
     DepFn1Ops(df)
-  case class DepFn1Ops[DF <: AnyDepFn1, I <: DF#In1, O <: DF#Out](val df: DF) extends AnyVal {
+  case class DepFn1Ops[DF <: AnyDepFn1](val df: DF) extends AnyVal {
 
-    def at(f: I => O): App1[DF,I,O] =
+    final def at[I <: DF#In1, O <: DF#Out](f: I => O): App1[DF,I,O] =
       App1(f)
   }
 
-  implicit final def depFn2Ops[DF <: AnyDepFn2](df: DF): DepFn2Ops[DF] =
+  implicit def depFn2Ops[DF <: AnyDepFn2](df: DF): DepFn2Ops[DF] =
     DepFn2Ops(df)
   case class DepFn2Ops[DF <: AnyDepFn2](val df: DF) extends AnyVal {
 
-    def at[X1 <: DF#In1, X2 <: DF#In2, Y <: DF#Out](f: (X1,X2) => Y): App2[DF,X1,X2,Y] =
+    final def at[X1 <: DF#In1, X2 <: DF#In2, Y <: DF#Out](f: (X1,X2) => Y): App2[DF,X1,X2,Y] =
       App2(f)
   }
 
   /* dependent function application machinery. These are to be thought of as the building blocks for terms of a dependent function type. */
-  trait AnyAt {
+  trait AnyAt extends Any {
 
     type DepFn <: AnyDepFn
+    type Y <: DepFn#Out
   }
-  trait At[P0 <: AnyDepFn] extends AnyAt {  type DepFn = P0  }
 
-  trait At0[DF0 <: AnyDepFn0] extends AnyAt {
+  trait AnyAt0 extends Any with AnyAt {
 
-    type DepFn = DF0
-    type Y <: DF0#Out
+    type DepFn <: AnyDepFn0
+
     def apply: Y
   }
 
-  trait At1[DF1 <: AnyDepFn1] extends AnyAt {
+  trait AnyAt1 extends Any with AnyAt {
 
-    type DepFn = DF1
+    type DepFn <: AnyDepFn1
     type X1 <: DepFn#In1
-    type Y <: DepFn#Out
 
     def apply(in: X1): Y
   }
 
-  trait At2[DF2 <: AnyDepFn2] extends AnyAt {
+  trait AnyAt2 extends Any with AnyAt {
 
-    type DepFn = DF2
-    type X1 <: DepFn#In1
-    type X2 <: DepFn#In2
-    type Y <: DepFn#Out
+    type DepFn <: AnyDepFn2
+    type X1 <: DepFn#In1; type X2 <: DepFn#In2
 
     def apply(in1: X1, in2: X2): Y
   }
 
-  case class App1[DF <: AnyDepFn1, I <: DF#In1, O <: DF#Out](val does: I => O) extends At1[DF] {
 
+  case class App1[DF <: AnyDepFn1, I <: DF#In1, O <: DF#Out](val does: I => O) extends AnyVal with AnyAt1 {
+
+    type DepFn = DF
     type X1 = I
     type Y = O
 
@@ -154,33 +153,15 @@ object fns {
   ](df: DF0): DepFn1ApplyOps[DF0,X10,Y0] =
     DepFn1ApplyOps(df)
 
-  case class DepFn1ApplyOps[DF0 <: AnyDepFn1, I0 <: DF0#In1, O0 <: DF0#Out](val df: DF0) {
+  case class DepFn1ApplyOps[DF0 <: AnyDepFn1, I0 <: DF0#In1, O0 <: DF0#Out](val df: DF0) extends AnyVal {
 
-    def apply(x1: I0)(implicit app: App1[DF0,I0,O0]): O0 =
+    final def apply(x1: I0)(implicit app: App1[DF0,I0,O0]): O0 =
       app(x1)
   }
 
-  // implicit def compositionApplyOps[
-  //   F <: AnyDepFn1, S <: AnyDepFn1 { type In1 >: F#Out },
-  //   X1 <: F#In1, M <: F#Out
-  // ](comp: Composition[F,S])(implicit
-  //   appS: App1[S,M]
-  // ): CompositionApplyOps[F,S,X1,M] = CompositionApplyOps(comp)
-  //
-  // case class CompositionApplyOps[
-  //   F <: AnyDepFn1, S <: AnyDepFn1 { type In1 >: F#Out },
-  //   X1 <: F#In1, M <: F#Out
-  // ](val comp: Composition[F,S]) extends AnyVal {
-  //
-  //   def apply[O](x1: X1)(implicit
-  //     appF: App1[F,X1] { type Out = M },
-  //     appS: App1[S,M] { type Out = O }
-  //   ): O = appS(appF(x1))
-  // }
+  case class App2[DF <: AnyDepFn2, I1 <: DF#In1, I2 <: DF#In2, O <: DF#Out](val does: (I1,I2) => O) extends AnyVal with AnyAt2 {
 
-  // trait App2[P <: AnyDepFn2, I1 <: P#In1,I2 <: P#In2] extends At2[P] { type In1 = I1; type In2 = I2 }
-  case class App2[P <: AnyDepFn2, I1 <: P#In1,I2 <: P#In2, O <: P#Out](val does: (I1,I2) => O) extends At2[P] {
-
+    type DepFn = DF
     type X1 = I1; type X2 = I2
     type Y = O
 
@@ -190,13 +171,13 @@ object fns {
 
   implicit def depFn2ApplyOps[
     DF <: AnyDepFn2,
-    X1 <: DF#In1,
-    X2 <: DF#In2
-  ](df: DF): DepFn2ApplyOps[DF,X1,X2] =
+    X1 <: DF#In1, X2 <: DF#In2,
+    O <: DF#Out
+  ](df: DF): DepFn2ApplyOps[DF,X1,X2,O] =
     DepFn2ApplyOps(df)
-  case class DepFn2ApplyOps[DF <: AnyDepFn2, X1 <: DF#In1, X2 <: DF#In2](val df: DF) extends AnyVal {
+  case class DepFn2ApplyOps[DF <: AnyDepFn2, X1 <: DF#In1, X2 <: DF#In2, O <: DF#Out](val df: DF) extends AnyVal {
 
-    def apply[O <: DF#Out](x1: X1, x2: X2)(implicit app: App2[DF,X1,X2,O]): O =
+    final def apply(x1: X1, x2: X2)(implicit app: App2[DF,X1,X2,O]): O =
       app(x1,x2)
   }
 }

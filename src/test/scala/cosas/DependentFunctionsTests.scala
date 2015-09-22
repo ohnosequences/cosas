@@ -40,6 +40,7 @@ object sampleFunctions {
 
 
   // pop
+  def pop[E]: Pop[E] = new Pop[E]
   class Pop[E] extends DepFn1[AnyTypeSet, (E, AnyTypeSet)]
 
   object Pop extends Pop_2 {
@@ -58,9 +59,6 @@ object sampleFunctions {
     : App1[Pop[E], H :~: T, (E, H :~: TO)] =
       App1 { (s: H :~: T) => val (e, t) = l(s.tail); (e, s.head :~: t) }
   }
-
-
-
 
   // union
   import typeSets._
@@ -124,11 +122,8 @@ class DependentFunctionsTests extends org.scalatest.FunSuite {
     val b = "lala" :~: 'a' :~: 2 :~: ∅
     val c = "lololo" :~: true :~: ∅
 
-    val popStr = new Pop[String]
-    val popBoolean = new Pop[Boolean]
-
-    assert { ("ohoho", 'c' :~: ∅) === popStr(a) }
-    assert { (true, "lololo" :~: ∅) === popBoolean(c) }
+    assert { ("ohoho", 'c' :~: ∅) === pop[String](a) }
+    assert { (true, "lololo" :~: ∅) === pop[Boolean](c) }
 
     assert { 4 :: 1 :: 2 :: HNil === MapToHList(size,b) }
 
@@ -137,21 +132,5 @@ class DependentFunctionsTests extends org.scalatest.FunSuite {
     val bc = union(b,c)
     val cb = union(c,b)
     val abc = union(union(a,b),c)
-  }
-
-  test("can compose and apply dependent functions") {
-
-    // object sp extends Composition(print,size)
-    // object psp extends Composition(sp,print)
-
-    // assert { "1: Int" === new Composition(size,print)(1) }
-    // assert { new Composition(size,print)(1) ===  new Composition(size,print)(1) }
-
-    // val uh = sp(2)
-    // val uhoh = psp(2)
-
-    // val zzz = new Composition( new Composition(print,size),print)
-    // does not work!
-    // zzz(2)
   }
 }
