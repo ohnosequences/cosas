@@ -41,10 +41,11 @@ case object Get {
 [main/scala/cosas/fns.scala]: ../../fns.scala.md
 [main/scala/cosas/types.scala]: ../../types.scala.md
 [main/scala/cosas/typeSets.scala]: ../../typeSets.scala.md
-[main/scala/cosas/ops/records/Conversions.scala]: Conversions.scala.md
 [main/scala/cosas/ops/records/Update.scala]: Update.scala.md
 [main/scala/cosas/ops/records/Transform.scala]: Transform.scala.md
 [main/scala/cosas/ops/records/Get.scala]: Get.scala.md
+[main/scala/cosas/ops/typeSets/SerializeDenotations.scala]: ../typeSets/SerializeDenotations.scala.md
+[main/scala/cosas/ops/typeSets/ParseDenotations.scala]: ../typeSets/ParseDenotations.scala.md
 [main/scala/cosas/ops/typeSets/Conversions.scala]: ../typeSets/Conversions.scala.md
 [main/scala/cosas/ops/typeSets/Filter.scala]: ../typeSets/Filter.scala.md
 [main/scala/cosas/ops/typeSets/Subtract.scala]: ../typeSets/Subtract.scala.md

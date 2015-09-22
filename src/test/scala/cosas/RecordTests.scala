@@ -2,9 +2,9 @@ package ohnosequences.cosas.tests
 
 import ohnosequences.cosas._, types._, typeSets._, properties._, records._
 
-object recordTestsContext {
+case object recordTestsContext {
 
-  case object id    extends Property[Integer]("id")
+  case object id    extends Property[Int]("id")
   case object name  extends Property[String]("name")
   case object notProperty
   case object email extends Property[String]("email")
@@ -22,6 +22,7 @@ object recordTestsContext {
     color("blue") :~:
     ∅
   )
+
   // creating a record instance is easy and neat:
   val simpleUserEntry = simpleUser (
     id(123)     :~:
@@ -38,7 +39,6 @@ object recordTestsContext {
     ∅
   )
 }
-
 
 class RecordTests extends org.scalatest.FunSuite {
 
@@ -60,10 +60,13 @@ class RecordTests extends org.scalatest.FunSuite {
     """)
   }
 
-  test("can access fields") {
+  test("can access fields and field values") {
 
     assert { (simpleUserEntry get id)   === id(123)     }
     assert { (simpleUserEntry get name) === name("foo") }
+
+    assert { (simpleUserEntry getV id) === 123 }
+    assert { (simpleUserEntry getV name) === "foo" }
   }
 
   test("can access fields from vals and volatile vals") {
@@ -138,7 +141,7 @@ class RecordTests extends org.scalatest.FunSuite {
 
   object propertyConverters {
 
-    val idVParser: String => Option[Integer] = str => {
+    val idVParser: String => Option[Int] = str => {
       import scala.util.control.Exception._
       catching(classOf[NumberFormatException]) opt str.toInt
     }
@@ -152,6 +155,8 @@ class RecordTests extends org.scalatest.FunSuite {
   test("can parse records from Maps") {
 
     import propertyConverters._
+    import types._
+    import ops.typeSets.{ParseDenotations, ParseDenotationsError, KeyNotFound, ErrorParsing}
 
     val simpleUserEntryMap =  Map(
       "id" -> "29681",
@@ -169,21 +174,24 @@ class RecordTests extends org.scalatest.FunSuite {
 
     val mapWithOtherStuff = simpleUserEntryMap + ("other" -> "stuff")
 
-    assert { ( simpleUser parseFrom simpleUserEntryMap ) === Right(simpleUser(id(29681) :~: name("Antonio") :~: ∅)) }
-    assert { ( simpleUser parseFrom wrongKeyMap ) === Left(KeyNotFound(id)) }
-    assert { ( simpleUser parseFrom notIntValueMap ) === Left(ErrorParsingValue(id,"twenty-two")) }
-    assert { ( simpleUser parseFrom mapWithOtherStuff ) === Right(simpleUser(id(29681) :~: name("Antonio") :~: ∅)) }
+
+    assert { ( simpleUser parse simpleUserEntryMap ) === Right(simpleUser(id(29681) :~: name("Antonio") :~: ∅)) }
+    assert { ( simpleUser parse wrongKeyMap ) === Left(KeyNotFound(id.label, wrongKeyMap)) }
+    assert { ( simpleUser parse notIntValueMap ) === Left(ErrorParsing(ErrorParsingValue(id)("twenty-two"))) }
+    assert { ( simpleUser parse mapWithOtherStuff ) === Right(simpleUser(id(29681) :~: name("Antonio") :~: ∅)) }
   }
 
   test("can serialize records to Maps") {
 
     import propertyConverters._
+    import ops.typeSets.{SerializeDenotations, SerializeDenotationsError, KeyPresent}
+
 
     val simpleUserEntryMap =  Map(
       "id" -> "29681",
       "name" -> "Antonio"
     )
-    assert { Right(simpleUserEntryMap) === simpleUser(id(29681) :~: name("Antonio") :~: ∅).serializeTo[String] }
+    assert { Right(simpleUserEntryMap) === simpleUser(id(29681) :~: name("Antonio") :~: ∅).serialize[String] }
 
     val unrelatedMap = Map(
       "lala" -> "hola!",
@@ -194,9 +202,19 @@ class RecordTests extends org.scalatest.FunSuite {
 
     assert {
       Right(simpleUserEntryMap ++ unrelatedMap) ===
-        ( simpleUser(id(29681) :~: name("Antonio") :~: ∅) serializeTo unrelatedMap )
+        ( simpleUser(id(29681) :~: name("Antonio") :~: ∅) serializeUsing unrelatedMap )
     }
 
-    assert { Left(KeyPresent(id, id.label)) === ( simpleUser(id(29681) :~: name("Antonio") :~: ∅) serializeTo mapWithKey ) }
+    assert {
+      Left(KeyPresent(id.label, mapWithKey)) ===
+        ( simpleUser(id(29681) :~: name("Antonio") :~: ∅) serializeUsing mapWithKey )
+    }
+  }
+
+  test("can get values from records as lists and typesets") {
+
+    val vRecordEntryValues: List[String] = vRecordEntry.value mapToList denotationValue
+
+    val simpleUserValues: Int :~: String :~: ∅ = simpleUserEntry.value map denotationValue
   }
 }

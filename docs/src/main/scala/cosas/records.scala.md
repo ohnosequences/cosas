@@ -6,6 +6,8 @@ case object records {
 
   import types._, typeSets._, properties._
   import ops.typeSets.{ReorderTo, CheckForAll}
+  import ops.typeSets.{SerializeDenotations, SerializeDenotationsError}
+  import ops.typeSets.{ParseDenotations, ParseDenotationsError}
 ```
 
 
@@ -64,14 +66,14 @@ Same as apply, but you can pass properties in any order
         reorder: Vs ReorderTo RT#Raw
       ): ValueOf[RT] = recType := reorder(values)
 
-    def parseFrom[V](map: Map[String,V])(implicit
-      parse: RT#PropertySet ParsePropertiesFrom V
-    ): Either[AnyPropertyParsingError, ValueOf[RT]] =
-      parse(map) match {
-
-        case Left(err)  => Left(err)
-        case Right(v)   => Right(new ValueOf[RT](v))
-      }
+    def parse[
+      V0,
+      PD <: ParseDenotations[RT#PropertySet#Raw, V0]
+    ](map: Map[String,V0])(implicit parse: PD): Either[ParseDenotationsError, ValueOf[RT]] =
+      parse(map).fold[Either[ParseDenotationsError, ValueOf[RT]]](
+        l => Left(l),
+        v => Right(new ValueOf[RT](v))
+      )
   }
 ```
 
@@ -85,6 +87,17 @@ Operations on `ValueOf`s a record type. As usual with value classes, parameter i
   implicit def getRecordEntryOps[RT <: AnyRecord](entry: ValueOf[RT]): RecordEntryOps[RT] =
     RecordEntryOps(entry.value)
   case class RecordEntryOps[RT <: AnyRecord](val entryRaw: RT#Raw) extends AnyVal {
+
+    def serialize[V](implicit
+      serialize: RT#PropertySet#Raw SerializeDenotations V
+    ): Either[SerializeDenotationsError, Map[String,V]] = serialize(entryRaw)
+
+    def serializeUsing[V](map: Map[String,V])(implicit
+      serialize: RT#PropertySet#Raw SerializeDenotations V
+    ): Either[SerializeDenotationsError, Map[String,V]] = serialize(entryRaw, map)
+
+    def getV[P <: AnyProperty](p: P)(implicit get: RT Get P): P#Raw =
+      get(entryRaw)
 
     def get[P <: AnyProperty](p: P)(implicit
       get: RT Get P
@@ -127,10 +140,11 @@ Operations on `ValueOf`s a record type. As usual with value classes, parameter i
 [main/scala/cosas/fns.scala]: fns.scala.md
 [main/scala/cosas/types.scala]: types.scala.md
 [main/scala/cosas/typeSets.scala]: typeSets.scala.md
-[main/scala/cosas/ops/records/Conversions.scala]: ops/records/Conversions.scala.md
 [main/scala/cosas/ops/records/Update.scala]: ops/records/Update.scala.md
 [main/scala/cosas/ops/records/Transform.scala]: ops/records/Transform.scala.md
 [main/scala/cosas/ops/records/Get.scala]: ops/records/Get.scala.md
+[main/scala/cosas/ops/typeSets/SerializeDenotations.scala]: ops/typeSets/SerializeDenotations.scala.md
+[main/scala/cosas/ops/typeSets/ParseDenotations.scala]: ops/typeSets/ParseDenotations.scala.md
 [main/scala/cosas/ops/typeSets/Conversions.scala]: ops/typeSets/Conversions.scala.md
 [main/scala/cosas/ops/typeSets/Filter.scala]: ops/typeSets/Filter.scala.md
 [main/scala/cosas/ops/typeSets/Subtract.scala]: ops/typeSets/Subtract.scala.md

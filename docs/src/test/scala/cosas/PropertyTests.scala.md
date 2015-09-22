@@ -4,7 +4,7 @@ package ohnosequences.cosas.test
 
 import ohnosequences.cosas._, types._, properties._, typeSets._
 
-object exampleProperties {
+case object exampleProperties {
 
   case object key       extends Property[String]("key")
   case object name      extends Property[String]("name")
@@ -29,7 +29,7 @@ class PropertyTests extends org.scalatest.FunSuite {
     assertTypeError("""val uhoh = age(true)""")
   }
 
-  test("valueless properties lead to nothing") {
+  test("properties which do not set Raw have Raw = Nothing") {
 
     val itIs = implicitly[valueless.Raw =:= Nothing]
   }
@@ -54,10 +54,11 @@ class PropertyTests extends org.scalatest.FunSuite {
 [main/scala/cosas/fns.scala]: ../../../main/scala/cosas/fns.scala.md
 [main/scala/cosas/types.scala]: ../../../main/scala/cosas/types.scala.md
 [main/scala/cosas/typeSets.scala]: ../../../main/scala/cosas/typeSets.scala.md
-[main/scala/cosas/ops/records/Conversions.scala]: ../../../main/scala/cosas/ops/records/Conversions.scala.md
 [main/scala/cosas/ops/records/Update.scala]: ../../../main/scala/cosas/ops/records/Update.scala.md
 [main/scala/cosas/ops/records/Transform.scala]: ../../../main/scala/cosas/ops/records/Transform.scala.md
 [main/scala/cosas/ops/records/Get.scala]: ../../../main/scala/cosas/ops/records/Get.scala.md
+[main/scala/cosas/ops/typeSets/SerializeDenotations.scala]: ../../../main/scala/cosas/ops/typeSets/SerializeDenotations.scala.md
+[main/scala/cosas/ops/typeSets/ParseDenotations.scala]: ../../../main/scala/cosas/ops/typeSets/ParseDenotations.scala.md
 [main/scala/cosas/ops/typeSets/Conversions.scala]: ../../../main/scala/cosas/ops/typeSets/Conversions.scala.md
 [main/scala/cosas/ops/typeSets/Filter.scala]: ../../../main/scala/cosas/ops/typeSets/Filter.scala.md
 [main/scala/cosas/ops/typeSets/Subtract.scala]: ../../../main/scala/cosas/ops/typeSets/Subtract.scala.md

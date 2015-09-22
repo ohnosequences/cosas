@@ -1,52 +1,58 @@
 
-## Replace elements in one set with elements from another
-
-The idea is that if `Q ⊂ S`, then you can replace some elements of `S`, 
-by the elements of `Q` with corresponding types. For example 
-`(1 :~: 'a' :~: "foo" :~: ∅) replace ("bar" :~: 2 :~: ∅) == (2 :~: 'a' :~: "bar" :~: ∅)`. 
-Note that the type of the result is the same (`S`).
-
-
-
 ```scala
 package ohnosequences.cosas.ops.typeSets
 
-import ohnosequences.cosas._, fns._, typeSets._
+import ohnosequences.cosas._, types._, typeSets._, fns._
 
-@annotation.implicitNotFound(msg = "Can't replace elements in ${S} with ${Q}")
-trait Replace[S <: AnyTypeSet, Q <: AnyTypeSet] extends Fn2[S, Q] with Out[S]
+@annotation.implicitNotFound(msg = """
+  Cannot serialize typeset of denotations
+    ${Denotations}
+  to a map of type
+    Map[String, ${V}]
 
-object Replace extends Replace_2 {
+  Probably some denotation serializers are missing.
+""")
+trait SerializeDenotations[Denotations <: AnyTypeSet, V]
+extends Fn2[Denotations, Map[String,V]] with
+        Out[Either[SerializeDenotationsError, Map[String,V]]] {
 
-  def apply[S <: AnyTypeSet, Q <: AnyTypeSet]
-    (implicit replace: Replace[S, Q]): Replace[S, Q] = replace
-
-  implicit def empty[S <: AnyTypeSet]:
-        Replace[S, ∅] = 
-    new Replace[S, ∅] { def apply(s: S, q: ∅) = s }
-
-  implicit def replaceHead[H, T <: AnyTypeSet, Q <: AnyTypeSet, QOut <: AnyTypeSet]
-    (implicit 
-      pop: PopSOut[Q, H, QOut],
-      rest: Replace[T, QOut]
-    ):  Replace[H :~: T, Q] =
-    new Replace[H :~: T, Q] {
-
-      def apply(s: H :~: T, q: Q): H :~: T = {
-        val (h, qq) = pop(q)
-        h :~: rest(s.tail, qq)
-      }
-    }
+  final def apply(d: Denotations): Out = apply(d, Map[String,V]())
 }
 
-trait Replace_2 {
-  implicit def skipHead[H, T <: AnyTypeSet, Q <: AnyTypeSet, QOut <: AnyTypeSet]
-    (implicit rest: Replace[T, Q]):
-        Replace[H :~: T, Q] =
-    new Replace[H :~: T, Q] {
+// errors should be named with the same name + error
+trait SerializeDenotationsError
+case class KeyPresent[V](val key: String, val map: Map[String,V]) extends SerializeDenotationsError
+case class ErrorSerializing[SE <: DenotationSerializerError](val err: SE) extends SerializeDenotationsError
 
-      def apply(s: H :~: T, q: Q) = s.head :~: rest(s.tail, q)
+case object SerializeDenotations {
+
+  implicit def atEmpty[V]: SerializeDenotations[∅,V] = new SerializeDenotations[∅,V] {
+
+    def apply(nil: ∅, map: Map[String,V]): Out = Right(map)
+  }
+
+  implicit def atCons[
+    V,
+    H <: AnyType, TD <: AnyTypeSet,
+    HR <: H#Raw,
+    SH <: AnyDenotationSerializer { type Type = H; type Value = V; type D = HR },
+    ST <: SerializeDenotations[TD,V]
+  ](implicit
+    serializeH: SH,
+    serializeT: ST
+  ): SerializeDenotations[(H := HR) :~: TD, V] = new SerializeDenotations[(H := HR) :~: TD, V] {
+
+    def apply(denotations: (H := HR) :~: TD, map: Map[String,V]): Out = {
+
+      serializeH(denotations.head).fold(
+        l => Left(ErrorSerializing(l)),
+        kv => (map get kv._1) match {
+          case Some(_)  => Left(KeyPresent(kv._1, map))
+          case None     => serializeT(denotations.tail, map + kv)
+        }
+      )
     }
+  }
 }
 
 ```

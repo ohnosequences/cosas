@@ -1,52 +1,58 @@
 
-## Replace elements in one set with elements from another
-
-The idea is that if `Q ⊂ S`, then you can replace some elements of `S`, 
-by the elements of `Q` with corresponding types. For example 
-`(1 :~: 'a' :~: "foo" :~: ∅) replace ("bar" :~: 2 :~: ∅) == (2 :~: 'a' :~: "bar" :~: ∅)`. 
-Note that the type of the result is the same (`S`).
-
-
-
 ```scala
 package ohnosequences.cosas.ops.typeSets
 
-import ohnosequences.cosas._, fns._, typeSets._
+import ohnosequences.cosas._, types._, typeSets._, fns._
 
-@annotation.implicitNotFound(msg = "Can't replace elements in ${S} with ${Q}")
-trait Replace[S <: AnyTypeSet, Q <: AnyTypeSet] extends Fn2[S, Q] with Out[S]
+@annotation.implicitNotFound(msg = """
+  Cannot parse typeset of denotations
+    ${Denotations}
+  from a map of type
+    Map[String, ${V}]
 
-object Replace extends Replace_2 {
+  Probably some denotation parsers are missing.
+""")
+trait ParseDenotations[Denotations <: AnyTypeSet, V]
+extends Fn1[Map[String,V]] with
+        Out[Either[ParseDenotationsError, Denotations]]
 
-  def apply[S <: AnyTypeSet, Q <: AnyTypeSet]
-    (implicit replace: Replace[S, Q]): Replace[S, Q] = replace
+trait ParseDenotationsError
+case class KeyNotFound[V](val key: String, val map: Map[String,V]) extends ParseDenotationsError
+case class ErrorParsing[PE <: DenotationParserError](val err: PE) extends ParseDenotationsError
 
-  implicit def empty[S <: AnyTypeSet]:
-        Replace[S, ∅] = 
-    new Replace[S, ∅] { def apply(s: S, q: ∅) = s }
+case object ParseDenotations {
 
-  implicit def replaceHead[H, T <: AnyTypeSet, Q <: AnyTypeSet, QOut <: AnyTypeSet]
-    (implicit 
-      pop: PopSOut[Q, H, QOut],
-      rest: Replace[T, QOut]
-    ):  Replace[H :~: T, Q] =
-    new Replace[H :~: T, Q] {
+  implicit def atEmpty[V]: ParseDenotations[∅,V] = new ParseDenotations[∅,V] {
 
-      def apply(s: H :~: T, q: Q): H :~: T = {
-        val (h, qq) = pop(q)
-        h :~: rest(s.tail, qq)
-      }
-    }
-}
+    def apply(map: Map[String,V]): Out = Right(∅)
+  }
 
-trait Replace_2 {
-  implicit def skipHead[H, T <: AnyTypeSet, Q <: AnyTypeSet, QOut <: AnyTypeSet]
-    (implicit rest: Replace[T, Q]):
-        Replace[H :~: T, Q] =
-    new Replace[H :~: T, Q] {
+  implicit def atCons[
+    V,
+    H <: AnyType, TD <: AnyTypeSet,
+    HR <: H#Raw,
+    PH <: AnyDenotationParser { type Type = H; type Value = V; type D = HR },
+    PT <: ParseDenotations[TD,V]
+  ](implicit
+    parseH: PH,
+    parseT: PT
+  ): ParseDenotations[(H := HR) :~: TD, V] = new ParseDenotations[(H := HR) :~: TD, V] {
 
-      def apply(s: H :~: T, q: Q) = s.head :~: rest(s.tail, q)
-    }
+    def apply(map: Map[String,V]): Out =
+      map.get(parseH.labelRep).fold[Out](
+        Left(KeyNotFound(parseH.labelRep, map))
+      )(
+        v => parseH(parseH.labelRep, v) fold (
+
+          l => Left(ErrorParsing(l)),
+
+          r => parseT(map).fold[Out] (
+            err => Left(err),
+            td  => Right(r :~: (td: TD))
+          )
+        )
+      )
+  }
 }
 
 ```

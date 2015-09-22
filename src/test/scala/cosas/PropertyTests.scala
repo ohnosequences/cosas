@@ -2,7 +2,7 @@ package ohnosequences.cosas.test
 
 import ohnosequences.cosas._, types._, properties._, typeSets._
 
-object exampleProperties {
+case object exampleProperties {
 
   case object key       extends Property[String]("key")
   case object name      extends Property[String]("name")
@@ -27,7 +27,7 @@ class PropertyTests extends org.scalatest.FunSuite {
     assertTypeError("""val uhoh = age(true)""")
   }
 
-  test("valueless properties lead to nothing") {
+  test("properties which do not set Raw have Raw = Nothing") {
 
     val itIs = implicitly[valueless.Raw =:= Nothing]
   }
