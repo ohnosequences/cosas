@@ -24,7 +24,7 @@ object sampleFunctions {
   // alternative mapping over typeSets
   case object MapToHList extends DepFn2[AnyDepFn1, AnyTypeSet, shapeless.HList] {
 
-    implicit def empty[F <: In1]: App2[this.type,F,∅,HNil] = this at { (f: F, e: ∅) => HNil }
+    implicit def empty[F <: In1]: App2[MapToHList.type,F,∅,HNil] = MapToHList at { (f: F, e: ∅) => HNil }
 
     implicit def cons[
       F <: In1,
@@ -32,10 +32,10 @@ object sampleFunctions {
       OutH <: F#Out, OutT <: Out
     ](implicit
       evF: App1[F,H,OutH],
-      evThis: App2[this.type,F,T,OutT]
+      evThis: App2[MapToHList.type,F,T,OutT]
     )
-    : App2[this.type, F, H :~: T, OutH :: OutT] =
-      this at { (f: F, ht: H :~: T) => f(ht.head) :: this(f,ht.tail) }
+    : App2[MapToHList.type, F, H :~: T, OutH :: OutT] =
+      MapToHList at { (f: F, ht: H :~: T) => f(ht.head) :: MapToHList(f,ht.tail) }
   }
 
 
@@ -64,43 +64,43 @@ object sampleFunctions {
   trait union_5 extends DepFn2[AnyTypeSet, AnyTypeSet, AnyTypeSet] {
 
     // use this, bound it at the end
-    type Union <: this.type
-    val union: Union
+    type union <: this.type
+    val union: union
 
     implicit def bothHeads[SH, ST <: AnyTypeSet, QH, QT <: AnyTypeSet, O <: AnyTypeSet](implicit
       sh: SH ∉ (QH :~: QT),
       qh: QH ∉ (SH :~: ST),
-      rest: App2[Union, ST, QT, O]
-    ) =
+      rest: App2[union, ST, QT, O]
+    ): App2[union,SH :~: ST,QH :~: QT, SH :~: QH :~: O] =
       union at { (s: SH :~: ST, q: QH :~: QT) => s.head :~: q.head :~: union(s.tail, q.tail) }
   }
   trait union_4 extends union_5 {
 
     implicit def qHead[S <: AnyTypeSet, QH, QT <: AnyTypeSet, O <: AnyTypeSet](implicit
       qh: QH ∈ S,
-      rest: App2[Union, S, QT, O]
-    ) =
+      rest: App2[union, S, QT, O]
+    ): App2[union,S,QH :~: QT, O] =
       union at { (s: S, q: QH :~: QT) => union(s, q.tail) }
   }
   trait union_3 extends union_4 {
 
     implicit def sHead[SH, ST <: AnyTypeSet, Q <: AnyTypeSet, O <: AnyTypeSet](implicit
       sh: SH ∈ Q,
-      rest: App2[Union,ST,Q,O]
-    ) =
+      rest: App2[union,ST,Q,O]
+    ): App2[union,SH :~: ST,Q,O] =
       union at { (s: SH :~: ST, q: Q) => union(s.tail,q) }
   }
   trait union_2 extends union_3 {
 
-    implicit def qInS[S <: AnyTypeSet.SubsetOf[Q], Q <: AnyTypeSet] =
+    implicit def qInS[S <: AnyTypeSet.SubsetOf[Q], Q <: AnyTypeSet]: App2[union,Q,S,Q] =
       union at { (q:Q, s: S) => q }
   }
   case object union extends union_2 {
 
-    type Union = this.type
+    type union = this.type
     val union = this
 
-    implicit def sInQ[S <: AnyTypeSet.SubsetOf[Q], Q <: AnyTypeSet] =
+    implicit def sInQ[S <: AnyTypeSet.SubsetOf[Q], Q <: AnyTypeSet]: App2[union,S,Q,Q] =
       union at { (s:S, q:Q) => q }
   }
 }
