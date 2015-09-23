@@ -78,8 +78,8 @@ case object HasProperties {
     type Condition[P <: AnyProperty] = PS HasProperty P
   }
 
-  implicit def recordHasP[PS <: AnyPropertySet, P <: AnyTypeSet.Of[AnyProperty]]
-    (implicit check: CheckForAll[P, PropertyIsIn[PS]]):
-        (PS HasProperties P) =
-    new (PS HasProperties P)
+//   implicit def recordHasP[PS <: AnyPropertySet, P <: AnyTypeSet.Of[AnyProperty]]
+//     (implicit check: CheckForAll[P, PropertyIsIn[PS]]):
+//         (PS HasProperties P) =
+//     new (PS HasProperties P)
 }

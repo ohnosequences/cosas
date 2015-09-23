@@ -12,11 +12,12 @@ case object take {
     App1 { s: S => ∅ }
 
   implicit def nonEmpty[
-    S <: AnyTypeSet, S_ <: AnyTypeSet,
-    H, T <: AnyTypeSet
+    TailToTake <: AnyTypeSet, From <: AnyTypeSet, Rest <: AnyTypeSet,
+    HeadToTake
   ](implicit
-    pop: App1[pop[H], S, (E, T)],
-    rest: App1[take[S_], S, S_]
-  ): App1[take[S], H :~: T, S] =
-    App1 { s: S => val (h, t) = pop(s); h :~: take[S_](t) }
+    pop: App1[pop[HeadToTake], From, (HeadToTake, Rest)],
+    take: App1[take[TailToTake], Rest, TailToTake]
+  )
+  : App1[take[HeadToTake :~: TailToTake], From, HeadToTake :~: TailToTake] =
+    App1 { s: From => { val (h, t) = pop(s); h :~: take(t) } }
 }

@@ -1,54 +1,45 @@
 package ohnosequences.cosas.typeSets
 
-import ohnosequences.cosas._, types._, typeSets._, fns._
-
-@annotation.implicitNotFound(msg = """
-  Cannot parse typeset of denotations
-    ${Denotations}
-  from a map of type
-    Map[String, ${V}]
-
-  Probably some denotation parsers are missing.
-""")
-trait ParseDenotations[Denotations <: AnyTypeSet, V]
-extends Fn1[Map[String,V]] with
-        Out[Either[ParseDenotationsError, Denotations]]
+import ohnosequences.cosas._, types._, fns._
 
 trait ParseDenotationsError
 case class KeyNotFound[V](val key: String, val map: Map[String,V]) extends ParseDenotationsError
 case class ErrorParsing[PE <: DenotationParserError](val err: PE) extends ParseDenotationsError
 
-case object ParseDenotations {
+class parseDenotations[V] extends DepFn1[Map[String,V], Either[ParseDenotationsError,AnyTypeSet]]
 
-  implicit def atEmpty[V]: ParseDenotations[∅,V] = new ParseDenotations[∅,V] {
+case object parseDenotations {
 
-    def apply(map: Map[String,V]): Out = Right(∅)
-  }
+  implicit def empty[V]: App1[parseDenotations[V], Map[String,V], Either[ParseDenotationsError,∅]] =
+    App1 { map: Map[String,V] => Right(∅) }
 
-  implicit def atCons[
+  implicit def nonEmpty[
     V,
     H <: AnyType, TD <: AnyTypeSet,
     HR <: H#Raw,
-    PH <: AnyDenotationParser { type Type = H; type Value = V; type D = HR },
-    PT <: ParseDenotations[TD,V]
+    PH <: AnyDenotationParser { type Type = H; type Value = V; type D = HR }
   ](implicit
     parseH: PH,
-    parseT: PT
-  ): ParseDenotations[(H := HR) :~: TD, V] = new ParseDenotations[(H := HR) :~: TD, V] {
+    parseRest: App1[parseDenotations[V], Map[String,V], Either[ParseDenotationsError,TD]]
+  )
+  : App1[parseDenotations[V], Map[String,V], Either[ParseDenotationsError, (H := HR) :~: TD]] =
 
-    def apply(map: Map[String,V]): Out =
-      map.get(parseH.labelRep).fold[Out](
+  App1 { map: Map[String,V] => {
+
+      map.get(parseH.labelRep).fold[Either[ParseDenotationsError, (H := HR) :~: TD]](
         Left(KeyNotFound(parseH.labelRep, map))
       )(
         v => parseH(parseH.labelRep, v) fold (
 
           l => Left(ErrorParsing(l)),
 
-          r => parseT(map).fold[Out] (
+          r => parseRest(map).fold[Either[ParseDenotationsError, (H := HR) :~: TD]] (
             err => Left(err),
             td  => Right(r :~: (td: TD))
           )
         )
       )
+
+    }
   }
 }

@@ -12,8 +12,29 @@ package object typeSets {
   final type :~:[E, S <: AnyTypeSet] = TypeSetImpl.ConsSet[E, S]
 
   // functions
-  def pop[E]: pop[E] = new pop[E]
+  type filter = Filter.type
+  val filter: filter = Filter
 
+  type union = Union.type
+  val union: union = Union
+
+  type pop[E] = Pop[E]
+  def pop[X]: pop[X] = new Pop[X]
+
+  def toListOf[X]: toListOf[X] = new toListOf
+  def toTypeMap[K <: AnyType, V]: toTypeMap[K,V] = new toTypeMap
+
+  type mapToListOf[X] = MapToListOf[X]
+  def mapToListOf[X]: mapToListOf[X] = new MapToListOf
+
+  type mapToHList = MapToHList.type
+  val mapToHList: mapToHList = MapToHList
+
+  type mapSet = MapSet.type
+  val mapSet: mapSet = MapSet
+  def parseDenotations[V]: parseDenotations[V] = new parseDenotations
+  def reorderTo[Q <: AnyTypeSet]: reorderTo[Q] = new reorderTo
+  def replace[Q <: AnyTypeSet]: replace[Q] = new replace
 
 
 
@@ -89,17 +110,17 @@ package object typeSets {
   }
 
   /* One set consists of representations of the types in another */
-  @annotation.implicitNotFound(msg = "Can't prove that ${Vs} are values of ${Ts}")
-  type areValuesOf[Vs <: AnyTypeSet, Ts <: AnyTypeSet] = typeSets.ValuesOf[Ts] { type Out = Vs }
+  // @annotation.implicitNotFound(msg = "Can't prove that ${Vs} are values of ${Ts}")
+  // type areValuesOf[Vs <: AnyTypeSet, Ts <: AnyTypeSet] = typeSets.ValuesOf[Ts] { type Out = Vs }
+  //
+  // @annotation.implicitNotFound(msg = "Can't prove that ${Ts} are types of ${Vs}")
+  // type areWrapsOf[Ts <: AnyTypeSet, Vs <: AnyTypeSet] = typeSets.WrapsOf[Ts] { type Out = Vs }
 
-  @annotation.implicitNotFound(msg = "Can't prove that ${Ts} are types of ${Vs}")
-  type areWrapsOf[Ts <: AnyTypeSet, Vs <: AnyTypeSet] = typeSets.WrapsOf[Ts] { type Out = Vs }
+  // type \[S <: AnyTypeSet, Q <: AnyTypeSet] = typeSets.Subtract[S, Q]
 
-  type \[S <: AnyTypeSet, Q <: AnyTypeSet] = typeSets.Subtract[S, Q]
+  // type ∪[S <: AnyTypeSet, Q <: AnyTypeSet] = typeSets.Union[S, Q]
 
-  type ∪[S <: AnyTypeSet, Q <: AnyTypeSet] = typeSets.Union[S, Q]
-
-  type ToListOf[S <: AnyTypeSet, T] = typeSets.ToList[S] { type O = T }
+  // type ToListOf[S <: AnyTypeSet, T] = typeSets.ToList[S] { type O = T }
 
   implicit def typeSetSyntax[S <: AnyTypeSet](s: S): syntax.TypeSetSyntax[S] =
     syntax.TypeSetSyntax(s)

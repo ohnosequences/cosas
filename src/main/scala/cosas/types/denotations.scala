@@ -12,11 +12,14 @@ trait AnyDenotation extends Any {
 
 case object denotationValue extends DepFn1[AnyDenotation,Any] {
 
-  implicit def value2[T <: AnyType, V <: T#Raw]: App1[denotationValue.type, V Denotes T, V] =
-    denotationValue at { d: V Denotes T => d.value }
-
   implicit def value[D <: AnyDenotation]: App1[denotationValue.type, D, D#Value] =
     denotationValue at { d: D => d.value }
+}
+
+case object typeOf extends DepFn1[AnyDenotation,AnyType] {
+
+  implicit def default[T <: AnyType, D <: AnyDenotation { type Tpe = T }](implicit t: T): App1[typeOf.type, D, T] =
+    typeOf at { d: D => t }
 }
 
 /* Bound the denoted type */

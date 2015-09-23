@@ -1,14 +1,14 @@
 package ohnosequences.cosas.tests
 
-import ohnosequences.cosas._, types._, AnySubsetType._
+import ohnosequences.cosas._, types._
 import ohnosequences.cosas.tests.asserts._
 
 case object DenotationTestsContext {
 
-  case object Color extends Wrap[String]("Color")
-  object User extends Type("User")
+  case object Color extends AnyType { val label = "Color"; type Raw = String }
+  object User extends AnyType {  val label = "User"; type Raw = Any  }
   type User = User.type
-  object Friend extends Type("Friend")
+  object Friend extends AnyType { val label = "Friend"; type Raw = Any }
   case class userInfo(id: String, name: String, age: Int)
 }
 
