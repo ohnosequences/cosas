@@ -1,7 +1,7 @@
 package ohnosequences.cosas.tests
 
 import ohnosequences.cosas._, types._, typeUnions._, typeSets._
-import ops.typeSets._
+import typeSets._
 
 class TypeSetTests extends org.scalatest.FunSuite {
 

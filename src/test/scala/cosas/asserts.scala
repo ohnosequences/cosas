@@ -2,17 +2,17 @@ package ohnosequences.cosas.tests
 
 case object asserts {
 
-  import ohnosequences.cosas._, types._, equalities._
+  import ohnosequences.cosas._, types._, equality._
   import org.scalatest.Assertions._
 
   // not only compares the values, but also check the types equality (essential for tagged values)
   def checkTypedEq[A, B](a: A, b: B)(implicit typesEq: A ≃ B): Boolean = a == b
 
-  implicit def taggedOps[T <: AnyType, V <: T#Raw](v: T := V):
-    TaggedOps[T, V] =
-    TaggedOps[T, V](v)
+  implicit def taggedSyntax[T <: AnyType, V <: T#Raw](v: T := V):
+    TaggedSyntax[T, V] =
+    TaggedSyntax[T, V](v)
 
-  case class TaggedOps[T <: AnyType, V <: T#Raw](v: T := V) {
+  case class TaggedSyntax[T <: AnyType, V <: T#Raw](v: T := V) {
 
     def =~=[W <: T#Raw](w: T := W)(implicit typesEq: V ≃ W): Boolean = v.value == w.value
   }

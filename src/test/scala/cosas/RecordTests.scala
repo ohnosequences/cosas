@@ -10,7 +10,7 @@ case object recordTestsContext {
   case object email extends Property[String]("email")
   case object color extends Property[String]("color")
 
-  // funny square ins an option too
+  // funny square is an option too
   case object simpleUser extends Record(id :&: name :&: □)
   case object normalUser extends Record(id :&: name :&: email :&: color :&: □)
   val vProps  = email :&: color :&: □
@@ -126,7 +126,6 @@ class RecordTests extends org.scalatest.FunSuite {
   }
 
   test("can check if record has properties") {
-    import ops.records._
 
     implicitly[simpleUser.PropertySet HasProperties (id.type :~: name.type :~: ∅)]
     implicitly[simpleUser.PropertySet HasProperties (name.type :~: id.type :~: ∅)]
@@ -157,7 +156,7 @@ class RecordTests extends org.scalatest.FunSuite {
 
     import propertyConverters._
     import types._
-    import ops.typeSets.{ParseDenotations, ParseDenotationsError, KeyNotFound, ErrorParsing}
+    import typeSets.{ParseDenotations, ParseDenotationsError, KeyNotFound, ErrorParsing}
 
     val simpleUserEntryMap =  Map(
       "id" -> "29681",
@@ -185,7 +184,7 @@ class RecordTests extends org.scalatest.FunSuite {
   test("can serialize records to Maps") {
 
     import propertyConverters._
-    import ops.typeSets.{SerializeDenotations, SerializeDenotationsError, KeyPresent}
+    import typeSets.{SerializeDenotations, SerializeDenotationsError, KeyPresent}
 
 
     val simpleUserEntryMap =  Map(

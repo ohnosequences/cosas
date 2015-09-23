@@ -120,14 +120,14 @@ class DependentFunctionsTests extends org.scalatest.FunSuite {
     assert { ("ohoho", 'c' :~: ∅) === pop[String](a) }
     assert { (true, "lololo" :~: ∅) === pop[Boolean](c) }
 
-    val zzz = depFn2ApplyOps[
+    val zzz = depFn2ApplySyntax[
       MapToHList.type,
       size.type,
       String :~: Char :~: Int :~: ∅,
       Int :: Int :: Int :: HNil
     ](MapToHList).apply(size,b)
 
-    depFn2ApplyOps[MapToHList.type, size.type, Int :~: ∅, Int :: HNil](MapToHList).apply(size,2 :~: ∅)
+    depFn2ApplySyntax[MapToHList.type, size.type, Int :~: ∅, Int :: HNil](MapToHList).apply(size,2 :~: ∅)
 
     // assert { 4 :: 1 :: 2 :: HNil === MapToHList(size,b) }
 
