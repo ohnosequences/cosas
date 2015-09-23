@@ -11,6 +11,14 @@ package object typeSets {
 
   final type :~:[E, S <: AnyTypeSet] = TypeSetImpl.ConsSet[E, S]
 
+  // functions
+  def pop[E]: pop[E] = new pop[E]
+
+
+
+
+
+
 
   /* An element is in the set */
   @annotation.implicitNotFound(msg = "Can't prove that ${E} is an element of ${S}")
@@ -42,7 +50,6 @@ package object typeSets {
     type isNot[S <: AnyTypeSet] = S isNotSubsetOf Q
   }
 
-
   /* Two sets have the same type union bound */
   @annotation.implicitNotFound(msg = "Can't prove that ${S} is the same as ${Q}")
   type    isSameAs[S <: AnyTypeSet, Q <: AnyTypeSet] = S#Bound =:=  Q#Bound
@@ -57,7 +64,6 @@ package object typeSets {
     type isNot[S <: AnyTypeSet] = S isNotSameAs Q
   }
 
-
   /* Elements of the set are bounded by the type */
   @annotation.implicitNotFound(msg = "Can't prove that elements of ${S} are bounded by ${B}")
   type isBoundedBy[S <: AnyTypeSet, B] = S#Bound <:< just[B]
@@ -69,7 +75,6 @@ package object typeSets {
     type    is[S <: AnyTypeSet] = S    isBoundedBy B
     type isNot[S <: AnyTypeSet] = S isNotBoundedBy B
   }
-
 
   /* Elements of the set are from the type union */
   @annotation.implicitNotFound(msg = "Can't prove that elements of ${S} are from the type union ${U}")
@@ -96,7 +101,7 @@ package object typeSets {
 
   type ToListOf[S <: AnyTypeSet, T] = typeSets.ToList[S] { type O = T }
 
-  implicit def typeSetSyntax[S <: AnyTypeSet](s: S): syntax.TypeSetSyntax[S] = 
+  implicit def typeSetSyntax[S <: AnyTypeSet](s: S): syntax.TypeSetSyntax[S] =
     syntax.TypeSetSyntax(s)
 
   implicit def denotationsSetSyntax[DS <: AnyTypeSet.Of[AnyDenotation]](ds: DS): syntax.DenotationsSetSyntax[DS] =

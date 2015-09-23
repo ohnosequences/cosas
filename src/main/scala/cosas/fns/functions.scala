@@ -57,6 +57,13 @@ trait DepFn2[I1,I2,O] extends AnyDepFn2 { type In1 = I1; type In2 = I2; type Out
 // TODO moar arities
 // trait AnyDepFn3 extends AnyDepFn { type In1; type In2 }
 
+trait Out[F[_]] extends AnyDepFn { 
+
+  type O
+  type Out = F[O]
+}
+
+
 trait AnyDepFn1Composition extends AnyDepFn1 {
 
   type First <: AnyDepFn1 { type Out <: Second#In1 }

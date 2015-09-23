@@ -2,38 +2,39 @@ package ohnosequences.cosas.typeSets
 
 import ohnosequences.cosas._, fns._, typeSets._, types._
 
-@annotation.implicitNotFound(msg = "Can't filter set ${S} using type predicate ${P}")
-trait Filter[S <: AnyTypeSet, P <: AnyTypePredicate]
-  extends Fn1[S] with OutBound[AnyTypeSet]
+// TODO make the type predicate only a type, not a param?
+trait Filter extends DepFn2[AnyTypePredicate, AnyTypeSet, AnyTypeSet] {
 
-object Filter extends Filter_2 {
+  type filter <: this.type
+  val filter: filter
 
-  implicit def empty[P <: AnyTypePredicate]:
-        Filter[∅, P] with Out[∅] =
-    new Filter[∅, P] with Out[∅] {
-      def apply(s: In1): Out = ∅
-    }
-
-
-  implicit def cons[P <: AnyTypePredicate, H <: P#ArgBound, T <: AnyTypeSet, TO <: AnyTypeSet]
-    (implicit
-      h: P Accepts H,
-      t: Filter[T, P] { type Out = TO }
-    ):  Filter[H :~: T, P] with Out[H :~: TO] =
-    new Filter[H :~: T, P] with Out[H :~: TO] {
-      def apply(s: In1): Out = s.head :~: t(s.tail)
-    }
+  implicit def skip[
+    P <: In1,
+    H <: P#ArgBound, T <: In2,
+    TO <: Out
+  ](implicit
+      ev: App2[filter, P, T, TO]
+    ): App2[filter, P, H :~: T, TO] =
+      filter at { (p: P, s: H :~: T) => filter(s.tail) }
 }
 
-trait Filter_2 {
+case object filter extends Filter {
 
-  implicit def skip[P <: AnyTypePredicate, H <: P#ArgBound, T <: AnyTypeSet, TO <: AnyTypeSet]
-    (implicit
-      t: Filter[T, P] { type Out = TO }
-    ):  Filter[H :~: T, P] with Out[TO] =
-    new Filter[H :~: T, P] with Out[TO] {
-      def apply(s: In1): Out = t(s.tail)
-    }
+  type filter = this.type
+  val filter = this
+
+  implicit def empty[P <: In1]: App2[filter, P, ∅, ∅] =
+    filter at { (p: P, empty: ∅) => ∅ }
+
+  implicit def nonEmpty[
+    P <: In1,
+    H <: P#ArgBound, T <: In1,
+    TO <: Out
+  ](implicit
+    h: P Accepts H,
+    ev: App2[filter, P, T, TO]
+  ): App2[filter, P, H :~: T, H :~: TO] =
+      filter at { (p: P, hs: H :~: T) => hs.head :~: filter(hs.tail) }
 }
 
 

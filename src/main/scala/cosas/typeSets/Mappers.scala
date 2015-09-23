@@ -1,66 +1,38 @@
 package ohnosequences.cosas.typeSets
 
 import ohnosequences.cosas._, fns._, typeSets._
-import shapeless._, poly._
 
+case object mapToHList extends DepFn2[AnyDepFn1, AnyTypeSet, shapeless.HList] {
 
-/* Mapping a set to an HList: when you want to preserve precise types, but they are not distinct */
-@annotation.implicitNotFound(msg = "Can't map ${F} over ${S} to an HList")
-trait MapToHList[F <: Poly1, S <: AnyTypeSet] extends Fn1[S] with OutBound[HList]
-
-object MapToHList {
-
-  def apply[F <: Poly1, S <: AnyTypeSet]
-    (implicit mapper: MapToHList[F, S]): MapToHList[F, S] = mapper
-
-  implicit def empty[F <: Poly1]:
-        MapToHList[F, ∅] with Out[HNil] =
-    new MapToHList[F, ∅] with Out[HNil] { def apply(s: ∅): Out = HNil }
+  implicit def empty[F <: In1]: App2[MapToHList.type,F,∅,HNil] =
+    mapToHList at { (f: F, e: ∅) => HNil }
 
   implicit def cons[
-    F <: Poly1,
-    H, T <: AnyTypeSet,
-    OutH, OutT <: HList
+    F <: In1,
+    H <: F#In1, T <: In2,
+    OutH <: F#Out, OutT <: Out
   ](implicit
-    h: Case1.Aux[F, H, OutH],
-    t: MapToHList[F, T] { type Out = OutT }
-  ):  MapToHList[F, H :~: T] with Out[OutH :: OutT] =
-  new MapToHList[F, H :~: T] with Out[OutH :: OutT] {
-
-    def apply(s: H :~: T): Out = h(s.head) :: t(s.tail:T)
-  }
+    evF: App1[F,H,OutH],
+    evThis: App2[mapToHList.type,F,T,OutT]
+  )
+  : App2[MapToHList.type, F, H :~: T, OutH :: OutT] =
+    mapToHList at { (f: F, ht: H :~: T) => f(ht.head) :: mapToHList(f,ht.tail) }
 }
 
-/* Mapping a set to a List: normally, when you are mapping everything to one type */
-@annotation.implicitNotFound(msg = "Can't map ${F} over ${S} to a List")
-trait MapToList[F <: Poly1, S <: AnyTypeSet] extends Fn1[S] with OutInContainer[List]
+class mapToListOf[X] extends DepFn2[AnyDepFn1 { type Out <: X }, AnyTypeSet, List[X]] {
 
-object MapToList {
+  implicit def empty[F <: In1]: App2[mapToList.type,F,∅,List[X]] =
+    mapToList at { (f: F, e: ∅) => Nil }
 
-  def apply[F <: Poly1, S <: AnyTypeSet]
-    (implicit mapper: MapToList[F, S]): MapToList[F, S] = mapper
-
-  implicit def empty[F <: Poly1, X]:
-        MapToList[F, ∅] with InContainer[X] =
-    new MapToList[F, ∅] with InContainer[X] { def apply(s: ∅): Out = Nil }
-
-  implicit def one[H, F <: Poly1, X]
-    (implicit h: Case1.Aux[F, H, X]):
-          MapToList[F, H :~: ∅] with InContainer[X] =
-      new MapToList[F, H :~: ∅] with InContainer[X] {
-
-        def apply(s: H :~: ∅): Out = List[X](h(s.head))
-      }
-
-  implicit def cons2[H1, H2, T <: AnyTypeSet, F <: Poly1, X]
-    (implicit
-      h: Case1.Aux[F, H1, X],
-      t: MapToList[F, H2 :~: T] { type O = X }
-    ):  MapToList[F, H1 :~: H2 :~: T] with InContainer[X] =
-    new MapToList[F, H1 :~: H2 :~: T] with InContainer[X] {
-
-      def apply(s: H1 :~: H2 :~: T): Out = h(s.head) :: t(s.tail)
-    }
+  implicit def nonEmpty[
+    F <: In1,
+    H <: F#In1, T <: In2,
+    OutH <: X
+  ](implicit
+    evF: App1[F,H,OutH],
+    maptolistof: App2[mapToListOf[X],F,T,List[X]]
+  ): App2[mapToList[X],F,H :~: T,List[X]] =
+    App2 { (f: F, s: H :~: T) => f(s.head) :: maptolistof(s.tail) }
 }
 
 /* Mapping a set to another set, i.e. the results of mapping should have distinct types */

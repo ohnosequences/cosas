@@ -3,30 +3,21 @@
 package ohnosequences.cosas.typeSets
 
 import ohnosequences.cosas._, fns._, typeSets._, types._
-import shapeless._, poly._
+// import shapeless._, poly._
 
-case object id extends Poly1 { implicit def default[T] = at[T]((t:T) => t) }
+case object id extends DepFn1[Any, Any] {
 
-
-@annotation.implicitNotFound(msg = "Can't convert ${S} to an HList")
-trait ToHList[S <: AnyTypeSet] extends Fn1[S] with OutBound[HList]
-
-object ToHList {
-
-  def apply[S <: AnyTypeSet](implicit toHList: ToHList[S]): ToHList[S] = toHList
-
-  implicit def any[S <: AnyTypeSet, O <: HList]
-    (implicit
-      mapper: MapToHList[id.type, S] { type Out = O }
-    ):  ToHList[S] with Out[O] =
-    new ToHList[S] with Out[O] {
-      def apply(s: S): Out = mapper(s)
-    }
-
+  implicit def default[T]: App1[id.type,T,T] = id at { x: X => x }
 }
 
+case object toHList extends DepFn1[AnyTypeSet, HList] {
 
-@annotation.implicitNotFound(msg = "Can't convert ${L} to a TypeSet (maybe element types are not distinct)")
+  implicit def any[S <: AnyTypeSet, O <: HList](implicit
+    map: App2[mapToHList.type, id.type,S,O]
+  ): App1[toHList.type,S,O] =
+    toHList at { s: S => mapToHList(s,id) }
+}
+
 trait FromHList[L <: HList] extends Fn1[L] with OutBound[AnyTypeSet]
 
 object FromHList {
@@ -50,7 +41,7 @@ object FromHList {
 
 }
 
-
+// TODO toListOf should be enough.
 @annotation.implicitNotFound(msg = "Can't convert ${S} to a List")
 trait ToList[S <: AnyTypeSet] extends Fn1[S] with OutInContainer[List]
 
