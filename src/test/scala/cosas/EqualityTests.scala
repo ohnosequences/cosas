@@ -1,6 +1,6 @@
 package ohnosequences.scala.tests
 
-import ohnosequences.cosas._, equalities._
+import ohnosequences.cosas._, equality._
 
 final class EqualsTests extends org.scalatest.FunSuite {
 
@@ -11,8 +11,8 @@ final class EqualsTests extends org.scalatest.FunSuite {
     type lstring = List[String]
     type llstring = List[List[String]]
     type llstringAgain = List[lstring]
-    // import coercion._  
-    
+    // import coercion._
+
     implicitly[string <≃> stringAgain]
     implicitly[stringAgain <≃> string]
     implicitly[string <≃> string]
@@ -51,7 +51,7 @@ final class EqualsTests extends org.scalatest.FunSuite {
 
         import ev._
         (xs:List[Int]).foldLeft(0)(_ + _)
-      }      
+      }
     }
 
     val xl = XList(List(1,2))

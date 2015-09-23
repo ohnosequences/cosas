@@ -14,8 +14,6 @@ trait AnyType {
 case object AnyType {
 
   type withRaw[V] = AnyType { type Raw = V }
-
-  implicit def typeSyntax[T <: AnyType](tpe: T): TypeSyntax[T] = TypeSyntax(tpe)
 }
 
 case object typeLabel extends DepFn1[AnyType, String] {

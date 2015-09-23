@@ -43,8 +43,6 @@ case object AnyTypeSet {
   type BoundedByUnion[U <: AnyTypeUnion] = AnyTypeSet { type Bound <: U#union }
 
   // type SameAs[S <: AnyTypeSet] = SubsetOf[S] with SupersetOf[S]
-
-  implicit def typeSetOps[S <: AnyTypeSet](s: S): TypeSetSyntax[S] = new TypeSetSyntax[S](s)
 }
 
 private[cosas] object TypeSetImpl {

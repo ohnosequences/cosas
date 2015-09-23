@@ -10,8 +10,7 @@ case object syntax {
 
     An `apply` method for building denotations of this record type, overloaded so that the properties can be provided in any order.
   */
-
-  case class RecordOps[RT <: AnyRecord](val recType: RT) extends AnyVal {
+  case class RecordSyntax[RT <: AnyRecord](val recType: RT) extends AnyVal {
 
     def apply(recEntry: RT#Raw): ValueOf[RT] = recType := recEntry
 
@@ -36,7 +35,7 @@ case object syntax {
 
     Operations on `ValueOf`s a record type. As usual with value classes, parameter is of the wrapped type, with the implicits providing them only for value class instances.
   */
-  case class RecordEntryOps[RT <: AnyRecord](val entryRaw: RT#Raw) extends AnyVal {
+  case class RecordEntrySyntax[RT <: AnyRecord](val entryRaw: RT#Raw) extends AnyVal {
 
     def serialize[V](implicit
       serialize: RT#PropertySet#Raw SerializeDenotations V

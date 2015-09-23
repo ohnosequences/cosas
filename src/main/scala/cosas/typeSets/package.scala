@@ -96,8 +96,12 @@ package object typeSets {
 
   type ToListOf[S <: AnyTypeSet, T] = typeSets.ToList[S] { type O = T }
 
-  implicit def denotationsSetOps[DS <: AnyTypeSet.Of[AnyDenotation]](ds: DS): DenotationsSetOps[DS] =
-    DenotationsSetOps(ds)
+  implicit def typeSetSyntax[S <: AnyTypeSet](s: S): syntax.TypeSetSyntax[S] = 
+    syntax.TypeSetSyntax(s)
 
-  implicit def hListOps[L <: HList](l: L): HListOps[L] = new HListOps[L](l)
+  implicit def denotationsSetSyntax[DS <: AnyTypeSet.Of[AnyDenotation]](ds: DS): syntax.DenotationsSetSyntax[DS] =
+    syntax.DenotationsSetSyntax(ds)
+
+  implicit def hListSyntax[L <: HList](l: L): syntax.HListSyntax[L] =
+    syntax.HListSyntax(l)
 }

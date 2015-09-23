@@ -9,4 +9,6 @@ package object types {
   def  valueOf[T <: AnyType, V <: T#Raw](t: T)(v: V): ValueOf[T] = v =: t
 
   type Accepts[P <: AnyTypePredicate, X <: P#ArgBound] = P#Condition[X]
+
+  implicit def typeSyntax[T <: AnyType](tpe: T): syntax.TypeSyntax[T] = syntax.TypeSyntax(tpe)
 }

@@ -8,7 +8,10 @@ package object properties {
   type  □   = EmptyPropertySet
   val □ : □ = EmptyPropertySet
 
-  implicit def getPropertySetOps[PS <: AnyPropertySet](record: PS):
-    PropertySetOps[PS] = PropertySetOps(record)
+  implicit def propertySyntax[P <: AnyProperty](p: P): syntax.PropertySyntax[P] = 
+    syntax.PropertySyntax(p)
+
+  implicit def propertySetSyntax[PS <: AnyPropertySet](record: PS):
+    syntax.PropertySetSyntax[PS] = syntax.PropertySetSyntax(record)
 
 }

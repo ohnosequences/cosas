@@ -17,13 +17,13 @@ object nelists {
 
   object NEList {
 
-    implicit def toOps[E](v: ValueOf[NEList[E]]): NEListOps[E] = new NEListOps(v.value)
-    implicit def toSSTops[E](v: NEList[E]): SubsetTypeOps[WrappedList[E], NEList[E]] = new SubsetTypeOps(v)
+    implicit def toSyntax[E](v: ValueOf[NEList[E]]): NEListSyntax[E] = new NEListSyntax(v.value)
+    implicit def toSSTops[E](v: NEList[E]): SubsetTypeSyntax[WrappedList[E], NEList[E]] = new SubsetTypeSyntax(v)
   }
 
   def NEListOf[E]: NEList[E] = new NEList()
 
-  class NEListOps[E](val l: List[E]) extends AnyVal with ValueOfSubsetTypeOps[WrappedList[E], NEList[E]] {
+  class NEListSyntax[E](val l: List[E]) extends AnyVal with ValueOfSubsetTypeSyntax[WrappedList[E], NEList[E]] {
 
     def ::(x: E): ValueOf[NEList[E]] = unsafeValueOf[NEList[E]](x :: l)
   }
