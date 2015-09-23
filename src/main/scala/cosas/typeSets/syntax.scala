@@ -1,7 +1,10 @@
 package ohnosequences.cosas.typeSets
 
+import shapeless._
+import ohnosequences.cosas.types._
+
 class TypeSetSyntax[S <: AnyTypeSet](val s: S) {
-  // import ops.typeSets._
+  // import typeSets._
 
   /* Element-related */
 
@@ -55,4 +58,19 @@ class TypeSetSyntax[S <: AnyTypeSet](val s: S) {
   def checkForAll[P <: AnyTypePredicate](implicit prove: CheckForAll[S, P]): CheckForAll[S, P] = prove
 
   def checkForAny[P <: AnyTypePredicate](implicit prove: CheckForAny[S, P]): CheckForAny[S, P] = prove
+}
+
+case class DenotationsSetOps[DS <: AnyTypeSet.Of[AnyDenotation]](val ds: DS) extends AnyVal {
+
+  def toMap[T <: AnyType, V](implicit toMap: ToMap[DS, T, V]): Map[T, V] = toMap(ds)
+
+  def serialize[V](implicit serialize: SerializeDenotations[DS, V]): Either[SerializeDenotationsError, Map[String,V]] =
+    serialize(ds, Map())
+
+  def serialize[V](map: Map[String,V])(implicit serialize: SerializeDenotations[DS, V]): Either[SerializeDenotationsError, Map[String,V]] =
+    serialize(ds, map)
+}
+
+class HListOps[L <: HList](l: L) {
+  def toTypeSet(implicit fromHList: FromHList[L]): fromHList.Out = fromHList(l)
 }

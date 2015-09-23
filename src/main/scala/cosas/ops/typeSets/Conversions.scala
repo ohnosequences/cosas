@@ -1,6 +1,6 @@
 /* ## Conversions to HList and List */
 
-package ohnosequences.cosas.ops.typeSets
+package ohnosequences.cosas.typeSets
 
 import ohnosequences.cosas._, fns._, typeSets._, types._
 import shapeless._, poly._

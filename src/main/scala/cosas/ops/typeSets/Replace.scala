@@ -8,7 +8,7 @@ Note that the type of the result is the same (`S`).
 
 */
 
-package ohnosequences.cosas.ops.typeSets
+package ohnosequences.cosas.typeSets
 
 import ohnosequences.cosas._, fns._, typeSets._
 

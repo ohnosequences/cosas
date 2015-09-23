@@ -1,7 +1,7 @@
 package ohnosequences.cosas.records
 
 import ohnosequences.cosas._, types._, fns._, records._, typeSets._
-import ops.typeSets.Take
+import typeSets.Take
 
 @annotation.implicitNotFound(msg = """
   Cannot transform record of type

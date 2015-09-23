@@ -169,16 +169,16 @@
 //
 //   /* One set consists of representations of the types in another */
 //   @annotation.implicitNotFound(msg = "Can't prove that ${Vs} are values of ${Ts}")
-//   type areValuesOf[Vs <: AnyTypeSet, Ts <: AnyTypeSet] = ops.typeSets.ValuesOf[Ts] { type Out = Vs }
+//   type areValuesOf[Vs <: AnyTypeSet, Ts <: AnyTypeSet] = typeSets.ValuesOf[Ts] { type Out = Vs }
 //
 //   @annotation.implicitNotFound(msg = "Can't prove that ${Ts} are types of ${Vs}")
-//   type areWrapsOf[Ts <: AnyTypeSet, Vs <: AnyTypeSet] = ops.typeSets.WrapsOf[Ts] { type Out = Vs }
+//   type areWrapsOf[Ts <: AnyTypeSet, Vs <: AnyTypeSet] = typeSets.WrapsOf[Ts] { type Out = Vs }
 //
-//   type \[S <: AnyTypeSet, Q <: AnyTypeSet] = ops.typeSets.Subtract[S, Q]
+//   type \[S <: AnyTypeSet, Q <: AnyTypeSet] = typeSets.Subtract[S, Q]
 //
-//   type ∪[S <: AnyTypeSet, Q <: AnyTypeSet] = ops.typeSets.Union[S, Q]
+//   type ∪[S <: AnyTypeSet, Q <: AnyTypeSet] = typeSets.Union[S, Q]
 //
-//   type ToListOf[S <: AnyTypeSet, T] = ops.typeSets.ToList[S] { type O = T }
+//   type ToListOf[S <: AnyTypeSet, T] = typeSets.ToList[S] { type O = T }
 //
 //
 //   trait AnyTypePredicate {
@@ -193,7 +193,7 @@
 //
 //
 //   class TypeSetOps[S <: AnyTypeSet](val s: S) {
-//     import ops.typeSets._
+//     import typeSets._
 //
 //     /* Element-related */
 //
@@ -250,7 +250,7 @@
 //   }
 //
 //   import types.{AnyType, AnyDenotation}
-//   import ops.typeSets.{ToMap, SerializeDenotations, SerializeDenotationsError}
+//   import typeSets.{ToMap, SerializeDenotations, SerializeDenotationsError}
 //   implicit def denotationsSetOps[DS <: AnyTypeSet.Of[AnyDenotation]](ds: DS): DenotationsSetOps[DS] =
 //     DenotationsSetOps(ds)
 //
@@ -269,7 +269,7 @@
 //   implicit def hListOps[L <: HList](l: L): HListOps[L] = new HListOps[L](l)
 //
 //   class HListOps[L <: HList](l: L) {
-//     def toTypeSet(implicit fromHList: ops.typeSets.FromHList[L]): fromHList.Out = fromHList(l)
+//     def toTypeSet(implicit fromHList: typeSets.FromHList[L]): fromHList.Out = fromHList(l)
 //   }
 //
 // }

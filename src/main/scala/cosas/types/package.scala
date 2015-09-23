@@ -1,3 +1,5 @@
+package ohnosequences.cosas
+
 package object types {
 
   type =:[V <: T#Raw, T <: AnyType] = Denotes[V,T]
@@ -5,4 +7,6 @@ package object types {
 
   type ValueOf[T <: AnyType] = T#Raw Denotes T
   def  valueOf[T <: AnyType, V <: T#Raw](t: T)(v: V): ValueOf[T] = v =: t
+
+  type Accepts[P <: AnyTypePredicate, X <: P#ArgBound] = P#Condition[X]
 }

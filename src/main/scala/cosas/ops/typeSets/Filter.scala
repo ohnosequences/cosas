@@ -1,6 +1,6 @@
-package ohnosequences.cosas.ops.typeSets
+package ohnosequences.cosas.typeSets
 
-import ohnosequences.cosas._, fns._, typeSets._
+import ohnosequences.cosas._, fns._, typeSets._, types._
 
 @annotation.implicitNotFound(msg = "Can't filter set ${S} using type predicate ${P}")
 trait Filter[S <: AnyTypeSet, P <: AnyTypePredicate]
@@ -8,7 +8,7 @@ trait Filter[S <: AnyTypeSet, P <: AnyTypePredicate]
 
 object Filter extends Filter_2 {
 
-  implicit def empty[P <: AnyTypePredicate]: 
+  implicit def empty[P <: AnyTypePredicate]:
         Filter[∅, P] with Out[∅] =
     new Filter[∅, P] with Out[∅] {
       def apply(s: In1): Out = ∅
@@ -16,7 +16,7 @@ object Filter extends Filter_2 {
 
 
   implicit def cons[P <: AnyTypePredicate, H <: P#ArgBound, T <: AnyTypeSet, TO <: AnyTypeSet]
-    (implicit 
+    (implicit
       h: P Accepts H,
       t: Filter[T, P] { type Out = TO }
     ):  Filter[H :~: T, P] with Out[H :~: TO] =
@@ -28,7 +28,7 @@ object Filter extends Filter_2 {
 trait Filter_2 {
 
   implicit def skip[P <: AnyTypePredicate, H <: P#ArgBound, T <: AnyTypeSet, TO <: AnyTypeSet]
-    (implicit 
+    (implicit
       t: Filter[T, P] { type Out = TO }
     ):  Filter[H :~: T, P] with Out[TO] =
     new Filter[H :~: T, P] with Out[TO] {
@@ -43,7 +43,7 @@ sealed class CheckForAll[S <: AnyTypeSet, P <: AnyTypePredicate]
 object CheckForAll {
 
   implicit def filterCheck[S <: AnyTypeSet, P <: AnyTypePredicate, Q <: AnyTypeSet]
-    (implicit 
+    (implicit
       f: Filter[S, P] { type Out = Q },
       s: S ~:~ Q
     ):  CheckForAll[S, P] =

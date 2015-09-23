@@ -4,7 +4,7 @@
 Returns the element of the set of the given type and the rest of the set
 */
 
-package ohnosequences.cosas.ops.typeSets
+package ohnosequences.cosas.typeSets
 
 import ohnosequences.cosas._, fns._, typeSets._
 

@@ -137,7 +137,7 @@
 //   sealed class HasProperties[PS <: AnyPropertySet, P <: AnyTypeSet.Of[AnyProperty]]
 //
 //   object HasProperties {
-//     import ops.typeSets.CheckForAll
+//     import typeSets.CheckForAll
 //
 //     trait PropertyIsIn[PS <: AnyPropertySet] extends TypePredicate[AnyProperty] {
 //       type Condition[P <: AnyProperty] = PS HasProperty P

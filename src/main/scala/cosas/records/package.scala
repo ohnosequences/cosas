@@ -9,4 +9,7 @@ package object records {
 
   implicit def recordEntryOps[RT <: AnyRecord](entry: ValueOf[RT]): syntax.RecordEntryOps[RT] =
     syntax.RecordEntryOps(entry.value)
+    
+  // implicit def getRecordEntryOps[RT <: AnyRecord](entry: ValueOf[RT]): RecordEntryOps[RT] =
+  //   RecordEntryOps(entry.value)
 }

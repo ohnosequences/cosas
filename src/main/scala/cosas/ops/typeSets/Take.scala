@@ -1,6 +1,6 @@
 /* ## Taking a subset */
 
-package ohnosequences.cosas.ops.typeSets
+package ohnosequences.cosas.typeSets
 
 import ohnosequences.cosas._, fns._, typeSets._
 

@@ -4,7 +4,7 @@
 Just a combination of ~:~ and Take (reordering set)
 */
 
-package ohnosequences.cosas.ops.typeSets
+package ohnosequences.cosas.typeSets
 
 import ohnosequences.cosas._, fns._, typeSets._
 

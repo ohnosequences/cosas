@@ -1,6 +1,6 @@
 package ohnosequences.cosas.records
 
-import ohnosequences.cosas._, types._, records._, properties._, fns._, ops.typeSets.Lookup
+import ohnosequences.cosas._, types._, records._, properties._, fns._, typeSets.Lookup
 
 @annotation.implicitNotFound(msg = """
   Cannot get property

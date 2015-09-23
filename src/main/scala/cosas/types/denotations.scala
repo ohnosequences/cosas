@@ -13,10 +13,10 @@ trait AnyDenotation extends Any {
 case object denotationValue extends DepFn1[AnyDenotation,Any] {
 
   implicit def value2[T <: AnyType, V <: T#Raw]: App1[denotationValue.type, V Denotes T, V] =
-    denotationValue at { v: V Denotes T => v.value }
+    denotationValue at { d: V Denotes T => d.value }
 
   implicit def value[D <: AnyDenotation]: App1[denotationValue.type, D, D#Value] =
-    denotationValue at { v: V => v.value }
+    denotationValue at { d: D => d.value }
 }
 
 /* Bound the denoted type */

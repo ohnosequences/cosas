@@ -16,7 +16,7 @@
   See examples of usage it for record properties in tests
 */
 
-package ohnosequences.cosas.ops.typeSets
+package ohnosequences.cosas.typeSets
 
 import ohnosequences.cosas._, fns._, types._, typeUnions._, typeSets._
 

@@ -3,9 +3,9 @@
 // case object records {
 //
 //   import types._, typeSets._, properties._
-//   import ops.typeSets.{ReorderTo, CheckForAll}
-//   import ops.typeSets.{SerializeDenotations, SerializeDenotationsError}
-//   import ops.typeSets.{ParseDenotations, ParseDenotationsError}
+//   import typeSets.{ReorderTo, CheckForAll}
+//   import typeSets.{SerializeDenotations, SerializeDenotationsError}
+//   import typeSets.{ParseDenotations, ParseDenotationsError}
 //
 //   /*
 //     ## Records
