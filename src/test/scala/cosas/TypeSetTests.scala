@@ -72,28 +72,28 @@ class TypeSetTests extends org.scalatest.FunSuite {
 
   test("filtering set by a type predicate") {
 
-    // type AllowedTypes = either[Int] or Boolean
-    // val s = 1 :~: false :~: ∅
-    //
-    // trait isAllowed extends TypePredicate[Any] {
-    //   type Condition[X] = X isOneOf AllowedTypes
-    // }
+    type AllowedTypes = either[Int] or Boolean
+    val s = 1 :~: false :~: ∅
+
+    case object isAllowed extends TypePredicate[Any] {
+      type Condition[X] = X isOneOf AllowedTypes
+    }
     // implicitly[CheckForAll[Int :~: ∅, isAllowed]]
     // implicitly[CheckForAll[Boolean :~: Int :~: ∅, isAllowed]]
     //
-    // assert{ s.filter[isAllowed] == s }
-    // assert{ ("foo" :~: 1 :~: 'a' :~: ∅).filter[isAllowed] == (1 :~: ∅) }
+    assert{ filter(isAllowed,s) === s }
+    assert{ filter(isAllowed,"foo" :~: 1 :~: 'a' :~: ∅) === (1 :~: ∅) }
     //
-    // case class isInSet[S <: AnyTypeSet](s: S) extends TypePredicate[Any] {
-    //   type Condition[X] = X ∈ S
-    // }
+    case class isInSet[S <: AnyTypeSet](val s: S) extends TypePredicate[Any] {
+      type Condition[X] = X ∈ S
+    }
     // implicitly[CheckForAll[Boolean :~: Int :~: ∅, isInSet[s.type]]]
     //
-    // assert{ s.filter[isInSet[s.type]] == s }
-    //
-    // val q = "foo" :~: 1 :~: 'a' :~: ∅
-    // assert{ q.filter[isInSet[s.type]] == (1 :~: ∅) }
-    // assert{ s.filter[isInSet[q.type]] == (1 :~: ∅) }
+    assert{ filter(isInSet(s),s) === s }
+
+    val q = "foo" :~: 1 :~: 'a' :~: ∅
+    assert{ filter(isInSet(s),q) === (1 :~: ∅) }
+    assert{ filter(isInSet(q),s) === (1 :~: ∅) }
     //
     // s.checkForAll[isAllowed]
     // s.checkForAll[isInSet[s.type]]
