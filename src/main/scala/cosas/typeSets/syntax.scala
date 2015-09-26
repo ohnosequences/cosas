@@ -38,7 +38,6 @@ case object syntax {
     /* Conversions */
 
     def reorderTo[Q <: AnyTypeSet](implicit
-      // check: S ~:~ Q,
       reorderTo: App1[reorderTo[Q],S,Q]
     ): Q = reorderTo(s)
 
@@ -46,25 +45,26 @@ case object syntax {
 
     def toList[X](implicit toList: App1[toListOf[X],S,List[X]]): List[X] = toList(s)
 
-    def toListOf[T](implicit  toListOf: App1[toListOf[T], S, List[T]]): List[T] = toListOf(s)
-
     // def getTypes[X](implicit types: TypesOf[S] { type Out = X }): X = types(s)
 
     /* Mappers */
 
     // def mapToHList[F <: Poly1](f: F)(implicit mapF: F MapToHList S): mapF.Out = mapF(s)
 
-    // def  mapToList[F <: Poly1](f: F)(implicit mapF: F  MapToList S): mapF.Out = mapF(s)
-    //
+    def  mapToList[F <: AnyDepFn1,X](f: F)(implicit
+      maptolistof: App2[mapToListOf[X],F,S,List[X]]
+    ): List[X] = maptolistof(f,s)
+
     def map[F <: AnyDepFn1, O <: AnyTypeSet](f: F)(implicit
       mapSet: App2[mapSet,F,S,O]
     ): O = mapSet(f,s)
-    //
-    // def mapFold[F <: Poly1, R](f: F)(r: R)(op: (R, R) => R)(implicit mapFold: MapFoldSet[F, S, R]): mapFold.Out = mapFold(s, r, op)
+
+    
     //
     // /* Predicates */
     //
-    // def filter[P <: AnyTypePredicate](implicit fltr: Filter[S, P]): fltr.Out = fltr(s)
+    // def filter[P <: AnyTypePredicate, O <: AnyTypeSet](implicit
+    //   fltr: Filter[S, P]): fltr.Out = fltr(s)
     //
     // def checkForAll[P <: AnyTypePredicate](implicit prove: CheckForAll[S, P]): CheckForAll[S, P] = prove
     //

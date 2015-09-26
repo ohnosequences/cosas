@@ -251,7 +251,6 @@ class TypeSetTests extends org.scalatest.FunSuite {
     assertTypeError("s.map(toStr)")
     //
     // assert(s.mapToHList(toStr) == "1" :: "a" :: "foo" :: "List(1, 2, 3)" :: HNil)
-    // val uh = mapToListOf[String](toStr,1 :~: ∅)
     assert(mapToListOf[String](toStr,s) === List("1", "a", "foo", "List(1, 2, 3)"))
     // assert(s.mapToHList(toStr).toList == s.mapToList(toStr))
     //

@@ -63,4 +63,12 @@ class TypeSetSyntaxTests extends org.scalatest.FunSuite {
     assert { ( s map id ) === mapSet(id, s) }
     assert { (s map rev ) === mapSet(rev,s) }
   }
+
+  test("mapToListOf syntax") {
+
+    type S = Int :~: Char :~: String :~: List[Int] :~: ∅
+    val s: S = 1 :~: 'a' :~: "foo" :~: List(1,2,3) :~: ∅
+
+    assert { ( s mapToList toStr ) === mapToListOf[String](toStr,s) }
+  }
 }
