@@ -180,10 +180,6 @@ class TypeSetTests extends org.scalatest.FunSuite {
 
     type pt = Char :~: Int :~: ∅
 
-    // implicitly[Take[∅, ∅]]
-    // implicitly[Take[Int :~: ∅, Int :~: ∅]]
-    // implicitly[Take[Int :~: Char :~: String :~: ∅, Char :~: Int :~: ∅]]
-    // implicitly[Take[Int :~: Char :~: String :~: ∅, pt]]
     assert { take[pt](s) === 'a' :~: 1 :~: ∅ }
     assert { take[Int :~: Char :~: String :~: ∅](s) === s }
   }
@@ -202,11 +198,7 @@ class TypeSetTests extends org.scalatest.FunSuite {
     val s = 1 :~: 'a' :~: "foo" :~: ∅
 
     assert { reorderTo[∅](∅) === ∅ }
-    assert { reorderTo[Char :~: Int :~: String :~: ∅](s) == 'a' :~: 1 :~: "foo" :~: ∅ }
-
-    val p = "bar" :~: 2 :~: 'b' :~: ∅
-    // TODO add syntax, possibly test it somewhere else
-    // assert((s reorderTo p) == "foo" :~: 1 :~: 'a' :~: ∅)
+    assert { reorderTo[Char :~: Int :~: String :~: ∅](s) === 'a' :~: 1 :~: "foo" :~: ∅ }
   }
 
   test("substraction") {
@@ -227,26 +219,20 @@ class TypeSetTests extends org.scalatest.FunSuite {
   test("union") {
 
     val s = 1 :~: 'a' :~: "foo" :~: ∅
-
     val q = bar :~: true :~: 2 :~: bar.toString :~: ∅
 
-    assert((∅ ∪ ∅) == ∅)
-    assert((∅ ∪ q) == q)
-    assert((s ∪ ∅) == s)
+    assert { union(∅, ∅) === ∅ }
+    assert { union(∅, q) === q }
+    assert { union(s, ∅) === s }
 
-    assert((s ∪ s) == s)
-
-    val sq = s ∪ q
-    val qs = q ∪ s
+    val sq = union(s,q)
+    val qs = union(q,s)
     implicitly[sq.type ~:~ qs.type]
-    assert(sq == 'a' :~: bar :~: true :~: 2 :~: "bar" :~: ∅)
-    assert(qs == bar :~: 'a' :~: true :~: 2 :~: "bar" :~: ∅)
+    assert(sq === 'a' :~: bar :~: true :~: 2 :~: "bar" :~: ∅)
+    assert(qs === bar :~: 'a' :~: true :~: 2 :~: "bar" :~: ∅)
   }
 
   test("mappers") {
-
-    // import shapeless._, poly._
-    //
 
     assert { mapSet(toStr,∅) === ∅ }
 
@@ -302,8 +288,6 @@ class TypeSetTests extends org.scalatest.FunSuite {
     object bar extends AnyType { val label = "bar"; type Raw = Any }
 
     val denots = (foo := 1) :~: (bar := "buh") :~: ∅
-
-    // val typesOf = implicitly[TypesOf[Denotes[Int, foo.type] :~: Denotes[String, bar.type] :~: ∅]]
 
     assertResult(foo :~: bar :~: ∅) { mapSet(typeOf,denots) }
   }

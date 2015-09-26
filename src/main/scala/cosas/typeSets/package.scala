@@ -40,12 +40,13 @@ package object typeSets {
   type mapSet = MapSet.type
   val mapSet: mapSet = MapSet
 
-  def parseDenotations[V]: parseDenotations[V] = new parseDenotations[V]
+  type parseDenotations[Z] = ParseDenotations[Z]
+  def parseDenotations[V]: parseDenotations[V] = new ParseDenotations[V]
 
   type reorderTo[Q <: AnyTypeSet] = ReorderTo[Q]
   def reorderTo[Q <: AnyTypeSet]: reorderTo[Q] = new ReorderTo[Q]
 
-  type replace[Q <: AnyTypeSet] = Replace[Q]
+  type replace[Z <: AnyTypeSet] = Replace[Z]
   def replace[Q <: AnyTypeSet]: replace[Q] = new Replace[Q]
 
 

@@ -6,9 +6,9 @@ trait ParseDenotationsError
 case class KeyNotFound[V](val key: String, val map: Map[String,V]) extends ParseDenotationsError
 case class ErrorParsing[PE <: DenotationParserError](val err: PE) extends ParseDenotationsError
 
-class parseDenotations[V] extends DepFn1[Map[String,V], Either[ParseDenotationsError,AnyTypeSet]]
+class ParseDenotations[V] extends DepFn1[Map[String,V], Either[ParseDenotationsError,AnyTypeSet]]
 
-case object parseDenotations {
+case object ParseDenotations {
 
   implicit def empty[V]: App1[parseDenotations[V], Map[String,V], Either[ParseDenotationsError,∅]] =
     App1 { map: Map[String,V] => Right(∅) }

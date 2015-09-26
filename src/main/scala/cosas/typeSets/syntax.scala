@@ -13,7 +13,7 @@ case object syntax {
 
     // def pop[E](implicit pop: S Pop E): pop.Out = pop(s)
 
-    // def lookup[E](implicit check: E ∈ S, lookup: S Lookup E): E = lookup(s)
+    def lookup[E](implicit check: E ∈ S, lookup: App1[lookup[E],S,E]): E = lookup(s)
 
     // deletes the first element of type E
     // def delete[E](implicit check: E ∈ S, del: S Delete E): del.Out = del(s)
@@ -24,9 +24,15 @@ case object syntax {
 
     def ∪[Q <: AnyTypeSet, O <: AnyTypeSet](q: Q)(implicit evU: App2[union, S, Q, O]): O = union(s, q)
 
-    // def take[Q <: AnyTypeSet](implicit check: Q ⊂ S, take: S Take Q): take.Out = take(s)
+    def take[Q <: AnyTypeSet](implicit
+      check: Q ⊂ S,
+      take: App1[take[Q],S,Q]
+    ): Q = take(s)
 
-    // def replace[Q <: AnyTypeSet](q: Q)(implicit check: Q ⊂ S, replace: S Replace Q): replace.Out = replace(s, q)
+    def replace[Q <: AnyTypeSet](q: Q)(implicit
+      check: Q ⊂ S,
+      replace: App2[replace[S],S,Q,S]
+    ): S = replace(s, q)
 
 
     /* Conversions */
@@ -36,11 +42,9 @@ case object syntax {
       reorderTo: App1[reorderTo[Q],S,Q]
     ): Q = reorderTo(s)
 
-    // def reorderTo[Q <: AnyTypeSet](q: Q)(implicit check: S ~:~ Q, reorder: S ReorderTo Q): reorder.Out = reorder(s)
-    //
     // def toHList(implicit toHList: ToHList[S]): toHList.Out = toHList(s)
 
-    // def  toList(implicit  toList:  ToList[S]):  toList.Out =  toList(s)
+    def toList[X](implicit toList: App1[toListOf[X],S,List[X]]): List[X] = toList(s)
 
     def toListOf[T](implicit  toListOf: App1[toListOf[T], S, List[T]]): List[T] = toListOf(s)
 
@@ -52,7 +56,9 @@ case object syntax {
 
     // def  mapToList[F <: Poly1](f: F)(implicit mapF: F  MapToList S): mapF.Out = mapF(s)
     //
-    // def        map[F <: Poly1](f: F)(implicit mapF: F     MapSet S): mapF.Out = mapF(s)
+    def map[F <: AnyDepFn1, O <: AnyTypeSet](f: F)(implicit
+      mapSet: App2[mapSet,F,S,O]
+    ): O = mapSet(f,s)
     //
     // def mapFold[F <: Poly1, R](f: F)(r: R)(op: (R, R) => R)(implicit mapFold: MapFoldSet[F, S, R]): mapFold.Out = mapFold(s, r, op)
     //
