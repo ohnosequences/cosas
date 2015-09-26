@@ -63,15 +63,21 @@ class DenotationTests extends org.scalatest.FunSuite {
 
   test("Can use show for denotations") {
 
-    assert{ (User := "hola").show == "(User := hola)" }
+    assert{ (User := "hola").show === "(User := hola)" }
 
     val azul = Color := "blue"
 
-    assert{ azul.show == "(Color := blue)" }
+    assert{ azul.show === "(Color := blue)" }
   }
 
-  test("can get poly values of denotations") {
+  test("can get values of denotations") {
 
     assert { "blue" === denotationValue(User := "blue") }
+  }
+
+  test("can get the types of denotations") {
+
+    assert { typeOf(Color := "blue") === Color }
+    assert { typeOf(User := "LALALA") === typeOf( User := 23) }
   }
 }
