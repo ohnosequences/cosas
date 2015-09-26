@@ -31,7 +31,6 @@ class TypeUnionTests extends org.scalatest.FunSuite {
     implicitly[just[Boolean] <:< SBI#union]
     implicitly[just[Int] <:< SBI#union]
 
-    import shapeless.{ <:!< }
     implicitly[just[Byte] <:!< SBI#union]
     implicitly[just[Byte] <:< Uh#union]
     implicitly[just[String] <:< SBI#union]
@@ -82,7 +81,7 @@ class TypeUnionTests extends org.scalatest.FunSuite {
     implicitly[UglyCat isOneOf ISDUC]
     implicitly[pipo.type isOneOf ISDUC]
     implicitly[uglyCat.type isOneOf ISDUC]
-    
+
     implicitly[Cat isNotOneOf ISDUC]
     implicitly[animal.type isNotOneOf ISDUC]
     implicitly[Cat isNotOneOf DUCIS]

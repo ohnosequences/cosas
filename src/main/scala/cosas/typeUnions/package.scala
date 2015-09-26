@@ -4,8 +4,8 @@ import shapeless.<:!<
 
 package object typeUnions {
 
-  private[cosas] type not[T] = T => Nothing
-  private[cosas] type just[T] = not[not[T]]
+  private[cosas] type not[-T] // = T => Nothing
+  private[cosas] type just[+T] = not[not[T]]
 
   type empty = either[Nothing]
 
