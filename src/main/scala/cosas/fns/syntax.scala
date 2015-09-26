@@ -20,9 +20,9 @@ case object syntax {
       app(x1)
   }
 
-  case class DepFn2ApplySyntax[DF <: AnyDepFn2, X1 <: DF#In1, X2 <: DF#In2, O <: DF#Out](val df: DF) extends AnyVal {
+  case class DepFn2ApplySyntax[DF0 <: AnyDepFn2, X10 <: DF0#In1, X20 <: DF0#In2, O0 <: DF0#Out](val df: DF0) extends AnyVal {
 
-    final def apply(x1: X1, x2: X2)(implicit app: App2[DF,X1,X2,O]): O =
+    final def apply(x1: X10, x2: X20)(implicit app: App2[DF0,X10,X20,O0]): O0 =
       app(x1,x2)
   }
 }

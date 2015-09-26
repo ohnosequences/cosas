@@ -18,23 +18,35 @@ package object typeSets {
   type union = Union.type
   val union: union = Union
 
+  type lookup[E] = Lookup[E]
+  def lookup[E] = new Lookup[E]
+
   type pop[E] = Pop[E]
   def pop[X]: pop[X] = new Pop[X]
 
-  def toListOf[X]: toListOf[X] = new toListOf
+  type take[X <: AnyTypeSet] = Take[X]
+  def take[X <: AnyTypeSet]: take[X] = new Take[X]
+
+  type toListOf[X] = ToListOf[X]
+  def toListOf[X]: toListOf[X] = new ToListOf[X]
   def toTypeMap[K <: AnyType, V]: toTypeMap[K,V] = new toTypeMap
 
   type mapToListOf[X] = MapToListOf[X]
-  def mapToListOf[X]: mapToListOf[X] = new MapToListOf
+  def mapToListOf[X]: mapToListOf[X] = new MapToListOf[X]
 
   type mapToHList = MapToHList.type
   val mapToHList: mapToHList = MapToHList
 
   type mapSet = MapSet.type
   val mapSet: mapSet = MapSet
-  def parseDenotations[V]: parseDenotations[V] = new parseDenotations
-  def reorderTo[Q <: AnyTypeSet]: reorderTo[Q] = new reorderTo
-  def replace[Q <: AnyTypeSet]: replace[Q] = new replace
+
+  def parseDenotations[V]: parseDenotations[V] = new parseDenotations[V]
+
+  type reorderTo[Q <: AnyTypeSet] = ReorderTo[Q]
+  def reorderTo[Q <: AnyTypeSet]: reorderTo[Q] = new ReorderTo[Q]
+
+  type replace[Q <: AnyTypeSet] = Replace[Q]
+  def replace[Q <: AnyTypeSet]: replace[Q] = new Replace[Q]
 
 
 

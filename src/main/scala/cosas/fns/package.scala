@@ -17,10 +17,10 @@ package object fns {
     syntax.DepFn1ApplySyntax(df)
 
   implicit def depFn2ApplySyntax[
-    DF <: AnyDepFn2,
-    X1 <: DF#In1, X2 <: DF#In2,
-    O <: DF#Out
-  ](df: DF): syntax.DepFn2ApplySyntax[DF,X1,X2,O] =
-    syntax. DepFn2ApplySyntax(df)
+    DF0 <: AnyDepFn2,
+    X10 <: DF0#In1, X20 <: DF0#In2,
+    O0 <: DF0#Out
+  ](df: DF0): syntax.DepFn2ApplySyntax[DF0,X10,X20,O0] =
+    syntax.DepFn2ApplySyntax(df)
 
 }

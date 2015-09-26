@@ -1,14 +1,12 @@
-/* ## Taking a subset */
-
 package ohnosequences.cosas.typeSets
 
 import ohnosequences.cosas._, fns._, typeSets._
 
-class take[Q <: AnyTypeSet] extends DepFn1[AnyTypeSet, Q]
+class Take[Q <: AnyTypeSet] extends DepFn1[AnyTypeSet, Q]
 
-case object take {
+case object Take {
 
-  implicit def empty[S <: AnyTypeSet]: App1[take[∅],S,∅] =
+  implicit def empty[S <: AnyTypeSet]: App1[Take[∅],S,∅] =
     App1 { s: S => ∅ }
 
   implicit def nonEmpty[
@@ -16,8 +14,8 @@ case object take {
     HeadToTake
   ](implicit
     pop: App1[pop[HeadToTake], From, (HeadToTake, Rest)],
-    take: App1[take[TailToTake], Rest, TailToTake]
+    take: App1[Take[TailToTake], Rest, TailToTake]
   )
-  : App1[take[HeadToTake :~: TailToTake], From, HeadToTake :~: TailToTake] =
+  : App1[Take[HeadToTake :~: TailToTake], From, HeadToTake :~: TailToTake] =
     App1 { s: From => { val (h, t) = pop(s); h :~: take(t) } }
 }

@@ -12,11 +12,11 @@ package ohnosequences.cosas.typeSets
 
 import ohnosequences.cosas._, fns._
 
-class replace[S <: AnyTypeSet] extends DepFn2[S, AnyTypeSet, S]
+class Replace[S <: AnyTypeSet] extends DepFn2[S, AnyTypeSet, S]
 
-case object replace extends replace_2 {
+case object Replace extends replace_2 {
 
-  implicit def empty[S <: AnyTypeSet]: App2[replace[S], S, ∅, S] =
+  implicit def empty[S <: AnyTypeSet]: App2[Replace[S], S, ∅, S] =
     App2 { (s: S, q: ∅) => s }
 
   implicit def replaceHead[
@@ -24,9 +24,9 @@ case object replace extends replace_2 {
     Q <: AnyTypeSet, QOut <: AnyTypeSet
   ](implicit
     popHead: App1[pop[H], Q, (H,QOut)],
-    replace: App2[replace[T], T, QOut, T]
+    replace: App2[Replace[T], T, QOut, T]
   )
-  : App2[replace[H :~: T], H :~: T, Q, H :~: T] =
+  : App2[Replace[H :~: T], H :~: T, Q, H :~: T] =
     App2 { (s: H :~: T, q: Q) => { val (h, qq) = popHead(q); h :~: replace(s.tail, qq) } }
 }
 
@@ -36,8 +36,8 @@ trait replace_2 {
     H, T <: AnyTypeSet,
     Q <: AnyTypeSet, QOut <: AnyTypeSet
   ](implicit
-    replace: App2[replace[T], T,Q,T]
+    replace: App2[Replace[T], T,Q,T]
   )
-  : App2[replace[H :~: T], H :~: T, Q, H :~: T] =
+  : App2[Replace[H :~: T], H :~: T, Q, H :~: T] =
     App2 { (s: H :~: T, q: Q) => s.head :~: replace(s.tail, q) }
 }

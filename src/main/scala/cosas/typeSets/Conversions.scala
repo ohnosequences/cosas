@@ -2,17 +2,17 @@ package ohnosequences.cosas.typeSets
 
 import ohnosequences.cosas._, fns._, typeSets._, types._
 
-class toListOf[X] extends DepFn1[AnyTypeSet, List[X]]
+class ToListOf[X] extends DepFn1[AnyTypeSet, List[X]]
 
-case object toListOf {
+case object ToListOf {
 
-  implicit def empty[X]: App1[toListOf[X], ∅, List[X]] =
+  implicit def empty[X]: App1[ToListOf[X], ∅, List[X]] =
     App1 { s: ∅ => Nil }
 
   implicit def nonEmpty[H <: X, X, T <: AnyTypeSet](implicit
-    ap: App1[toListOf[X],T,List[X]]
-  ): App1[toListOf[X], H :~: T, List[X]] =
-    App1 { xs: H :~: T => xs.head :: toListOf(xs.tail) }
+    ap: App1[ToListOf[X],T,List[X]]
+  ): App1[ToListOf[X], H :~: T, List[X]] =
+    App1 { xs: H :~: T => xs.head :: ap(xs.tail) }
 }
 
 class toTypeMap[K <: AnyType,V] extends DepFn1[AnyTypeSet, Map[K,V]]
