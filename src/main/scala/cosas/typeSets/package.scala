@@ -140,7 +140,4 @@ package object typeSets {
 
   implicit def denotationsSetSyntax[DS <: AnyTypeSet.Of[AnyDenotation]](ds: DS): syntax.DenotationsSetSyntax[DS] =
     syntax.DenotationsSetSyntax(ds)
-
-  implicit def hListSyntax[L <: HList](l: L): syntax.HListSyntax[L] =
-    syntax.HListSyntax(l)
 }

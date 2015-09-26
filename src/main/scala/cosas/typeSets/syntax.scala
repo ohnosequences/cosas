@@ -1,6 +1,5 @@
 package ohnosequences.cosas.typeSets
 
-import shapeless.{union => _, _}
 import ohnosequences.cosas._, typeSets._, types._, fns._
 
 case object syntax {
@@ -59,7 +58,7 @@ case object syntax {
       mapSet: App2[mapSet,F,S,O]
     ): O = mapSet(f,s)
 
-    
+
     //
     // /* Predicates */
     //
@@ -82,8 +81,4 @@ case object syntax {
     //   serialize(ds, map)
   }
 
-  case class HListSyntax[L <: HList](l: L) extends AnyVal {
-
-    // def toTypeSet(implicit fromHList: FromHList[L]): fromHList.Out = fromHList(l)
-  }
 }
