@@ -1,6 +1,6 @@
 package ohnosequences.cosas.records
 
-import ohnosequences.cosas._, types._, typeSets._, properties._
+import ohnosequences.cosas._, fns._, types._, typeSets._, properties._
 
 case object syntax {
 
@@ -14,10 +14,10 @@ case object syntax {
     def apply(recEntry: RT#Raw): ValueOf[RT] = recType := recEntry
 
     /* Same as apply, but you can pass properties in any order */
-    // def apply[Vs <: AnyTypeSet](values: Vs)(implicit
-    //     reorder: Vs ReorderTo RT#Raw
-    //   ): ValueOf[RT] = recType := reorder(values)
-    //
+    def apply[Vs <: AnyTypeSet](values: Vs)(implicit
+      reorder: App1[reorderTo[RT#Raw], Vs, RT#Raw]
+    ): ValueOf[RT] = recType := reorder(values)
+
     // def parse[
     //   V0,
     //   PD <: ParseDenotations[RT#PropertySet#Raw, V0]
@@ -44,21 +44,31 @@ case object syntax {
     //   serialize: RT#PropertySet#Raw SerializeDenotations V
     // ): Either[SerializeDenotationsError, Map[String,V]] = serialize(entryRaw, map)
     //
-    // def getV[P <: AnyProperty](p: P)(implicit get: RT Get P): P#Raw =
-    //   get(entryRaw)
-    //
-    // def get[P <: AnyProperty](p: P)(implicit
-    //   get: RT Get P
-    // ): ValueOf[P] = p := get(entryRaw)
-    //
-    // def update[P <: AnyProperty](field: ValueOf[P])(implicit
-    //   check: (ValueOf[P] :~: ∅) ⊂ RT#Raw,
-    //   update: RT Update (ValueOf[P] :~: ∅)
-    // ): ValueOf[RT] = update(entryRaw, field :~: ∅)
-    //
-    // def update[Ps <: AnyTypeSet](properties: Ps)(implicit
-    //   update: RT Update Ps
-    // ): ValueOf[RT] = update(entryRaw, properties)
+    def getV[P <: AnyProperty](p: P)(implicit
+      get: App1[get[P,RT], ValueOf[RT], ValueOf[P]]
+    )
+    : P#Raw =
+      get(new ValueOf[RT](entryRaw)).value
+
+
+    def get[P <: AnyProperty](p: P)(implicit
+      get: App1[get[P,RT], ValueOf[RT], ValueOf[P]]
+    )
+    : ValueOf[P] =
+      get(new ValueOf[RT](entryRaw))
+
+    def update[P <: AnyProperty](field: ValueOf[P])(implicit
+      check: (ValueOf[P] :~: ∅) ⊂ RT#Raw,
+      update: App2[Update[RT], ValueOf[RT], (ValueOf[P] :~: ∅), ValueOf[RT]]
+    )
+    : ValueOf[RT] =
+      update(new ValueOf[RT](entryRaw), field :~: ∅)
+
+    def update[Ps <: AnyTypeSet](properties: Ps)(implicit
+      update: App2[Update[RT], ValueOf[RT], Ps, ValueOf[RT]]
+    )
+    : ValueOf[RT] =
+      update(new ValueOf[RT](entryRaw), properties)
     //
     // def as[Other <: AnyRecord, Rest <: AnyTypeSet](other: Other, rest: Rest)(implicit
     //   transform: Transform[RT, Other, Rest]
