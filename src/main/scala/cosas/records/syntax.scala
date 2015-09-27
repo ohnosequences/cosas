@@ -48,27 +48,27 @@ case object syntax {
       get: App1[get[P,RT], ValueOf[RT], ValueOf[P]]
     )
     : P#Raw =
-      get(new ValueOf[RT](entryRaw)).value
+      get(new Denotes[RT#Raw,RT](entryRaw)).value
 
 
     def get[P <: AnyProperty](p: P)(implicit
-      get: App1[get[P,RT], ValueOf[RT], ValueOf[P]]
+      get: App1[Get[P,RT], ValueOf[RT], ValueOf[P]]
     )
     : ValueOf[P] =
-      get(new ValueOf[RT](entryRaw))
+      get(new Denotes[RT#Raw,RT](entryRaw))
 
     def update[P <: AnyProperty](field: ValueOf[P])(implicit
       check: (ValueOf[P] :~: ∅) ⊂ RT#Raw,
       update: App2[Update[RT], ValueOf[RT], (ValueOf[P] :~: ∅), ValueOf[RT]]
     )
     : ValueOf[RT] =
-      update(new ValueOf[RT](entryRaw), field :~: ∅)
+      update(new Denotes[RT#Raw,RT](entryRaw), field :~: ∅)
 
     def update[Ps <: AnyTypeSet](properties: Ps)(implicit
       update: App2[Update[RT], ValueOf[RT], Ps, ValueOf[RT]]
     )
     : ValueOf[RT] =
-      update(new ValueOf[RT](entryRaw), properties)
+      update(new Denotes[RT#Raw,RT](entryRaw), properties)
     //
     // def as[Other <: AnyRecord, Rest <: AnyTypeSet](other: Other, rest: Rest)(implicit
     //   transform: Transform[RT, Other, Rest]

@@ -9,9 +9,9 @@ case object MapToHList extends DepFn2[AnyDepFn1, AnyTypeSet, shapeless.HList] {
     mapToHList at { (f: F, e: ∅) => HNil }
 
   implicit def cons[
-    F <: In1,
+    F <: In1 { type Out >: OutH },
     H <: F#In1, T <: In2,
-    OutH <: F#Out, OutT <: Out
+    OutH, OutT <: Out
   ](implicit
     evF: App1[F,H,OutH],
     evThis: App2[mapToHList,F,T,OutT]
@@ -24,19 +24,43 @@ class MapToListOf[A] extends DepFn2[AnyDepFn1, AnyTypeSet, List[A]]
 
 case object MapToListOf {
 
-  implicit def empty[F <: AnyDepFn1 { type Out <: A }, A]: App2[mapToListOf[A],F,∅,List[A]] =
-    App2 { (f: F, e: ∅) => Nil }
+  implicit def empty[F <: AnyDepFn1, X]: App2[MapToListOf[X],F,∅,List[X]] =
+    App2 { (f: F, e: ∅) => Nil: List[X] }
 
   implicit def nonEmpty[
     F <: AnyDepFn1 { type Out >: X },
-    H <: F#In1, T <: AnyTypeSet,
+    H1 <: F#In1, H2, T <: AnyTypeSet,
     X
   ](implicit
-    evF: App1[F,H,X],
-    maptolistof: App2[MapToListOf[X],F,T,List[X]]
-  ): App2[MapToListOf[X], F, H :~: T, List[X]] =
-    App2 { (f: F, s: H :~: T) => (f(s.head): X) :: maptolistof(f, s.tail) }
+    evF: App1[F,H1,X],
+    maptolistof: App2[MapToListOf[X], F, H2 :~: T, List[X]]
+  )
+  : App2[MapToListOf[X], F, H1 :~: H2 :~: T, List[X]] =
+    App2 { (f: F, s: H1 :~: H2 :~: T) => f(s.head) :: maptolistof(f, s.tail) }
+
+  implicit def one[
+    F <: AnyDepFn1,
+    H <: F#In1,
+    X <: F#Out
+  ](implicit
+    evF: App1[F,H,X]
+  )
+  : App2[MapToListOf[X], F, H :~: ∅, List[X]] =
+    App2 { (f: F, s: H :~: ∅) =>  List[X](f(s.head)) }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 case object MapSet extends DepFn2[AnyDepFn1, AnyTypeSet, AnyTypeSet] {
 

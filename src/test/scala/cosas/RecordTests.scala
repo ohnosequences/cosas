@@ -213,8 +213,15 @@ class RecordTests extends org.scalatest.FunSuite {
 //
   test("can get values from records as lists and typesets") {
 
-    // val vRecordEntryValues: List[String] = vRecordEntry.value mapToList denotationValue
+    val vRecordEntryValues = mapToListOf[String](
+      denotationValue,
+      // need to add the type here
+      vRecordEntry.value: ValueOf[email.type] :~: ValueOf[color.type] :~: ∅
+    )
 
     val simpleUserValues: Int :~: String :~: ∅ = simpleUserEntry.value map denotationValue
+    val simpleUserValuesAny = mapToListOf[Any](denotationValue, simpleUserEntry.value)
+
+    assert { simpleUserValuesAny === simpleUserValues.toList[Any] }
   }
 }

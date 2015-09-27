@@ -17,7 +17,7 @@ object nelists {
     lazy val label = "NEList"
     def predicate(l: WrappedList[E] := List[E]): Boolean = ! l.value.isEmpty
 
-    def apply(e: E): ValueOf[NEList[E]] = new ValueOf[NEList[E]](e :: Nil)
+    def apply(e: E): ValueOf[NEList[E]] = new Denotes[List[E],NEList[E]](e :: Nil)
   }
 
   case object NEList {

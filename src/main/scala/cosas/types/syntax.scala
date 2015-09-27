@@ -14,7 +14,7 @@ case object syntax {
 
     final def apply(raw: W := W#Raw): Option[ValueOf[ST]] = {
 
-      if ( st predicate raw ) None else Some( new ValueOf[ST](raw.value) )
+      if ( st predicate raw ) None else Some( new Denotes[ST#Raw,ST](raw.value) )
     }
 
     final def withValue(raw: W := W#Raw): Option[ValueOf[ST]] = apply(raw)

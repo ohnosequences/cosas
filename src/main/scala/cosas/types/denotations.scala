@@ -26,10 +26,18 @@ final class Denotes[V <: T#Raw, T <: AnyType](val value: V) extends AnyVal with 
   final def show(implicit t: T): String = s"(${t.label} := ${value})"
 }
 
-case object denotationValue extends DepFn1[AnyDenotation,Any] {
+case object denotationValue extends DepFn1[AnyDenotation,Any] with denotationValue_2 {
 
   implicit def value[D <: AnyDenotation]: App1[denotationValue.type, D, D#Value] =
     denotationValue at { d: D => d.value }
+  // implicit def value2[T <: AnyType]: App1[denotationValue.type, ValueOf[T], T#Raw] =
+  //   denotationValue at { v: ValueOf[T] => v.value }
+}
+
+trait denotationValue_2 {
+
+  implicit def valueForValueOf[T <: AnyType { type Raw <: V}, V]: App1[denotationValue.type, ValueOf[T], V] =
+    App1 { (v: ValueOf[T]) =>  v.value }
 }
 
 case object typeOf extends DepFn1[AnyDenotation,AnyType] {
