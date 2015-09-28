@@ -19,34 +19,24 @@ object properties {
   trait AnyPropertySerializer extends AnyDenotationSerializer {
 
     type Type <: AnyProperty
-    type D = Type#Raw
   }
 
   case class PropertySerializer[P <: AnyProperty,V](
-    val tpe: P,
-    val labelRep: String
+    val _tpe: P,
+    val _labelRep: String
   )(
-    val serializer: P#Raw => Option[V]
-  ) extends AnyPropertySerializer {
-
-    type Type = P
-    type Value = V
-  }
+    val _serializer: P#Raw => Option[V]
+  ) extends DenotationSerializer[P,P#Raw,V](_tpe,_labelRep)(_serializer) with AnyPropertySerializer
 
   trait AnyPropertyParser extends AnyDenotationParser { parser =>
 
     type Type <: AnyProperty
-    type D = Type#Raw
   }
   case class PropertyParser[P <: AnyProperty,V](
-    val tpe: P,
-    val labelRep: String)(
-    val parser: V => Option[P#Raw]
-  ) extends AnyPropertyParser {
-
-    type Type = P
-    type Value = V
-  }
+    val _tpe: P,
+    val _labelRep: String)(
+    val _parser: V => Option[P#Raw]
+  ) extends DenotationParser[P,P#Raw,V](_tpe,_labelRep)(_parser) with AnyPropertyParser
 
   case class PropertyOps[P <: AnyProperty](val p: P) extends AnyVal {
 

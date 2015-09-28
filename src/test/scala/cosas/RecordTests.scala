@@ -146,8 +146,8 @@ class RecordTests extends org.scalatest.FunSuite {
       import scala.util.control.Exception._
       catching(classOf[NumberFormatException]) opt str.toInt
     }
-    implicit val idParser   = PropertyParser(id, id.label)(idVParser)
-    implicit val nameParser = PropertyParser(name, name.label){ str: String => Some(str) }
+    implicit val idParser: PropertyParser[id.type,String]   = PropertyParser(id, id.label)(idVParser)
+    implicit val nameParser: PropertyParser[name.type,String] = PropertyParser(name, name.label){ str: String => Some(str) }
 
     implicit val idSerializer   = PropertySerializer(id, id.label)( x => Some(x.toString) )
     implicit val nameSerializer = PropertySerializer(name, name.label){ x: String => Some(x) }
@@ -155,9 +155,9 @@ class RecordTests extends org.scalatest.FunSuite {
 
   test("can parse records from Maps") {
 
-    import propertyConverters._
     import types._
-    import ops.typeSets.{ParseDenotations, ParseDenotationsError, KeyNotFound, ErrorParsing}
+    import ops.typeSets._
+    import propertyConverters._
 
     val simpleUserEntryMap =  Map(
       "id" -> "29681",
@@ -175,8 +175,10 @@ class RecordTests extends org.scalatest.FunSuite {
 
     val mapWithOtherStuff = simpleUserEntryMap + ("other" -> "stuff")
 
+    assert {
 
-    assert { ( simpleUser parse simpleUserEntryMap ) === Right(simpleUser(id(29681) :~: name("Antonio") :~: ∅)) }
+      ( simpleUser parse simpleUserEntryMap ) === Right(simpleUser(id(29681) :~: name("Antonio") :~: ∅))
+    }
     assert { ( simpleUser parse wrongKeyMap ) === Left(KeyNotFound(id.label, wrongKeyMap)) }
     assert { ( simpleUser parse notIntValueMap ) === Left(ErrorParsing(ErrorParsingValue(id)("twenty-two"))) }
     assert { ( simpleUser parse mapWithOtherStuff ) === Right(simpleUser(id(29681) :~: name("Antonio") :~: ∅)) }
@@ -184,8 +186,8 @@ class RecordTests extends org.scalatest.FunSuite {
 
   test("can serialize records to Maps") {
 
-    import propertyConverters._
     import ops.typeSets.{SerializeDenotations, SerializeDenotationsError, KeyPresent}
+    import propertyConverters._
 
 
     val simpleUserEntryMap =  Map(

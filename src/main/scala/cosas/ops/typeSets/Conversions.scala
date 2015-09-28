@@ -5,7 +5,7 @@ package ohnosequences.cosas.ops.typeSets
 import ohnosequences.cosas._, fns._, typeSets._, types._
 import shapeless._, poly._
 
-case object id extends Poly1 { implicit def default[T] = at[T]((t:T) => t) }
+case object ArghAGHGH extends Poly1 { implicit def default[T] = at[T]((t:T) => t) }
 
 
 @annotation.implicitNotFound(msg = "Can't convert ${S} to an HList")
@@ -17,7 +17,7 @@ object ToHList {
 
   implicit def any[S <: AnyTypeSet, O <: HList]
     (implicit
-      mapper: MapToHList[id.type, S] { type Out = O }
+      mapper: MapToHList[ArghAGHGH.type, S] { type Out = O }
     ):  ToHList[S] with Out[O] =
     new ToHList[S] with Out[O] {
       def apply(s: S): Out = mapper(s)
