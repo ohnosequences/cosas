@@ -9,7 +9,8 @@ trait AnyPropertyParser extends AnyDenotationParser { parser =>
 }
 case class PropertyParser[P <: AnyProperty,V](
   val tpe: P,
-  val labelRep: String)(
+  val labelRep: String
+)(
   val parser: V => Option[P#Raw]
 ) extends AnyPropertyParser {
 

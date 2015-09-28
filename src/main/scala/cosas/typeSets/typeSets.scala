@@ -9,12 +9,12 @@ import shapeless.{Nat, Succ}
 sealed trait AnyTypeSet {
 
   type Types <: AnyTypeUnion
-  type Bound // should be Types#union, but we can't set it here
+  type Bound >: Types#union <: Types#union
 
   type Size <: Nat
 
   def toStr: String
-  override def toString = "{" + toStr + "}"
+  override final def toString: String = "{" + toStr + "}"
 }
 
 trait EmptySet extends AnyTypeSet { type Size = _0 }
@@ -41,8 +41,6 @@ case object AnyTypeSet {
   type SupersetOf[S <: AnyTypeSet] = AnyTypeSet { type Bound >: S#Bound }
 
   type BoundedByUnion[U <: AnyTypeUnion] = AnyTypeSet { type Bound <: U#union }
-
-  // type SameAs[S <: AnyTypeSet] = SubsetOf[S] with SupersetOf[S]
 }
 
 private[cosas] object TypeSetImpl {
@@ -52,7 +50,7 @@ private[cosas] object TypeSetImpl {
     type Types = empty
     type Bound = Types#union
 
-    def toStr = ""
+    final def toStr: String = ""
   }
 
   case object EmptySetImpl extends EmptySetImpl { override type Types = empty }
@@ -60,12 +58,13 @@ private[cosas] object TypeSetImpl {
 
   case class ConsSet[H, T <: AnyTypeSet]
     (val head : H,  val tail : T)(implicit val headIsNew: H ∉ T) extends NonEmptySet {
+
     type Head = H; type Tail = T
 
-    type Types = Tail#Types or Head
+    type Types = Tail#Types or H
     type Bound = Types#union
 
-    def toStr = {
+    final def toStr: String = {
       val h = head match {
         case _: String => "\""+head+"\""
         case _: Char   => "\'"+head+"\'"
@@ -82,8 +81,3 @@ private[cosas] object TypeSetImpl {
     def cons[E, S <: AnyTypeSet](e: E, set: S)(implicit check: E ∉ S): ConsSet[E,S] = ConsSet(e, set)
   }
 }
-
-
-/*
-  ### Predicates and aliases
-*/

@@ -6,11 +6,11 @@ trait ParseDenotationsError
 case class KeyNotFound[V](val key: String, val map: Map[String,V]) extends ParseDenotationsError
 case class ErrorParsing[PE <: DenotationParserError](val err: PE) extends ParseDenotationsError
 
-class ParseDenotations[V] extends DepFn1[Map[String,V], Either[ParseDenotationsError,AnyTypeSet]]
+class ParseDenotations[V,S <: AnyTypeSet] extends DepFn1[Map[String,V], Either[ParseDenotationsError,S]]
 
 case object ParseDenotations {
 
-  implicit def empty[V]: App1[parseDenotations[V], Map[String,V], Either[ParseDenotationsError,∅]] =
+  implicit def empty[V]: App1[parseDenotations[V,∅], Map[String,V], Either[ParseDenotationsError,∅]] =
     App1 { map: Map[String,V] => Right(∅) }
 
   implicit def nonEmpty[
@@ -20,9 +20,9 @@ case object ParseDenotations {
     PH <: AnyDenotationParser { type Type = H; type Value = V; type D = HR }
   ](implicit
     parseH: PH,
-    parseRest: App1[parseDenotations[V], Map[String,V], Either[ParseDenotationsError,TD]]
+    parseRest: App1[parseDenotations[V,TD], Map[String,V], Either[ParseDenotationsError,TD]]
   )
-  : App1[parseDenotations[V], Map[String,V], Either[ParseDenotationsError, (H := HR) :~: TD]] =
+  : App1[parseDenotations[V,(H := HR) :~: TD], Map[String,V], Either[ParseDenotationsError, (H := HR) :~: TD]] =
 
   App1 { map: Map[String,V] => {
 

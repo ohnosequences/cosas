@@ -29,7 +29,6 @@ package object typeSets {
 
   type toListOf[X] = ToListOf[X]
   def toListOf[X]: toListOf[X] = new ToListOf[X]
-  def toTypeMap[K <: AnyType, V]: toTypeMap[K,V] = new toTypeMap
 
   type mapToListOf[X] = MapToListOf[X]
   def mapToListOf[X]: mapToListOf[X] = new MapToListOf[X]
@@ -40,17 +39,20 @@ package object typeSets {
   type mapSet = MapSet.type
   val mapSet: mapSet = MapSet
 
-  type parseDenotations[Z] = ParseDenotations[Z]
-  def parseDenotations[V]: parseDenotations[V] = new ParseDenotations[V]
+  type toTypeMap[K <: AnyType, V] = ToTypeMap[K,V]
+  def toTypeMap[K <: AnyType, V]: toTypeMap[K,V] = new ToTypeMap[K,V]
+
+  type parseDenotations[Z, DS <: AnyTypeSet] = ParseDenotations[Z,DS]
+  def parseDenotations[V, DS <: AnyTypeSet]: parseDenotations[V,DS] = new ParseDenotations[V,DS]
+
+  type serializeDenotations[Z, DS <: AnyTypeSet] = SerializeDenotations[Z,DS]
+  def serializeDenotations[V, DS <: AnyTypeSet]: serializeDenotations[V,DS] = new SerializeDenotations[V,DS]
 
   type reorderTo[Q <: AnyTypeSet] = ReorderTo[Q]
   def reorderTo[Q <: AnyTypeSet]: reorderTo[Q] = new ReorderTo[Q]
 
   type replace[Z <: AnyTypeSet] = Replace[Z]
   def replace[Q <: AnyTypeSet]: replace[Q] = new Replace[Q]
-
-
-
 
 
 
@@ -138,6 +140,6 @@ package object typeSets {
   implicit def typeSetSyntax[S <: AnyTypeSet](s: S): syntax.TypeSetSyntax[S] =
     syntax.TypeSetSyntax(s)
 
-  implicit def denotationsSetSyntax[DS <: AnyTypeSet.Of[AnyDenotation]](ds: DS): syntax.DenotationsSetSyntax[DS] =
+  implicit def denotationsSetSyntax[DS0 <: AnyTypeSet.Of[AnyDenotation]](ds: DS0): syntax.DenotationsSetSyntax[DS0] =
     syntax.DenotationsSetSyntax(ds)
 }

@@ -4,11 +4,6 @@ import ohnosequences.cosas._, fns._, types._, typeSets._, properties._
 
 case object syntax {
 
-  /*
-    ### Record ops
-
-    An `apply` method for building denotations of this record type, overloaded so that the properties can be provided in any order.
-  */
   case class RecordSyntax[RT <: AnyRecord](val recType: RT) extends AnyVal {
 
     def apply(recEntry: RT#Raw): ValueOf[RT] = recType := recEntry
@@ -18,14 +13,14 @@ case object syntax {
       reorder: App1[reorderTo[RT#Raw], Vs, RT#Raw]
     ): ValueOf[RT] = recType := reorder(values)
 
-    // def parse[
-    //   V0,
-    //   PD <: ParseDenotations[RT#PropertySet#Raw, V0]
-    // ](map: Map[String,V0])(implicit parse: PD): Either[ParseDenotationsError, ValueOf[RT]] =
-    //   parse(map).fold[Either[ParseDenotationsError, ValueOf[RT]]](
-    //     l => Left(l),
-    //     v => Right(new ValueOf[RT](v))
-    //   )
+    def parse[V0](map: Map[String,V0])(
+      implicit parseRaw: App1[parseDenotations[V0,RT#Raw], Map[String,V0], Either[ParseDenotationsError,RT#Raw]]
+    )
+    : Either[ParseDenotationsError, ValueOf[RT]] =
+      parseRaw(map).fold[Either[ParseDenotationsError, ValueOf[RT]]](
+        l => Left(l),
+        v => Right(new ValueOf[RT](v))
+      )
   }
 
 
@@ -49,7 +44,6 @@ case object syntax {
     )
     : P#Raw =
       get(new Denotes[RT#Raw,RT](entryRaw)).value
-
 
     def get[P <: AnyProperty](p: P)(implicit
       get: App1[Get[P,RT], ValueOf[RT], ValueOf[P]]

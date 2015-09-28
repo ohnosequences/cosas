@@ -15,9 +15,9 @@ case object ToListOf {
     App1 { xs: H :~: T => xs.head :: ap(xs.tail) }
 }
 
-class toTypeMap[K <: AnyType,V] extends DepFn1[AnyTypeSet, Map[K,V]]
+class ToTypeMap[K <: AnyType,V] extends DepFn1[AnyTypeSet, Map[K,V]]
 
-case object toTypeMap {
+case object ToTypeMap {
 
   implicit def empty[K <: AnyType, V]:App1[toTypeMap[K,V], ∅, Map[K,V]] =
     App1 { s: ∅ => Map() }
@@ -27,7 +27,7 @@ case object toTypeMap {
     D <: AnyDenotation { type Tpe <: K; type Value <: V },
     T <: AnyTypeSet
   ](implicit
-    ev: App1[toTypeMap[K,V], T, Map[K,V]],
+    toTypeMap: App1[toTypeMap[K,V], T, Map[K,V]],
     key: D#Tpe
   )
   : App1[toTypeMap[K,V], D :~: T, Map[K,V]] =
