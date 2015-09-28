@@ -5,16 +5,11 @@ import ohnosequences.cosas.types._
 trait AnyPropertySerializer extends AnyDenotationSerializer {
 
   type Type <: AnyProperty
-  type D = Type#Raw
 }
 
 case class PropertySerializer[P <: AnyProperty,V](
-  val tpe: P,
-  val labelRep: String
+  val _tpe: P,
+  val _labelRep: String
 )(
-  val serializer: P#Raw => Option[V]
-) extends AnyPropertySerializer {
-
-  type Type = P
-  type Value = V
-}
+  val _serializer: P#Raw => Option[V]
+) extends DenotationSerializer[P,P#Raw,V](_tpe,_labelRep)(_serializer) with AnyPropertySerializer

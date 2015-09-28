@@ -16,10 +16,9 @@ case object ParseDenotations {
   implicit def nonEmpty[
     V,
     H <: AnyType, TD <: AnyTypeSet,
-    HR <: H#Raw,
-    PH <: AnyDenotationParser { type Type = H; type Value = V; type D = HR }
+    HR <: H#Raw
   ](implicit
-    parseH: PH,
+    parseH: DenotationParser[H,HR,V],
     parseRest: App1[parseDenotations[V,TD], Map[String,V], Either[ParseDenotationsError,TD]]
   )
   : App1[parseDenotations[V,(H := HR) :~: TD], Map[String,V], Either[ParseDenotationsError, (H := HR) :~: TD]] =

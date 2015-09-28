@@ -21,10 +21,9 @@ case object SerializeDenotations {
   implicit def atCons[
     V,
     H <: AnyType, TD <: AnyTypeSet,
-    HR <: H#Raw,
-    SH <: AnyDenotationSerializer { type Type = H; type Value = V; type D = HR }
+    HR <: H#Raw
   ](implicit
-    serializeH: SH,
+    serializeH: DenotationSerializer[H,HR,V],
     serializeT: App2[SerializeDenotations[V,TD], Map[String,V], TD, Either[SerializeDenotationsError, Map[String,V]]]
   )
   : App2[

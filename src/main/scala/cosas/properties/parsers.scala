@@ -5,15 +5,10 @@ import ohnosequences.cosas.types._
 trait AnyPropertyParser extends AnyDenotationParser { parser =>
 
   type Type <: AnyProperty
-  type D = Type#Raw
 }
 case class PropertyParser[P <: AnyProperty,V](
-  val tpe: P,
-  val labelRep: String
+  val _tpe: P,
+  val _labelRep: String
 )(
-  val parser: V => Option[P#Raw]
-) extends AnyPropertyParser {
-
-  type Type = P
-  type Value = V
-}
+  val _parser: V => Option[P#Raw]
+) extends DenotationParser[P,P#Raw,V](_tpe,_labelRep)(_parser) with AnyPropertyParser
