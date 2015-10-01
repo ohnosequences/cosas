@@ -51,7 +51,7 @@ case object syntax {
     : ValueOf[P] =
       get(new Denotes[RT#Raw,RT](entryRaw))
 
-    def update[P <: AnyProperty](field: ValueOf[P])(implicit
+    def update[P <: AnyProperty,V <: P#Raw](field: P := V)(implicit
       check: (ValueOf[P] :~: ∅) ⊂ RT#Raw,
       update: App2[Update[RT], ValueOf[RT], (ValueOf[P] :~: ∅), ValueOf[RT]]
     )

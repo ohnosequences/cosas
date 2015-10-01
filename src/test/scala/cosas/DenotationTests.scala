@@ -80,4 +80,14 @@ class DenotationTests extends org.scalatest.FunSuite {
     assert { typeOf(Color := "blue") === Color }
     assert { typeOf(User := "LALALA") === typeOf( User := 23) }
   }
+
+  test("can covariantly denote types") {
+
+    trait Foo
+    class Buh extends Foo
+    class Bar extends Buh
+
+    val z: User := Bar = User := new Bar
+    val x: User := Foo = z
+  }
 }

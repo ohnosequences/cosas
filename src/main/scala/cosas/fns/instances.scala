@@ -1,6 +1,6 @@
 package ohnosequences.cosas.fns
 
-case object id extends DepFn1[Any, Any] {
+case object identity extends DepFn1[Any, Any] {
 
-  implicit def buhbuh[X]: App1[id.type,X,X] = id at { x: X => x }
+  implicit def default[X]: App1[identity.type,X,X] = identity at { x: X => x }
 }

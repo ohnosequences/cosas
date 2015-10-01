@@ -11,6 +11,6 @@ case object Update {
     check: Ps ⊂ RT#Raw,
     replace: App2[replace[RT#Raw], RT#Raw, Ps, RT#Raw]
   )
-  : App2[Update[RT], ValueOf[RT], Ps, ValueOf[RT]] = //Update[RT, Ps] =
+  : App2[Update[RT], ValueOf[RT], Ps, ValueOf[RT]] =
     App2 { (rec: ValueOf[RT], propReps: Ps) => new (RT#Raw Denotes RT)( replace(rec.value: RT#Raw, propReps) ) }
 }

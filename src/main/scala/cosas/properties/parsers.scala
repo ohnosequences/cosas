@@ -6,6 +6,7 @@ trait AnyPropertyParser extends AnyDenotationParser { parser =>
 
   type Type <: AnyProperty
 }
+
 case class PropertyParser[P <: AnyProperty,V](
   val _tpe: P,
   val _labelRep: String

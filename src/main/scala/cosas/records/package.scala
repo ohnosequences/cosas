@@ -8,6 +8,9 @@ package object records {
   type get[P <: AnyProperty, R <: AnyRecord] = Get[P,R]
   def get[P <: AnyProperty, R <: AnyRecord]: get[P,R] = new Get[P,R]
 
+  type update[RT <: AnyRecord] = Update[RT]
+  def update[RT <: AnyRecord]: update[RT] = new Update[RT]
+
   implicit def recordSyntax[RT <: AnyRecord](recType: RT): syntax.RecordSyntax[RT] =
     syntax.RecordSyntax(recType)
 

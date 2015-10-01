@@ -1,38 +1,22 @@
-// package ohnosequences.cosas.records
+package ohnosequences.cosas.records
+
+import ohnosequences.cosas._, types._, fns._, records._, typeSets._
+
+// TODO add it once DepFn3 is there
+// case object Transform extends DepFn3[ValueOf[RT], Other, ... ]{
 //
-// import ohnosequences.cosas._, types._, fns._, records._, typeSets._
-// import typeSets.Take
-//
-// @annotation.implicitNotFound(msg = """
-//   Cannot transform record of type
-//     ${RT}
-//   to
-//     ${Other}
-//   with values
-//     ${Rest}
-//   Probably you haven't provided values for all missing properties.
-// """)
-// trait Transform[RT <: AnyRecord, Other <: AnyRecord, Rest]
-//   extends Fn3[RT#Raw, Other, Rest] with Out[ValueOf[Other]]
-//
-// case object Transform {
-//
-//   implicit def transform[
-//       RT <: AnyRecord,
-//       Other <: AnyRecord,
-//       Rest <: AnyTypeSet,
-//       Uni <: AnyTypeSet,
-//       Missing <: AnyTypeSet
-//     ](implicit
-//       missing: (Other#Raw \ RT#Raw) { type Out = Missing },
-//       allMissing: Rest ~:~ Missing,
-//       uni: (RT#Raw ∪ Rest) { type Out = Uni },
-//       project: Take[Uni, Other#Raw]
-//     ):  Transform[RT, Other, Rest] =
-//     new Transform[RT, Other, Rest] {
-//
-//       def apply(recRaw: RT#Raw, other: Other, rest: Rest): Out =
-//         other := project(uni(recRaw, rest))
-//     }
-//
+//   implicit def default[
+//     RT <: AnyRecord,
+//     Other <: AnyRecord,
+//     Rest <: AnyTypeSet,
+//     Uni <: AnyTypeSet,
+//     Missing <: AnyTypeSet
+//   ](implicit
+//     missing: App2[subtract, Other#Raw, RT#Raw, Missing],
+//     allMissing: Rest ~:~ Missing,
+//     uni: App2[union, RT#Raw, Rest, Uni], //(RT#Raw ∪ Rest) { type Out = Uni },
+//     project: App2[take[Uni],Other#Raw,Uni]
+//   )
+//   : App3[Transform.type, RT, Other, Rest, ValueOf[Other]] =
+//     App3 { (recRaw: RT#Raw, other: Other, rest: Rest) => other := project(uni(recRaw, rest)) }
 // }

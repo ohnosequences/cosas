@@ -10,16 +10,26 @@ case object syntax {
 
     def :~:[E](e: E)(implicit check: E ∉ S): (E :~: S) = TypeSetImpl.ConsSet.cons(e, s) : (E :~: S)
 
-    // def pop[E](implicit pop: S Pop E): pop.Out = pop(s)
+    def pop[E, O <: AnyTypeSet](ref: TypeRef[E])(implicit
+      p: App1[pop[E], S, (E,O)]
+    )
+    : (E,O) =
+      p(s)
 
     def lookup[E](implicit check: E ∈ S, lookup: App1[lookup[E],S,E]): E = lookup(s)
 
     // deletes the first element of type E
-    // def delete[E](implicit check: E ∈ S, del: S Delete E): del.Out = del(s)
+    def delete[E,O <: AnyTypeSet](ref: TypeRef[E])(implicit
+      check: E ∈ S,
+      delete: App1[pop[E],S,(E,O)]
+    )
+    : O =
+      delete(s)._2
 
     /* Set-related */
 
-    // def \[Q <: AnyTypeSet](q: Q)(implicit sub: S \ Q): sub.Out = sub(s, q)
+    def \[Q <: AnyTypeSet, O <: AnyTypeSet](q: Q)(implicit sub: App2[subtract,S,Q,O]): O =
+      subtract(s, q)
 
     def ∪[Q <: AnyTypeSet, O <: AnyTypeSet](q: Q)(implicit evU: App2[union, S, Q, O]): O = union(s, q)
 

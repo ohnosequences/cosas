@@ -25,6 +25,23 @@ class TypeSetSyntaxTests extends org.scalatest.FunSuite {
     assert { s.take[Int :~: Char :~: String :~: ∅] === s }
   }
 
+  test("delete syntax") {
+
+    val s = 1 :~: 'a' :~: "foo" :~: ∅
+
+    assert { ( s delete q[Char] )   === pop[Char](s)._2 }
+    assert { ( s delete q[String] ) === pop[String](s)._2 }
+  }
+
+  test("pop syntax") {
+
+    val s = 1 :~: 'a' :~: "foo" :~: ∅
+
+    assert{ ( s pop q[Int] )    === pop[Int](s)      }
+    assert{ ( s pop q[Char] )   === pop[Char](s)     }
+    assert{ ( s pop q[String] ) === pop[String](s)   }
+  }
+
   test("replace syntax") {
 
     val s = 1 :~: 'a' :~: "foo" :~: ∅
@@ -60,7 +77,7 @@ class TypeSetSyntaxTests extends org.scalatest.FunSuite {
     val s: S = 1 :~: 'a' :~: "foo" :~: List(1,2,3) :~: ∅
 
     assert { ( ∅ map toStr ) === ∅ }
-    assert { ( s map id ) === mapSet(id, s) }
+    assert { ( s map identity ) === mapSet(identity, s) }
     assert { (s map rev ) === mapSet(rev,s) }
   }
 

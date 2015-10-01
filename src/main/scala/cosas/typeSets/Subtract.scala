@@ -1,14 +1,57 @@
 // /* ## Subtract one set from another */
-//
-// package ohnosequences.cosas.typeSets
-//
-// import ohnosequences.cosas._, fns._, typeSets._
-//
-//
-// case object subtract extends DepFn2[AnyTypeSet, AnyTypeSet, AnyTypeSet] {
-//
-//
-// }
+
+package ohnosequences.cosas.typeSets
+
+import ohnosequences.cosas._, fns._, typeSets._
+
+
+case object Subtract extends DepFn2[AnyTypeSet, AnyTypeSet, AnyTypeSet] with Subtract_2 {
+
+  type Me = this.type
+
+  implicit def sInQ[S <: AnyTypeSet.SubsetOf[Q], Q <: AnyTypeSet]
+    : App2[Me, S, Q, ∅] =
+      App2 { (s: S, q: Q) => ∅ }
+}
+
+trait Subtract_2 extends Subtract_3 {
+
+  /* * Case when Q is empty => result is S: */
+  implicit def qEmpty[S <: AnyTypeSet]
+  : App2[Me, S, ∅, S] =
+    App2 { (s: S, q: ∅) => s }
+
+    /* * Case when S.head ∈ Q => result is S.tail \ Q: */
+    implicit def sConsWithoutHead[
+      H, T <: AnyTypeSet,
+      Q <: AnyTypeSet, TO <: AnyTypeSet
+    ]
+    (implicit
+      h: H ∈ Q,
+      rest: App2[Me,T,Q,TO]
+    )
+    : App2[Me, H :~: T, Q, TO] =
+      App2 { (s: H :~: T, q: Q) => rest(s.tail, q) }
+}
+
+trait Subtract_3 extends DepFn2[AnyTypeSet, AnyTypeSet, AnyTypeSet] {
+
+  type Me <: this.type
+
+  implicit def sConsAnyHead[
+    H, T <: AnyTypeSet,
+    Q <: AnyTypeSet, TO <: AnyTypeSet
+  ](implicit
+    h: H ∉ Q,
+    rest: App2[Me,T,Q,TO]
+  )
+  : App2[Me, H :~: T, Q, H :~: TO] =
+    App2 { (s: H :~: T, q: Q) => s.head :~: rest(s.tail, q) }
+}
+
+
+
+
 //
 //
 // @annotation.implicitNotFound(msg = "Can't subtract ${Q} from ${S}")

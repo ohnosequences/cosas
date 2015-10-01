@@ -201,19 +201,19 @@ class TypeSetTests extends org.scalatest.FunSuite {
     assert { reorderTo[Char :~: Int :~: String :~: ∅](s) === 'a' :~: 1 :~: "foo" :~: ∅ }
   }
 
-  test("substraction") {
+  test("subtraction") {
 
     val s = 1 :~: 'a' :~: "foo" :~: ∅
 
-    // assert(∅ \ ∅ == ∅)
-    // assert(∅ \ s == ∅)
-    // assert(s \ ∅ == s)
-    // assert(s \ s == ∅)
+    assert(subtract(∅,∅) === ∅)
+    assert(subtract(∅,s) === ∅)
+    assert(subtract(s,∅) === s)
+    assert(subtract(s,s) === ∅)
 
     val q = bar :~: true :~: 2 :~: "bar" :~: ∅
 
-    // assert(s \ q == 'a' :~: ∅)
-    // assert(q \ s == bar :~: true :~: ∅)
+    assert(subtract(s,q) === 'a' :~: ∅)
+    assert(subtract(q,s) === bar :~: true :~: ∅)
   }
 
   test("union") {
@@ -240,17 +240,18 @@ class TypeSetTests extends org.scalatest.FunSuite {
     val s: S = 1 :~: 'a' :~: "foo" :~: List(1,2,3) :~: ∅
     // implicitly[MapSet[id.type, Int :~: Char :~: String :~: List[Int] :~: ∅]]
 
-    assert { mapSet(id, s) === s }
+    assert { mapSet(identity, s) === s }
 
-    val x0 = mapSet(id, 1 :~: ∅)
-    val x = mapSet(id, 1 :~: 'a' :~: "oof" :~: List(3,2,1) :~: ∅)
+    val x0 = mapSet(identity, 1 :~: ∅)
+    val x = mapSet(identity, 1 :~: 'a' :~: "oof" :~: List(3,2,1) :~: ∅)
     assert { mapSet(rev,s) === 1 :~: 'a' :~: "oof" :~: List(3,2,1) :~: ∅ }
 
     // // This case should fail, because toStr in not "type-injective"
-    // assertTypeError("implicitly[MapSet[toStr.type, s.type]]")
-    assertTypeError("s.map(toStr)")
-    //
-    // assert(s.mapToHList(toStr) == "1" :: "a" :: "foo" :: "List(1, 2, 3)" :: HNil)
+    assertTypeError("mapSet(toStr,s)")
+
+    // import shapeless._
+    // assert(mapToHList(toStr,s) == "1" :: "a" :: "foo" :: "List(1, 2, 3)" :: HNil)
+
     assert(mapToListOf[String](toStr,s) === List("1", "a", "foo", "List(1, 2, 3)"))
     // assert(s.mapToHList(toStr).toList == s.mapToList(toStr))
     //

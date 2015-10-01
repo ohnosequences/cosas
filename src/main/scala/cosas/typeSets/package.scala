@@ -27,6 +27,9 @@ package object typeSets {
   type take[X <: AnyTypeSet] = Take[X]
   def take[X <: AnyTypeSet]: take[X] = new Take[X]
 
+  type subtract = Subtract.type
+  val subtract: subtract = Subtract
+
   type toListOf[X] = ToListOf[X]
   def toListOf[X]: toListOf[X] = new ToListOf[X]
 

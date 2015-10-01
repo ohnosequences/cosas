@@ -49,19 +49,6 @@ case object MapToListOf {
     App2 { (f: F, s: H :~: ∅) =>  List[X](f(s.head)) }
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 case object MapSet extends DepFn2[AnyDepFn1, AnyTypeSet, AnyTypeSet] {
 
   implicit def empty[F <: In1]: App2[MapSet.type, F, ∅, ∅] =
