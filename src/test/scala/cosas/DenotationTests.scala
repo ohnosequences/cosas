@@ -90,4 +90,11 @@ class DenotationTests extends org.scalatest.FunSuite {
     val z: User := Bar = User := new Bar
     val x: User := Foo = z
   }
+
+  test("denoting types with bound Any") {
+
+    trait Boundless extends AnyType { type Raw = Any }
+
+    def buh[Val, B <: Boundless](v: Val): B := Val = new (B := Val)(v)
+  }
 }
