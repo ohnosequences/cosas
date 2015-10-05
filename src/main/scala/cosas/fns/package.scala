@@ -8,6 +8,9 @@ package object fns {
   implicit def depFn2Syntax[DF <: AnyDepFn2](df: DF): syntax.DepFn2Syntax[DF] =
     syntax.DepFn2Syntax(df)
 
+  implicit def depFn3Syntax[DF <: AnyDepFn3](df: DF): syntax.DepFn3Syntax[DF] =
+    syntax.DepFn3Syntax(df)
+
   implicit def depFn1ApplySyntax[
     DF0 <: AnyDepFn1,
     X10 <: DF0#In1,
@@ -22,4 +25,10 @@ package object fns {
   ](df: DF0): syntax.DepFn2ApplySyntax[DF0,X10,X20,O0] =
     syntax.DepFn2ApplySyntax(df)
 
+  implicit def depFn3ApplySyntax[
+    DF0 <: AnyDepFn3,
+    X10 <: DF0#In1, X20 <: DF0#In2, X30 <: DF0#In3,
+    O0 <: DF0#Out
+  ](df: DF0): syntax.DepFn3ApplySyntax[DF0,X10,X20,X30,O0] =
+    syntax.DepFn3ApplySyntax(df)
 }
