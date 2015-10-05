@@ -31,7 +31,7 @@ class TypeUnionTests extends org.scalatest.FunSuite {
     implicitly[just[Boolean] <:< SBI#union]
     implicitly[just[Int] <:< SBI#union]
 
-    implicitly[just[Byte] <:!< SBI#union]
+    implicitly[just[Byte] !< SBI#union]
     implicitly[just[Byte] <:< Uh#union]
     implicitly[just[String] <:< SBI#union]
 

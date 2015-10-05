@@ -13,7 +13,7 @@ package object typeUnions {
   type    isOneOf[X, U <: AnyTypeUnion] = just[X] <:<  U#union
 
   @annotation.implicitNotFound(msg = "Can't prove that ${X} is not one of ${U}")
-  type isNotOneOf[X, U <: AnyTypeUnion] = just[X] <:!< U#union
+  type isNotOneOf[X, U <: AnyTypeUnion] = just[X] !< U#union
 
   final type oneOf[U <: AnyTypeUnion] = {
     type    is[X] = X    isOneOf U
@@ -24,5 +24,5 @@ package object typeUnions {
   type    isSubunionOf[V <: AnyTypeUnion, U <: AnyTypeUnion] = V#union <:<  U#union
 
   @annotation.implicitNotFound(msg = "Can't prove that ${V <: AnyTypeUnion} is not subunion of ${U}")
-  type isNotSubunionOf[V <: AnyTypeUnion, U <: AnyTypeUnion] = V#union <:!< U#union
+  type isNotSubunionOf[V <: AnyTypeUnion, U <: AnyTypeUnion] = V#union !< U#union
 }

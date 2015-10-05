@@ -1,7 +1,7 @@
 package ohnosequences.cosas
 
 import types._, typeUnions._
-import shapeless.{ HList, =:!=, <:!< }
+import shapeless.HList
 
 package object typeSets {
 
@@ -80,7 +80,7 @@ package object typeSets {
   final type ⊂[S <: AnyTypeSet, Q <: AnyTypeSet] = S isSubsetOf Q
 
   @annotation.implicitNotFound(msg = "Can't prove that ${S} is not a subset of ${Q}")
-  type isNotSubsetOf[S <: AnyTypeSet, Q <: AnyTypeSet] = S#Bound <:!< Q#Bound
+  type isNotSubsetOf[S <: AnyTypeSet, Q <: AnyTypeSet] = S#Bound !< Q#Bound
   @annotation.implicitNotFound(msg = "Can't prove that ${S} is not a subset of ${Q}")
   final type ⊄[S <: AnyTypeSet, Q <: AnyTypeSet] = S isNotSubsetOf Q
 
@@ -95,7 +95,7 @@ package object typeSets {
   type ~:~[S <: AnyTypeSet, Q <: AnyTypeSet] = S isSameAs Q
 
   @annotation.implicitNotFound(msg = "Can't prove that ${S} is not the same as ${Q}")
-  type isNotSameAs[S <: AnyTypeSet, Q <: AnyTypeSet] = S#Bound =:!= Q#Bound
+  type isNotSameAs[S <: AnyTypeSet, Q <: AnyTypeSet] = S#Bound != Q#Bound
   type ~:!~[S <: AnyTypeSet, Q <: AnyTypeSet] = S isNotSameAs Q
 
   final type sameAs[Q <: AnyTypeSet] = {
@@ -108,7 +108,7 @@ package object typeSets {
   type isBoundedBy[S <: AnyTypeSet, B] = S#Bound <:< just[B]
 
   @annotation.implicitNotFound(msg = "Can't prove that elements of ${S} are not bounded by ${B}")
-  type isNotBoundedBy[S <: AnyTypeSet, B] = S#Bound <:!< just[B]
+  type isNotBoundedBy[S <: AnyTypeSet, B] = S#Bound !< just[B]
 
   final type boundedBy[B] = {
     type    is[S <: AnyTypeSet] = S    isBoundedBy B
@@ -120,7 +120,7 @@ package object typeSets {
   type    isBoundedByUnion[S <: AnyTypeSet, U <: AnyTypeUnion] = S#Bound <:<  U#union
 
   @annotation.implicitNotFound(msg = "Can't prove that elements of ${S} are not from the type union ${U}")
-  type isNotBoundedByUnion[S <: AnyTypeSet, U <: AnyTypeUnion] = S#Bound <:!< U#union
+  type isNotBoundedByUnion[S <: AnyTypeSet, U <: AnyTypeUnion] = S#Bound !< U#union
 
   final type boundedByUnion[U <: AnyTypeUnion] = {
     type    is[S <: AnyTypeSet] = S    isBoundedByUnion U

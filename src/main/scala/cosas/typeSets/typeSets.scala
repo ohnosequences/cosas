@@ -2,7 +2,7 @@ package ohnosequences.cosas.typeSets
 
 // deps
 import ohnosequences.cosas.typeUnions._
-import shapeless.{ HList, Poly1, <:!<, =:!= }
+import shapeless.{ HList, Poly1 }
 import shapeless.Nat._
 import shapeless.{Nat, Succ}
 
