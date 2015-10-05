@@ -24,29 +24,29 @@ case object syntax {
       App3(f)
   }
 
-  case class DepFn1ApplySyntax[DF0 <: AnyDepFn1, I0 <: DF0#In1, O0 <: DF0#Out](val df: DF0) extends AnyVal {
+  case class DepFn1ApplySyntax[DF <: AnyDepFn1, I0 <: DF#In1, O <: DF#Out](val df: DF) extends AnyVal {
 
-    final def apply(x1: I0)(implicit app: App1[DF0,I0,O0]): O0 =
+    final def apply(x1: I0)(implicit app: App1[DF,I0,O]): O =
       app(x1)
   }
 
-  case class DepFn2ApplySyntax[DF0 <: AnyDepFn2, X10 <: DF0#In1, X20 <: DF0#In2, O0 <: DF0#Out](val df: DF0) extends AnyVal {
+  case class DepFn2ApplySyntax[DF <: AnyDepFn2, X1 <: DF#In1, X2 <: DF#In2, O <: DF#Out](val df: DF) extends AnyVal {
 
-    final def apply(x1: X10, x2: X20)(implicit app: App2[DF0,X10,X20,O0]): O0 =
+    final def apply(x1: X1, x2: X2)(implicit app: App2[DF,X1,X2,O]): O =
       app(x1,x2)
   }
 
   case class DepFn3ApplySyntax[
-    DF0 <: AnyDepFn3,
-    X10 <: DF0#In1, X20 <: DF0#In2, X30 <: DF0#In3,
-    O0 <: DF0#Out
+    DF <: AnyDepFn3,
+    X1 <: DF#In1, X2 <: DF#In2, X3 <: DF#In3,
+    O <: DF#Out
   ]
-  (val df: DF0) extends AnyVal {
+  (val df: DF) extends AnyVal {
 
-    final def apply(x1: X10, x2: X20, x3: X30)(implicit
-      app: App3[DF0,X10,X20,X30,O0]
+    final def apply(x1: X1, x2: X2, x3: X3)(implicit
+      app: App3[DF,X1,X2,X3,O]
     )
-    : O0 =
+    : O =
       app(x1,x2,x3)
   }
 }

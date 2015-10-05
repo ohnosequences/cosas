@@ -70,20 +70,20 @@ class Composition[
 }
 
 /* dependent function application machinery. These are to be thought of as the building blocks for terms of a dependent function type. */
-trait AnyAt extends Any {
+trait AnyApp extends Any {
 
   type DepFn <: AnyDepFn
   type Y <: DepFn#Out
 }
 
-trait AnyAt0 extends Any with AnyAt {
+trait AnyApp0 extends Any with AnyApp {
 
   type DepFn <: AnyDepFn0
 
   def apply: Y
 }
 
-trait AnyAt1 extends Any with AnyAt {
+trait AnyApp1 extends Any with AnyApp {
 
   type DepFn <: AnyDepFn1
   type X1 <: DepFn#In1
@@ -91,7 +91,7 @@ trait AnyAt1 extends Any with AnyAt {
   def apply(in: X1): Y
 }
 
-trait AnyAt2 extends Any with AnyAt {
+trait AnyApp2 extends Any with AnyApp {
 
   type DepFn <: AnyDepFn2
   type X1 <: DepFn#In1; type X2 <: DepFn#In2
@@ -99,7 +99,7 @@ trait AnyAt2 extends Any with AnyAt {
   def apply(in1: X1, in2: X2): Y
 }
 
-trait AnyAt3 extends Any with AnyAt {
+trait AnyApp3 extends Any with AnyApp {
 
   type DepFn <: AnyDepFn3
   type X1 <: DepFn#In1; type X2 <: DepFn#In2; type X3 <: DepFn#In3
@@ -113,7 +113,7 @@ case class App1[
   I <: DF#In1,
   O <: DF#Out
 ]
-(val does: I => O) extends AnyVal with AnyAt1 {
+(val does: I => O) extends AnyVal with AnyApp1 {
 
   type DepFn = DF
   type X1 = I
@@ -128,7 +128,7 @@ case class App2[
   I1 <: DF#In1, I2 <: DF#In2,
   O <: DF#Out
 ]
-(val does: (I1,I2) => O) extends AnyVal with AnyAt2 {
+(val does: (I1,I2) => O) extends AnyVal with AnyApp2 {
 
   type DepFn = DF
   type X1 = I1; type X2 = I2
@@ -143,7 +143,7 @@ case class App3[
   I1 <: DF#In1, I2 <: DF#In2, I3 <: DF#In3,
   O <: DF#Out
 ]
-(val does: (I1,I2,I3) => O) extends AnyVal with AnyAt3 {
+(val does: (I1,I2,I3) => O) extends AnyVal with AnyApp3 {
 
   type DepFn = DF
   type X1 = I1; type X2 = I2; type X3 = I3

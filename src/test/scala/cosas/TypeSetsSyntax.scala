@@ -29,17 +29,17 @@ class TypeSetSyntaxTests extends org.scalatest.FunSuite {
 
     val s = 1 :~: 'a' :~: "foo" :~: ∅
 
-    assert { ( s delete q[Char] )   === pop[Char](s)._2 }
-    assert { ( s delete q[String] ) === pop[String](s)._2 }
+    assert { ( s delete ofType[Char] )   === pop[Char](s)._2 }
+    assert { ( s delete ofType[String] ) === pop[String](s)._2 }
   }
 
   test("pop syntax") {
 
     val s = 1 :~: 'a' :~: "foo" :~: ∅
 
-    assert{ ( s pop q[Int] )    === pop[Int](s)      }
-    assert{ ( s pop q[Char] )   === pop[Char](s)     }
-    assert{ ( s pop q[String] ) === pop[String](s)   }
+    assert{ ( s pop ofType[Int] )    === pop[Int](s)      }
+    assert{ ( s pop ofType[Char] )   === pop[Char](s)     }
+    assert{ ( s pop ofType[String] ) === pop[String](s)   }
   }
 
   test("replace syntax") {
