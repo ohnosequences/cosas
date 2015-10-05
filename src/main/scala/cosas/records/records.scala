@@ -2,11 +2,6 @@ package ohnosequences.cosas.records
 
 import ohnosequences.cosas._, types._, typeSets._, properties._
 
-/*
-  ## Records
-
-  Records are `AnyType`s wrapping a `PropertySet` from which they take their `Raw` type: entries for that set of properties.
-*/
 trait AnyRecord extends AnyType {
 
   type PropertySet <: AnyPropertySet

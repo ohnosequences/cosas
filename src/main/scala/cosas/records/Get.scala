@@ -1,21 +1,15 @@
 package ohnosequences.cosas.records
 
-import ohnosequences.cosas._, types._, records._, properties._, fns._, typeSets.Lookup
+import ohnosequences.cosas._, types._, typeSets._, properties._, fns._
 
-@annotation.implicitNotFound(msg = """
-  Cannot get property
-    ${P}
-  from record of type
-    ${RT}
-""")
-trait Get[RT <: AnyRecord, P <: AnyProperty]
-  extends Fn1[RT#Raw] with Out[P#Raw]
+class Get[P <: AnyProperty, R <: AnyRecord] extends DepFn1[ValueOf[R], ValueOf[P]]
 
 case object Get {
 
-  implicit def getter[R <: AnyRecord, P <: AnyProperty]
-    (implicit
-      lookup: R#Raw Lookup ValueOf[P]
-    ):  Get[R, P] =
-    new Get[R, P] { def apply(recEntry: R#Raw): Out = lookup(recEntry).value }
+  implicit def default[P0 <: AnyProperty, R0 <: AnyRecord]
+  (implicit
+    look: App1[Lookup[ValueOf[P0]], R0#Raw, ValueOf[P0]]
+  )
+  : App1[get[P0,R0], ValueOf[R0], ValueOf[P0]] =
+    App1 { rec: ValueOf[R0] => look(rec.value) }
 }

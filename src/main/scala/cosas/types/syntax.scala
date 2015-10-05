@@ -9,4 +9,14 @@ case object syntax {
     final def =:[@specialized V <: T#Raw](v: V): V =: T = new (V Denotes T)(v)
     final def :=[@specialized V <: T#Raw](v: V): T := V = new (V Denotes T)(v)
   }
+
+  case class SubsetTypeSyntax[W <: AnyType, ST <: SubsetType[W]](val st: ST) extends AnyVal {
+
+    final def apply(raw: W := W#Raw): Option[ValueOf[ST]] = {
+
+      if ( st predicate raw ) None else Some( new Denotes[ST#Raw,ST](raw.value) )
+    }
+
+    final def withValue(raw: W := W#Raw): Option[ValueOf[ST]] = apply(raw)
+  }
 }

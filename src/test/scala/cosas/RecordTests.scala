@@ -124,22 +124,22 @@ class RecordTests extends org.scalatest.FunSuite {
 
     assert { simpleUserV == sameSimpleUserV }
   }
-
-  test("can check if record has properties") {
-
-    implicitly[simpleUser.PropertySet HasProperties (id.type :~: name.type :~: ∅)]
-    implicitly[simpleUser.PropertySet HasProperties (name.type :~: id.type :~: ∅)]
-    implicitly[simpleUser.PropertySet HasProperties (name.type :~: ∅)]
-    implicitly[simpleUser.PropertySet HasProperties (id.type :~: ∅)]
-
-    implicitly[simpleUser.PropertySet HasProperty name.type]
-    implicitly[simpleUser.PropertySet HasProperty id.type]
-
-    assertTypeError { """implicitly[simpleUser.PropertySet HasProperties (email.type :~: id.type :~: ∅)]""" }
-    assertTypeError { """implicitly[simpleUser.PropertySet HasProperties (email.type :~: name.type :~: color.type :~: ∅)]""" }
-  }
-
-  object propertyConverters {
+  //
+  // test("can check if record has properties") {
+  //
+  //   implicitly[simpleUser.PropertySet HasProperties (id.type :~: name.type :~: ∅)]
+  //   implicitly[simpleUser.PropertySet HasProperties (name.type :~: id.type :~: ∅)]
+  //   implicitly[simpleUser.PropertySet HasProperties (name.type :~: ∅)]
+  //   implicitly[simpleUser.PropertySet HasProperties (id.type :~: ∅)]
+  //
+  //   implicitly[simpleUser.PropertySet HasProperty name.type]
+  //   implicitly[simpleUser.PropertySet HasProperty id.type]
+  //
+  //   assertTypeError { """implicitly[simpleUser.PropertySet HasProperties (email.type :~: id.type :~: ∅)]""" }
+  //   assertTypeError { """implicitly[simpleUser.PropertySet HasProperties (email.type :~: name.type :~: color.type :~: ∅)]""" }
+  // }
+//
+  case object propertyConverters {
 
     val idVParser: String => Option[Int] = str => {
       import scala.util.control.Exception._
@@ -155,8 +155,6 @@ class RecordTests extends org.scalatest.FunSuite {
   test("can parse records from Maps") {
 
     import propertyConverters._
-    import types._
-    import typeSets.{ParseDenotations, ParseDenotationsError, KeyNotFound, ErrorParsing}
 
     val simpleUserEntryMap =  Map(
       "id" -> "29681",
@@ -174,24 +172,36 @@ class RecordTests extends org.scalatest.FunSuite {
 
     val mapWithOtherStuff = simpleUserEntryMap + ("other" -> "stuff")
 
-
-    assert { ( simpleUser parse simpleUserEntryMap ) === Right(simpleUser(id(29681) :~: name("Antonio") :~: ∅)) }
-    assert { ( simpleUser parse wrongKeyMap ) === Left(KeyNotFound(id.label, wrongKeyMap)) }
-    assert { ( simpleUser parse notIntValueMap ) === Left(ErrorParsing(ErrorParsingValue(id)("twenty-two"))) }
-    assert { ( simpleUser parse mapWithOtherStuff ) === Right(simpleUser(id(29681) :~: name("Antonio") :~: ∅)) }
+    assert {
+      parseDenotations[String,simpleUser.Raw](simpleUserEntryMap) ===
+      Right(id(29681) :~: name("Antonio") :~: ∅)
+    }
+    assert {
+      parseDenotations[String,simpleUser.Raw](wrongKeyMap) ===
+      Left(KeyNotFound(id.label, wrongKeyMap))
+    }
+    assert {
+      parseDenotations[String,simpleUser.Raw](notIntValueMap) ===
+      Left(ErrorParsing(ErrorParsingValue(id)("twenty-two")))
+    }
+    assert {
+      parseDenotations[String,simpleUser.Raw](mapWithOtherStuff) ===
+      Right(id(29681) :~: name("Antonio") :~: ∅)
+    }
   }
 
   test("can serialize records to Maps") {
 
     import propertyConverters._
-    import typeSets.{SerializeDenotations, SerializeDenotationsError, KeyPresent}
-
 
     val simpleUserEntryMap =  Map(
       "id" -> "29681",
       "name" -> "Antonio"
     )
-    assert { Right(simpleUserEntryMap) === simpleUser(id(29681) :~: name("Antonio") :~: ∅).serialize[String] }
+    assert {
+      Right(simpleUserEntryMap) ===
+      serializeDenotations[String,simpleUser.Raw](Map[String,String](), id(29681) :~: name("Antonio") :~: ∅)
+    }
 
     val unrelatedMap = Map(
       "lala" -> "hola!",
@@ -202,19 +212,32 @@ class RecordTests extends org.scalatest.FunSuite {
 
     assert {
       Right(simpleUserEntryMap ++ unrelatedMap) ===
-        ( simpleUser(id(29681) :~: name("Antonio") :~: ∅) serializeUsing unrelatedMap )
+      serializeDenotations[String,simpleUser.Raw](
+        unrelatedMap,
+        id(29681) :~: name("Antonio") :~: ∅
+      )
     }
 
     assert {
       Left(KeyPresent(id.label, mapWithKey)) ===
-        ( simpleUser(id(29681) :~: name("Antonio") :~: ∅) serializeUsing mapWithKey )
+      serializeDenotations[String,simpleUser.Raw](
+        mapWithKey,
+        id(29681) :~: name("Antonio") :~: ∅
+      )
     }
   }
 
   test("can get values from records as lists and typesets") {
 
-    val vRecordEntryValues: List[String] = vRecordEntry.value mapToList denotationValue
+    val vRecordEntryValues = mapToListOf[String](
+      denotationValue,
+      // need to add the type here
+      vRecordEntry.value: ValueOf[email.type] :~: ValueOf[color.type] :~: ∅
+    )
 
     val simpleUserValues: Int :~: String :~: ∅ = simpleUserEntry.value map denotationValue
+    val simpleUserValuesAny = mapToListOf[Any](denotationValue, simpleUserEntry.value)
+
+    assert { simpleUserValuesAny === simpleUserValues.toList[Any] }
   }
 }

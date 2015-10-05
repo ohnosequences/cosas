@@ -1,9 +1,5 @@
 package ohnosequences.cosas.typeUnions
 
-/*
-  The two type-level constructors of a type union.
-  A generic term looks like `either[A]#or[B]#or[C]`.
-*/
 trait AnyTypeUnion {
 
   type or[Y] <: AnyTypeUnion
@@ -12,7 +8,6 @@ trait AnyTypeUnion {
 
 sealed trait either[X] extends TypeUnion[not[X]] {}
 
-/* Builder */
 trait TypeUnion[T] extends AnyTypeUnion {
 
   type or[S] = TypeUnion[T with not[S]]

@@ -1,14 +1,14 @@
 package ohnosequences.cosas.tests
 
-import ohnosequences.cosas._, types._, AnySubsetType._
+import ohnosequences.cosas._, types._
 import ohnosequences.cosas.tests.asserts._
 
 case object DenotationTestsContext {
 
-  case object Color extends Wrap[String]("Color")
-  object User extends Type("User")
+  case object Color extends AnyType { val label = "Color"; type Raw = String }
+  object User extends AnyType {  val label = "User"; type Raw = Any  }
   type User = User.type
-  object Friend extends Type("Friend")
+  object Friend extends AnyType { val label = "Friend"; type Raw = Any }
   case class userInfo(id: String, name: String, age: Int)
 }
 
@@ -63,15 +63,43 @@ class DenotationTests extends org.scalatest.FunSuite {
 
   test("Can use show for denotations") {
 
-    assert{ (User := "hola").show == "(User := hola)" }
+    assert{ (User := "hola").show === "(User := hola)" }
 
     val azul = Color := "blue"
 
-    assert{ azul.show == "(Color := blue)" }
+    assert{ azul.show === "(Color := blue)" }
   }
 
-  test("can get poly values of denotations") {
+  test("can get values of denotations") {
 
     assert { "blue" === denotationValue(User := "blue") }
+  }
+
+  test("can get the types of denotations") {
+
+    assert { typeOf(Color := "blue") === Color }
+    assert { typeOf(User := "LALALA") === typeOf( User := 23) }
+  }
+
+  test("can covariantly denote types") {
+
+    trait Foo
+    class Buh extends Foo
+    class Bar extends Buh
+
+    val z: User := Bar = User := new Bar
+    val x: User := Foo = z
+
+    case object A extends AnyType { lazy val label = toString; type Raw = Foo }
+
+    val aFoo = A := new Foo {}
+    val aBar: ValueOf[A.type] = A := new Bar
+  }
+
+  test("denoting types with bound Any") {
+
+    trait Boundless extends AnyType { type Raw = Any }
+
+    def buh[Val, B <: Boundless](v: Val): B := Val = new (B := Val)(v)
   }
 }

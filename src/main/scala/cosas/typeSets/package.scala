@@ -1,7 +1,7 @@
 package ohnosequences.cosas
 
 import types._, typeUnions._
-import shapeless.{ HList, =:!=, <:!< }
+import shapeless.HList
 
 package object typeSets {
 
@@ -10,6 +10,53 @@ package object typeSets {
   val emptySet : ∅ = TypeSetImpl.EmptySetImpl
 
   final type :~:[E, S <: AnyTypeSet] = TypeSetImpl.ConsSet[E, S]
+
+  // functions
+  type filter = Filter.type
+  val filter: filter = Filter
+
+  type union = Union.type
+  val union: union = Union
+
+  type lookup[E] = Lookup[E]
+  def lookup[E]: lookup[E] = new Lookup[E]
+
+  type pop[E] = Pop[E]
+  def pop[X]: pop[X] = new Pop[X]
+
+  type take[X <: AnyTypeSet] = Take[X]
+  def take[X <: AnyTypeSet]: take[X] = new Take[X]
+
+  type subtract = Subtract.type
+  val subtract: subtract = Subtract
+
+  type toListOf[X] = ToListOf[X]
+  def toListOf[X]: toListOf[X] = new ToListOf[X]
+
+  type mapToListOf[X] = MapToListOf[X]
+  def mapToListOf[X]: mapToListOf[X] = new MapToListOf[X]
+
+  type mapToHList = MapToHList.type
+  val mapToHList: mapToHList = MapToHList
+
+  type mapSet = MapSet.type
+  val mapSet: mapSet = MapSet
+
+  type toTypeMap[K <: AnyType, V] = ToTypeMap[K,V]
+  def toTypeMap[K <: AnyType, V]: toTypeMap[K,V] = new ToTypeMap[K,V]
+
+  type parseDenotations[Z, DS <: AnyTypeSet] = ParseDenotations[Z,DS]
+  def parseDenotations[V, DS <: AnyTypeSet]: parseDenotations[V,DS] = new ParseDenotations[V,DS]
+
+  type serializeDenotations[Z, DS <: AnyTypeSet] = SerializeDenotations[Z,DS]
+  def serializeDenotations[V, DS <: AnyTypeSet]: serializeDenotations[V,DS] = new SerializeDenotations[V,DS]
+
+  type reorderTo[Q <: AnyTypeSet] = ReorderTo[Q]
+  def reorderTo[Q <: AnyTypeSet]: reorderTo[Q] = new ReorderTo[Q]
+
+  type replace[Z <: AnyTypeSet] = Replace[Z]
+  def replace[Q <: AnyTypeSet]: replace[Q] = new Replace[Q]
+
 
 
   /* An element is in the set */
@@ -33,7 +80,7 @@ package object typeSets {
   final type ⊂[S <: AnyTypeSet, Q <: AnyTypeSet] = S isSubsetOf Q
 
   @annotation.implicitNotFound(msg = "Can't prove that ${S} is not a subset of ${Q}")
-  type isNotSubsetOf[S <: AnyTypeSet, Q <: AnyTypeSet] = S#Bound <:!< Q#Bound
+  type isNotSubsetOf[S <: AnyTypeSet, Q <: AnyTypeSet] = S#Bound !< Q#Bound
   @annotation.implicitNotFound(msg = "Can't prove that ${S} is not a subset of ${Q}")
   final type ⊄[S <: AnyTypeSet, Q <: AnyTypeSet] = S isNotSubsetOf Q
 
@@ -42,14 +89,13 @@ package object typeSets {
     type isNot[S <: AnyTypeSet] = S isNotSubsetOf Q
   }
 
-
   /* Two sets have the same type union bound */
   @annotation.implicitNotFound(msg = "Can't prove that ${S} is the same as ${Q}")
   type    isSameAs[S <: AnyTypeSet, Q <: AnyTypeSet] = S#Bound =:=  Q#Bound
   type ~:~[S <: AnyTypeSet, Q <: AnyTypeSet] = S isSameAs Q
 
   @annotation.implicitNotFound(msg = "Can't prove that ${S} is not the same as ${Q}")
-  type isNotSameAs[S <: AnyTypeSet, Q <: AnyTypeSet] = S#Bound =:!= Q#Bound
+  type isNotSameAs[S <: AnyTypeSet, Q <: AnyTypeSet] = S#Bound != Q#Bound
   type ~:!~[S <: AnyTypeSet, Q <: AnyTypeSet] = S isNotSameAs Q
 
   final type sameAs[Q <: AnyTypeSet] = {
@@ -57,26 +103,24 @@ package object typeSets {
     type isNot[S <: AnyTypeSet] = S isNotSameAs Q
   }
 
-
   /* Elements of the set are bounded by the type */
   @annotation.implicitNotFound(msg = "Can't prove that elements of ${S} are bounded by ${B}")
   type isBoundedBy[S <: AnyTypeSet, B] = S#Bound <:< just[B]
 
   @annotation.implicitNotFound(msg = "Can't prove that elements of ${S} are not bounded by ${B}")
-  type isNotBoundedBy[S <: AnyTypeSet, B] = S#Bound <:!< just[B]
+  type isNotBoundedBy[S <: AnyTypeSet, B] = S#Bound !< just[B]
 
   final type boundedBy[B] = {
     type    is[S <: AnyTypeSet] = S    isBoundedBy B
     type isNot[S <: AnyTypeSet] = S isNotBoundedBy B
   }
 
-
   /* Elements of the set are from the type union */
   @annotation.implicitNotFound(msg = "Can't prove that elements of ${S} are from the type union ${U}")
   type    isBoundedByUnion[S <: AnyTypeSet, U <: AnyTypeUnion] = S#Bound <:<  U#union
 
   @annotation.implicitNotFound(msg = "Can't prove that elements of ${S} are not from the type union ${U}")
-  type isNotBoundedByUnion[S <: AnyTypeSet, U <: AnyTypeUnion] = S#Bound <:!< U#union
+  type isNotBoundedByUnion[S <: AnyTypeSet, U <: AnyTypeUnion] = S#Bound !< U#union
 
   final type boundedByUnion[U <: AnyTypeUnion] = {
     type    is[S <: AnyTypeSet] = S    isBoundedByUnion U
@@ -84,24 +128,21 @@ package object typeSets {
   }
 
   /* One set consists of representations of the types in another */
-  @annotation.implicitNotFound(msg = "Can't prove that ${Vs} are values of ${Ts}")
-  type areValuesOf[Vs <: AnyTypeSet, Ts <: AnyTypeSet] = typeSets.ValuesOf[Ts] { type Out = Vs }
+  // @annotation.implicitNotFound(msg = "Can't prove that ${Vs} are values of ${Ts}")
+  // type areValuesOf[Vs <: AnyTypeSet, Ts <: AnyTypeSet] = typeSets.ValuesOf[Ts] { type Out = Vs }
+  //
+  // @annotation.implicitNotFound(msg = "Can't prove that ${Ts} are types of ${Vs}")
+  // type areWrapsOf[Ts <: AnyTypeSet, Vs <: AnyTypeSet] = typeSets.WrapsOf[Ts] { type Out = Vs }
 
-  @annotation.implicitNotFound(msg = "Can't prove that ${Ts} are types of ${Vs}")
-  type areWrapsOf[Ts <: AnyTypeSet, Vs <: AnyTypeSet] = typeSets.WrapsOf[Ts] { type Out = Vs }
+  // type \[S <: AnyTypeSet, Q <: AnyTypeSet] = typeSets.Subtract[S, Q]
 
-  type \[S <: AnyTypeSet, Q <: AnyTypeSet] = typeSets.Subtract[S, Q]
+  // type ∪[S <: AnyTypeSet, Q <: AnyTypeSet] = typeSets.Union[S, Q]
 
-  type ∪[S <: AnyTypeSet, Q <: AnyTypeSet] = typeSets.Union[S, Q]
+  // type ToListOf[S <: AnyTypeSet, T] = typeSets.ToList[S] { type O = T }
 
-  type ToListOf[S <: AnyTypeSet, T] = typeSets.ToList[S] { type O = T }
-
-  implicit def typeSetSyntax[S <: AnyTypeSet](s: S): syntax.TypeSetSyntax[S] = 
+  implicit def typeSetSyntax[S <: AnyTypeSet](s: S): syntax.TypeSetSyntax[S] =
     syntax.TypeSetSyntax(s)
 
-  implicit def denotationsSetSyntax[DS <: AnyTypeSet.Of[AnyDenotation]](ds: DS): syntax.DenotationsSetSyntax[DS] =
+  implicit def denotationsSetSyntax[DS0 <: AnyTypeSet.Of[AnyDenotation]](ds: DS0): syntax.DenotationsSetSyntax[DS0] =
     syntax.DenotationsSetSyntax(ds)
-
-  implicit def hListSyntax[L <: HList](l: L): syntax.HListSyntax[L] =
-    syntax.HListSyntax(l)
 }

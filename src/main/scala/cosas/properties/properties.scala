@@ -1,7 +1,6 @@
 package ohnosequences.cosas.properties
 
-// deps
-import ohnosequences.cosas.types._, ohnosequences.cosas.typeSets._
+import ohnosequences.cosas._, types._, typeSets._
 
 trait AnyProperty extends AnyType
 

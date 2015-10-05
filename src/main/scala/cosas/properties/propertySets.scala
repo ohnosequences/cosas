@@ -1,13 +1,7 @@
 package ohnosequences.cosas.properties
 
-import ohnosequences.cosas.typeSets._
-import ohnosequences.cosas.types._
+import ohnosequences.cosas._, typeSets._, types._
 
-/*
-  ## PropertySet
-
-  PropertySet wraps a typeset of properties, constructing along the way the typeset of their `ValueOf`s.
-*/
 trait AnyPropertySet extends AnyType {
 
   type Properties <: AnyTypeSet // of AnyProperty's
@@ -28,7 +22,6 @@ case object EmptyPropertySet extends AnyPropertySet {
   val label: String = "□"
 }
 
-// TODO review this symbol; I'm fine with any other
 case class :&:[P <: AnyProperty, T <: AnyPropertySet]
 (val head: P, val tail: T)(implicit val headIsNew: P ∉ T#Properties) extends AnyPropertySet {
 
@@ -78,8 +71,8 @@ case object HasProperties {
     type Condition[P <: AnyProperty] = PS HasProperty P
   }
 
-  implicit def recordHasP[PS <: AnyPropertySet, P <: AnyTypeSet.Of[AnyProperty]]
-    (implicit check: CheckForAll[P, PropertyIsIn[PS]]):
-        (PS HasProperties P) =
-    new (PS HasProperties P)
+//   implicit def recordHasP[PS <: AnyPropertySet, P <: AnyTypeSet.Of[AnyProperty]]
+//     (implicit check: CheckForAll[P, PropertyIsIn[PS]]):
+//         (PS HasProperties P) =
+//     new (PS HasProperties P)
 }

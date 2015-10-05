@@ -1,72 +1,73 @@
 package ohnosequences.cosas.typeSets
 
-import ohnosequences.cosas._, fns._, typeSets._, types._
+import ohnosequences.cosas._, fns._, types._
 
-@annotation.implicitNotFound(msg = "Can't filter set ${S} using type predicate ${P}")
-trait Filter[S <: AnyTypeSet, P <: AnyTypePredicate]
-  extends Fn1[S] with OutBound[AnyTypeSet]
+// TODO make the type predicate only a type, not a param?
+trait Filter extends DepFn2[AnyTypePredicate, AnyTypeSet, AnyTypeSet] {
 
-object Filter extends Filter_2 {
+  type filter <: this.type
+  val filter: filter
 
-  implicit def empty[P <: AnyTypePredicate]:
-        Filter[∅, P] with Out[∅] =
-    new Filter[∅, P] with Out[∅] {
-      def apply(s: In1): Out = ∅
-    }
-
-
-  implicit def cons[P <: AnyTypePredicate, H <: P#ArgBound, T <: AnyTypeSet, TO <: AnyTypeSet]
-    (implicit
-      h: P Accepts H,
-      t: Filter[T, P] { type Out = TO }
-    ):  Filter[H :~: T, P] with Out[H :~: TO] =
-    new Filter[H :~: T, P] with Out[H :~: TO] {
-      def apply(s: In1): Out = s.head :~: t(s.tail)
-    }
+  implicit def skip[
+    P <: In1,
+    H <: P#ArgBound, T <: In2,
+    TO <: Out
+  ](implicit
+      ev: App2[filter, P, T, TO]
+    ): App2[filter, P, H :~: T, TO] =
+      filter at { (p: P, s: H :~: T) => filter(p,s.tail) }
 }
 
-trait Filter_2 {
+case object Filter extends Filter {
 
-  implicit def skip[P <: AnyTypePredicate, H <: P#ArgBound, T <: AnyTypeSet, TO <: AnyTypeSet]
-    (implicit
-      t: Filter[T, P] { type Out = TO }
-    ):  Filter[H :~: T, P] with Out[TO] =
-    new Filter[H :~: T, P] with Out[TO] {
-      def apply(s: In1): Out = t(s.tail)
-    }
-}
+  type filter = this.type
+  val filter = this
 
+  implicit def empty[P <: In1]: App2[filter, P, ∅, ∅] =
+    filter at { (p: P, empty: ∅) => ∅ }
 
-@annotation.implicitNotFound(msg = "Can't check that predicate ${P} is true for every element of ${S}")
-sealed class CheckForAll[S <: AnyTypeSet, P <: AnyTypePredicate]
-
-object CheckForAll {
-
-  implicit def filterCheck[S <: AnyTypeSet, P <: AnyTypePredicate, Q <: AnyTypeSet]
-    (implicit
-      f: Filter[S, P] { type Out = Q },
-      s: S ~:~ Q
-    ):  CheckForAll[S, P] =
-    new CheckForAll[S, P]
+  implicit def nonEmpty[
+    P <: AnyTypePredicate,
+    H <: P#ArgBound, T <: AnyTypeSet,
+    TO <:AnyTypeSet
+  ](implicit
+    h: P Accepts H,
+    ev: App2[filter, P, T, TO]
+  ): App2[filter, P, H :~: T, H :~: TO] =
+      filter at { (p: P, hs: H :~: T) => hs.head :~: filter(p,hs.tail) }
 }
 
 
-@annotation.implicitNotFound(msg = "Can't check that predicate ${P} is true for any element of ${S}")
-sealed class CheckForAny[S <: AnyTypeSet, P <: AnyTypePredicate]
-
-// NOTE: this doesn't use Filter because it stop as soon as finds an element accepted byt the predicate
-object CheckForAny extends CheckForAny_2 {
-
-  implicit def head[P <: AnyTypePredicate, H <: P#ArgBound, T <: AnyTypeSet]
-    (implicit h: P Accepts H):
-        CheckForAny[H :~: T, P] =
-    new CheckForAny[H :~: T, P]
-}
-
-trait CheckForAny_2 {
-
-  implicit def tail[P <: AnyTypePredicate, H <: P#ArgBound, T <: AnyTypeSet]
-    (implicit t: CheckForAny[T, P]):
-        CheckForAny[H :~: T, P] =
-    new CheckForAny[H :~: T, P]
-}
+// @annotation.implicitNotFound(msg = "Can't check that predicate ${P} is true for every element of ${S}")
+// sealed class CheckForAll[S <: AnyTypeSet, P <: AnyTypePredicate]
+//
+// object CheckForAll {
+//
+//   implicit def filterCheck[S <: AnyTypeSet, P <: AnyTypePredicate, Q <: AnyTypeSet]
+//     (implicit
+//       f: Filter[S, P] { type Out = Q },
+//       s: S ~:~ Q
+//     ):  CheckForAll[S, P] =
+//     new CheckForAll[S, P]
+// }
+//
+//
+// @annotation.implicitNotFound(msg = "Can't check that predicate ${P} is true for any element of ${S}")
+// sealed class CheckForAny[S <: AnyTypeSet, P <: AnyTypePredicate]
+//
+// // NOTE: this doesn't use Filter because it stop as soon as finds an element accepted byt the predicate
+// object CheckForAny extends CheckForAny_2 {
+//
+//   implicit def head[P <: AnyTypePredicate, H <: P#ArgBound, T <: AnyTypeSet]
+//     (implicit h: P Accepts H):
+//         CheckForAny[H :~: T, P] =
+//     new CheckForAny[H :~: T, P]
+// }
+//
+// trait CheckForAny_2 {
+//
+//   implicit def tail[P <: AnyTypePredicate, H <: P#ArgBound, T <: AnyTypeSet]
+//     (implicit t: CheckForAny[T, P]):
+//         CheckForAny[H :~: T, P] =
+//     new CheckForAny[H :~: T, P]
+// }

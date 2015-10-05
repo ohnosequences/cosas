@@ -6,7 +6,7 @@ case object syntax {
 
   case class PropertySyntax[P <: AnyProperty](val p: P) extends AnyVal {
 
-    def apply(v: P#Raw): ValueOf[P] = valueOf(p)(v)
+    def apply[PV <: P#Raw](v: PV): P := PV = p := v
   }
 
   case class PropertySetSyntax[PS <: AnyPropertySet](val propSet: PS) extends AnyVal {

@@ -1,31 +1,21 @@
-/* ## Taking a subset */
-
 package ohnosequences.cosas.typeSets
 
 import ohnosequences.cosas._, fns._, typeSets._
 
-@annotation.implicitNotFound(msg = "Cannot take subset ${Q} from ${S}")
-trait Take[S <: AnyTypeSet, Q <: AnyTypeSet] extends Fn1[S] with Out[Q]
+class Take[Q <: AnyTypeSet] extends DepFn1[AnyTypeSet, Q]
 
-object Take {
+case object Take {
 
-  def apply[S <: AnyTypeSet, Q <: AnyTypeSet]
-    (implicit take: Take[S, Q]): Take[S, Q] = take
+  implicit def empty[S <: AnyTypeSet]: App1[Take[∅],S,∅] =
+    App1 { s: S => ∅ }
 
-  implicit def empty[S <: AnyTypeSet]: 
-        Take[S, ∅] = 
-    new Take[S, ∅] { def apply(s: S): ∅ = ∅ }
-
-  implicit def cons[S <: AnyTypeSet, S_ <: AnyTypeSet, H, T <: AnyTypeSet]
-    (implicit 
-      pop: PopSOut[S, H, S_],
-      rest: Take[S_, T]
-    ):  Take[S, H :~: T] =
-    new Take[S, H :~: T] { 
-
-      def apply(s: S): Out = {
-        val (h, t) = pop(s)
-        h :~: rest(t)
-      }
-    }
+  implicit def nonEmpty[
+    TailToTake <: AnyTypeSet, From <: AnyTypeSet, Rest <: AnyTypeSet,
+    HeadToTake
+  ](implicit
+    pop: App1[pop[HeadToTake], From, (HeadToTake, Rest)],
+    take: App1[Take[TailToTake], Rest, TailToTake]
+  )
+  : App1[Take[HeadToTake :~: TailToTake], From, HeadToTake :~: TailToTake] =
+    App1 { s: From => { val (h, t) = pop(s); h :~: take(t) } }
 }

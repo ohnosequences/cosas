@@ -8,3 +8,7 @@ trait AnyTypePredicate {
 }
 
 trait TypePredicate[B] extends AnyTypePredicate { type ArgBound = B }
+
+trait Bool
+case object True extends Bool
+case object False extends Bool
