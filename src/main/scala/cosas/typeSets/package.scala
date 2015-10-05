@@ -19,7 +19,7 @@ package object typeSets {
   val union: union = Union
 
   type lookup[E] = Lookup[E]
-  def lookup[E] = new Lookup[E]
+  def lookup[E]: lookup[E] = new Lookup[E]
 
   type pop[E] = Pop[E]
   def pop[X]: pop[X] = new Pop[X]
