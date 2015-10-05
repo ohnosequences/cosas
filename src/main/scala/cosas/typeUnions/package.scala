@@ -1,7 +1,5 @@
 package ohnosequences.cosas
 
-import shapeless.<:!<
-
 package object typeUnions {
 
   private[cosas] type not[-T]

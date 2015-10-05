@@ -2,7 +2,6 @@ package ohnosequences.cosas
 
 package object fns {
 
-
   implicit def depFn1Syntax[DF <: AnyDepFn1](df: DF): syntax.DepFn1Syntax[DF] =
     syntax.DepFn1Syntax(df)
 

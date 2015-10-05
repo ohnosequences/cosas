@@ -8,7 +8,6 @@ trait AnyTypeUnion {
 
 sealed trait either[X] extends TypeUnion[not[X]] {}
 
-/* Builder */
 trait TypeUnion[T] extends AnyTypeUnion {
 
   type or[S] = TypeUnion[T with not[S]]

@@ -1,21 +1,43 @@
 package ohnosequences.cosas.fns
 
 /* Dependent functions aka dependent products */
-trait AnyDepFn { type Out }
+trait AnyDepFn {
+  type Out
+}
 trait AnyDepFn0 extends AnyDepFn
-trait AnyDepFn1 extends AnyDepFn { type In1 }
-trait DepFn1[I,O] extends AnyDepFn1 { type In1 = I; type Out = O }
-trait AnyDepFn2 extends AnyDepFn { type In1; type In2 }
-trait DepFn2[I1,I2,O] extends AnyDepFn2 { type In1 = I1; type In2 = I2; type Out = O }
-// TODO moar arities
-// trait AnyDepFn3 extends AnyDepFn { type In1; type In2 }
-
-trait Out[F[_]] extends AnyDepFn {
-
-  type O
-  type Out = F[O]
+trait DepFn0[O] extends AnyDepFn0 {
+  type Out = O
 }
 
+trait AnyDepFn1 extends AnyDepFn {
+  type In1
+}
+trait DepFn1[I,O] extends AnyDepFn1 {
+  type In1 = I
+  type Out = O
+}
+
+trait AnyDepFn2 extends AnyDepFn {
+  type In1
+  type In2
+}
+trait DepFn2[I1,I2,O] extends AnyDepFn2 {
+  type In1 = I1
+  type In2 = I2
+  type Out = O
+}
+
+trait AnyDepFn3 extends AnyDepFn {
+  type In1
+  type In2
+  type In3
+}
+trait DepFn3[I1, I2, I3, O] extends AnyDepFn3 {
+  type In1 = I1
+  type In2 = I2
+  type In3 = I3
+  type Out = O
+}
 
 trait AnyDepFn1Composition extends AnyDepFn1 {
 
@@ -77,8 +99,21 @@ trait AnyAt2 extends Any with AnyAt {
   def apply(in1: X1, in2: X2): Y
 }
 
+trait AnyAt3 extends Any with AnyAt {
 
-case class App1[DF <: AnyDepFn1, I <: DF#In1, O <: DF#Out](val does: I => O) extends AnyVal with AnyAt1 {
+  type DepFn <: AnyDepFn3
+  type X1 <: DepFn#In1; type X2 <: DepFn#In2; type X3 <: DepFn#In3
+
+  def apply(in1: X1, in2: X2, in3: X3): Y
+}
+
+
+case class App1[
+  DF <: AnyDepFn1,
+  I <: DF#In1,
+  O <: DF#Out
+]
+(val does: I => O) extends AnyVal with AnyAt1 {
 
   type DepFn = DF
   type X1 = I
@@ -88,7 +123,12 @@ case class App1[DF <: AnyDepFn1, I <: DF#In1, O <: DF#Out](val does: I => O) ext
     does(in)
 }
 
-case class App2[DF <: AnyDepFn2, I1 <: DF#In1, I2 <: DF#In2, O <: DF#Out](val does: (I1,I2) => O) extends AnyVal with AnyAt2 {
+case class App2[
+  DF <: AnyDepFn2,
+  I1 <: DF#In1, I2 <: DF#In2,
+  O <: DF#Out
+]
+(val does: (I1,I2) => O) extends AnyVal with AnyAt2 {
 
   type DepFn = DF
   type X1 = I1; type X2 = I2
@@ -96,4 +136,19 @@ case class App2[DF <: AnyDepFn2, I1 <: DF#In1, I2 <: DF#In2, O <: DF#Out](val do
 
   final def apply(in1: X1, in2: X2): Y =
     does(in1,in2)
+}
+
+case class App3[
+  DF <: AnyDepFn3,
+  I1 <: DF#In1, I2 <: DF#In2, I3 <: DF#In3,
+  O <: DF#Out
+]
+(val does: (I1,I2,I3) => O) extends AnyVal with AnyAt3 {
+
+  type DepFn = DF
+  type X1 = I1; type X2 = I2; type X3 = I3
+  type Y = O
+
+  final def apply(in1: X1, in2: X2, in3: X3): Y =
+    does(in1,in2,in3)
 }

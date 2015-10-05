@@ -89,6 +89,11 @@ class DenotationTests extends org.scalatest.FunSuite {
 
     val z: User := Bar = User := new Bar
     val x: User := Foo = z
+
+    case object A extends AnyType { lazy val label = toString; type Raw = Foo }
+
+    val aFoo = A := new Foo {}
+    val aBar: ValueOf[A.type] = A := new Bar
   }
 
   test("denoting types with bound Any") {
