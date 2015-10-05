@@ -63,11 +63,17 @@ case object syntax {
     )
     : ValueOf[RT] =
       update(new Denotes[RT#Raw,RT](entryRaw), properties)
-    //
-    // def as[Other <: AnyRecord, Rest <: AnyTypeSet](other: Other, rest: Rest)(implicit
-    //   transform: Transform[RT, Other, Rest]
-    // ): ValueOf[Other] = transform(entryRaw, other, rest)
-    //
+
+    def as[
+      Other <: AnyRecord,
+      Rest <: AnyTypeSet
+    ]
+    (other: Other, rest: Rest)(implicit
+      _transform: App3[transform[RT, Other], ValueOf[RT], Other, Rest, ValueOf[Other]]
+    )
+    : ValueOf[Other] =
+      _transform(new (RT := RT#Raw)(entryRaw), other, rest)
+
     // def as[Other <: AnyRecord { type Raw = RT#Raw }](otherEntry: ValueOf[Other]): ValueOf[RT] =
     //   new ValueOf[RT](otherEntry.value)
   }

@@ -11,6 +11,9 @@ package object records {
   type update[RT <: AnyRecord] = Update[RT]
   def update[RT <: AnyRecord]: update[RT] = new Update[RT]
 
+  type transform[RT <: AnyRecord, Other <: AnyRecord] = Transform[RT,Other]
+  def transform[RT <: AnyRecord, Other <: AnyRecord]: transform[RT,Other] = new Transform[RT,Other]
+
   implicit def recordSyntax[RT <: AnyRecord](recType: RT): syntax.RecordSyntax[RT] =
     syntax.RecordSyntax(recType)
 

@@ -99,11 +99,11 @@ class RecordTests extends org.scalatest.FunSuite {
     }
   }
 
-//   test("can see a record entry as another") {
-//
-//     assert { normalUserEntry === ( simpleUserEntry as (normalUser, email("foo@bar.qux") :~: color("orange") :~: ∅) ) }
-//   }
-//
+  test("can see a record entry as another") {
+
+    assert { normalUserEntry === ( simpleUserEntry as (normalUser, email("foo@bar.qux") :~: color("orange") :~: ∅) ) }
+  }
+
   test("can provide properties in different order") {
 
     // the declared property order
