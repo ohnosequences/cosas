@@ -8,17 +8,18 @@ trait AnyKList {
   type Bound
 }
 
-trait KList[A] extends AnyKList { type Bound = A }
+trait KList[+A] extends AnyKList {
+  type Bound = A @scala.annotation.unchecked.uncheckedVariance
+}
 
-
-case class KNilOf[A]() extends KList[A] {
+case class KNilOf[+A]() extends KList[A] {
 
   type Types = TypeUnion.empty
   type Union = Types#union
 }
 
 
-trait AnyNEKList extends AnyKList { 
+trait AnyNEKList extends AnyKList {
 
   type Head <: Bound
   val  head: Head
@@ -31,13 +32,13 @@ trait AnyNEKList extends AnyKList {
   type Union = Types#union
 }
 
-trait NEKList[A] extends AnyNEKList with KList[A]
+trait NEKList[+A] extends AnyNEKList with KList[A]
 
 
-case class KCons[H <: B, T <: KList[B], B](val head: H, val tail: T) extends NEKList[B] {
+case class KCons[+H <: B, +T <: KList[B], +B](val head: H, val tail: T) extends NEKList[B] {
 
-  type Head = H 
-  type Tail = T
+  type Head = H @scala.annotation.unchecked.uncheckedVariance
+  type Tail = T @scala.annotation.unchecked.uncheckedVariance
 }
 
 
@@ -66,7 +67,7 @@ trait IsKCons[L <: KList[B],B] {
 
   type H <: B
   type T <: KList[B]
-    
+
   def h(l: L): H
   def t(l: L): T
 }
@@ -74,14 +75,14 @@ trait IsKCons[L <: KList[B],B] {
 object IsKCons {
 
   implicit def klistIsKCons[
-    H0 <: B0, 
+    H0 <: B0,
     T0 <: KList[B0],
     B0
   ]: IsKCons[KCons[H0,T0,B0], B0] = new IsKCons[KCons[H0,T0,B0], B0] {
-      
+
     type T = T0
     type H = H0
-    
+
     def h(l: KCons[H0,T0,B0]): H0 = l.head
     def t(l: KCons[H0,T0,B0]): T0 = l.tail
   }

@@ -39,6 +39,10 @@ class HListTests extends org.scalatest.FunSuite {
   test("KList stuff") {
 
     val oh = A0 :@: A1 :@: A0 :@: KNil[A]
+    val oh_any: KList[Any] = oh
+
+    val uh: KList[A0.type] = A0 :@: A0 :@: A0 :@: KNil[A0.type]
+    val uh_A: KList[A] = uh
 
     assert{ oh.HEAD.boo == true }
     assert{ oh.tail.head.boo == false }
