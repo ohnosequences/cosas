@@ -1,0 +1,7 @@
+This release is a first step towards a more stable API. Additions/improvements:
+
+- type-level functions
+- type equality witness style
+- simplify properties and records
+
+I promise I will write better release notes in the future :)

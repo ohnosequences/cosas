@@ -1,7 +1,5 @@
-## Pointless
-
-_It's **pointless**, but **useful**_
-
+## cosas
+[![Gitter](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/ohnosequences/cosas?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 * Records
 * Type union
@@ -15,7 +13,7 @@ To add a dependency on this library to your sbt project, add these lines to your
 ```scala
 resolvers += "Era7 maven releases" at "http://releases.era7.com.s3.amazonaws.com"
 
-libraryDependencies += "ohnosequences" %% "pointless" % "0.6.0" // not released yet
+libraryDependencies += "ohnosequences" %% "cosas" % "0.6.0" // not released yet
 ```
 
 The artifact is published only for scala `2.11.2`.
@@ -26,4 +24,8 @@ The artifact is published only for scala `2.11.2`.
 Documentation is generated from the code by [literator](https://github.com/laughedelic/literator) 
 tool. See the `docs/` folder and tests for examples.
 
-Also, there are [API docs](http://ohnosequences.com/pointless/docs/api/0.5.0)
+Also, there are [API docs](http://ohnosequences.com/cosas/docs/api/0.5.0)
+
+### contact
+
+- **maintainer** [@eparejatobes](https://github.com/eparejatobes)
