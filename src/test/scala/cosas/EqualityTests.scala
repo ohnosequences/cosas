@@ -1,4 +1,4 @@
-package ohnosequences.scala.tests
+package ohnosequences.cosas.tests
 
 import ohnosequences.cosas._, equality._
 
