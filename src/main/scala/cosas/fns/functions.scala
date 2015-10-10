@@ -23,6 +23,9 @@ case object AnyDepFn1 {
     Y0 <: DF0#Out
   ](df: DF0): syntax.DepFn1ApplySyntax[DF0,X10,Y0] =
     syntax.DepFn1ApplySyntax(df)
+
+  implicit def reallyIam[F <: AnyDepFn1](f: F): AnyDepFn1.is[F] = f
+  type is[F <: AnyDepFn1] = F with AnyDepFn1 { type In1 = F#In1; type Out = F#Out }
 }
 trait DepFn1[I,O] extends AnyDepFn1 {
   type In1 = I

@@ -30,4 +30,7 @@ scalacOptions ++= Seq("-Xlog-implicits")
 
 incOptions := incOptions.value.withNameHashing(false)
 
-wartremoverExcluded += baseDirectory.value / "src" / "main" / "scala" / "cosas" / "products" / "map.scala"
+wartremoverExcluded ++= Seq(
+  baseDirectory.value / "src" / "main" / "scala" / "cosas" / "products" / "map.scala",
+  baseDirectory.value / "src" / "main" / "scala" / "cosas" / "products" / "klists.scala"
+)
