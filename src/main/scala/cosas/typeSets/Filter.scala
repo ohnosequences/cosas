@@ -34,7 +34,7 @@ case object Filter extends Filter {
     h: P Accepts H,
     ev: App2[filter, P, T, TO]
   ): App2[filter, P, H :~: T, H :~: TO] =
-      filter at { (p: P, hs: H :~: T) => hs.head :~: filter(p,hs.tail) }
+      filter at { (p: P, hs: H :~: T) => hs.head :~: filter(p,hs.tail)(ev) }
 }
 
 

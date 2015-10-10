@@ -30,11 +30,29 @@ case object syntax {
       app(x1)
   }
 
-  case class DepFn2ApplySyntax[DF <: AnyDepFn2, X1 <: DF#In1, X2 <: DF#In2, O <: DF#Out](val df: DF) extends AnyVal {
+  // case class DepFn2ApplySyntax[DF <: AnyDepFn2, X1 <: DF#In1, X2 <: DF#In2, O <: DF#Out](val df: DF) extends AnyVal {
+  //
+  //   final def apply(x1: X1, x2: X2)(implicit app: App2[DF,X1,X2,O]): O =
+  //     app(x1,x2)
+  // }
 
-    final def apply(x1: X1, x2: X2)(implicit app: App2[DF,X1,X2,O]): O =
-      app(x1,x2)
+  case class DepFn2ApplyAt[DF <: AnyDepFn2, A <: DF#In1, B <: DF#In2](val df: DF) {
+
+    final def apply[Y0 <: DF#Out](x1: A, x2: B)(implicit app: AnyApp2At[DF,A,B] { type Y = Y0 }): Y0 = app(x1,x2)
   }
+  // case class DepFn2ApplySyntax[DF <: AnyDepFn2](val df: DF) extends AnyVal {
+  //
+  //   final def apply[
+  //     A <: DF#In1, B <: DF#In2,
+  //     Z <: DF#Out,
+  //     App <: AnyApp2 { type DepFn = DF; type X1 = A; type X2 = B; type Y = Z }
+  //   ](x1: A, x2: B)(implicit
+  //     app: App
+  //   ): Z =
+  //     app(x1,x2)
+  // }
+
+
 
   case class DepFn3ApplySyntax[
     DF <: AnyDepFn3,
