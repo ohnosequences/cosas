@@ -2,8 +2,11 @@ package ohnosequences.cosas.products
 
 import ohnosequences.cosas._, fns._
 
-class MapKListOf[F <: AnyDepFn1 { type Out = Y; type In1 = X }, X,Y] extends DepFn2[
-  AnyDepFn1,
+class MapKListOf[
+  F <: AnyDepFn1,
+  X,Y
+]
+extends DepFn1[
   AnyKList { type Bound = X },
   AnyKList { type Bound = Y }
 ]
@@ -11,30 +14,31 @@ class MapKListOf[F <: AnyDepFn1 { type Out = Y; type In1 = X }, X,Y] extends Dep
 case object MapKListOf {
 
   implicit def empty[
-    F <: AnyDepFn1 {type In1 = A; type Out = B0 },
+    F <: AnyDepFn1 { type In1 = A; type Out = B0 },
     A,
     B0
   ]
-  : AnyApp2At[MapKListOf[F,A,B0],F,KNil[A]] { type Y = KNil[B0] } =
-    App2 { (f: F, e: KNil[A]) => KNil[B0] }
+  : AnyApp1At[MapKListOf[F,A,B0],KNil[A]] { type Y = KNil[B0] } =
+    App1 { (e: KNil[A]) => KNil[B0] }
 
   implicit def kcons[
     F <: AnyDepFn1 { type In1 = A; type Out = B },
     A, B >: O,
     H <: F#In1, InT <: AnyKList { type Bound = A },
-    O
+    O, OutT <: AnyKList { type Bound = B }
   ](implicit
     evF: App1[F,H,O],
-    mapof: AnyApp2At[
+    mapof: AnyApp1At[
       MapKListOf[F,A,B],
-      F, InT
+      InT
     ]
   )
-  : AnyApp2At[MapKListOf[F,A,B], F, H :: InT] { type Y = O :: mapof.Y } =
-    new AnyApp2At[MapKListOf[F,A,B], F, H :: InT] {
-
-      type Y = O :: mapof.Y
-
-      def apply(f: F, s: H :: InT): Y = f(s.head) :: mapof(f,s.tail)
+  : AnyApp1At[MapKListOf[F,A,B], H :: InT] { type Y = O :: mapof.Y } =
+    App1[MapKListOf[F,A,B], H :: InT,  O :: mapof.Y] {
+      (s: H :: InT) => evF(s.head) :: mapof(s.tail)
+      //
+      // type Y = O :: mapof.Y
+      //
+      // def apply(f: F, s: H :: InT): Y = f(s.head) :: mapof(f,s.tail)
     }
 }

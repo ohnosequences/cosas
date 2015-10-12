@@ -9,8 +9,9 @@ package object products {
   type ::[+H <: T#Bound, +T <: AnyKList] = KCons[H,T]
 
   type mapKList[F <: AnyDepFn1] =
-    MapKListOf[F with AnyDepFn1 { type In1 = F#In1; type Out = F#Out }, F#In1,F#Out]
-  def mapKList[F <: AnyDepFn1]: mapKList[F] =
-    new MapKListOf[F with AnyDepFn1 { type In1 = F#In1; type Out = F#Out }, F#In1,F#Out]
-  def altBuh[F <: AnyDepFn1 { type Out = Y; type In1 = X }, X,Y]: MapKListOf[F,X,Y] = new MapKListOf[F,X,Y]
+    MapKListOf[F, F#In1,F#Out]
+  def mapKList[F <: AnyDepFn1](f: F): mapKList[F] = new mapKList[F]
+
+  type toList[L <: AnyKList] = ToList[L]
+  def toList[L <: AnyKList]: toList[L] = new ToList[L]
 }

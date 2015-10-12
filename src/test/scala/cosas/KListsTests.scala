@@ -50,6 +50,33 @@ class HListTests extends org.scalatest.FunSuite {
     assert{ foo(oh) === true }
   }
 
+  test("can convert KLists to lists of their bound") {
+
+    assert {
+      (A0 :: A1 :: A0 :: KNil[A]).toList === (A0 :: A1 :: A0 :: Nil)
+    }
+
+    assert {
+      ("hola" :: "scalac" :: KNil[String]).toList === ("hola" :: "scalac" :: Nil)
+    }
+  }
+
+  test("can concatenate KLists") {
+
+    val concat = new Concatenate[Boolean :: String :: KNil[Any]]
+
+    assert {
+
+      concat(true :: "que tal" :: KNil[Any], "hola" :: 2 :: KNil[Any]) ===
+        (true :: "que tal" :: "hola" :: 2 :: KNil[Any])
+    }
+
+    assert {
+      (true :: "que tal" :: KNil[Any]) ++ ("hola" :: 2 :: KNil[Any]) ===
+        true :: "que tal" :: "hola" :: 2 :: KNil[Any]
+    }
+  }
+
   test("can map over KLists") {
 
     case object f extends DepFn1[Any,String] {
@@ -61,18 +88,50 @@ class HListTests extends org.scalatest.FunSuite {
     val zz: Boolean :: KNil[Any] = true :: KNil[Any]
     val zzz: Int :: Boolean :: KNil[Any] = 2 :: true :: KNil[Any]
 
-    val map: mapKList[identity.type] = mapKList[identity.type]
-
-    val m0 = mapKList[identity.type](identity, KNil[Any])
-    val m1 = map.apply(identity, zz)
-    val m2 = map(identity, zzz)
-
     assert {
-      mapKList[f.type](f,zzz) === "2" :: "true" :: KNil[String]
+
+      KList(identity)(zzz) === zzz
+    }
+    assert {
+      KList(f)(zzz) === "2" :: "true" :: KNil[String]
     }
 
-    // TODO shouldn't need to add the type
-    // val bbb = mapKList(f,zzz)
+    assert {
+
+      KList(f)("hola" :: "scalac" :: KNil[Any]) === "hola" :: "scalac" :: KNil[String]
+    }
+
+    assert {
+
+      KList(as[String,Any])("hola" :: "scalac" :: KNil[String]) === "hola" :: "scalac" :: KNil[Any]
+    }
+  }
+
+  case object sum extends DepFn2[Int,Int,Int] {
+
+    implicit val default: App2[sum.type, Int,Int,Int] = App2 { (a: Int, b: Int) => (a + b): Int }
+  }
+
+  test("can foldLeft over KLists") {
+
+    val flEmpty = new FoldLeft[KNil[Int], sum.type, Int]
+    val flAgain = new FoldLeft[Int :: KNil[Int], sum.type, Int]
+    assert {
+      flEmpty(KNil[Int],0,sum) === 0
+    }
+
+    assert {
+
+      flAgain(2 :: KNil[Int],0,sum) === 2
+    }
+
+    assert {
+
+      (3 :: 2 :: 1 :: KNil[Int]).foldLeft(sum)(0) === 6
+    }
+
+    // val foldLeft = new FoldLeft[String :: String :: KNil[Any], identity.type]
+    // val z = foldLeft("hola" :: "scalac" :: KNil[Any], "", identity)
   }
 
 }

@@ -19,13 +19,11 @@ case object AnyDepFn1 {
 
   implicit def depFn1ApplySyntax[
     DF0 <: AnyDepFn1,
-    X10 <: DF0#In1,
-    Y0 <: DF0#Out
-  ](df: DF0): syntax.DepFn1ApplySyntax[DF0,X10,Y0] =
-    syntax.DepFn1ApplySyntax(df)
+    X10 <: DF0#In1
+  ](df: DF0): syntax.DepFn1ApplyAt[DF0,X10] =
+    syntax.DepFn1ApplyAt(df)
 
-  implicit def reallyIam[F <: AnyDepFn1](f: F): AnyDepFn1.is[F] = f
-  type is[F <: AnyDepFn1] = F with AnyDepFn1 { type In1 = F#In1; type Out = F#Out }
+  // type is[F <: AnyDepFn1] = F with AnyDepFn1 { type In1 = F#In1; type Out = F#Out }
 }
 trait DepFn1[I,O] extends AnyDepFn1 {
   type In1 = I
@@ -64,12 +62,18 @@ case object AnyDepFn3 {
   implicit def depFn3Syntax[DF <: AnyDepFn3](df: DF): syntax.DepFn3Syntax[DF] =
     syntax.DepFn3Syntax(df)
 
-  implicit def depFn3ApplySyntax[
+  implicit def depFn2ApplySyntax[
     DF0 <: AnyDepFn3,
-    X10 <: DF0#In1, X20 <: DF0#In2, X30 <: DF0#In3,
-    O0 <: DF0#Out
-  ](df: DF0): syntax.DepFn3ApplySyntax[DF0,X10,X20,X30,O0] =
-    syntax.DepFn3ApplySyntax(df)
+    A0 <: DF0#In1, B0 <: DF0#In2, C0 <: DF0#In3
+  ](df: DF0): syntax.DepFn3ApplyAt[DF0,A0,B0,C0] =
+    syntax.DepFn3ApplyAt(df)
+
+  // implicit def depFn3ApplySyntax[
+  //   DF0 <: AnyDepFn3,
+  //   X10 <: DF0#In1, X20 <: DF0#In2, X30 <: DF0#In3,
+  //   O0 <: DF0#Out
+  // ](df: DF0): syntax.DepFn3ApplySyntax[DF0,X10,X20,X30,O0] =
+  //   syntax.DepFn3ApplySyntax(df)
 }
 trait DepFn3[I1, I2, I3, O] extends AnyDepFn3 {
   type In1 = I1
@@ -130,6 +134,12 @@ trait AnyApp1 extends Any with AnyApp {
   def apply(in: X1): Y
 }
 
+trait AnyApp1At[DF <: AnyDepFn1,A0 <: DF#In1] extends Any with AnyApp1 {
+
+  type DepFn = DF;
+  type X1 = A0
+}
+
 trait AnyApp2 extends Any with AnyApp {
 
   type DepFn <: AnyDepFn2
@@ -152,16 +162,20 @@ trait AnyApp3 extends Any with AnyApp {
   def apply(in1: X1, in2: X2, in3: X3): Y
 }
 
+trait AnyApp3At[DF <: AnyDepFn3,A0 <: DF#In1,B0 <: DF#In2,C0 <: DF#In3] extends Any with AnyApp3 {
+
+  type DepFn = DF;
+  type X1 = A0; type X2 = B0; type X3 = C0
+}
+
 
 case class App1[
   DF <: AnyDepFn1,
   I <: DF#In1,
   O <: DF#Out
 ]
-(val does: I => O) extends AnyVal with AnyApp1 {
+(val does: I => O) extends AnyVal with AnyApp1At[DF,I] {
 
-  type DepFn = DF
-  type X1 = I
   type Y = O
 
   final def apply(in: X1): Y =
@@ -186,10 +200,8 @@ case class App3[
   I1 <: DF#In1, I2 <: DF#In2, I3 <: DF#In3,
   O <: DF#Out
 ]
-(val does: (I1,I2,I3) => O) extends AnyVal with AnyApp3 {
+(val does: (I1,I2,I3) => O) extends AnyVal with AnyApp3At[DF,I1,I2,I3] {
 
-  type DepFn = DF
-  type X1 = I1; type X2 = I2; type X3 = I3
   type Y = O
 
   final def apply(in1: X1, in2: X2, in3: X3): Y =
