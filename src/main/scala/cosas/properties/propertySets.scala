@@ -39,6 +39,9 @@ case object AnyPropertySet {
 
   type withProperties[Ps <: AnyTypeSet.Of[AnyProperty]] = AnyPropertySet { type Properties = Ps }
   type withRaw[Vs <: AnyTypeSet] = AnyPropertySet { type Raw = Vs }
+
+  implicit def propertySetSyntax[PS <: AnyPropertySet](record: PS): syntax.PropertySetSyntax[PS] =
+    syntax.PropertySetSyntax(record)
 }
 
 @annotation.implicitNotFound(msg = """

@@ -1,7 +1,7 @@
 package ohnosequences.cosas.typeSets
 
 // deps
-import ohnosequences.cosas.typeUnions._
+import ohnosequences.cosas._, typeUnions._, types._
 import shapeless.{ HList, Poly1 }
 import shapeless.Nat._
 import shapeless.{Nat, Succ}
@@ -41,6 +41,12 @@ case object AnyTypeSet {
   type SupersetOf[S <: AnyTypeSet] = AnyTypeSet { type Bound >: S#Bound }
 
   type BoundedByUnion[U <: AnyTypeUnion] = AnyTypeSet { type Bound <: U#union }
+
+  implicit def typeSetSyntax[S <: AnyTypeSet](s: S): syntax.TypeSetSyntax[S] =
+    syntax.TypeSetSyntax(s)
+
+  implicit def denotationsSetSyntax[DS0 <: AnyTypeSet.Of[AnyDenotation]](ds: DS0): syntax.DenotationsSetSyntax[DS0] =
+    syntax.DenotationsSetSyntax(ds)
 }
 
 private[cosas] object TypeSetImpl {

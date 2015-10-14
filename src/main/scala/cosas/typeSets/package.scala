@@ -139,10 +139,4 @@ package object typeSets {
   // type ∪[S <: AnyTypeSet, Q <: AnyTypeSet] = typeSets.Union[S, Q]
 
   // type ToListOf[S <: AnyTypeSet, T] = typeSets.ToList[S] { type O = T }
-
-  implicit def typeSetSyntax[S <: AnyTypeSet](s: S): syntax.TypeSetSyntax[S] =
-    syntax.TypeSetSyntax(s)
-
-  implicit def denotationsSetSyntax[DS0 <: AnyTypeSet.Of[AnyDenotation]](ds: DS0): syntax.DenotationsSetSyntax[DS0] =
-    syntax.DenotationsSetSyntax(ds)
 }

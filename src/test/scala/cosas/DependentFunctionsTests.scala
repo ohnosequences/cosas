@@ -26,4 +26,24 @@ class DependentFunctionsTests extends org.scalatest.FunSuite {
     assert { 2 === size(size("bu")) }
     assert { size(4) === size("four") }
   }
+
+  test("can apply functions as dependent functions") {
+
+    val f = { x: List[String] => x.size }
+
+    assert { Fn1(f)(List("hola", "scalac")) === f(List("hola", "scalac")) }
+  }
+
+  test("composition?") {
+
+    assert {
+      (new Composition( size, new Composition(size,size) ))(2) === size(size(size(2)))
+    }
+
+    assert { (new Composition(new Composition(size,size), size ))(2) === size(size(size(2))) }
+
+    assert {
+      (new Composition(print,print))("abc") === print(print("abc"))
+    }
+  }
 }

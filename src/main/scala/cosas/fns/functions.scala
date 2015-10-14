@@ -22,9 +22,8 @@ case object AnyDepFn1 {
     X10 <: DF0#In1
   ](df: DF0): syntax.DepFn1ApplyAt[DF0,X10] =
     syntax.DepFn1ApplyAt(df)
-
-  // type is[F <: AnyDepFn1] = F with AnyDepFn1 { type In1 = F#In1; type Out = F#Out }
 }
+
 trait DepFn1[I,O] extends AnyDepFn1 {
   type In1 = I
   type Out = O
@@ -62,18 +61,11 @@ case object AnyDepFn3 {
   implicit def depFn3Syntax[DF <: AnyDepFn3](df: DF): syntax.DepFn3Syntax[DF] =
     syntax.DepFn3Syntax(df)
 
-  implicit def depFn2ApplySyntax[
+  implicit def depFn3ApplySyntax[
     DF0 <: AnyDepFn3,
     A0 <: DF0#In1, B0 <: DF0#In2, C0 <: DF0#In3
   ](df: DF0): syntax.DepFn3ApplyAt[DF0,A0,B0,C0] =
     syntax.DepFn3ApplyAt(df)
-
-  // implicit def depFn3ApplySyntax[
-  //   DF0 <: AnyDepFn3,
-  //   X10 <: DF0#In1, X20 <: DF0#In2, X30 <: DF0#In3,
-  //   O0 <: DF0#Out
-  // ](df: DF0): syntax.DepFn3ApplySyntax[DF0,X10,X20,X30,O0] =
-  //   syntax.DepFn3ApplySyntax(df)
 }
 trait DepFn3[I1, I2, I3, O] extends AnyDepFn3 {
   type In1 = I1
@@ -110,6 +102,20 @@ class Composition[
     appF: App1[F,X1,M],
     appS: App1[S,M,O]
   ): App1[this.type,X1,O] = App1 { x1: X1 => appS(appF(x1)) }
+}
+case object Composition {
+
+  implicit def appForComposition[
+    F <: AnyDepFn1 { type Out >: M },
+    S <: AnyDepFn1 { type In1 >: F#Out },
+    X1 <: F#In1,
+    M,
+    O <: S#Out
+  ](implicit
+    appF: AnyApp1At[F,X1] { type Y = M },
+    appS: AnyApp1At[S,M]
+  ): App1[Composition[F,S],X1,appS.Y] = App1 { x1: X1 => appS(appF(x1)) }
+
 }
 
 /* dependent function application machinery. These are to be thought of as the building blocks for terms of a dependent function type. */
