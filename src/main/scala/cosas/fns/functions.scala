@@ -93,15 +93,6 @@ class Composition[
 
   type First = F
   type Second = S
-
-  implicit def appForMe[
-    X1 <: First#In1,
-    M <: First#Out,
-    O <: Second#Out
-  ](implicit
-    appF: App1[F,X1,M],
-    appS: App1[S,M,O]
-  ): App1[this.type,X1,O] = App1 { x1: X1 => appS(appF(x1)) }
 }
 case object Composition {
 
@@ -173,7 +164,6 @@ trait AnyApp3At[DF <: AnyDepFn3,A0 <: DF#In1,B0 <: DF#In2,C0 <: DF#In3] extends 
   type DepFn = DF;
   type X1 = A0; type X2 = B0; type X3 = C0
 }
-
 
 case class App1[
   DF <: AnyDepFn1,

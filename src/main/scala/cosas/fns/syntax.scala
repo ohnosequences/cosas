@@ -24,12 +24,6 @@ case object syntax {
       App3(f)
   }
 
-  case class DepFn1ApplySyntax[DF <: AnyDepFn1, I0 <: DF#In1, O <: DF#Out](val df: DF) extends AnyVal {
-
-    final def apply(x1: I0)(implicit app: App1[DF,I0,O]): O =
-      app(x1)
-  }
-
   case class DepFn1ApplyAt[DF <: AnyDepFn1, A <: DF#In1](val df: DF) extends AnyVal {
 
     final def apply[Y0 <: DF#Out](x1: A)(implicit app: AnyApp1At[DF,A] { type Y = Y0 }): Y0 =

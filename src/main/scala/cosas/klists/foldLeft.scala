@@ -2,6 +2,7 @@ package ohnosequences.cosas.klists
 
 import ohnosequences.cosas.fns._
 
+// TODO review this signature
 class FoldLeft[L <: AnyKList, F <: AnyDepFn2, Z <: F#Out] extends DepFn3[
   L, Z, F,
   F#Out

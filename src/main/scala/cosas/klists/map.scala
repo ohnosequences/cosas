@@ -4,7 +4,7 @@ import ohnosequences.cosas._, fns._
 
 class MapKListOf[
   F <: AnyDepFn1,
-  X,Y
+  X >: F#In1 <: F#In1, Y >: F#Out <: F#Out
 ]
 extends DepFn1[
   AnyKList { type Bound = X },
