@@ -1,6 +1,6 @@
 package ohnosequences.cosas.tests
 
-import ohnosequences.cosas._, products._, fns._
+import ohnosequences.cosas._, klists._, fns._
 
 case object HListTestsContext {
 

@@ -1,4 +1,4 @@
-package ohnosequences.cosas.products
+package ohnosequences.cosas.klists
 
 case object syntax {
 

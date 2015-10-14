@@ -2,7 +2,7 @@ package ohnosequences.cosas
 
 import ohnosequences.cosas.fns._
 
-package object products {
+package object klists {
 
   type KNil[+A] = KNilOf[A]
   def  KNil[A]: KNil[A] = KNilOf[A]

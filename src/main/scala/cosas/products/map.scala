@@ -1,4 +1,4 @@
-package ohnosequences.cosas.products
+package ohnosequences.cosas.klists
 
 import ohnosequences.cosas._, fns._
 
