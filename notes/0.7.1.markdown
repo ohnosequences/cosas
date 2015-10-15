@@ -1,0 +1,1 @@
+This is a bugfix release. It contains a fix for #63: ambiguous implicits when parsing/serializing properties.
