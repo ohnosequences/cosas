@@ -1,29 +1,34 @@
 package ohnosequences.cosas.tests
 
-import ohnosequences.cosas._, types._, AnySubsetType._
+import ohnosequences.cosas._, types._, syntax.SubsetTypeSyntax
 import ohnosequences.cosas.tests.asserts._
 
 object nelists {
 
-  final case class WrappedList[E]() extends Wrap[List[E]]("WrappedList")
+  final case class WrappedList[E]() extends AnyType {
+
+    type Raw = List[E]
+
+    val label = "WrappedList"
+  }
 
   class NEList[E] extends SubsetType[WrappedList[E]] {
 
     lazy val label = "NEList"
     def predicate(l: WrappedList[E] := List[E]): Boolean = ! l.value.isEmpty
 
-    def apply(e: E): ValueOf[NEList[E]] = new ValueOf[NEList[E]](e :: Nil)
+    def apply(e: E): ValueOf[NEList[E]] = new Denotes[List[E],NEList[E]](e :: Nil)
   }
 
-  object NEList {
+  case object NEList {
 
-    implicit def toOps[E](v: ValueOf[NEList[E]]): NEListOps[E] = new NEListOps(v.value)
-    implicit def toSSTops[E](v: NEList[E]): SubsetTypeOps[WrappedList[E], NEList[E]] = new SubsetTypeOps(v)
+    implicit def toSyntax[E](v: ValueOf[NEList[E]]): NEListSyntax[E] = new NEListSyntax(v.value)
+    implicit def toSSTops[E](v: NEList[E]): SubsetTypeSyntax[WrappedList[E], NEList[E]] = new SubsetTypeSyntax(v)
   }
 
   def NEListOf[E]: NEList[E] = new NEList()
 
-  class NEListOps[E](val l: List[E]) extends AnyVal with ValueOfSubsetTypeOps[WrappedList[E], NEList[E]] {
+  case class NEListSyntax[E](val l: List[E]) extends AnyVal with ValueOfSubsetTypeSyntax[WrappedList[E], NEList[E]] {
 
     def ::(x: E): ValueOf[NEList[E]] = unsafeValueOf[NEList[E]](x :: l)
   }
