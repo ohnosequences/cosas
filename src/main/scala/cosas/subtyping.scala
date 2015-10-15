@@ -1,41 +1,39 @@
 package ohnosequences.cosas
 
-// TODO consider caching singleton
+final case class NotSubtypeOf[A,B] private(val witness: NotSubtypeOf.type) extends AnyVal
 
-sealed trait !<[A,B]
+case object NotSubtypeOf extends SubtypeYieldsAmbiguity {
 
-case object !< extends SubtypeYieldsAmbiguity {
-
-  implicit def nsub[A, B] : A !< B = new !<[A, B] {}
+  implicit def nsub[A, B]: A !< B = new (A !< B)(this)
 }
 
 trait SubtypeYieldsAmbiguity {
 
-  implicit def nsubAmbig1[A, B >: A] : A !< B = throw new Exception {}
-  implicit def nsubAmbig2[A, B >: A] : A !< B = throw new Exception {}
+  implicit def nsubAmbig1[A, B >: A]: A !< B = throw new Exception {}
+  implicit def nsubAmbig2[A, B >: A]: A !< B = throw new Exception {}
 }
 
-sealed trait !=[A, B]
+final case class Distinct[A, B] private(val witness: Distinct.type) extends AnyVal
 
-case object != extends EqualTypesYieldsAmbiguity {
+case object Distinct extends EqualTypesYieldsAmbiguity {
 
-  implicit def neq[A, B] : A != B = new !=[A, B] {}
+  implicit def neq[A, B] : A != B = new (A != B)(this)
 }
 
 trait EqualTypesYieldsAmbiguity {
 
-  implicit def neqAmbig1[A] : A != A = throw new Exception {}
-  implicit def neqAmbig2[A] : A != A = throw new Exception {}
+  implicit def neqAmbig1[A]: A != A = throw new Exception {}
+  implicit def neqAmbig2[A]: A != A = throw new Exception {}
 }
 
-sealed trait ≤[A,B]
+final case class SubtypeOf[A,B] private[cosas](val witness: SubtypeOf.type) extends AnyVal
 
-case object ≤ extends WorksForSubtypesToo {
+case object SubtypeOf extends WorksForSubtypesToo {
 
-  implicit def refl[A]: A ≤ A = new (A ≤ A) {}
+  implicit def refl[A]: A ≤ A = new (A ≤ A)(this)
 }
 
 trait WorksForSubtypesToo {
 
-  implicit def subtype[A, B <: A]: B ≤ A = new (B ≤ A) {}
+  implicit def subtype[A, B <: A]: B ≤ A = new (B ≤ A)(SubtypeOf)
 }

@@ -21,9 +21,9 @@
 //
 //     val kset = kcons(buh, kcons(qux, kone(bar)))
 //
-//     implicitly[kset.Bound <:< superfoo]
+//     implicitly[kset.Bound ≤ superfoo]
 //     implicitly[kset.Bound =:= foo]
-//     implicitly[kset.tail.Bound <:< foo] // but not =:=
+//     implicitly[kset.tail.Bound ≤ foo] // but not =:=
 //
 //     type NEKSetOf[B] = NEKSet { type Bound <: B }
 //     def fun1[S <: NEKSetOf[foo] ](s: S): Int = s.head.boo
@@ -35,7 +35,7 @@
 //     val foobuh: foo = buh
 //     val foorest = kcons(qux, kone(bar))
 //
-//     implicitly[foorest.type <:< AnyKSet.Of[foo]]
+//     implicitly[foorest.type ≤ AnyKSet.Of[foo]]
 //
 //     val todos: AnyKSet.Of[foo] = kcons(foobuh, foorest)
 //

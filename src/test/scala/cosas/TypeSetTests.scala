@@ -64,8 +64,8 @@ class TypeSetTests extends org.scalatest.FunSuite {
 
 
     // case class foo[S <: AnyTypeSet.TypeSetOf[Int]]()
-    implicitly[foos.type <:< AnyTypeSet.Of[foo]]
-    // implicitly[(Int :~: ∅) <:< AnyTypeSet.Of[AnyVal]]
+    implicitly[foos.type ≤ AnyTypeSet.Of[foo]]
+    // implicitly[(Int :~: ∅) ≤ AnyTypeSet.Of[AnyVal]]
     trait goos {
       type F <: AnyTypeSet.Of[foo]
       val  f: F

@@ -1,6 +1,6 @@
 package ohnosequences.cosas
 
-import types._, typeUnions._, equality._
+import types._, typeUnions._
 import shapeless.HList
 
 package object typeSets {

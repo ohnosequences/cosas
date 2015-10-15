@@ -6,4 +6,8 @@ package object cosas {
   type <≃>[A, B] = (A ?≃ B) => (A ≃ B)
 
   def ofType[X]: TypeRef[X] = TypeRef(TypeRef)
+
+  type !=[A,B]  = Distinct[A,B]
+  type !<[A,B]  = A NotSubtypeOf B
+  type ≤[A,B]   = A SubtypeOf B
 }

@@ -4,5 +4,5 @@ package object properties {
 
   /* An alias for unicode-lovers */
   type  □   = EmptyPropertySet.type
-  val □ : □ = EmptyPropertySet
+  lazy val □ : □ = EmptyPropertySet
 }

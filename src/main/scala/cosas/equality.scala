@@ -23,6 +23,16 @@ sealed trait ≃[A, B] {
   def sym: ≃[B, A]
 }
 
+final case class Refl[A]() extends (A ≃ A) {
+
+  final type Out = A
+
+  final implicit def inL(a: A): Out = a
+  final implicit def inR(b: A): Out = b
+
+  final def sym = this
+}
+
 case object ≃ extends EqualityIsSymmetric {
 
   implicit def refl[A >: B <: B, B]: (A <≃> B) = x => Refl[B]()
@@ -32,15 +42,4 @@ case object ≃ extends EqualityIsSymmetric {
 trait EqualityIsSymmetric {
 
   implicit def sym[A, B](implicit p: B <≃> A): A <≃> B = x => (p(x.swap).sym)
-
-}
-
-final case class Refl[A]() extends (A ≃ A) {
-
-  final type Out = A
-
-  final implicit def inL(a: A): Out = a
-  final implicit def inR(b: A): Out = b
-
-  final def sym = this
 }
