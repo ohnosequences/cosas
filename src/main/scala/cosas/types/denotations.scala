@@ -1,6 +1,7 @@
 package ohnosequences.cosas.types
 
 import ohnosequences.cosas.fns._
+import annotation.unchecked.{ uncheckedVariance => uv }
 
 trait AnyDenotation extends Any {
 
@@ -16,7 +17,7 @@ trait AnyDenotationOf[T <: AnyType] extends Any with AnyDenotation { type Tpe = 
 // TODO: who knows what's going on here wrt specialization (http://axel22.github.io/2013/11/03/specialization-quirks.html)
 trait AnyDenotes[@specialized +V <: T#Raw, T <: AnyType] extends Any with AnyDenotationOf[T] {
 
-  final type Value = V @annotation.unchecked.uncheckedVariance
+  final type Value = V @uv
 }
 
 /* Denote T with a `value: V`. Normally you write it as `V Denotes T` thus the name. */
