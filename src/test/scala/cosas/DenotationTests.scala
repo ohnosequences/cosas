@@ -1,15 +1,19 @@
 package ohnosequences.cosas.tests
 
-import ohnosequences.cosas._, types._
+import ohnosequences.cosas._, types._, fns._
 import ohnosequences.cosas.tests.asserts._
 
 case object DenotationTestsContext {
 
   case object Color extends AnyType { val label = "Color"; type Raw = String }
+  type Color = Color.type
   object User extends AnyType {  val label = "User"; type Raw = Any  }
   type User = User.type
   object Friend extends AnyType { val label = "Friend"; type Raw = Any }
+  type Friend = Friend.type
   case class userInfo(id: String, name: String, age: Int)
+
+  val FavoriteColor = (User ==> Color)
 }
 
 class DenotationTests extends org.scalatest.FunSuite {
@@ -101,5 +105,14 @@ class DenotationTests extends org.scalatest.FunSuite {
     trait Boundless extends AnyType { type Raw = Any }
 
     def buh[Val, B <: Boundless](v: Val): B := Val = new (B := Val)(v)
+  }
+
+  test("can denote function types") {
+
+    val f = { x: Any => "blue" }
+
+    val alwaysBlue = FavoriteColor := Fn1(f)
+
+    assertTypeError("""FavoriteColor := Fn1 { x: Int => "hola" }""")
   }
 }
