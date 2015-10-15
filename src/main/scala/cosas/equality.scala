@@ -1,4 +1,4 @@
-package ohnosequences.cosas.equality
+package ohnosequences.cosas
 
 @annotation.implicitNotFound( msg =
 """
