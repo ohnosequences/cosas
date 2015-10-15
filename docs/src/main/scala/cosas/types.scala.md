@@ -127,16 +127,16 @@ Denote T with a `value: V`. Normally you write it as `V Denotes T` thus the name
   case class WrongKey[Tpe <: AnyType](val tpe: Tpe, val got: String, val expected: String)
   extends DenotationParserError
 
-  class DenotationParser[T <: AnyType, D0 <: T#Raw, V](
+  class DenotationParser[T <: AnyType, D0 <: T#Raw, V0](
     val tpe: T,
     val labelRep: String
   )(
-    val parser: V => Option[D0]
+    val parser: V0 => Option[D0]
   )
   extends AnyDenotationParser {
 
     type Type = T
-    type Value = V
+    type Value = V0
     type D = D0
   }
 

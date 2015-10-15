@@ -66,10 +66,7 @@ Same as apply, but you can pass properties in any order
         reorder: Vs ReorderTo RT#Raw
       ): ValueOf[RT] = recType := reorder(values)
 
-    def parse[
-      V0,
-      PD <: ParseDenotations[RT#PropertySet#Raw, V0]
-    ](map: Map[String,V0])(implicit parse: PD): Either[ParseDenotationsError, ValueOf[RT]] =
+    def parse[V0](map: Map[String,V0])(implicit parse: ParseDenotations[RT#Raw, V0]): Either[ParseDenotationsError, ValueOf[RT]] =
       parse(map).fold[Either[ParseDenotationsError, ValueOf[RT]]](
         l => Left(l),
         v => Right(new ValueOf[RT](v))
