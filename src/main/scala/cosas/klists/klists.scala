@@ -81,6 +81,12 @@ case class KListSyntax[L <: AnyKList](val l: L) extends AnyVal {
   : KCons[E,L] =
     KCons[E,L](e, l)
 
+  def find[A <: L#Bound](implicit
+    findIn: App1[A findIn L, L, A]
+  )
+  : A =
+    findIn(l)
+
   def toList(implicit
     conv: App1[toList[L], L, List[L#Bound]]
   )

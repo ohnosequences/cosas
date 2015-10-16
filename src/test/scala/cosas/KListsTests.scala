@@ -77,6 +77,13 @@ class HListTests extends org.scalatest.FunSuite {
     }
   }
 
+  test("can pick elements by type") {
+
+    assert { (true :: "que tal" :: KNil[Any]).find[Boolean] === true }
+    assert { (true :: "que tal" :: KNil[Any]).find[String] === "que tal" }
+    assert { (true :: "que tal" :: "scalac" :: KNil[Any]).find[String] === "que tal" }
+  }
+
   test("can map over KLists") {
 
     case object f extends DepFn1[Any,String] {

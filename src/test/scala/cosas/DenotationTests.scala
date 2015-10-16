@@ -1,6 +1,6 @@
 package ohnosequences.cosas.tests
 
-import ohnosequences.cosas._, types._, fns._
+import ohnosequences.cosas._, types._, fns._, klists._
 import ohnosequences.cosas.tests.asserts._
 
 case object DenotationTestsContext {
@@ -14,6 +14,8 @@ case object DenotationTestsContext {
   case class userInfo(id: String, name: String, age: Int)
 
   val FavoriteColor = (User ==> Color)
+
+  val colorAndFriend = Color :×: Friend :×: EmptyProductType
 }
 
 class DenotationTests extends org.scalatest.FunSuite {
@@ -114,5 +116,19 @@ class DenotationTests extends org.scalatest.FunSuite {
     val alwaysBlue = FavoriteColor := Fn1(f)
 
     assertTypeError("""FavoriteColor := Fn1 { x: Int => "hola" }""")
+  }
+
+  test("denote product types") {
+
+    val zz = colorAndFriend := (
+      (Color := "blue") ::
+      (Friend := true)  :: KNil[AnyDenotation]
+    )
+
+    val color =
+      (new Project[Color :×: Friend :×: EmptyProductType.type, Color])(zz)
+
+    val friend =
+      (new Project[Color :×: Friend :×: EmptyProductType.type, Friend])(zz)
   }
 }
