@@ -12,8 +12,14 @@ trait AnyProductType extends AnyType {
 
 case object AnyProductType {
 
-  implicit def productTypeSyntax[L <: AnyProductType](l: L): AnyProductTypeSyntax[L] =
+  implicit def productTypeSyntax[L <: AnyProductType](l: L)
+  : AnyProductTypeSyntax[L] =
     AnyProductTypeSyntax(l)
+
+  implicit def productTypeDenotationSyntax[L <: AnyProductType, Vs <: L#Raw](ds: L := Vs)
+    : AnyProductTypeDenotationSyntax[L,Vs] =
+      AnyProductTypeDenotationSyntax(ds.value)
+
 }
 
 case object EmptyProductType extends AnyProductType {
@@ -40,6 +46,15 @@ case class AnyProductTypeSyntax[L <: AnyProductType](val l: L) extends AnyVal {
 
   def :×:[H <: AnyType, T <: AnyProductType](h: H): H :×: L =
     new :×:(h,l)
+}
+
+case class AnyProductTypeDenotationSyntax[L <: AnyProductType, Vs <: L#Raw](val vs: Vs) extends AnyVal {
+
+  def project[T <: AnyType, V <: T#Raw](t: T)(implicit
+    p: App1[Project[L,T], L := Vs, T := V]
+  )
+  : T := V =
+    p( new (L := Vs)(vs) )
 }
 
 
