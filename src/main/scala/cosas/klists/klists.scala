@@ -77,6 +77,9 @@ case class KListSyntax[L <: AnyKList](val l: L) extends AnyVal {
   : T =
     c.t(l)
 
+  def at[N <: AnyNat, Z <: L#Bound](n: Witness[N])(implicit a: App1[L at N, L, Z]): Z =
+    a(l)
+
   def ::[E <: L#Bound](e: E)
   : KCons[E,L] =
     KCons[E,L](e, l)

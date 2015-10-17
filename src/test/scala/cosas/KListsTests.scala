@@ -50,6 +50,7 @@ class HListTests extends org.scalatest.FunSuite {
     assert{ foo(oh) === true }
   }
 
+
   test("can convert KLists to lists of their bound") {
 
     assert {
@@ -82,6 +83,8 @@ class HListTests extends org.scalatest.FunSuite {
     assert { (true :: "que tal" :: KNil[Any]).find[Boolean] === true }
     assert { (true :: "que tal" :: KNil[Any]).find[String] === "que tal" }
     assert { (true :: "que tal" :: "scalac" :: KNil[Any]).find[String] === "que tal" }
+
+    assert { (true :: "que tal" :: "scalac" :: KNil[Any] at witness[_2]) === "scalac" }
   }
 
   test("can map over KLists") {
@@ -136,9 +139,5 @@ class HListTests extends org.scalatest.FunSuite {
 
       (3 :: 2 :: 1 :: KNil[Int]).foldLeft(sum)(0) === 6
     }
-
-    // val foldLeft = new FoldLeft[String :: String :: KNil[Any], identity.type]
-    // val z = foldLeft("hola" :: "scalac" :: KNil[Any], "", identity)
   }
-
 }

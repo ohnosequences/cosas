@@ -10,7 +10,7 @@ case object syntax {
 
     def :~:[E](e: E)(implicit check: E ∉ S): (E :~: S) = TypeSetImpl.ConsSet.cons(e, s) : (E :~: S)
 
-    def pop[E, O <: AnyTypeSet](ref: TypeRef[E])(implicit
+    def pop[E, O <: AnyTypeSet](w: Witness[E])(implicit
       p: App1[pop[E], S, (E,O)]
     )
     : (E,O) =
@@ -19,7 +19,7 @@ case object syntax {
     def lookup[E](implicit check: E ∈ S, lookup: App1[lookup[E],S,E]): E = lookup(s)
 
     // deletes the first element of type E
-    def delete[E,O <: AnyTypeSet](ref: TypeRef[E])(implicit
+    def delete[E,O <: AnyTypeSet](ref: Witness[E])(implicit
       check: E ∈ S,
       delete: App1[pop[E],S,(E,O)]
     )

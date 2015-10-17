@@ -33,7 +33,12 @@ case object SubtypeOf extends WorksForSubtypesToo {
   implicit def refl[A]: A ≤ A = new (A ≤ A)(this)
 }
 
-trait WorksForSubtypesToo {
+trait WorksForSubtypesToo extends SubtypeIsTransitive {
 
   implicit def subtype[A, B <: A]: B ≤ A = new (B ≤ A)(SubtypeOf)
+}
+
+trait SubtypeIsTransitive {
+
+  implicit def trans[A <: B, B <: C, C](implicit ab: A ≤ B, bc: B ≤ A): A ≤ C = new (A ≤ C)(SubtypeOf)
 }

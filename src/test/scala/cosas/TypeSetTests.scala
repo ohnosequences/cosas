@@ -28,11 +28,9 @@ class TypeSetTests extends org.scalatest.FunSuite {
 
   test("set size") {
 
-    import shapeless.Nat._
-
     type Two = ( Int :~: Char :~: ∅ )#Size
 
-    implicitly [ Two =:= _2 ]
+    implicitly [ Two ≃ _2 ]
   }
 
   test("empty set") {

@@ -2,6 +2,7 @@ package ohnosequences.cosas.records
 
 import ohnosequences.cosas._, types._, typeSets._, properties._
 
+// TODO rewrite this in terms of product types
 trait AnyRecord extends AnyType {
 
   type PropertySet <: AnyPropertySet
