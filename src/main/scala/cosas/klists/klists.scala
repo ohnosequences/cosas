@@ -4,7 +4,7 @@ import ohnosequences.cosas._, typeUnions._, fns._
 
 import scala.annotation.unchecked.{ uncheckedVariance => uv }
 
-trait AnyKList {
+trait AnyKList extends Any {
 
   type Types <: AnyTypeUnion
   type Union // NOTE should be Types#union, but we can't set it here; scalac bugs
@@ -17,14 +17,14 @@ case object KList {
   def apply[F <: AnyDepFn1](f: F): mapKList[F] = mapKList[F](f)
 }
 
-trait KList[+A] extends AnyKList {
+trait KList[+A] extends Any with AnyKList {
 
   type Bound = A @uv
 }
 
-trait AnyEmptyKList extends AnyKList
+trait AnyEmptyKList extends Any with AnyKList
 
-case class KNilOf[+A]() extends AnyEmptyKList with KList[A] {
+case class KNilOf[+A]private[klists](val unique: KNilOf.type) extends AnyVal with AnyEmptyKList with KList[A] {
 
   type Types = TypeUnion.empty
   type Union = Types#union

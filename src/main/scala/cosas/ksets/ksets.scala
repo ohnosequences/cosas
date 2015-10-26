@@ -13,10 +13,11 @@ trait AnyKSet extends Any { kset =>
     KSet[E :: Elements](e :: elements)
 }
 
-case class KEmpty[+B](val elements: KNil[B]) extends AnyVal with AnyKSet {
+case class KEmpty[+B](val w: KEmpty.type) extends AnyVal with AnyKSet {
 
   type Elements = KNil[B] @uv
   type Bound = B @uv
+  def elements: Elements = KNil[B]
 }
 case class KSet[+El <: AnyKList] private (val elements: El) extends AnyVal with AnyKSet {
 

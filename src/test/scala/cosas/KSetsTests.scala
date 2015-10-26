@@ -16,7 +16,6 @@ class KSetTests extends org.scalatest.FunSuite {
     }
 
     val isb: Boolean :~: Int :~: String :~: ∅[Any] = true :~: is
-
   }
 
 }
