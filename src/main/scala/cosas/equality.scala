@@ -30,7 +30,7 @@ final case class Refl[A]() extends (A ≃ A) {
   final implicit def inL(a: A): Out = a
   final implicit def inR(b: A): Out = b
 
-  final def sym = this
+  final def sym: A ≃ A = this
 }
 
 case object ≃ extends EqualityIsSymmetric with EqualityIsTransitive {

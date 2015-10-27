@@ -79,7 +79,7 @@ class TypeSetTests extends org.scalatest.FunSuite {
     val b = boos(foos)
 
     type AllowedTypes = either[Int]#or[Boolean]
-    def checkTypes[S <: AnyTypeSet.BoundedByUnion[AllowedTypes]](s: S) = assert(true)
+    def checkTypes[S <: AnyTypeSet.BoundedByUnion[AllowedTypes]](s: S): Unit = assert(true)
     checkTypes(1 :~: false :~: ∅)
     assertTypeError("""checkTypes(1 :~: 'a' :~: ∅)""")
 
@@ -134,7 +134,7 @@ class TypeSetTests extends org.scalatest.FunSuite {
     implicitly[(Int :~: Char :~: ∅) ⊂ (Char :~: Int :~: ∅)]
     implicitly[(Int :~: Char :~: ∅) ~:~ (Char :~: Int :~: ∅)]
 
-    def isSubsetOfb[S <: AnyTypeSet.SubsetOf[b.type]] = true
+    def isSubsetOfb[S <: AnyTypeSet.SubsetOf[b.type]]: Boolean = true
     assert(isSubsetOfb[Boolean :~: Int :~: ∅] == true)
     assertTypeError("""
       val x = isSubsetOfb[Boolean :~: Int :~: String :~: ∅]
