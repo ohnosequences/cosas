@@ -1,6 +1,8 @@
 package ohnosequences.cosas.types
 
+import ohnosequences.cosas._, fns._
 
+// TODO DepFn1 to Bool?
 trait AnyTypePredicate {
 
   type ArgBound
@@ -9,6 +11,4 @@ trait AnyTypePredicate {
 
 trait TypePredicate[B] extends AnyTypePredicate { type ArgBound = B }
 
-trait Bool
-case object True extends Bool
-case object False extends Bool
+trait AnyPredicateOn[B] extends DepFn1[B,AnyBool]

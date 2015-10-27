@@ -28,11 +28,9 @@ class TypeSetTests extends org.scalatest.FunSuite {
 
   test("set size") {
 
-    import shapeless.Nat._
-
     type Two = ( Int :~: Char :~: ∅ )#Size
 
-    implicitly [ Two =:= _2 ]
+    implicitly [ Two ≃ _2 ]
   }
 
   test("empty set") {
@@ -64,8 +62,8 @@ class TypeSetTests extends org.scalatest.FunSuite {
 
 
     // case class foo[S <: AnyTypeSet.TypeSetOf[Int]]()
-    implicitly[foos.type <:< AnyTypeSet.Of[foo]]
-    // implicitly[(Int :~: ∅) <:< AnyTypeSet.Of[AnyVal]]
+    implicitly[foos.type ≤ AnyTypeSet.Of[foo]]
+    // implicitly[(Int :~: ∅) ≤ AnyTypeSet.Of[AnyVal]]
     trait goos {
       type F <: AnyTypeSet.Of[foo]
       val  f: F

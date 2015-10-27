@@ -1,17 +1,15 @@
 package ohnosequences.cosas.typeSets
 
 // deps
-import ohnosequences.cosas.typeUnions._
+import ohnosequences.cosas._, typeUnions._, types._
 import shapeless.{ HList, Poly1 }
-import shapeless.Nat._
-import shapeless.{Nat, Succ}
 
 sealed trait AnyTypeSet {
 
   type Types <: AnyTypeUnion
   type Bound >: Types#union <: Types#union
 
-  type Size <: Nat
+  type Size <: AnyNat
 
   def toStr: String
   override final def toString: String = "{" + toStr + "}"
@@ -26,7 +24,7 @@ trait NonEmptySet extends AnyTypeSet {
     type Tail <: AnyTypeSet
     val  tail: Tail
 
-    type Size = Succ[Tail#Size]
+    type Size = Successor[Tail#Size]
     // should be provided implicitly:
     val headIsNew: Head ∉ Tail
 }
@@ -41,6 +39,12 @@ case object AnyTypeSet {
   type SupersetOf[S <: AnyTypeSet] = AnyTypeSet { type Bound >: S#Bound }
 
   type BoundedByUnion[U <: AnyTypeUnion] = AnyTypeSet { type Bound <: U#union }
+
+  implicit def typeSetSyntax[S <: AnyTypeSet](s: S): syntax.TypeSetSyntax[S] =
+    syntax.TypeSetSyntax(s)
+
+  implicit def denotationsSetSyntax[DS0 <: AnyTypeSet.Of[AnyDenotation]](ds: DS0): syntax.DenotationsSetSyntax[DS0] =
+    syntax.DenotationsSetSyntax(ds)
 }
 
 private[cosas] object TypeSetImpl {

@@ -13,10 +13,4 @@ package object records {
 
   type transform[RT <: AnyRecord, Other <: AnyRecord] = Transform[RT,Other]
   def transform[RT <: AnyRecord, Other <: AnyRecord]: transform[RT,Other] = new Transform[RT,Other]
-
-  implicit def recordSyntax[RT <: AnyRecord](recType: RT): syntax.RecordSyntax[RT] =
-    syntax.RecordSyntax(recType)
-
-  implicit def recordEntrySyntax[RT <: AnyRecord](entry: ValueOf[RT]): syntax.RecordEntrySyntax[RT] =
-    syntax.RecordEntrySyntax(entry.value)
 }

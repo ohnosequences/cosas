@@ -2,20 +2,23 @@ package ohnosequences
 
 package object cosas {
 
-  sealed trait !<[A,B]
+  type ?≃[X, Y] = Either[X,Y]
+  type <≃>[A, B] = (A ?≃ B) => (A ≃ B)
 
-  implicit def nsub[A, B] : A !< B = new !<[A, B] {}
-  implicit def nsubAmbig1[A, B >: A] : A !< B = throw new Exception
-  implicit def nsubAmbig2[A, B >: A] : A !< B = throw new Exception
+  def ofType[X]: Witness[X] = Witness(Witness)
 
-  trait !=[A, B]
+  type !=[A,B]  = Distinct[A,B]
+  type !<[A,B]  = A NotSubtypeOf B
+  type ≤[A,B]   = A SubtypeOf B
 
-  implicit def neq[A, B] : A != B = new !=[A, B] {}
-  implicit def neqAmbig1[A] : A != A = throw new Exception
-  implicit def neqAmbig2[A] : A != A = throw new Exception
+  type _0 = zero.type
+  type _1 = Successor[_0]
+  type _2 = Successor[_1]
+  type _3 = Successor[_2]
+  type _4 = Successor[_3]
+  // ...
 
-  case object TypeRef
-  case class TypeRef[X](val x: TypeRef.type) extends AnyVal
+  def witness[A]: Witness[A] = new Witness[A](Witness)
 
-  def ofType[X]: TypeRef[X] = TypeRef(TypeRef)
+  private[cosas] type uv = scala.annotation.unchecked.uncheckedVariance
 }

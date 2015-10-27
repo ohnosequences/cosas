@@ -1,4 +1,4 @@
-package ohnosequences.cosas.test
+package ohnosequences.cosas.tests
 
 import ohnosequences.cosas._, types._, properties._, typeSets._
 

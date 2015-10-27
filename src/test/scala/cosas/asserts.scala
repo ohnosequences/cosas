@@ -2,7 +2,7 @@ package ohnosequences.cosas.tests
 
 case object asserts {
 
-  import ohnosequences.cosas._, types._, equality._
+  import ohnosequences.cosas._, types._
   import org.scalatest.Assertions._
 
   // not only compares the values, but also check the types equality (essential for tagged values)

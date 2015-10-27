@@ -19,6 +19,18 @@ trait AnySubsetType extends AnyType {
   def predicate(raw: W := Raw): Boolean
 }
 
+case object AnySubsetType {
+
+  implicit def subsetTypeSyntax[W <: AnyType, ST <: SubsetType[W]](st: ST): syntax.SubsetTypeSyntax[W,ST] =
+    syntax.SubsetTypeSyntax(st)
+
+  implicit def ValueOfSubsetTypeSyntax[
+    W <: AnyType,
+    ST <: SubsetType[W],
+    Syntax <: ValueOfSubsetTypeSyntax[W,ST]
+  ](v: ValueOf[ST])(implicit conv: ValueOf[ST] => Syntax): Syntax = conv(v)
+}
+
 trait SubsetType[W0 <: AnyType] extends AnySubsetType { type W = W0 }
 
 /* you should implement this trait for providing ops for values of a subset type `ST`. */

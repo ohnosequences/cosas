@@ -6,7 +6,7 @@ trait AnyTypeUnion {
   type union // kind of return
 }
 
-sealed trait either[X] extends TypeUnion[not[X]] {}
+sealed trait either[X] extends TypeUnion[not[X]]
 
 trait TypeUnion[T] extends AnyTypeUnion {
 

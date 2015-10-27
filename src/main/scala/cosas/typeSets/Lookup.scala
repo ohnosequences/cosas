@@ -10,7 +10,7 @@ case object Lookup extends Lookup_2 {
     App1 { s: H :~: T => s.head }
 }
 
-trait Lookup_2  {
+trait Lookup_2 {
 
   implicit def foundInTail[H, T <: AnyTypeSet, A](implicit
     e: A ∈ T,

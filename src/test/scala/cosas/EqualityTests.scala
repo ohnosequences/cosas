@@ -1,6 +1,6 @@
-package ohnosequences.scala.tests
+package ohnosequences.cosas.tests
 
-import ohnosequences.cosas._, equality._
+import ohnosequences.cosas._
 
 final class EqualsTests extends org.scalatest.FunSuite {
 
@@ -37,20 +37,27 @@ final class EqualsTests extends org.scalatest.FunSuite {
     def doSomethingElse[X,Y](x: X, y: Y)(implicit ev: Y <≃> X): Y = y
 
     val x: String = doSomething("buh", "boh")
-    def uh = doSomethingElse(doSomething(doSomethingDifferently("buh","boh"), doSomething("boh","buh")), "oh")
+    def uh: String =
+      doSomethingElse(
+        doSomething(
+          doSomethingDifferently("buh","boh"),
+          doSomething("boh","buh")
+        ),
+        "oh"
+      )
 
     final case class XList[A](xs: List[A]) {
 
       def sum(implicit ev: List[Int] ≃ List[A]): Int = {
 
         import ev._
-        (xs:List[Int]).foldLeft(0)(_ + _)
+        (xs: List[Int]).foldLeft(0)(_ + _)
       }
 
       def sum2(implicit ev: List[A] ≃ List[Int]): Int = {
 
         import ev._
-        (xs:List[Int]).foldLeft(0)(_ + _)
+        (xs: List[Int]).foldLeft(0)(_ + _)
       }
     }
 

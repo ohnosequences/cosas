@@ -1,4 +1,4 @@
-package ohnosequences.cosas.equality
+package ohnosequences.cosas
 
 @annotation.implicitNotFound( msg =
 """
@@ -31,4 +31,25 @@ final case class Refl[A]() extends (A ≃ A) {
   final implicit def inR(b: A): Out = b
 
   final def sym = this
+}
+
+case object ≃ extends EqualityIsSymmetric with EqualityIsTransitive {
+
+  implicit def refl[A >: B <: B, B]: (A <≃> B) = x => Refl[B]()
+  implicit def reflInst[B]: B ≃ B = Refl[B]()
+}
+
+trait EqualityIsSymmetric {
+
+  implicit def sym[A, B](implicit p: B <≃> A): A <≃> B = x => (p(x.swap).sym)
+}
+
+trait EqualityIsTransitive {
+
+  implicit def trans_eq[A >: C <: C,B,C](implicit
+    p1: A ≃ B,
+    p2: B ≃ C
+  )
+  : A ≃ C =
+    Refl[C]
 }

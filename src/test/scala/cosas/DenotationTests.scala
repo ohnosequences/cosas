@@ -1,15 +1,21 @@
 package ohnosequences.cosas.tests
 
-import ohnosequences.cosas._, types._
+import ohnosequences.cosas._, types._, fns._, klists._
 import ohnosequences.cosas.tests.asserts._
 
 case object DenotationTestsContext {
 
   case object Color extends AnyType { val label = "Color"; type Raw = String }
+  type Color = Color.type
   object User extends AnyType {  val label = "User"; type Raw = Any  }
   type User = User.type
   object Friend extends AnyType { val label = "Friend"; type Raw = Any }
+  type Friend = Friend.type
   case class userInfo(id: String, name: String, age: Int)
+
+  val FavoriteColor = (User ==> Color)
+
+  val colorAndFriend = Color :×: Friend :×: EmptyProductType
 }
 
 class DenotationTests extends org.scalatest.FunSuite {
@@ -22,7 +28,7 @@ class DenotationTests extends org.scalatest.FunSuite {
     val verde = valueOf(Color)("green")
     val amarillo = Color := "yellow"
 
-    val x1 = "yellow" =: Color
+    val x1 = Color := "yellow"
 
     assert(azul.value == "blue")
     assert(verde.value == "green")
@@ -35,9 +41,9 @@ class DenotationTests extends org.scalatest.FunSuite {
     val z = User := 2423423
 
     /* the right-associative syntax */
-    val uh: userInfo =: User = userInfo(id = "adqwr32141", name = "Salustiano", age = 143) =: User
+    val uh: User := userInfo = User := userInfo(id = "adqwr32141", name = "Salustiano", age = 143)
     /* or with equals-sign style */
-    val oh = userInfo(id = "adqwr32141", name = "Salustiano", age = 143) =: User
+    val oh = User := userInfo(id = "adqwr32141", name = "Salustiano", age = 143)
     /* or in the other order */
     val ah = User := userInfo(id = "adqwr32141", name = "Salustiano", age = 143)
   }
@@ -47,11 +53,11 @@ class DenotationTests extends org.scalatest.FunSuite {
     val paco = "Paco"
     val jose = "Jose"
 
-    val u1 = paco =: User
-    val u1Again = paco =: User
+    val u1 = User := paco
+    val u1Again = User := paco
 
-    val u2 = paco =: Friend
-    val v = jose =: Friend
+    val u2 = Friend := paco
+    val v = Friend := jose
 
     assertTaggedEq(u1, u1)
     assertTaggedEq(u1, u1Again)
@@ -101,5 +107,30 @@ class DenotationTests extends org.scalatest.FunSuite {
     trait Boundless extends AnyType { type Raw = Any }
 
     def buh[Val, B <: Boundless](v: Val): B := Val = new (B := Val)(v)
+  }
+
+  test("can denote function types") {
+
+    val f = { x: Any => "blue" }
+
+    val alwaysBlue = FavoriteColor := Fn1(f)
+
+    assertTypeError("""FavoriteColor := Fn1 { x: Int => "hola" }""")
+  }
+
+  test("denote product types") {
+
+    val zz = colorAndFriend := (
+      (Color := "blue") ::
+      (Friend := true)  :: KNil[AnyDenotation]
+    )
+
+    val color =
+      (new Project[Color :×: Friend :×: EmptyProductType.type, Color])(zz)
+
+    val friend =
+      (new Project[Color :×: Friend :×: EmptyProductType.type, Friend])(zz)
+
+    val friendAgain = zz.project(Friend)
   }
 }

@@ -2,6 +2,7 @@ package ohnosequences.cosas.records
 
 import ohnosequences.cosas._, types._, typeSets._, properties._
 
+// TODO rewrite this in terms of product types
 trait AnyRecord extends AnyType {
 
   type PropertySet <: AnyPropertySet
@@ -25,4 +26,10 @@ class Record[PS <: AnyPropertySet](val propertySet: PS) extends AnyRecord {
 case object AnyRecord {
 
   type withProperties[PS <: AnyPropertySet] = AnyRecord { type Properties = PS }
+
+  implicit def recordSyntax[RT <: AnyRecord](recType: RT): syntax.RecordSyntax[RT] =
+    syntax.RecordSyntax(recType)
+
+  implicit def recordEntrySyntax[RT <: AnyRecord](entry: ValueOf[RT]): syntax.RecordEntrySyntax[RT] =
+    syntax.RecordEntrySyntax(entry.value)
 }

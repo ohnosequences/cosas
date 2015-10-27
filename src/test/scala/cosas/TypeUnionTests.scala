@@ -15,27 +15,27 @@ class TypeUnionTests extends org.scalatest.FunSuite {
     type BarBIS = either[String] or Int or Boolean or Bar
     type Uh     = either[Byte] or Int or Boolean or String
 
-    implicitly[just[String] <:< Uh#union]
-    implicitly[just[Boolean] <:< Uh#union]
-    implicitly[just[Int] <:< Uh#union]
+    implicitly[just[String] ≤ Uh#union]
+    implicitly[just[Boolean] ≤ Uh#union]
+    implicitly[just[Int] ≤ Uh#union]
 
     implicitly[S#union =:= just[String]]
 
-    implicitly[just[String] <:< S#union]
-    implicitly[just[Boolean] <:< SB#union]
-    implicitly[just[String] <:< SB#union]
-    implicitly[just[Boolean] <:< SB2#union]
-    implicitly[just[String] <:< SB2#union]
+    implicitly[just[String] ≤ S#union]
+    implicitly[just[Boolean] ≤ SB#union]
+    implicitly[just[String] ≤ SB#union]
+    implicitly[just[Boolean] ≤ SB2#union]
+    implicitly[just[String] ≤ SB2#union]
 
-    implicitly[just[String] <:< SBI#union]
-    implicitly[just[Boolean] <:< SBI#union]
-    implicitly[just[Int] <:< SBI#union]
+    implicitly[just[String] ≤ SBI#union]
+    implicitly[just[Boolean] ≤ SBI#union]
+    implicitly[just[Int] ≤ SBI#union]
 
     implicitly[just[Byte] !< SBI#union]
-    implicitly[just[Byte] <:< Uh#union]
-    implicitly[just[String] <:< SBI#union]
+    implicitly[just[Byte] ≤ Uh#union]
+    implicitly[just[String] ≤ SBI#union]
 
-    implicitly[just[Bar] <:< BarBIS#union]
+    implicitly[just[Bar] ≤ BarBIS#union]
   }
 
   test("bounds with subtyping") {
