@@ -76,6 +76,9 @@ class HListTests extends org.scalatest.FunSuite {
       (true :: "que tal" :: KNil[Any]) ++ ("hola" :: 2 :: KNil[Any]) ===
         true :: "que tal" :: "hola" :: 2 :: KNil[Any]
     }
+
+    val hola: Boolean :: String :: String :: KNil[Any] =
+      (true :: "que tal" :: KNil[Any]) ++ KList(as[String,Any])("hola" :: KNil[String])
   }
 
   test("can pick elements by type") {
