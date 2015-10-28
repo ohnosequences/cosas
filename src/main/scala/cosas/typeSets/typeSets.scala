@@ -38,6 +38,8 @@ trait NonEmptySet[+B] extends TypeSet[B] {
   type Head <: Bound
   val  head: Head
 
+  type Union = Types#union
+
   type Tail <: AnyTypeSet //{ type Bound = B }
   val  tail: Tail
 
@@ -51,7 +53,6 @@ case class ConsSet[H <: T#Bound, T <: AnyTypeSet](val head : H, val tail : T)(im
   type Head = H; type Tail = T
 
   type Types = Tail#Types or H
-  type Union = Types#union
 
   final def toStr: String = {
     val h = head match {
