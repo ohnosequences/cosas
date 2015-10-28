@@ -4,20 +4,20 @@ import ohnosequences.cosas._, typeSets._, types._
 
 trait AnyPropertySet extends AnyType {
 
-  type Properties <: AnyTypeSet // of AnyProperty's
+  type Properties <: AnyTypeSet.Of[AnyProperty]// of AnyProperty's
   val  properties: Properties
 
-  type Raw <: AnyTypeSet
+  type Raw <: AnyTypeSet.Of[AnyDenotation]
 
   type Size = Properties#Size
 }
 
 case object EmptyPropertySet extends AnyPropertySet {
 
-  type Properties = ∅
-  val  properties = ∅
+  type Properties = ∅[AnyProperty]
+  val  properties = ∅[AnyProperty]
 
-  type Raw = ∅
+  type Raw = ∅[AnyDenotation]
 
   val label: String = "□"
 }

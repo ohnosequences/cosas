@@ -6,12 +6,12 @@ class Take[Q <: AnyTypeSet] extends DepFn1[AnyTypeSet, Q]
 
 case object Take {
 
-  implicit def empty[S <: AnyTypeSet]: App1[Take[∅],S,∅] =
-    App1 { s: S => ∅ }
+  implicit def empty[S <: AnyTypeSet]: App1[Take[∅[S#Bound]],S,∅[S#Bound]] =
+    App1 { s: S => ∅[S#Bound] }
 
   implicit def nonEmpty[
     TailToTake <: AnyTypeSet, From <: AnyTypeSet, Rest <: AnyTypeSet,
-    HeadToTake
+    HeadToTake <: TailToTake#Bound
   ](implicit
     pop: App1[pop[HeadToTake], From, (HeadToTake, Rest)],
     take: App1[Take[TailToTake], Rest, TailToTake]

@@ -28,36 +28,36 @@ class TypeSetTests extends org.scalatest.FunSuite {
 
   test("set size") {
 
-    type Two = ( Int :~: Char :~: ∅ )#Size
+    type Two = ( Int :~: Char :~: ∅[Any] )#Size
 
     implicitly [ Two ≃ _2 ]
   }
 
   test("empty set") {
 
-    implicitly[Any isNotIn ∅]
+    implicitly[Any isNotIn ∅[Any]]
 
     // or with nicer syntax:
-    implicitly[Any ∉ ∅]
+    implicitly[Any ∉ ∅[Any]]
 
     // or Yoda style:
-    implicitly[in[∅]#isNot[Any]]
+    implicitly[in[∅[Any]]#isNot[Any]]
 
   }
 
 
   test("bounding") {
 
-    implicitly[boundedBy[Nothing]#is[∅]]
+    implicitly[boundedBy[Nothing]#is[∅[Any]]]
 
     trait foo
     case object boo extends foo
     case object buh extends foo
 
-    val foos = boo :~: buh :~: ∅
+    val foos = boo :~: buh :~: ∅[Any]
     implicitly[boundedBy[foo]#is[foos.type]]
 
-    val vals = 1 :~: 'a' :~: true :~: ∅
+    val vals = 1 :~: 'a' :~: true :~: ∅[Any]
     implicitly[boundedBy[AnyVal]#is[vals.type]]
 
 
@@ -80,26 +80,26 @@ class TypeSetTests extends org.scalatest.FunSuite {
 
     type AllowedTypes = either[Int]#or[Boolean]
     def checkTypes[S <: AnyTypeSet.BoundedByUnion[AllowedTypes]](s: S): Unit = assert(true)
-    checkTypes(1 :~: false :~: ∅)
-    assertTypeError("""checkTypes(1 :~: 'a' :~: ∅)""")
+    checkTypes(1 :~: false :~: ∅[Any])
+    assertTypeError("""checkTypes(1 :~: 'a' :~: ∅[Any])""")
 
-    implicitly[(Boolean :~: Int :~: ∅) isBoundedByUnion AllowedTypes]
-    implicitly[(Boolean :~: Char :~: Int :~: ∅) isNotBoundedByUnion AllowedTypes]
+    implicitly[(Boolean :~: Int :~: ∅[Any]) isBoundedByUnion AllowedTypes]
+    implicitly[(Boolean :~: Char :~: Int :~: ∅[Any]) isNotBoundedByUnion AllowedTypes]
   }
 
   test("filtering set by a type predicate") {
 
     type AllowedTypes = either[Int] or Boolean
-    val s = 1 :~: false :~: ∅
+    val s = 1 :~: false :~: ∅[Any]
 
     case object isAllowed extends TypePredicate[Any] {
       type Condition[X] = X isOneOf AllowedTypes
     }
-    // implicitly[CheckForAll[Int :~: ∅, isAllowed]]
-    // implicitly[CheckForAll[Boolean :~: Int :~: ∅, isAllowed]]
+    // implicitly[CheckForAll[Int :~: ∅[Any], isAllowed]]
+    // implicitly[CheckForAll[Boolean :~: Int :~: ∅[Any], isAllowed]]
     //
     assert{ filter(isAllowed,s) === s }
-    assert{ filter(isAllowed,"foo" :~: 1 :~: 'a' :~: ∅) === (1 :~: ∅) }
+    assert{ filter(isAllowed,"foo" :~: 1 :~: 'a' :~: ∅[Any]) === (1 :~: ∅[Any]) }
     //
     case class isInSet[S <: AnyTypeSet](val s: S) extends TypePredicate[Any] {
       type Condition[X] = X ∈ S
@@ -108,51 +108,51 @@ class TypeSetTests extends org.scalatest.FunSuite {
     //
     assert{ filter(isInSet(s),s) === s }
 
-    val q = "foo" :~: 1 :~: 'a' :~: ∅
-    assert{ filter(isInSet(s),q) === (1 :~: ∅) }
-    assert{ filter(isInSet(q),s) === (1 :~: ∅) }
+    val q = "foo" :~: 1 :~: 'a' :~: ∅[Any]
+    assert{ filter(isInSet(s),q) === (1 :~: ∅[Any]) }
+    assert{ filter(isInSet(q),s) === (1 :~: ∅[Any]) }
     //
     // s.checkForAll[isAllowed]
     // s.checkForAll[isInSet[s.type]]
     //
-    // val q0 = 'a' :~: true :~: "bar" :~: ∅
+    // val q0 = 'a' :~: true :~: "bar" :~: ∅[Any]
     // q0.checkForAny[isInSet[s.type]]
   }
 
   test("subset") {
 
-    val s = 1 :~: ∅
+    val s = 1 :~: ∅[Any]
 
-    implicitly[∅ ⊂ ∅]
-    implicitly[∅ ⊂ s.type]
+    implicitly[∅[Any] ⊂ ∅[Any]]
+    implicitly[∅[Any] ⊂ s.type]
     implicitly[s.type ⊂ s.type]
 
-    val a = 100500 :~: 'a' :~: ∅
-    val b = 'b' :~: 1 :~: true :~: ∅
+    val a = 100500 :~: 'a' :~: ∅[Any]
+    val b = 'b' :~: 1 :~: true :~: ∅[Any]
     implicitly[a.type ⊂ b.type]
 
-    implicitly[(Int :~: Char :~: ∅) ⊂ (Char :~: Int :~: ∅)]
-    implicitly[(Int :~: Char :~: ∅) ~:~ (Char :~: Int :~: ∅)]
+    implicitly[(Int :~: Char :~: ∅[Any]) ⊂ (Char :~: Int :~: ∅[Any])]
+    implicitly[(Int :~: Char :~: ∅[Any]) ~:~ (Char :~: Int :~: ∅[Any])]
 
     def isSubsetOfb[S <: AnyTypeSet.SubsetOf[b.type]]: Boolean = true
-    assert(isSubsetOfb[Boolean :~: Int :~: ∅] == true)
+    assert(isSubsetOfb[Boolean :~: Int :~: ∅[Any]] == true)
     assertTypeError("""
-      val x = isSubsetOfb[Boolean :~: Int :~: String :~: ∅]
+      val x = isSubsetOfb[Boolean :~: Int :~: String :~: ∅[Any]]
     """)
   }
 
   test("pop") {
 
-    val s = 1 :~: 'a' :~: "foo" :~: ∅
+    val s = 1 :~: 'a' :~: "foo" :~: ∅[Any]
 
-    assert{ pop[Int](s)    === ((1, 'a' :~: "foo" :~: ∅)) }
-    assert{ pop[Char](s)   === (('a', 1 :~: "foo" :~: ∅)) }
-    assert{ pop[String](s) === (("foo", 1 :~: 'a' :~: ∅)) }
+    assert{ pop[Int](s)    === ((1, 'a' :~: "foo" :~: ∅[Any])) }
+    assert{ pop[Char](s)   === (('a', 1 :~: "foo" :~: ∅[Any])) }
+    assert{ pop[String](s) === (("foo", 1 :~: 'a' :~: ∅[Any])) }
   }
 
   test("contains/lookup") {
 
-    val s = 1 :~: 'a' :~: "foo" :~: ∅
+    val s = 1 :~: 'a' :~: "foo" :~: ∅[Any]
     type st = s.type
 
     implicitly[Int ∈ st]
@@ -174,75 +174,75 @@ class TypeSetTests extends org.scalatest.FunSuite {
 
   test("projection (take)") {
 
-    val s = 1 :~: 'a' :~: "foo" :~: ∅
+    val s = 1 :~: 'a' :~: "foo" :~: ∅[Any]
 
-    type pt = Char :~: Int :~: ∅
+    type pt = Char :~: Int :~: ∅[Any]
 
-    assert { take[pt](s) === 'a' :~: 1 :~: ∅ }
-    assert { take[Int :~: Char :~: String :~: ∅](s) === s }
+    assert { take[pt](s) === 'a' :~: 1 :~: ∅[Any] }
+    assert { take[Int :~: Char :~: String :~: ∅[Any]](s) === s }
   }
 
   test("replace") {
 
-    val s = 1 :~: 'a' :~: "foo" :~: ∅
+    val s = 1 :~: 'a' :~: "foo" :~: ∅[Any]
 
-    assert { replace(∅,∅) === ∅ }
-    assert { replace(s, 2 :~: ∅) === 2 :~: 'a' :~: "foo" :~: ∅ }
-    assert { replace(s, "bar" :~: ∅) == 1 :~: 'a' :~: "bar" :~: ∅ }
+    assert { replace(∅[Any],∅[Any]) === ∅[Any] }
+    assert { replace(s, 2 :~: ∅[Any]) === 2 :~: 'a' :~: "foo" :~: ∅[Any] }
+    assert { replace(s, "bar" :~: ∅[Any]) == 1 :~: 'a' :~: "bar" :~: ∅[Any] }
   }
 
   test("reordering") {
 
-    val s = 1 :~: 'a' :~: "foo" :~: ∅
+    val s = 1 :~: 'a' :~: "foo" :~: ∅[Any]
 
-    assert { reorderTo[∅](∅) === ∅ }
-    assert { reorderTo[Char :~: Int :~: String :~: ∅](s) === 'a' :~: 1 :~: "foo" :~: ∅ }
+    assert { reorderTo[∅[Any]](∅[Any]) === ∅[Any] }
+    assert { reorderTo[Char :~: Int :~: String :~: ∅[Any]](s) === 'a' :~: 1 :~: "foo" :~: ∅[Any] }
   }
 
   test("subtraction") {
 
-    val s = 1 :~: 'a' :~: "foo" :~: ∅
+    val s = 1 :~: 'a' :~: "foo" :~: ∅[Any]
 
-    assert(subtract(∅,∅) === ∅)
-    assert(subtract(∅,s) === ∅)
-    assert(subtract(s,∅) === s)
-    assert(subtract(s,s) === ∅)
+    assert(subtract(∅[Any],∅[Any]) === ∅[Any])
+    assert(subtract(∅[Any],s) === ∅[Any])
+    assert(subtract(s,∅[Any]) === s)
+    assert(subtract(s,s) === ∅[Any])
 
-    val q = bar :~: true :~: 2 :~: "bar" :~: ∅
+    val q = bar :~: true :~: 2 :~: "bar" :~: ∅[Any]
 
-    assert(subtract(s,q) === 'a' :~: ∅)
-    assert(subtract(q,s) === bar :~: true :~: ∅)
+    assert(subtract(s,q) === 'a' :~: ∅[Any])
+    assert(subtract(q,s) === bar :~: true :~: ∅[Any])
   }
 
   test("union") {
 
-    val s = 1 :~: 'a' :~: "foo" :~: ∅
-    val q = bar :~: true :~: 2 :~: bar.toString :~: ∅
+    val s = 1 :~: 'a' :~: "foo" :~: ∅[Any]
+    val q = bar :~: true :~: 2 :~: bar.toString :~: ∅[Any]
 
-    assert { union(∅, ∅) === ∅ }
-    assert { union(∅, q) === q }
-    assert { union(s, ∅) === s }
+    assert { union(∅[Any], ∅[Any]) === ∅[Any] }
+    assert { union(∅[Any], q) === q }
+    assert { union(s, ∅[Any]) === s }
 
     val sq = union(s,q)
     val qs = union(q,s)
     implicitly[sq.type ~:~ qs.type]
-    assert(sq === 'a' :~: bar :~: true :~: 2 :~: "bar" :~: ∅)
-    assert(qs === bar :~: 'a' :~: true :~: 2 :~: "bar" :~: ∅)
+    assert(sq === 'a' :~: bar :~: true :~: 2 :~: "bar" :~: ∅[Any])
+    assert(qs === bar :~: 'a' :~: true :~: 2 :~: "bar" :~: ∅[Any])
   }
 
   test("mappers") {
 
-    assert { mapSet(toStr,∅) === ∅ }
+    assert { mapSet(toStr,∅[Any]) === ∅[Any] }
 
-    type S = Int :~: Char :~: String :~: List[Int] :~: ∅
-    val s: S = 1 :~: 'a' :~: "foo" :~: List(1,2,3) :~: ∅
-    // implicitly[MapSet[id.type, Int :~: Char :~: String :~: List[Int] :~: ∅]]
+    type S = Int :~: Char :~: String :~: List[Int] :~: ∅[Any]
+    val s: S = 1 :~: 'a' :~: "foo" :~: List(1,2,3) :~: ∅[Any]
+    // implicitly[MapSet[id.type, Int :~: Char :~: String :~: List[Int] :~: ∅[Any]]]
 
     assert { mapSet(identity, s) === s }
 
-    val x0 = mapSet(identity, 1 :~: ∅)
-    val x = mapSet(identity, 1 :~: 'a' :~: "oof" :~: List(3,2,1) :~: ∅)
-    assert { mapSet(rev,s) === 1 :~: 'a' :~: "oof" :~: List(3,2,1) :~: ∅ }
+    val x0 = mapSet(identity, 1 :~: ∅[Any])
+    val x = mapSet(identity, 1 :~: 'a' :~: "oof" :~: List(3,2,1) :~: ∅[Any])
+    assert { mapSet(rev,s) === 1 :~: 'a' :~: "oof" :~: List(3,2,1) :~: ∅[Any] }
 
     // // This case should fail, because toStr in not "type-injective"
     assertTypeError("mapSet(toStr,s)")
@@ -253,9 +253,9 @@ class TypeSetTests extends org.scalatest.FunSuite {
     assert(mapToListOf[String](toStr,s) === List("1", "a", "foo", "List(1, 2, 3)"))
     // assert(s.mapToHList(toStr).toList == s.mapToList(toStr))
     //
-    // assert(∅.mapFold(rev)(0)(_ + _) == 0)
-    // assertResult("1 :~: a :~: foo :~: List(1, 2, 3) :~: ∅") {
-    //   s.mapFold(toStr)("∅"){ _ + " :~: " + _ }
+    // assert(∅[Any].mapFold(rev)(0)(_ + _) == 0)
+    // assertResult("1 :~: a :~: foo :~: List(1, 2, 3) :~: ∅[Any]") {
+    //   s.mapFold(toStr)("∅[Any]"){ _ + " :~: " + _ }
     // }
     // // TODO: more tests for map-folding
   }
@@ -264,18 +264,18 @@ class TypeSetTests extends org.scalatest.FunSuite {
 
     import shapeless._
 
-    // assert(∅.toHList == HNil)
-    // assert((1 :~: 'a' :~: "foo" :~: ∅).toHList == (1 :: 'a' :: "foo" :: HNil))
+    // assert(∅[Any].toHList == HNil)
+    // assert((1 :~: 'a' :~: "foo" :~: ∅[Any]).toHList == (1 :: 'a' :: "foo" :: HNil))
 
-    assert(toListOf[Any](∅) === Nil)
-    assert( toListOf[Any](1 :~: 'a' :~: "foo" :~: ∅) === List[Any](1, 'a', "foo"))
+    assert(toListOf[Any](∅[Any]) === Nil)
+    assert( toListOf[Any](1 :~: 'a' :~: "foo" :~: ∅[Any]) === List[Any](1, 'a', "foo"))
 
     trait foo
     object boo extends foo
     object buh extends foo
-    assert(toListOf[foo](boo :~: buh :~: ∅) === List[foo](boo, buh))
+    assert(toListOf[foo](boo :~: buh :~: ∅[Any]) === List[foo](boo, buh))
 
-    val s = 1 :~: 'a' :~: buh :~: "sdk" :~: boo :~: ∅
+    val s = 1 :~: 'a' :~: buh :~: "sdk" :~: boo :~: ∅[Any]
     // val buhbuh = pop[foo] from s
 
   }
@@ -285,21 +285,21 @@ class TypeSetTests extends org.scalatest.FunSuite {
     object foo extends AnyType { val label = "foo"; type Raw = Any }
     object bar extends AnyType { val label = "bar"; type Raw = Any }
 
-    val denots = (foo := 1) :~: (bar := "buh") :~: ∅
+    val denots = (foo := 1) :~: (bar := "buh") :~: ∅[Any]
 
-    assertResult(foo :~: bar :~: ∅) { mapSet(typeOf,denots) }
+    assertResult(foo :~: bar :~: ∅[Any]) { mapSet(typeOf,denots) }
   }
 
   test("conversion to a Map") {
     // import properties._
     //
-    // assert{ ∅.serialize[Int] === Right( Map() ) }
-    // assert{ ∅.toMap[AnyType, Int] === Map() }
+    // assert{ ∅[Any].serialize[Int] === Right( Map() ) }
+    // assert{ ∅[Any].toMap[AnyType, Int] === Map() }
     //
     // case object key  extends Property[String]("key")
     // case object name extends Property[String]("name")
     //
-    // val set = key("foo") :~: name("bob") :~: ∅
+    // val set = key("foo") :~: name("bob") :~: ∅[Any]
     //
     // assert{ set.serialize[String] === Right( Map("key" -> "foo", "name" -> "bob") ) }
     // assert{ set.toMap[AnyProperty, String] === Map(key -> "foo", name -> "bob") }

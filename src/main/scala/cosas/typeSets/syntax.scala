@@ -8,7 +8,7 @@ case object syntax {
 
     /* Element-related */
 
-    def :~:[E](e: E)(implicit check: E ∉ S): (E :~: S) = TypeSetImpl.ConsSet.cons(e, s) : (E :~: S)
+    def :~:[E <: S#Bound](e: E)(implicit check: E ∉ S): (E :~: S) = ConsSet(e, s) : (E :~: S)
 
     def pop[E, O <: AnyTypeSet](w: Witness[E])(implicit
       p: App1[pop[E], S, (E,O)]
@@ -52,7 +52,7 @@ case object syntax {
 
     // def toHList(implicit toHList: ToHList[S]): toHList.Out = toHList(s)
 
-    def toList[X](implicit toList: App1[toListOf[X],S,List[X]]): List[X] = toList(s)
+    def toList(implicit toList: App1[toListOf[S#Bound],S,List[S#Bound]]): List[S#Bound] = toList(s)
 
     // def getTypes[X](implicit types: TypesOf[S] { type Out = X }): X = types(s)
 

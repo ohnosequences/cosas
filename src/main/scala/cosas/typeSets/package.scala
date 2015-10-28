@@ -5,11 +5,11 @@ import shapeless.HList
 
 package object typeSets {
 
-  final type ∅ = TypeSetImpl.EmptySetImpl
-  val ∅ : ∅ = TypeSetImpl.EmptySetImpl // the space before : is needed
-  val emptySet : ∅ = TypeSetImpl.EmptySetImpl
+  final type ∅[+X] = EmptySet[X]
+  def ∅[X] : ∅[X] = EmptySet[X](AnyEmptySet) // the space before : is needed
+  // val emptySet : ∅ = TypeSetImpl.EmptySetImpl
 
-  final type :~:[E, S <: AnyTypeSet] = TypeSetImpl.ConsSet[E, S]
+  final type :~:[E <: S#Bound, S <: AnyTypeSet] = ConsSet[E, S]
 
   // functions
   type filter = Filter.type

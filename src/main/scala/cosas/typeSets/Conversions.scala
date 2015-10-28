@@ -6,10 +6,10 @@ class ToListOf[X] extends DepFn1[AnyTypeSet, List[X]]
 
 case object ToListOf {
 
-  implicit def empty[X]: App1[ToListOf[X], ∅, List[X]] =
-    App1 { s: ∅ => Nil }
+  implicit def empty[X]: App1[ToListOf[X], ∅[X], List[X]] =
+    App1 { s: ∅[X] => Nil }
 
-  implicit def nonEmpty[H <: X, X, T <: AnyTypeSet](implicit
+  implicit def nonEmpty[H <: X, X, T <: AnyTypeSet { type Bound = X }](implicit
     ap: App1[ToListOf[X],T,List[X]]
   ): App1[ToListOf[X], H :~: T, List[X]] =
     App1 { xs: H :~: T => xs.head :: ap(xs.tail) }
@@ -19,13 +19,13 @@ class ToTypeMap[K <: AnyType,V] extends DepFn1[AnyTypeSet, Map[K,V]]
 
 case object ToTypeMap {
 
-  implicit def empty[K <: AnyType, V]:App1[toTypeMap[K,V], ∅, Map[K,V]] =
-    App1 { s: ∅ => Map() }
+  implicit def empty[K <: AnyType, V]: App1[toTypeMap[K,V], ∅[AnyType], Map[K,V]] =
+    App1 { s: ∅[AnyType] => Map() }
 
   implicit def nonEmpty[
     K <: AnyType, V,
     D <: AnyDenotation { type Tpe <: K; type Value <: V },
-    T <: AnyTypeSet
+    T <: AnyTypeSet.Of[AnyDenotation]
   ](implicit
     toTypeMap: App1[toTypeMap[K,V], T, Map[K,V]],
     key: D#Tpe
