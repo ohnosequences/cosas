@@ -10,7 +10,7 @@ trait Filter extends DepFn2[AnyTypePredicate, AnyTypeSet, AnyTypeSet] {
 
   implicit def skip[
     P <: In1,
-    H <: P#ArgBound, T <: In2,
+    H <: P#ArgBound, T <: AnyTypeSet.Of[P#ArgBound],
     TO <: Out
   ](implicit
       ev: App2[filter, P, T, TO]
@@ -23,13 +23,13 @@ case object Filter extends Filter {
   type filter = this.type
   val filter = this
 
-  implicit def empty[P <: In1]: App2[filter, P, ∅, ∅] =
-    filter at { (p: P, empty: ∅) => ∅ }
+  implicit def empty[P <: In1, X]: App2[filter, P, ∅[X], ∅[X]] =
+    filter at { (p: P, empty: ∅[X]) => ∅[X] }
 
   implicit def nonEmpty[
     P <: AnyTypePredicate,
-    H <: P#ArgBound, T <: AnyTypeSet,
-    TO <:AnyTypeSet
+    H <: P#ArgBound, T <: AnyTypeSet.Of[P#ArgBound],
+    TO <: AnyTypeSet.Of[P#ArgBound]
   ](implicit
     h: P Accepts H,
     ev: App2[filter, P, T, TO]

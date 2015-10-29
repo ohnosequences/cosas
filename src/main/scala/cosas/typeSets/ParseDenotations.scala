@@ -10,12 +10,12 @@ class ParseDenotations[V,S <: AnyTypeSet] extends DepFn1[Map[String,V], Either[P
 
 case object ParseDenotations {
 
-  implicit def empty[V]: App1[parseDenotations[V,∅], Map[String,V], Either[ParseDenotationsError,∅]] =
-    App1 { map: Map[String,V] => Right(∅) }
+  implicit def empty[V,X]: App1[parseDenotations[V,∅[AnyDenotation]], Map[String,V], Either[ParseDenotationsError,∅[AnyDenotation]]] =
+    App1 { map: Map[String,V] => Right(∅[AnyDenotation]) }
 
   implicit def nonEmpty[
     V,
-    H <: AnyType, TD <: AnyTypeSet,
+    H <: AnyType, TD <: AnyTypeSet.Of[AnyDenotation],
     HR <: H#Raw
   ](implicit
     parseH: DenotationParser[H,HR,V],

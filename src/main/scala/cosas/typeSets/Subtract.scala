@@ -9,21 +9,21 @@ case object Subtract extends DepFn2[AnyTypeSet, AnyTypeSet, AnyTypeSet] with Sub
 
   type Me = this.type
 
-  implicit def sInQ[S <: AnyTypeSet.SubsetOf[Q], Q <: AnyTypeSet]
-    : App2[Me, S, Q, ∅] =
-      App2 { (s: S, q: Q) => ∅ }
+  implicit def sInQ[S <: AnyTypeSet.SubsetOf[Q], Q <: AnyTypeSet, X]
+    : App2[Me, S, Q, ∅[X]] =
+      App2 { (s: S, q: Q) => ∅[X] }
 }
 
 trait Subtract_2 extends Subtract_3 {
 
   /* * Case when Q is empty => result is S: */
-  implicit def qEmpty[S <: AnyTypeSet]
-  : App2[Me, S, ∅, S] =
-    App2 { (s: S, q: ∅) => s }
+  implicit def qEmpty[S <: AnyTypeSet, X]
+  : App2[Me, S, ∅[X], S] =
+    App2 { (s: S, q: ∅[X]) => s }
 
     /* * Case when S.head ∈ Q => result is S.tail \ Q: */
     implicit def sConsWithoutHead[
-      H, T <: AnyTypeSet,
+      H <: T#Bound, T <: AnyTypeSet,
       Q <: AnyTypeSet, TO <: AnyTypeSet
     ]
     (implicit
@@ -39,8 +39,8 @@ trait Subtract_3 extends DepFn2[AnyTypeSet, AnyTypeSet, AnyTypeSet] {
   type Me <: this.type
 
   implicit def sConsAnyHead[
-    H, T <: AnyTypeSet,
-    Q <: AnyTypeSet, TO <: AnyTypeSet
+    H <: T#Bound, T <: AnyTypeSet,
+    Q <: AnyTypeSet, TO <: AnyTypeSet { type Bound >: H }
   ](implicit
     h: H ∉ Q,
     rest: App2[Me,T,Q,TO]

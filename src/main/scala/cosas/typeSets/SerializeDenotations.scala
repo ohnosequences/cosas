@@ -15,12 +15,12 @@ class SerializeDenotations[V,Denotations <: AnyTypeSet] extends DepFn2[
 case object SerializeDenotations {
 
   implicit def atEmpty[V]
-  : App2[SerializeDenotations[V,∅], Map[String,V], ∅, Either[SerializeDenotationsError, Map[String,V]]] =
-    App2 { (map: Map[String,V],nil: ∅) => Right(map): Either[SerializeDenotationsError, Map[String,V]] }
+  : App2[SerializeDenotations[V,∅[AnyDenotation]], Map[String,V], ∅[AnyDenotation], Either[SerializeDenotationsError, Map[String,V]]] =
+    App2 { (map: Map[String,V],nil: ∅[AnyDenotation]) => Right(map): Either[SerializeDenotationsError, Map[String,V]] }
 
   implicit def atCons[
     V,
-    H <: AnyType, TD <: AnyTypeSet,
+    H <: AnyType, TD <: AnyTypeSet.Of[AnyDenotation],
     HR <: H#Raw
   ](implicit
     serializeH: DenotationSerializer[H,HR,V],

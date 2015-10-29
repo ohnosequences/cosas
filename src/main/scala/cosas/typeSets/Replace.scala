@@ -16,11 +16,11 @@ class Replace[S <: AnyTypeSet] extends DepFn2[S, AnyTypeSet, S]
 
 case object Replace extends replace_2 {
 
-  implicit def empty[S <: AnyTypeSet]: App2[Replace[S], S, ∅, S] =
-    App2 { (s: S, q: ∅) => s }
+  implicit def empty[S <: AnyTypeSet]: App2[Replace[S], S, ∅[S#Bound], S] =
+    App2 { (s: S, q: ∅[S#Bound]) => s }
 
   implicit def replaceHead[
-    H, T <: AnyTypeSet,
+    H <: T#Bound, T <: AnyTypeSet,
     Q <: AnyTypeSet, QOut <: AnyTypeSet
   ](implicit
     popHead: App1[pop[H], Q, (H,QOut)],
@@ -33,7 +33,7 @@ case object Replace extends replace_2 {
 trait replace_2 {
 
   implicit def skipHead[
-    H, T <: AnyTypeSet,
+    H <: T#Bound, T <: AnyTypeSet,
     Q <: AnyTypeSet, QOut <: AnyTypeSet
   ](implicit
     replace: App2[Replace[T], T,Q,T]
