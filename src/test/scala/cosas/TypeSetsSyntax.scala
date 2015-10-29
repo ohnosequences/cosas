@@ -16,14 +16,14 @@ class TypeSetSyntaxTests extends org.scalatest.FunSuite {
     assert{ s.lookup[String] === "foo" }
   }
 
-  test("take syntax") {
-
-    val s = 1 :~: 'a' :~: "foo" :~: ∅[Any]
-    type pt = Char :~: Int :~: ∅[Any]
-
-    assert { s.take[pt] === 'a' :~: 1 :~: ∅[Any] }
-    assert { s.take[Int :~: Char :~: String :~: ∅[Any]] === s }
-  }
+  // test("take syntax") {
+  //
+  //   val s = 1 :~: 'a' :~: "foo" :~: ∅[Any]
+  //   type pt = Char :~: Int :~: ∅[Any]
+  //
+  //   assert { s.take[pt] === 'a' :~: 1 :~: ∅[Any] }
+  //   assert { s.take[Int :~: Char :~: String :~: ∅[Any]] === s }
+  // }
 
   test("delete syntax") {
 
@@ -42,21 +42,21 @@ class TypeSetSyntaxTests extends org.scalatest.FunSuite {
     assert{ ( s pop ofType[String] ) === pop[String](s)   }
   }
 
-  test("replace syntax") {
+  // test("replace syntax") {
+  //
+  //   val s = 1 :~: 'a' :~: "foo" :~: ∅[Any]
+  //
+  //   assert { (∅[Any] replace ∅[Any]) === ∅[Any] }
+  //   assert { (s replace 2 :~: ∅[Any]) === 2 :~: 'a' :~: "foo" :~: ∅[Any] }
+  //   assert { (s replace "bar" :~: ∅[Any]) === 1 :~: 'a' :~: "bar" :~: ∅[Any] }
+  // }
 
-    val s = 1 :~: 'a' :~: "foo" :~: ∅[Any]
-
-    assert { (∅[Any] replace ∅[Any]) === ∅[Any] }
-    assert { (s replace 2 :~: ∅[Any]) === 2 :~: 'a' :~: "foo" :~: ∅[Any] }
-    assert { (s replace "bar" :~: ∅[Any]) === 1 :~: 'a' :~: "bar" :~: ∅[Any] }
-  }
-
-  test("reorder syntax") {
-
-    val s = 1 :~: 'a' :~: "foo" :~: ∅[Any]
-
-    assert { s.reorderTo[Char :~: Int :~: String :~: ∅[Any]] === 'a' :~: 1 :~: "foo" :~: ∅[Any] }
-  }
+  // test("reorder syntax") {
+  //
+  //   val s = 1 :~: 'a' :~: "foo" :~: ∅[Any]
+  //
+  //   assert { s.reorderTo[Char :~: Int :~: String :~: ∅[Any]] === 'a' :~: 1 :~: "foo" :~: ∅[Any] }
+  // }
 
   test("union syntax") {
 
@@ -71,21 +71,21 @@ class TypeSetSyntaxTests extends org.scalatest.FunSuite {
     assert { (q ∪ s) === union(q,s) }
   }
 
-  test("map syntax") {
-
-    type S = Int :~: Char :~: String :~: List[Int] :~: ∅[Any]
-    val s: S = 1 :~: 'a' :~: "foo" :~: List(1,2,3) :~: ∅[Any]
-
-    assert { ( ∅[Any] map toStr ) === ∅[Any] }
-    assert { ( s map identity ) === mapSet(identity, s) }
-    assert { (s map rev ) === mapSet(rev,s) }
-  }
-
-  test("mapToListOf syntax") {
-
-    type S = Int :~: Char :~: String :~: List[Int] :~: ∅[Any]
-    val s: S = 1 :~: 'a' :~: "foo" :~: List(1,2,3) :~: ∅[Any]
-
-    assert { ( s mapToList toStr ) === mapToListOf[String](toStr,s) }
-  }
+  // test("map syntax") {
+  //
+  //   type S = Int :~: Char :~: String :~: List[Int] :~: ∅[Any]
+  //   val s: S = 1 :~: 'a' :~: "foo" :~: List(1,2,3) :~: ∅[Any]
+  //
+  //   assert { ( ∅[Any] map toStr ) === ∅[Any] }
+  //   assert { ( s map identity ) === mapSet(identity, s) }
+  //   assert { (s map rev ) === mapSet(rev,s) }
+  // }
+  //
+  // test("mapToListOf syntax") {
+  //
+  //   type S = Int :~: Char :~: String :~: List[Int] :~: ∅[Any]
+  //   val s: S = 1 :~: 'a' :~: "foo" :~: List(1,2,3) :~: ∅[Any]
+  //
+  //   assert { ( s mapToList toStr ) === mapToListOf[String](toStr,s) }
+  // }
 }
