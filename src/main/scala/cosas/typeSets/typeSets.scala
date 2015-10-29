@@ -3,7 +3,7 @@ package ohnosequences.cosas.typeSets
 // deps
 import ohnosequences.cosas._, typeUnions._, types._
 
-trait AnyTypeSet extends Any {
+sealed trait AnyTypeSet extends Any {
 
   type Types <: AnyTypeUnion
   // type Union // NOTE should be Types#union, but we can't set it here; scalac bugs
@@ -45,14 +45,14 @@ trait NonEmptySet[+B] extends TypeSet[B] {
 
   type Size = Successor[Tail#Size]
   // should be provided implicitly:
-  val headIsNew: Head ∉ Tail
+  // val headIsNew: Head ∉ Tail
 }
 
-case class ConsSet[H <: T#Bound, T <: AnyTypeSet](val head : H, val tail : T)(implicit val headIsNew: H ∉ T) extends NonEmptySet[T#Bound] {
+case class ConsSet[+H <: T#Bound, +T <: AnyTypeSet](val head : H, val tail : T) extends NonEmptySet[T#Bound] {
 
-  type Head = H; type Tail = T
+  type Head = H @uv; type Tail = T @uv
 
-  type Types = Tail#Types or H
+  type Types = Tail#Types @uv or H @uv
 
   final def toStr: String = {
     val h = head match {

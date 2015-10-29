@@ -5,8 +5,8 @@ import ohnosequences.cosas.properties._
 
 package object records {
 
-  type get[P <: AnyProperty, R <: AnyRecord] = Get[P,R]
-  def get[P <: AnyProperty, R <: AnyRecord]: get[P,R] = new Get[P,R]
+  type get[P <: AnyType, R <: AnyRecord] = Get[P,R]
+  def get[P <: AnyType, R <: AnyRecord]: get[P,R] = new Get[P,R]
 
   type update[RT <: AnyRecord] = Update[RT]
   def update[RT <: AnyRecord]: update[RT] = new Update[RT]

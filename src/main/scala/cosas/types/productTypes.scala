@@ -67,7 +67,7 @@ case object Project extends ProjectInTail {
 
   implicit def foundInHead[
     H <: AnyType { type Raw >: V }, V,
-    Ts <: AnyProductType { type Raw >: Ds }, Ds <: AnyKList { type Bound = AnyDenotation}
+    Ts <: AnyProductType { type Raw >: Ds }, Ds <: AnyKList { type Bound = AnyDenotation }
   ]
   : App1[
       Project[H :×: Ts, H],

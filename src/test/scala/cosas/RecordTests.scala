@@ -62,7 +62,7 @@ class RecordTests extends org.scalatest.FunSuite {
 
   test("can access fields and field values") {
 
-    assert { (simpleUserEntry get id)   === id(123)     }
+    assert { (new Get[id.type,simpleUser.type])(simpleUserEntry)(Get.default(Lookup.foundInHead))   === id(123)     }
     assert { (simpleUserEntry get name) === name("foo") }
 
     assert { (simpleUserEntry getV id) === 123 }
@@ -127,16 +127,16 @@ class RecordTests extends org.scalatest.FunSuite {
   //
   // test("can check if record has properties") {
   //
-  //   implicitly[simpleUser.PropertySet HasProperties (id.type :~: name.type :~: ∅[AnyDenotation])]
-  //   implicitly[simpleUser.PropertySet HasProperties (name.type :~: id.type :~: ∅)]
-  //   implicitly[simpleUser.PropertySet HasProperties (name.type :~: ∅)]
-  //   implicitly[simpleUser.PropertySet HasProperties (id.type :~: ∅)]
+  //   implicitly[simpleUser.SetOfTypes HasProperties (id.type :~: name.type :~: ∅[AnyDenotation])]
+  //   implicitly[simpleUser.SetOfTypes HasProperties (name.type :~: id.type :~: ∅)]
+  //   implicitly[simpleUser.SetOfTypes HasProperties (name.type :~: ∅)]
+  //   implicitly[simpleUser.SetOfTypes HasProperties (id.type :~: ∅)]
   //
-  //   implicitly[simpleUser.PropertySet HasProperty name.type]
-  //   implicitly[simpleUser.PropertySet HasProperty id.type]
+  //   implicitly[simpleUser.SetOfTypes HasProperty name.type]
+  //   implicitly[simpleUser.SetOfTypes HasProperty id.type]
   //
-  //   assertTypeError { """implicitly[simpleUser.PropertySet HasProperties (email.type :~: id.type :~: ∅)]""" }
-  //   assertTypeError { """implicitly[simpleUser.PropertySet HasProperties (email.type :~: name.type :~: color.type :~: ∅)]""" }
+  //   assertTypeError { """implicitly[simpleUser.SetOfTypes HasProperties (email.type :~: id.type :~: ∅)]""" }
+  //   assertTypeError { """implicitly[simpleUser.SetOfTypes HasProperties (email.type :~: name.type :~: color.type :~: ∅)]""" }
   // }
 //
   case object propertyConverters {

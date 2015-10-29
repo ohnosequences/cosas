@@ -2,11 +2,11 @@ package ohnosequences.cosas.records
 
 import ohnosequences.cosas._, types._, typeSets._, properties._, fns._
 
-class Get[P <: AnyProperty, R <: AnyRecord] extends DepFn1[ValueOf[R], ValueOf[P]]
+class Get[P <: AnyType, R <: AnyRecord] extends DepFn1[ValueOf[R], ValueOf[P]]
 
 case object Get {
 
-  implicit def default[P0 <: AnyProperty, R0 <: AnyRecord]
+  implicit def default[P0 <: AnyType, R0 <: AnyRecord]
   (implicit
     look: App1[Lookup[ValueOf[P0]], R0#Raw, ValueOf[P0]]
   )

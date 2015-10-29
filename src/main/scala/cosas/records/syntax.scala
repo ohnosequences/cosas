@@ -32,11 +32,11 @@ case object syntax {
   case class RecordEntrySyntax[RT <: AnyRecord](val entryRaw: RT#Raw) extends AnyVal {
 
     // def serialize[V](implicit
-    //   serialize: RT#PropertySet#Raw SerializeDenotations V
+    //   serialize: RT#SetOfTypes#Raw SerializeDenotations V
     // ): Either[SerializeDenotationsError, Map[String,V]] = serialize(entryRaw)
     //
     // def serializeUsing[V](map: Map[String,V])(implicit
-    //   serialize: RT#PropertySet#Raw SerializeDenotations V
+    //   serialize: RT#SetOfTypes#Raw SerializeDenotations V
     // ): Either[SerializeDenotationsError, Map[String,V]] = serialize(entryRaw, map)
     //
     def getV[P <: AnyProperty](p: P)(implicit

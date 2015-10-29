@@ -5,27 +5,27 @@ import ohnosequences.cosas._, types._, typeSets._, properties._
 // TODO rewrite this in terms of product types
 trait AnyRecord extends AnyType {
 
-  type PropertySet <: AnyPropertySet
-  val  propertySet: PropertySet
+  type SetOfTypes <: AnySetOfTypes
+  val  propertySet: SetOfTypes
 
-  type Properties = PropertySet#Properties
-  val  properties: Properties = propertySet.properties
+  type Properties = SetOfTypes#Types
+  val  properties: Properties = propertySet.types
 
-  type Raw = PropertySet#Raw
+  type Raw = SetOfTypes#Raw
 
   type Size = Properties#Size
 }
 
-class Record[PS <: AnyPropertySet](val propertySet: PS) extends AnyRecord {
+class Record[PS <: AnySetOfTypes](val propertySet: PS) extends AnyRecord {
 
-  type PropertySet = PS
+  type SetOfTypes = PS
 
   lazy val label = toString
 }
 
 case object AnyRecord {
 
-  type withProperties[PS <: AnyPropertySet] = AnyRecord { type Properties = PS }
+  type withProperties[PS <: AnySetOfTypes] = AnyRecord { type Properties = PS }
 
   implicit def recordSyntax[RT <: AnyRecord](recType: RT): syntax.RecordSyntax[RT] =
     syntax.RecordSyntax(recType)
