@@ -145,8 +145,8 @@ class RecordTests extends org.scalatest.FunSuite {
       import scala.util.control.Exception._
       catching(classOf[NumberFormatException]) opt str.toInt
     }
-    implicit val idParser   = PropertyParser(id, id.label)(idVParser)
-    implicit val nameParser = PropertyParser(name, name.label){ str: String => Some(str) }
+    implicit val idParser: PropertyParser[id.type,String]   = PropertyParser(id, id.label)(idVParser)
+    implicit val nameParser: PropertyParser[name.type,String] = PropertyParser(name, name.label){ str: String => Some(str) }
 
     implicit val idSerializer   = PropertySerializer(id, id.label)( x => Some(x.toString) )
     implicit val nameSerializer = PropertySerializer(name, name.label){ x: String => Some(x) }

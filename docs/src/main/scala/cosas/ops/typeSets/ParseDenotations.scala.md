@@ -22,23 +22,22 @@ case class ErrorParsing[PE <: DenotationParserError](val err: PE) extends ParseD
 
 case object ParseDenotations {
 
+  def apply[Ds <: AnyTypeSet,V](implicit p: ParseDenotations[Ds,V]): ParseDenotations[Ds,V] = p
   implicit def atEmpty[V]: ParseDenotations[∅,V] = new ParseDenotations[∅,V] {
 
     def apply(map: Map[String,V]): Out = Right(∅)
   }
 
   implicit def atCons[
-    V,
-    H <: AnyType, TD <: AnyTypeSet,
-    HR <: H#Raw,
-    PH <: AnyDenotationParser { type Type = H; type Value = V; type D = HR },
-    PT <: ParseDenotations[TD,V]
+    HType <: AnyType, TailDenotations <: AnyTypeSet,
+    HRaw <: HType#Raw,
+    Vv
   ](implicit
-    parseH: PH,
-    parseT: PT
-  ): ParseDenotations[(H := HR) :~: TD, V] = new ParseDenotations[(H := HR) :~: TD, V] {
+    parseH: DenotationParser[HType,HRaw,Vv],
+    parseT: ParseDenotations[TailDenotations,Vv]
+  ): ParseDenotations[(HType := HRaw) :~: TailDenotations, Vv] = new ParseDenotations[(HType := HRaw) :~: TailDenotations, Vv] {
 
-    def apply(map: Map[String,V]): Out =
+    def apply(map: Map[String,Vv]): Out =
       map.get(parseH.labelRep).fold[Out](
         Left(KeyNotFound(parseH.labelRep, map))
       )(
@@ -48,7 +47,7 @@ case object ParseDenotations {
 
           r => parseT(map).fold[Out] (
             err => Left(err),
-            td  => Right(r :~: (td: TD))
+            td  => Right(r :~: (td: TailDenotations))
           )
         )
       )
