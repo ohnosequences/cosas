@@ -11,7 +11,7 @@ case object at {
     App1 { s: H :: T => s.head }
 
   implicit def atN[
-    H <: T#Bound, T <: AnyKList { type Bound >: Z},
+    H <: T#Bound, T <: AnyKList { type Bound >: Z },
     N <: AnyNat,
     Z
   ](implicit
@@ -20,16 +20,3 @@ case object at {
   : App1[(H :: T) at Successor[N], H :: T, Z] =
     App1 { ht: H :: T => atT(ht.tail)}
 }
-
-// trait FoundInTail {
-//
-//   implicit def foundInTail[
-//     H <: T#Bound,
-//     T <: AnyKList { type Bound >: A },
-//     A
-//   ](implicit
-//     findIn: App1[A FindIn T, T, A]
-//   )
-//   : App1[A FindIn (H :: T), H :: T, A] =
-//     App1 { s: H :: T => findIn(s.tail) }
-// }

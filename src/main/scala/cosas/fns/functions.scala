@@ -1,7 +1,7 @@
 package ohnosequences.cosas.fns
 
 /* Dependent functions aka dependent products */
-trait AnyDepFn {
+trait AnyDepFn extends Any {
   type Out
 }
 trait AnyDepFn0 extends AnyDepFn
@@ -9,7 +9,7 @@ trait DepFn0[O] extends AnyDepFn0 {
   type Out = O
 }
 
-trait AnyDepFn1 extends AnyDepFn {
+trait AnyDepFn1 extends Any with AnyDepFn {
   type In1
 }
 case object AnyDepFn1 {
@@ -22,9 +22,12 @@ case object AnyDepFn1 {
     X10 <: DF0#In1
   ](df: DF0): syntax.DepFn1ApplyAt[DF0,X10] =
     syntax.DepFn1ApplyAt(df)
+
+  implicit def appForFn1[A,B](fn: Fn1[A,B]): Fn1.AppFn1[A,B] =
+    Fn1.AppFn1(fn.f)
 }
 
-trait DepFn1[I,O] extends AnyDepFn1 {
+trait DepFn1[I,O] extends Any with AnyDepFn1 {
   type In1 = I
   type Out = O
 }
@@ -85,7 +88,7 @@ trait AnyDepFn1Composition extends AnyDepFn1 {
   type Out = Second#Out
 }
 
-class Composition[
+case class Composition[
   F <: AnyDepFn1 { type Out <: S#In1 },
   S <: AnyDepFn1
 ]

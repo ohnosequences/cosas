@@ -6,6 +6,9 @@ case object syntax {
 
     final def at[I <: DF#In1, O <: DF#Out](f: I => O): App1[DF,I,O] =
       App1(f)
+
+    final def ∘[F <: AnyDepFn1 { type Out <: DF#In1 }](f: F): Composition[F,DF] =
+      Composition(f,df)
   }
 
   case class DepFn2Syntax[DF <: AnyDepFn2](val df: DF) extends AnyVal {

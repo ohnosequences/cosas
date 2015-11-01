@@ -4,7 +4,7 @@ import ohnosequences.cosas._, fns._
 
 class MapKListOf[
   F <: AnyDepFn1,
-  X >: F#In1 <: F#In1, Y >: F#Out <: F#Out
+  X <: F#In1, Y >: F#Out
 ]
 extends DepFn1[
   AnyKList { type Bound = X },
@@ -36,9 +36,5 @@ case object MapKListOf {
   : AnyApp1At[MapKListOf[F,A,B], H :: InT] { type Y = O :: mapof.Y } =
     App1[MapKListOf[F,A,B], H :: InT,  O :: mapof.Y] {
       (s: H :: InT) => evF(s.head) :: mapof(s.tail)
-      //
-      // type Y = O :: mapof.Y
-      //
-      // def apply(f: F, s: H :: InT): Y = f(s.head) :: mapof(f,s.tail)
     }
 }

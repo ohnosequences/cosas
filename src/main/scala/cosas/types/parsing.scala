@@ -1,8 +1,6 @@
 package ohnosequences.cosas.types
 
-/*
-  ### Type parsing and serialization
-*/
+// TODO update to DepFns
 trait AnyDenotationParser {
 
   type Type <: AnyType

@@ -5,12 +5,12 @@ trait AnyBool {
   type If[T <: Bound, F <: Bound, Bound] <: Bound
 }
 
-case object True extends AnyBool {
+case object TRUE extends AnyBool {
 
   type If[T <: Bound, F <: Bound, Bound] = T
 }
 
-case object False extends AnyBool {
+case object FALSE extends AnyBool {
 
   type If[T <: Bound, F <: Bound, Bound] = F
 }

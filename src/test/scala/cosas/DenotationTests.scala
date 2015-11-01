@@ -131,6 +131,8 @@ class DenotationTests extends org.scalatest.FunSuite {
     val friend =
       (new Project[Color :×: Friend :×: EmptyProductType.type, Friend])(zz)
 
-    val friendAgain = zz.project(Friend)
+    assert { ( zz project Friend ) === ( zz at _1 ) }
+
+    assert { ( zz project Friend ) === (zz getFirst Friend) }
   }
 }
