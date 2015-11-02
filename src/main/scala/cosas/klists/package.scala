@@ -4,9 +4,12 @@ import ohnosequences.cosas.fns._
 
 package object klists {
 
-  type KNilW = KNilOf.type
   type KNil[+A] = KNilOf[A]
   def  KNil[A]: KNil[A] = KNilOf[A](KNilOf)
+
+  type *[+A] = KNilOf[A]
+  def  *[A]: *[A] = KNilOf[A](KNilOf)
+
   type ::[+H <: T#Bound, +T <: AnyKList] = KCons[H,T]
 
   type mapKList[F <: AnyDepFn1] =

@@ -27,9 +27,11 @@ trait Successor[N <: AnyNat] extends AnyNonZeroNat {
 
 case object sum extends DepFn2[Witness.Of[AnyNat], Witness.Of[AnyNat], Witness.Of[AnyNat]] {
 
+  type apply[A <: Witness.Of[AnyNat], B <: Witness.Of[AnyNat]] = AnyApp2At[sum.type, A, B]
+
   implicit def zeroPlusAnything[N <: AnyNat]
-  : AnyApp2At[sum.type, Witness[N], Witness[_0]] { type Y = Witness[N] } =
-    App2 { (n: Witness[N], o: Witness[_0]) => n }
+  : sum.apply[Witness[N], Witness[zero.type]] { type Y = Witness[N] } =
+    App2 { (n: Witness[N], o: Witness[zero.type]) => n }
 
   implicit def rec[
     X <: AnyNat,
@@ -38,6 +40,6 @@ case object sum extends DepFn2[Witness.Of[AnyNat], Witness.Of[AnyNat], Witness.O
   ](implicit
     sumN: AnyApp2At[sum.type, Witness[Successor[X]], Witness[Y]] { type Y = Witness[Z] }
   )
-  : AnyApp2At[sum.type, Witness[X], Witness[Successor[Y]]] { type Y = Witness[Z] }=
+  : sum.apply[Witness[X], Witness[Successor[Y]]] { type Y = Witness[Z] }=
     App2 { (n: Witness[X], o: Witness[Successor[Y]]) => witness[Z] }
 }
