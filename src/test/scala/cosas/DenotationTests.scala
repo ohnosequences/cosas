@@ -15,7 +15,7 @@ case object DenotationTestsContext {
 
   val FavoriteColor = (User ==> Color)
 
-  val colorAndFriend = Color :×: Friend :×: EmptyProductType
+  val colorAndFriend = Color :×: Friend :×: unit
 }
 
 class DenotationTests extends org.scalatest.FunSuite {
@@ -24,9 +24,9 @@ class DenotationTests extends org.scalatest.FunSuite {
 
   test("can create denotations of types") {
 
-    val azul = Color := "blue"
-    val verde = valueOf(Color)("green")
-    val amarillo = Color := "yellow"
+    val azul      = Color := "blue"
+    val verde     = Color := "green"
+    val amarillo  = Color := "yellow"
 
     val x1 = Color := "yellow"
 
@@ -84,7 +84,7 @@ class DenotationTests extends org.scalatest.FunSuite {
   test("can get the types of denotations") {
 
     assert { typeOf(Color := "blue") === Color }
-    assert { typeOf(User := "LALALA") === typeOf( User := 23) }
+    assert { typeOf(User := "LALALA") === typeOf(User := 23) }
   }
 
   test("can covariantly denote types") {
@@ -99,7 +99,7 @@ class DenotationTests extends org.scalatest.FunSuite {
     case object A extends AnyType { lazy val label = toString; type Raw = Foo }
 
     val aFoo = A := new Foo {}
-    val aBar: ValueOf[A.type] = A := new Bar
+    val aBar: A.type := A.Raw = A := new Bar
   }
 
   test("denoting types with bound Any") {
@@ -122,17 +122,10 @@ class DenotationTests extends org.scalatest.FunSuite {
 
     val zz = colorAndFriend := (
       (Color := "blue") ::
-      (Friend := true)  :: KNil[AnyDenotation]
+      (Friend := true)  ::
+      *[AnyDenotation]
     )
 
-    val color =
-      (new Project[Color :×: Friend :×: EmptyProductType.type, Color])(zz)
-
-    val friend =
-      (new Project[Color :×: Friend :×: EmptyProductType.type, Friend])(zz)
-
-    assert { ( zz project Friend ) === ( zz at _1 ) }
-
-    assert { ( zz project Friend ) === (zz getFirst Friend) }
+    val friend = (zz getFirst Friend)
   }
 }

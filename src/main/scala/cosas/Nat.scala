@@ -4,22 +4,24 @@ import ohnosequences.cosas._, fns._, typeUnions._
 
 trait AnyNat { n =>
 
-  type Next <: AnyNat { type Pred = n.type }
+  type Next <: AnyNat
   val next: Next
 
   type StrictlySmaller <: AnyTypeUnion
+
+  implicit val me = this
 }
 
 case object zero extends AnyNat {
 
-  type Next = Successor[this.type]
+  type Next = Successor[zero.type]
   lazy val next: Next = Successor(zero)
 
   type StrictlySmaller = empty
 }
 trait AnyNonZeroNat extends AnyNat { nz =>
 
-  type Next <: AnyNonZeroNat { type Pred = nz.type }
+  type Next <: AnyNonZeroNat
   type Pred <: AnyNat
   val pred: Pred
 
@@ -28,10 +30,12 @@ trait AnyNonZeroNat extends AnyNat { nz =>
 
 case class Successor[N <: AnyNat](val pred: N) extends AnyNonZeroNat {
 
-  type Next = Successor[this.type]
+  type Next = Successor[Successor[N]]
   lazy val next: Next = Successor(this)
   type Pred = N
 }
+
+// TODO build nat rec depfn0
 
 case object sum extends DepFn2[AnyNat, AnyNat, AnyNat] {
 

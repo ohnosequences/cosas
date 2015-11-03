@@ -8,7 +8,7 @@ case object syntax {
       App1(f)
 
     final def ∘[F <: AnyDepFn1 { type Out <: DF#In1 }](f: F): Composition[F,DF] =
-      Composition(f,df)
+      new Composition[F,DF]
   }
 
   case class DepFn2Syntax[DF <: AnyDepFn2](val df: DF) extends AnyVal {

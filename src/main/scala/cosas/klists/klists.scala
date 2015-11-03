@@ -6,9 +6,10 @@ trait AnyKList extends Any {
 
   type Bound
 
+  type Length <: AnyNat
+
   type Types <: AnyTypeUnion
   type Union >: Types#union <: Types#union // NOTE should be Types#union, but we can't set it here; scalac bugs
-
 }
 
 case object KList {
@@ -24,9 +25,11 @@ trait AnyEmptyKList extends Any with AnyKList {
 
   type Types = TypeUnion.empty
   type Union = Types#union
+
+  type Length = _0
 }
 
-case class KNilOf[+A] private[klists] (val unique: KNilOf.type) extends AnyVal with AnyEmptyKList {
+case class KNilOf[+A]() extends AnyEmptyKList {
 
   type Bound = A @uv
 }
@@ -43,6 +46,8 @@ trait AnyNonEmptyKList extends Any with AnyKList {
 
   type Types = Tail#Types#or[Head]
   type Union = Types#union
+
+  type Length = Successor[Tail#Length]
 }
 
 case object NonEmptyKList {

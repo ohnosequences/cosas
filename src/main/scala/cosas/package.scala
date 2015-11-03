@@ -14,13 +14,13 @@ package object cosas {
   val   _0: _0 = zero
 
   type  _1 = Successor[_0]
-  val   _1 = Successor(_0)
+  val   _1: _1 = Successor(_0)
 
   type  _2 = Successor[_1]
-  val   _2 = Successor(_1)
+  val   _2: _2 = Successor(_1)
 
   type  _3 = Successor[_2]
-  val   _3 = Successor(_2)
+  val   _3: _3 = Successor(_2)
 
   type  _4 = Successor[_3]
   val   _4 = Successor(_3)

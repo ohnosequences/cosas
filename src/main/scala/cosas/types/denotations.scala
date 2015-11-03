@@ -35,8 +35,8 @@ case object denotationValue extends DepFn1[AnyDenotation,Any] with denotationVal
 
 trait denotationValue_2 {
 
-  implicit def valueForValueOf[T <: AnyType { type Raw <: V}, V]: App1[denotationValue.type, ValueOf[T], V] =
-    App1 { (v: ValueOf[T]) =>  v.value }
+  implicit def valueForValueOf[T <: AnyType { type Raw <: V}, V]: App1[denotationValue.type, T := T#Raw, V] =
+    App1 { (v: T := T#Raw) =>  v.value }
 }
 
 case object typeOf extends DepFn1[AnyDenotation,AnyType] {

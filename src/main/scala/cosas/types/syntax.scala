@@ -13,6 +13,12 @@ case object syntax {
     final def ==>[S <: AnyType](s: S): T ==> S = new (T ==> S)(tpe,s)
   }
 
+  final case class AnyProductTypeSyntax[L <: AnyProductType](val l: L) extends AnyVal {
+
+    def :×:[H <: AnyType, T <: AnyProductType](h: H): H :×: L =
+      new :×:(h,l)
+  }
+
   final case class AnyProductTypeDenotationSyntax[L <: AnyProductType, Vs <: L#Raw](val vs: Vs) extends AnyVal {
 
     def project[T <: AnyType, V <: T#Raw](t: T)(implicit
@@ -45,11 +51,11 @@ case object syntax {
 
   case class SubsetTypeSyntax[W <: AnyType, ST <: SubsetType[W]](val st: ST) extends AnyVal {
 
-    final def apply(raw: W := W#Raw): Option[ValueOf[ST]] = {
+    final def apply[R <: W#Raw](raw: W := R): Option[ST := R] = {
 
-      if ( st predicate raw ) None else Some( new Denotes[ST#Raw,ST](raw.value) )
+      if ( st predicate raw ) None else Some( new (ST := R)(raw.value) )
     }
 
-    final def withValue(raw: W := W#Raw): Option[ValueOf[ST]] = apply(raw)
+    final def withValue[R <: W#Raw](raw: W := R): Option[ST := R] = apply(raw)
   }
 }

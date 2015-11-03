@@ -18,13 +18,19 @@ case object syntax {
     : Z =
       a(l)
 
-    def take[N <: AnyNat, Z <: KList.Of[L#Bound]](n: N)(implicit take: App1[L take N, L, Z])
+    def take[N <: AnyNat, Z <: KList.Of[L#Bound]](n: N)(implicit take: AnyApp1At[take[N], L] {type Y = Z })
     : Z =
       take(l)
 
-    def drop[N <: AnyNat, Z <: KList.Of[L#Bound]](n: N)(implicit drop: App1[L drop N, L, Z])
+    def drop[N <: AnyNat, Z <: KList.Of[L#Bound]](n: N)(implicit drop: AnyApp1At[drop[N], L] { type Y = Z })
     : Z =
       drop(l)
+
+    def span[A <: AnyNat, B <: AnyNat, Z <: KList.Of[L#Bound]](start: A, end: B)(implicit
+      sp: AnyApp1At[span[A,B], L] { type Y = Z }
+    )
+    : Z =
+      sp(l)
 
 
     def ::[E <: L#Bound](e: E)

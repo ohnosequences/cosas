@@ -40,17 +40,15 @@ class DependentFunctionsTests extends org.scalatest.FunSuite {
   test("composition?") {
 
     assert {
-      (new Composition( size, new Composition(size,size) ))(2) === size(size(size(2)))
+      (size ∘ size ∘ size)(2) === size(size(size(2)))
     }
-    
+
     assert {
       (print ∘ size)(2) === print(size(2))
     }
 
-    assert { (new Composition(new Composition(size,size), size ))(2) === size(size(size(2))) }
-
     assert {
-      (new Composition(print,print))("abc") === print(print("abc"))
+      (print ∘ print)("abc") === print(print("abc"))
     }
   }
 }

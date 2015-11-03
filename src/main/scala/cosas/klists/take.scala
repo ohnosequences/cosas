@@ -2,21 +2,24 @@ package ohnosequences.cosas.klists
 
 import ohnosequences.cosas._, fns._
 
-class take[L <: AnyKList, N <: AnyNat] extends DepFn1[L, AnyKList]
+class take[N <: AnyNat] extends DepFn1[AnyKList, AnyKList]
 
-case object take {
-
-  implicit def atZero[L <: AnyKList]
-  : App1[L take _0, L, KNil[L#Bound]] =
-    App1 { l: L => KNil[L#Bound] }
+case object take extends takeEmptyAtZero {
 
   implicit def atN[
-    H <: Z#Bound, T <: AnyKList { type Bound = Z#Bound },
-    Z <: AnyKList,
-    N <: AnyNat
+    H <: Z0#Bound, T <: AnyKList { type Bound = Z0#Bound },
+    Z0 <: AnyKList,
+    N0 <: AnyNat
   ](implicit
-    takeN: App1[T take N, T, Z]
+    takeN: AnyApp1At[take[N0], T] { type Y = Z0 }
   )
-  : App1[(H :: T) take Successor[N], H :: T, H :: Z] =
+  : AnyApp1At[take[Successor[N0]], H :: T] { type Y = H :: Z0 } =
     App1 { ht: H :: T => ht.head :: takeN(ht.tail) }
+}
+
+trait takeEmptyAtZero {
+
+  implicit def atZero[L <: AnyKList]
+  : AnyApp1At[take[_0], L] { type Y = KNil[L#Bound] } =
+    App1 { l: L => KNil[L#Bound] }
 }

@@ -2,21 +2,26 @@ package ohnosequences.cosas.klists
 
 import ohnosequences.cosas._, fns._
 
-class drop[L <: AnyKList, N <: AnyNat] extends DepFn1[L, AnyKList]
+class drop[N <: AnyNat] extends DepFn1[AnyKList, AnyKList]
 
-case object drop {
-
-  implicit def atZero[L <: AnyKList]
-  : App1[L drop _0, L, L] =
-    App1 { l: L => l }
-
+case object drop extends dropAtN {
+  
   implicit def atN[
     H <: Z#Bound, T <: AnyKList { type Bound = Z#Bound },
     Z <: AnyKList,
-    N <: AnyNat
+    N0 <: AnyNat
   ](implicit
-    dropN: App1[T drop N, T, Z]
+    dropN: AnyApp1At[drop[N0], T] {type Y = Z }
   )
-  : App1[(H :: T) drop Successor[N], H :: T, Z] =
+  : AnyApp1At[drop[Successor[N0]], H :: T] { type Y = Z } =
     App1 { ht: H :: T => dropN(ht.tail) }
+
+
+}
+
+trait dropAtN {
+
+  implicit def atZero[L <: AnyKList]
+  : AnyApp1At[drop[_0], L] { type Y = L } =
+    App1 { l: L => l }
 }
