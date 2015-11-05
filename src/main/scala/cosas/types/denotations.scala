@@ -1,7 +1,6 @@
 package ohnosequences.cosas.types
 
-import ohnosequences.cosas.fns._
-import annotation.unchecked.{ uncheckedVariance => uv }
+import ohnosequences.cosas._, fns._
 
 trait AnyDenotation extends Any {
 
