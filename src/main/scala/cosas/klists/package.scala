@@ -32,4 +32,7 @@ package object klists {
 
   type  filter[A] = Filter[A]
   def   filter[A]: filter[A] = new Filter[A]
+
+  type  replace[L <: AnyKList] = Replace[L]
+  def   replace[L <: AnyKList]: replace[L] = new Replace[L]
 }

@@ -47,6 +47,11 @@ case object syntax {
     : (E,O) =
       p(l)
 
+    def replaceFirst[S <: AnyKList { type Bound = L#Bound }](s: S)(implicit
+      replaceFirst: App2[replace[L], L, S, L]
+    )
+    : L = replaceFirst(l,s)
+
     def toList(implicit conv: App1[toList[L], L, List[L#Bound]])
     : List[L#Bound] =
       conv(l)
