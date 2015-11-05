@@ -2,16 +2,6 @@ package ohnosequences.cosas.klists
 
 import ohnosequences.cosas._, fns._
 
-/*
-## Replace elements in one set with elements from another
-
-The idea is that if `Q ⊂ S`, then you can replace some elements of `S`,
-by the elements of `Q` with corresponding types. For example
-`(1 :: 'a' :: "foo" :: *) replace ("bar" :: 2 :: *) == (2 :: 'a' :: "bar" :: *)`.
-Note that the type of the result is the same (`S`).
-
-*/
-
 class Replace[S <: AnyKList] extends DepFn2[S, AnyKList, S]
 
 case object Replace extends ReplaceInTail {
