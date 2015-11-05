@@ -178,6 +178,13 @@ class KListTests extends org.scalatest.FunSuite {
     assert { (z replaceFirst "hola" :: *[Any]) === "hola" :: z.tail }
   }
 
+  test("can take a sublist by type") {
+
+      val z = "a" :: 'b' :: true :: 2 :: "cd" :: false :: *[Any]
+
+      assert { (z takeFirst /[Boolean :: Int :: *[Any]]) === true :: 2 :: *[Any] }
+  }
+
   test("can map over KLists") {
 
     case object f extends DepFn1[Any,String] {

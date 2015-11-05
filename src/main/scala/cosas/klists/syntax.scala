@@ -47,10 +47,17 @@ case object syntax {
     : (E,O) =
       p(l)
 
+    def takeFirst[Q <: KList.Of[L#Bound]](w: Witness[Q])(implicit
+      takeFirst: App1[takeFirst[Q], L, Q]
+    )
+    : Q =
+      takeFirst(l)
+
     def replaceFirst[S <: AnyKList { type Bound = L#Bound }](s: S)(implicit
       replaceFirst: App2[replace[L], L, S, L]
     )
-    : L = replaceFirst(l,s)
+    : L =
+      replaceFirst(l,s)
 
     def toList(implicit conv: App1[toList[L], L, List[L#Bound]])
     : List[L#Bound] =
