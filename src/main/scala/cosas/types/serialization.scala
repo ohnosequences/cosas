@@ -1,5 +1,6 @@
 package ohnosequences.cosas.types
 
+// TODO move to DepFns
 trait AnyDenotationSerializer {
 
   type Type <: AnyType

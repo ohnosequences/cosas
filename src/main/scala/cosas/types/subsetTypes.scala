@@ -28,7 +28,7 @@ case object AnySubsetType {
     W <: AnyType,
     ST <: SubsetType[W],
     Syntax <: ValueOfSubsetTypeSyntax[W,ST]
-  ](v: ValueOf[ST])(implicit conv: ValueOf[ST] => Syntax): Syntax = conv(v)
+  ](v: ST := ST#Raw)(implicit conv: (ST := ST#Raw) => Syntax): Syntax = conv(v)
 }
 
 trait SubsetType[W0 <: AnyType] extends AnySubsetType { type W = W0 }
@@ -37,5 +37,5 @@ trait SubsetType[W0 <: AnyType] extends AnySubsetType { type W = W0 }
 trait ValueOfSubsetTypeSyntax[W <: AnyType, ST <: SubsetType[W]] extends Any {
 
   /* use case: concat of sized has the sum of the two arg sizes; but how do you create the corresponding value saving a stupid check (and returning an Option)? `unsafeValueOf`. By implementing this trait you assume the responsibility that comes with being able to create unchecked values of `ST`; use it with caution! */
-  protected final def unsafeValueOf[ST0 <: ST](other: ST#Raw): ValueOf[ST] = new Denotes[ST#Raw,ST](other)
+  protected final def unsafeValueOf[ST0 <: ST](other: ST#Raw): ST := ST#Raw = new (ST := ST#Raw)(other)
 }

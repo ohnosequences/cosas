@@ -4,8 +4,8 @@ import ohnosequences.cosas._, klists._, fns._
 
 trait AnyProductType extends AnyType {
 
-  type Types <: AnyKList { type Bound = AnyType }
-  val types: Types
+  type  Types <: AnyKList { type Bound = AnyType }
+  val   types: Types
 
   type Raw <: AnyKList { type Bound = AnyDenotation }
 }
@@ -13,23 +13,23 @@ trait AnyProductType extends AnyType {
 case object AnyProductType {
 
   implicit def productTypeSyntax[L <: AnyProductType](l: L)
-  : AnyProductTypeSyntax[L] =
-    AnyProductTypeSyntax(l)
+  : syntax.AnyProductTypeSyntax[L] =
+    syntax.AnyProductTypeSyntax(l)
 
   implicit def productTypeDenotationSyntax[L <: AnyProductType, Vs <: L#Raw](ds: L := Vs)
-    : AnyProductTypeDenotationSyntax[L,Vs] =
-      AnyProductTypeDenotationSyntax(ds.value)
+  : syntax.AnyProductTypeDenotationSyntax[L,Vs] =
+    syntax.AnyProductTypeDenotationSyntax(ds.value)
 
 }
 
 case object EmptyProductType extends AnyProductType {
 
-  type Types = KNil[AnyType]
-  val  types = KNil[AnyType]
+  type Types = *[AnyType]
+  val  types = *[AnyType]
 
-  type Raw = KNil[AnyDenotation]
+  type Raw = *[AnyDenotation]
 
-  val label: String = "□"
+  val label: String = "()"
 }
 
 case class :×:[H <: AnyType, T <: AnyProductType](val head: H, val tail: T) extends AnyProductType {
@@ -42,38 +42,21 @@ case class :×:[H <: AnyType, T <: AnyProductType](val head: H, val tail: T) ext
   lazy val label: String = s"${head.label} :×: ${tail.label}"
 }
 
-case class AnyProductTypeSyntax[L <: AnyProductType](val l: L) extends AnyVal {
-
-  def :×:[H <: AnyType, T <: AnyProductType](h: H): H :×: L =
-    new :×:(h,l)
-}
-
-case class AnyProductTypeDenotationSyntax[L <: AnyProductType, Vs <: L#Raw](val vs: Vs) extends AnyVal {
-
-  def project[T <: AnyType, V <: T#Raw](t: T)(implicit
-    p: App1[Project[L,T], L := Vs, T := V]
-  )
-  : T := V =
-    p( new (L := Vs)(vs) )
-}
-
-
 class Project[Ts <: AnyProductType, T <: AnyType] extends DepFn1[
-  AnyDenotation,
-  AnyDenotation
+  AnyDenotation { type Tpe = Ts },
+  AnyDenotation { type Tpe = T }
 ]
 
 case object Project extends ProjectInTail {
 
   implicit def foundInHead[
     H <: AnyType { type Raw >: V }, V,
-    Ts <: AnyProductType { type Raw >: Ds }, Ds <: AnyKList { type Bound = AnyDenotation}
+    Ts <: AnyProductType { type Raw >: Ds }, Ds <: AnyKList { type Bound = AnyDenotation }
   ]
-  : App1[
+  : AnyApp1At[
       Project[H :×: Ts, H],
-      (H :×: Ts) := ((H := V) :: Ds),
-      H := V
-    ] =
+      (H :×: Ts) := ((H := V) :: Ds)
+    ] { type Y = H := V } =
     App1 { x: (H :×: Ts) := ((H := V) :: Ds) => x.value.head  }
 }
 
@@ -85,7 +68,7 @@ trait ProjectInTail {
     P <: AnyType { type Raw >: W }, W
   ]
   (implicit
-    proj: App1[Project[Ts,P], Ts := Ds, P := W ]
+    proj: AnyApp1At[Project[Ts,P], Ts := Ds] { type Y = P := W }
   )
   : App1[
     Project[H :×: Ts, P],

@@ -1,7 +1,7 @@
 package ohnosequences.cosas.fns
 
 /* Dependent functions aka dependent products */
-trait AnyDepFn {
+trait AnyDepFn extends Any {
   type Out
 }
 trait AnyDepFn0 extends AnyDepFn
@@ -9,7 +9,7 @@ trait DepFn0[O] extends AnyDepFn0 {
   type Out = O
 }
 
-trait AnyDepFn1 extends AnyDepFn {
+trait AnyDepFn1 extends Any with AnyDepFn {
   type In1
 }
 case object AnyDepFn1 {
@@ -22,9 +22,12 @@ case object AnyDepFn1 {
     X10 <: DF0#In1
   ](df: DF0): syntax.DepFn1ApplyAt[DF0,X10] =
     syntax.DepFn1ApplyAt(df)
+
+  implicit def appForFn1[A,B](fn: Fn1[A,B]): Fn1.AppFn1[A,B] =
+    Fn1.AppFn1(fn.f)
 }
 
-trait DepFn1[I,O] extends AnyDepFn1 {
+trait DepFn1[I,O] extends Any with AnyDepFn1 {
   type In1 = I
   type Out = O
 }
@@ -77,9 +80,7 @@ trait DepFn3[I1, I2, I3, O] extends AnyDepFn3 {
 trait AnyDepFn1Composition extends AnyDepFn1 {
 
   type First <: AnyDepFn1 { type Out <: Second#In1 }
-  val first: First
   type Second <: AnyDepFn1
-  val second: Second
 
   type In1 = First#In1
   type Out = Second#Out
@@ -89,23 +90,34 @@ class Composition[
   F <: AnyDepFn1 { type Out <: S#In1 },
   S <: AnyDepFn1
 ]
-(val first: F, val second: S) extends AnyDepFn1Composition {
+extends AnyDepFn1Composition {
 
   type First = F
   type Second = S
 }
 case object Composition {
 
-  implicit def appForComposition[
-    F <: AnyDepFn1 { type Out >: M },
-    S <: AnyDepFn1 { type In1 >: F#Out },
-    X1 <: F#In1,
-    M,
-    O <: S#Out
+  // implicit def appForComposition[
+  //   F <: AnyDepFn1 { type Out >: M },
+  //   S <: AnyDepFn1 { type In1 >: F#Out },
+  //   X1 <: F#In1,
+  //   M,
+  //   O <: S#Out
+  // ](implicit
+  //   appF: AnyApp1At[F,X1] { type Y = M },
+  //   appS: AnyApp1At[S,M]
+  // ): App1[Composition[F,S],X1,appS.Y] = App1 { x1: X1 => appS(appF(x1)) }
+
+  implicit def appForComposition2[
+    SF <: AnyDepFn1Composition { type Second <: AnyDepFn1 { type In1 >: M0; type Out >: O } },
+    X10 <: SF#First#In1,
+    M0,
+    O
   ](implicit
-    appF: AnyApp1At[F,X1] { type Y = M },
-    appS: AnyApp1At[S,M]
-  ): App1[Composition[F,S],X1,appS.Y] = App1 { x1: X1 => appS(appF(x1)) }
+    appF: AnyApp1At[SF#First, X10] { type Y = M0 },
+    appS: AnyApp1At[SF#Second, M0] { type Y = O }
+  )
+  : AnyApp1At[SF,X10] { type Y = O } = App1 { x1: X10 => appS(appF(x1)) }
 
 }
 
