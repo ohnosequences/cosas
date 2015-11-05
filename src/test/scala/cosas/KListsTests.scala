@@ -168,6 +168,16 @@ class KListTests extends org.scalatest.FunSuite {
       ( "que tal", true :: "scalac" :: *[Any]) }
   }
 
+  test("can replace segments of Klists") {
+
+    val z = "a" :: 'b' :: true :: 2 :: "cd" :: false :: *[Any]
+    val s = false :: 1 :: "argh" :: *[Any]
+
+    assert { (z replaceFirst *[Any]) === z }
+    assert { (z replaceFirst s) === ("argh" :: 'b' :: false :: 1 :: "cd" :: false :: *[Any]) }
+    assert { (z replaceFirst "hola" :: *[Any]) === "hola" :: z.tail }
+  }
+
   test("can map over KLists") {
 
     case object f extends DepFn1[Any,String] {
