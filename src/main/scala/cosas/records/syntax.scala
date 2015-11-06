@@ -1,29 +1,46 @@
-// package ohnosequences.cosas.records
-//
-// import ohnosequences.cosas._, fns._, types._, typeSets._, properties._
-//
-// case object syntax {
-//
-//   case class RecordSyntax[RT <: AnyRecord](val recType: RT) extends AnyVal {
-//
-//     def apply(recEntry: RT#Raw): ValueOf[RT] = recType := recEntry
-//
-//     /* Same as apply, but you can pass properties in any order */
-//     def apply[Vs <: AnyTypeSet](values: Vs)(implicit
-//       reorder: App1[reorderTo[RT#Raw], Vs, RT#Raw]
-//     ): ValueOf[RT] = recType := reorder(values)
-//
-//     def parse[V0](map: Map[String,V0])(
-//       implicit parseRaw: App1[parseDenotations[V0,RT#Raw], Map[String,V0], Either[ParseDenotationsError,RT#Raw]]
-//     )
-//     : Either[ParseDenotationsError, ValueOf[RT]] =
-//       parseRaw(map).fold[Either[ParseDenotationsError, ValueOf[RT]]](
-//         l => Left(l),
-//         v => Right(new ValueOf[RT](v))
-//       )
-//   }
-//
-//
+package ohnosequences.cosas.records
+
+import ohnosequences.cosas._, types._, fns._, klists._
+
+case object syntax {
+
+  final case class RecordTypeDenotationSyntax[RT <: AnyRecordType, Vs <: RT#Keys#Raw](val vs: Vs) extends AnyVal {
+
+    // def get[D <: AnyDenotation { type Tpe = T }, T <: AnyType](tpe: T)(implicit
+    //   get: AnyApp1At[D findIn Vs, Vs] { type Y = D }
+    // ): D =
+    //   get(vs)
+    //
+    // def getV[D <: AnyDenotation { type Tpe = T }, T <: AnyType](tpe: T)(implicit
+    //   get: AnyApp1At[D findIn Vs, Vs] { type Y = D }
+    // ): D#Value =
+    //   get(vs).value
+
+    // NOTE I need project, findIn won't work
+    def get[D <: AnyDenotation { type Tpe = T }, T <: AnyType](tpe: T)(implicit
+      get: AnyApp1At[Project[RT#Keys, T], RT#Keys := Vs] { type Y = D }
+    ): D = get(new (RT#Keys := Vs)(vs))
+
+    def getV[D <: AnyDenotation { type Tpe = T }, T <: AnyType](tpe: T)(implicit
+      get: AnyApp1At[Project[RT#Keys, T], RT#Keys := Vs] { type Y = D }
+    ): D#Value = get(new (RT#Keys := Vs)(vs)).value
+
+    def updateWith[Ds <: KList.Of[AnyDenotation]](ds: Ds)(implicit
+      update: AnyApp2At[update[RT], Vs, Ds] { type Y = RT := Vs }
+    ): RT := Vs = update(vs, ds)
+
+  }
+
+  final case class RecordTypeSyntax[RT <: AnyRecordType](val rt: RT) extends AnyVal {
+
+    def apply[Vs <: AnyKList { type Bound = AnyDenotation }](values: Vs)(implicit
+      reorder: AnyApp1At[TakeFirst[RT#Raw], Vs]
+    ): RT := RT#Raw = rt := reorder(values)
+  }
+
+
+}
+
 //   /*
 //     ### Record entry ops
 //

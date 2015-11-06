@@ -18,6 +18,9 @@ case object AnyType {
   implicit def typeSyntax[T <: AnyType](tpe: T): syntax.TypeSyntax[T] = syntax.TypeSyntax(tpe)
 }
 
+class Type[V](val label: String) extends AnyType { type Raw = V }
+
+
 case object typeLabel extends DepFn1[AnyType, String] {
 
   implicit def atType[T <: AnyType]: App1[typeLabel.type,T,String] = typeLabel at { t: T => t.label }

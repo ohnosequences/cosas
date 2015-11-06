@@ -42,19 +42,19 @@ case object syntax {
       findIn(l)
 
     def pick[E <: L#Bound, O <: KList.Of[L#Bound]](w: Witness[E])(implicit
-      p: App1[pick[E], L, (E,O)]
+      p: AnyApp1At[pick[E], L] { type Y = (E,O) }
     )
     : (E,O) =
       p(l)
 
     def takeFirst[Q <: KList.Of[L#Bound]](w: Witness[Q])(implicit
-      takeFirst: App1[takeFirst[Q], L, Q]
+      takeFirst: AnyApp1At[takeFirst[Q], L] { type Y = Q }
     )
     : Q =
       takeFirst(l)
 
     def replaceFirst[S <: AnyKList { type Bound = L#Bound }](s: S)(implicit
-      replaceFirst: App2[replace[L], L, S, L]
+      replaceFirst: AnyApp2At[replace[L], L, S] { type Y = L }
     )
     : L =
       replaceFirst(l,s)
