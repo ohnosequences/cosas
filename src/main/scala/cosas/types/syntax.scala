@@ -40,19 +40,29 @@ case object syntax {
       get(vs)
   }
 
-  final case class RecordTypeDenotationSyntax[RT <: AnyRecordType, Vs <: RT#Raw](val vs: Vs) extends AnyVal {
+  final case class RecordTypeDenotationSyntax[
+    RT <: AnyRecordType,
+    Vs <: RT#Types#Raw
+  ](val vs: Vs) extends AnyVal {
 
+    // NOTE I need project, findIn won't work
     def get[D <: AnyDenotation { type Tpe = T }, T <: AnyType](tpe: T)(implicit
-      get: AnyApp1At[D findIn Vs, Vs] { type Y = D }
+      get: AnyApp1At[Project[RT#Types, T], RT#Types := Vs] { type Y = D }
     )
     : D =
-      get(vs)
+      get(new (RT#Types := Vs)(vs))
 
     def getV[D <: AnyDenotation { type Tpe = T }, T <: AnyType](tpe: T)(implicit
-      get: AnyApp1At[D findIn Vs, Vs] { type Y = D }
+      get: AnyApp1At[Project[RT#Types, T], RT#Types := Vs] { type Y = D }
     )
     : D#Value =
-      get(vs).value
+      get(new (RT#Types := Vs)(vs)).value
+
+    def updateWith[Ds <: KList.Of[AnyDenotation]](ds: Ds)(implicit
+      updateRecord: App2[updateRecord[RT], Vs, Ds, RT := Vs]
+    )
+    : RT := Vs =
+      updateRecord(vs, ds)
 
   }
 

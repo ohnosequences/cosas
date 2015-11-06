@@ -37,7 +37,7 @@ case object syntax {
     : E :: L =
       KCons[E,L](e, l)
 
-    def find[A <: L#Bound](implicit findIn: App1[A findIn L, L, A])
+    def find[A <: L#Bound](implicit findIn: AnyApp1At[A findIn L, L] { type Y = A })
     : A =
       findIn(l)
 

@@ -14,23 +14,14 @@ case object recordTestsContext {
   case object color extends Property[String]("color")
 
   // funny square is an option too
-  case object simpleUser extends RecordType(id :×: name :×: □)
-  case object normalUser extends RecordType(id :×: name :×: email :×: color :×: □)
-  val vProps  = email :×: color :×: □
-  val vRecordType = new RecordType(vProps)
-  val vEmail = "oh@buh.com"
-
-  val vRecordTypeEntry = vRecordType (
-    email(vEmail) ::
-    color("blue") ::
-    KNil[AnyDenotation]
-  )
+  case object simpleUser extends RecordType(id :×: name :×: unit)
+  case object normalUser extends RecordType(id :×: name :×: email :×: color :×: unit)
 
   // creating a record instance is easy and neat:
   val simpleUserEntry = simpleUser (
     id(123)     ::
     name("foo") ::
-    KNil[AnyDenotation]
+    *[AnyDenotation]
   )
 
   // this way the order of properties does not matter
@@ -39,7 +30,7 @@ case object recordTestsContext {
     name("foo")           ::
     email("foo@bar.qux")  ::
     color("orange")       ::
-    KNil[AnyDenotation]
+    *[AnyDenotation]
   )
 }
 //
@@ -66,39 +57,36 @@ class RecordTypeTests extends org.scalatest.FunSuite {
   test("can access fields and field values") {
 
     assert { (simpleUserEntry get name) === name("foo") }
-    assert { (simpleUserEntry getV id) === 123 }
     assert { (simpleUserEntry getV name) === "foo" }
+    assert { (simpleUserEntry get id) === id(123) }
+    assert { (normalUserEntry get email) === email("foo@bar.qux") }
+    assert { (normalUserEntry getV email) === "foo@bar.qux" }
   }
 
-  test("can access fields from vals and volatile vals") {
+  test("can update fields") {
 
-    assert{ (vRecordTypeEntry get email) === email("oh@buh.com") }
+    // assert {
+    //
+    //   ( normalUserEntry updateWith color("albero") :: *[AnyDenotation] ) === normalUser (
+    //     (normalUserEntry get id)    ::
+    //     (normalUserEntry get name)  ::
+    //     (normalUserEntry get email) ::
+    //     color("albero")             ::
+    //     KNil[AnyDenotation]
+    //   )
+    // }
+
+    // assert {
+    //
+    //   // ( normalUserEntry updateWith (name("bar") :: id(321) :: *[AnyDenotation]) ) === normalUser (
+    //   //     id(321)               ::
+    //   //     name("bar")           ::
+    //   //     email("foo@bar.qux")  ::
+    //   //     color("orange")       ::
+    //   //     KNil[AnyDenotation]
+    //   //   )
+    // }
   }
-//
-//   // test("can update fields") {
-//   //
-//   //   assert {
-//   //
-//   //     ( normalUserEntry update color("albero") ) === normalUser (
-//   //       (normalUserEntry get id)    ::
-//   //       (normalUserEntry get name)  ::
-//   //       (normalUserEntry get email) ::
-//   //       color("albero")             ::
-//   //       KNil[AnyDenotation]
-//   //     )
-//   //   }
-//   //
-//   //   assert {
-//   //
-//   //     ( normalUserEntry update name("bar") :: id(321) :: KNil ) === normalUser (
-//   //         id(321)               ::
-//   //         name("bar")           ::
-//   //         email("foo@bar.qux")  ::
-//   //         color("orange")       ::
-//   //         KNil[AnyDenotation]
-//   //       )
-//   //   }
-//   // }
 //
 //   // test("can see a record entry as another") {
 //   //
