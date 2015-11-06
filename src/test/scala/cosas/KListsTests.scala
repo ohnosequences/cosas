@@ -167,6 +167,17 @@ class KListTests extends org.scalatest.FunSuite {
     assertResult( ( "que tal", true :: "scalac" :: *[Any]) ) {
       (true :: "que tal" :: "scalac" :: *[Any] pick /[String])
     }
+
+    trait A
+    trait B extends A
+    case object B1 extends B
+    case object B2 extends B
+
+    val ab1b2b = (new A {}) :: (B1: B1.type) :: B2 :: (new B {}) :: *[A]
+
+    // NOTE most specific type
+    val b1: B1.type = ab1b2b.pickSubtype(/[B])._1
+    assert { (ab1b2b pickSubtype /[B])._1 === B1 }
   }
 
   test("can replace segments of Klists") {

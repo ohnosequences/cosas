@@ -25,3 +25,25 @@ sealed trait PickFoundInTail {
   ): AnyApp1At[Pick[E], H :: T] { type Y = (E, H :: TO) } =
      App1 { (s: H :: T) => val (e, t) = l(s.tail); (e, s.head :: t) }
 }
+
+class PickSubtype[X <: E, E] extends DepFn1[AnyKList, (X, AnyKList)]
+
+case object PickSubtype extends PickSubtypeFoundInTail  {
+
+  implicit def foundInHead[E <: T#Bound, H <: E, T <: AnyKList { type Bound >: H }]
+  : AnyApp1At[PickSubtype[H,E], H :: T] { type Y = (H, T) } =
+    App1 { (s: H :: T) => (s.head, s.tail) }
+}
+
+trait PickSubtypeFoundInTail {
+
+  implicit def foundInTail[
+    X, E >: X, H <: TO#Bound,
+    T  <: AnyKList { type Bound >: H },
+    TO <: AnyKList
+  ](implicit
+      l: AnyApp1At[PickSubtype[X,E], T] { type Y = (X, TO) }
+  )
+  : AnyApp1At[PickSubtype[X,E], H :: T] { type Y = (X, H :: TO) } =
+    App1 { (s: H :: T) => val (e, t) = l(s.tail); (e, s.head :: t) }
+}
