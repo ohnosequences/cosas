@@ -4,17 +4,30 @@ import ohnosequences.cosas._, types._, fns._, klists._
 
 case object syntax {
 
-  final case class RecordTypeDenotationSyntax[RT <: AnyRecordType, Vs <: RT#Raw](val vs: Vs) extends AnyVal {
+  final case class RecordTypeDenotationSyntax[RT <: AnyRecordType, Vs <: RT#Keys#Raw](val vs: Vs) extends AnyVal {
 
+    // def get[D <: AnyDenotation { type Tpe = T }, T <: AnyType](tpe: T)(implicit
+    //   get: AnyApp1At[D findIn Vs, Vs] { type Y = D }
+    // ): D =
+    //   get(vs)
+    //
+    // def getV[D <: AnyDenotation { type Tpe = T }, T <: AnyType](tpe: T)(implicit
+    //   get: AnyApp1At[D findIn Vs, Vs] { type Y = D }
+    // ): D#Value =
+    //   get(vs).value
+
+    // NOTE I need project, findIn won't work
     def get[D <: AnyDenotation { type Tpe = T }, T <: AnyType](tpe: T)(implicit
-      get: AnyApp1At[D findIn Vs, Vs] { type Y = D }
-    ): D =
-      get(vs)
+      get: AnyApp1At[Project[RT#Keys, T], RT#Keys := Vs] { type Y = D }
+    ): D = get(new (RT#Keys := Vs)(vs))
 
     def getV[D <: AnyDenotation { type Tpe = T }, T <: AnyType](tpe: T)(implicit
-      get: AnyApp1At[D findIn Vs, Vs] { type Y = D }
-    ): D#Value =
-      get(vs).value
+      get: AnyApp1At[Project[RT#Keys, T], RT#Keys := Vs] { type Y = D }
+    ): D#Value = get(new (RT#Keys := Vs)(vs)).value
+
+    def updateWith[Ds <: KList.Of[AnyDenotation]](ds: Ds)(implicit
+      update: AnyApp2At[update[RT], Vs, Ds] { type Y = RT := Vs }
+    ): RT := Vs = update(vs, ds)
 
   }
 

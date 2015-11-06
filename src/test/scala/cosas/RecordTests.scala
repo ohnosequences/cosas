@@ -64,13 +64,35 @@ class RecordTypeTests extends org.scalatest.FunSuite {
   test("can access fields and field values") {
 
     assert { (simpleUserEntry get name) === name("foo") }
-    assert { (simpleUserEntry getV id) === 123 }
     assert { (simpleUserEntry getV name) === "foo" }
+    assert { (simpleUserEntry get id) === id(123) }
+    assert { (normalUserEntry get email) === email("foo@bar.qux") }
+    // assert { (normalUserEntry getV email) === "foo@bar.qux" }
   }
 
-  test("can access fields from vals and volatile vals") {
+  test("can update fields") {
 
-    assert{ (vRecordTypeEntry get email) === email("oh@buh.com") }
+    // assert {
+    //
+    //   ( normalUserEntry updateWith color("albero") :: *[AnyDenotation] ) === normalUser (
+    //     (normalUserEntry get id)    ::
+    //     (normalUserEntry get name)  ::
+    //     (normalUserEntry get email) ::
+    //     color("albero")             ::
+    //     KNil[AnyDenotation]
+    //   )
+    // }
+
+    assert {
+
+      ( normalUserEntry updateWith id(321) :: name("bar") :: *[AnyDenotation] ) === normalUser (
+          id(321)               ::
+          name("bar")           ::
+          email("foo@bar.qux")  ::
+          color("orange")       ::
+          KNil[AnyDenotation]
+        )
+    }
   }
 
   test("reordering record values") {
@@ -85,31 +107,6 @@ class RecordTypeTests extends org.scalatest.FunSuite {
       )
     }
   }
-//
-//   // test("can update fields") {
-//   //
-//   //   assert {
-//   //
-//   //     ( normalUserEntry update color("albero") ) === normalUser (
-//   //       (normalUserEntry get id)    ::
-//   //       (normalUserEntry get name)  ::
-//   //       (normalUserEntry get email) ::
-//   //       color("albero")             ::
-//   //       KNil[AnyDenotation]
-//   //     )
-//   //   }
-//   //
-//   //   assert {
-//   //
-//   //     ( normalUserEntry update name("bar") :: id(321) :: KNil ) === normalUser (
-//   //         id(321)               ::
-//   //         name("bar")           ::
-//   //         email("foo@bar.qux")  ::
-//   //         color("orange")       ::
-//   //         KNil[AnyDenotation]
-//   //       )
-//   //   }
-//   // }
 //
 //   // test("can see a record entry as another") {
 //   //

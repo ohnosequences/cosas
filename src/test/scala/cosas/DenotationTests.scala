@@ -15,7 +15,7 @@ case object DenotationTestsContext {
 
   val FavoriteColor = (User ==> Color)
 
-  val colorAndFriend = Color :×: Friend :×: unit
+  val colorAndFriend = Color :×: Friend :×: Friend :×: unit
 }
 
 class DenotationTests extends org.scalatest.FunSuite {
@@ -123,6 +123,7 @@ class DenotationTests extends org.scalatest.FunSuite {
     val zz = colorAndFriend := (
       (Color := "blue") ::
       (Friend := true)  ::
+      (Friend := false) ::
       *[AnyDenotation]
     )
 

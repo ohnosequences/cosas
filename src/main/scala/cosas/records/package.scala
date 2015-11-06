@@ -14,4 +14,7 @@ package object records {
   //
   // type transform[RT <: AnyRecord, Other <: AnyRecord] = Transform[RT,Other]
   // def transform[RT <: AnyRecord, Other <: AnyRecord]: transform[RT,Other] = new Transform[RT,Other]
+
+  type  update[RT <: AnyRecordType] = Update[RT]
+  def   update[RT <: AnyRecordType]: update[RT] = new Update[RT]
 }

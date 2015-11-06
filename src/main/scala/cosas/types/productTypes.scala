@@ -70,10 +70,19 @@ trait ProjectInTail {
   (implicit
     proj: AnyApp1At[Project[Ts,P], Ts := Ds] { type Y = P := W }
   )
-  : App1[
+  : AnyApp1At[
     Project[H :×: Ts, P],
-    (H :×: Ts) := ((H := V) :: Ds),
-    P := W
-  ] =
+    (H :×: Ts) := ((H := V) :: Ds)]{
+    type Y = P := W
+  } =
     App1 { x: (H :×: Ts) := ((H := V) :: Ds) => proj( new (Ts := Ds)(x.value.tail)) }
+
+  // implicit def usingFindIn[
+  //   Ds <: AnyDenotation { type Tpe = Ts; type Value = Vs }, Vs <: AnyKList { type Bound = AnyDenotation }, Ts <: AnyProductType,
+  //   D <: AnyDenotation { type Tpe = T }, T <: AnyType
+  // ](implicit
+  //   find: AnyApp1At[D findIn Vs, Vs] { type Y = D }
+  // )
+  // : App1[Project[Ts,T],Ds,D] =
+  //   App1 { ds: Ds => find(ds.value) }
 }
