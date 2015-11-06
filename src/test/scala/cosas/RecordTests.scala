@@ -1,36 +1,34 @@
 package ohnosequences.cosas.tests
 
-import ohnosequences.cosas._, types._, klists._
+import ohnosequences.cosas._, types._, klists._, records._
 
 case object recordTestsContext {
 
-  val □ = EmptyProductType
-  class Property[V](val label: String) extends AnyType { type Raw = V }
-
-  case object id    extends Property[Int]("id")
-  case object name  extends Property[String]("name")
-  case object notProperty
-  case object email extends Property[String]("email")
-  case object color extends Property[String]("color")
+  case object id    extends Type[Int]("id")
+  case object name  extends Type[String]("name")
+  case object email extends Type[String]("email")
+  case object color extends Type[String]("color")
 
   // funny square is an option too
-  case object simpleUser extends RecordType(id :×: name :×: □)
-  case object normalUser extends RecordType(id :×: name :×: email :×: color :×: □)
-  val vProps  = email :×: color :×: □
+  case object simpleUser extends RecordType(id :×: name :×: unit)
+  case object normalUser extends RecordType(id :×: name :×: email :×: color :×: unit)
+  case object normalUser2 extends RecordType(color :×: id :×: email :×: name :×: unit)
+
+  val vProps  = email :×: color :×: unit
   val vRecordType = new RecordType(vProps)
   val vEmail = "oh@buh.com"
 
   val vRecordTypeEntry = vRecordType (
     email(vEmail) ::
     color("blue") ::
-    KNil[AnyDenotation]
+    *[AnyDenotation]
   )
 
   // creating a record instance is easy and neat:
   val simpleUserEntry = simpleUser (
     id(123)     ::
     name("foo") ::
-    KNil[AnyDenotation]
+    *[AnyDenotation]
   )
 
   // this way the order of properties does not matter
@@ -39,7 +37,7 @@ case object recordTestsContext {
     name("foo")           ::
     email("foo@bar.qux")  ::
     color("orange")       ::
-    KNil[AnyDenotation]
+    *[AnyDenotation]
   )
 }
 //
@@ -73,6 +71,19 @@ class RecordTypeTests extends org.scalatest.FunSuite {
   test("can access fields from vals and volatile vals") {
 
     assert{ (vRecordTypeEntry get email) === email("oh@buh.com") }
+  }
+
+  test("reordering record values") {
+
+    assertResult(normalUserEntry) {
+      normalUser (
+        name("foo")           ::
+        color("orange")       ::
+        email("foo@bar.qux")  ::
+        id(123)               ::
+        *[AnyDenotation]
+      )
+    }
   }
 //
 //   // test("can update fields") {

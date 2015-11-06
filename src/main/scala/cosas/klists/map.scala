@@ -25,7 +25,7 @@ case object MapKListOf {
     F <: AnyDepFn1 { type In1 = A; type Out = B },
     A, B >: O,
     H <: F#In1, InT <: AnyKList { type Bound = A },
-    O, OutT <: AnyKList { type Bound = B }
+    O
   ](implicit
     evF: App1[F,H,O],
     mapof: AnyApp1At[
