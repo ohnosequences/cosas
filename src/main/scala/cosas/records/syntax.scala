@@ -18,28 +18,16 @@ case object syntax {
 
   }
 
+  final case class RecordTypeSyntax[RT <: AnyRecordType](val rt: RT) extends AnyVal {
+
+    def apply[Vs <: AnyKList { type Bound = AnyDenotation }](values: Vs)(implicit
+      reorder: AnyApp1At[TakeFirst[RT#Raw], Vs]
+    ): RT := RT#Raw = rt := reorder(values)
+  }
+
+
 }
 
-//   case class RecordSyntax[RT <: AnyRecord](val recType: RT) extends AnyVal {
-//
-//     def apply(recEntry: RT#Raw): ValueOf[RT] = recType := recEntry
-//
-//     /* Same as apply, but you can pass properties in any order */
-//     def apply[Vs <: AnyTypeSet](values: Vs)(implicit
-//       reorder: App1[reorderTo[RT#Raw], Vs, RT#Raw]
-//     ): ValueOf[RT] = recType := reorder(values)
-//
-//     def parse[V0](map: Map[String,V0])(
-//       implicit parseRaw: App1[parseDenotations[V0,RT#Raw], Map[String,V0], Either[ParseDenotationsError,RT#Raw]]
-//     )
-//     : Either[ParseDenotationsError, ValueOf[RT]] =
-//       parseRaw(map).fold[Either[ParseDenotationsError, ValueOf[RT]]](
-//         l => Left(l),
-//         v => Right(new ValueOf[RT](v))
-//       )
-//   }
-//
-//
 //   /*
 //     ### Record entry ops
 //

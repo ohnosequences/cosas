@@ -164,8 +164,9 @@ class KListTests extends org.scalatest.FunSuite {
 
     assert { (true :: "que tal" :: "scalac" :: *[Any] at _2) === "scalac" }
 
-    assert { (true :: "que tal" :: "scalac" :: *[Any] pick /[String]) ===
-      ( "que tal", true :: "scalac" :: *[Any]) }
+    assertResult( ( "que tal", true :: "scalac" :: *[Any]) ) {
+      (true :: "que tal" :: "scalac" :: *[Any] pick /[String])
+    }
   }
 
   test("can replace segments of Klists") {
