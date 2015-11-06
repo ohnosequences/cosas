@@ -47,6 +47,13 @@ case object syntax {
     )
     : D =
       get(vs)
+
+    def getV[D <: AnyDenotation { type Tpe = T }, T <: AnyType](tpe: T)(implicit
+      get: AnyApp1At[D findIn Vs, Vs] { type Y = D }
+    )
+    : D#Value =
+      get(vs).value
+
   }
 
   case class SubsetTypeSyntax[W <: AnyType, ST <: SubsetType[W]](val st: ST) extends AnyVal {
