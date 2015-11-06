@@ -40,22 +40,6 @@ case object syntax {
       get(vs)
   }
 
-  final case class RecordTypeDenotationSyntax[RT <: AnyRecordType, Vs <: RT#Raw](val vs: Vs) extends AnyVal {
-
-    def get[D <: AnyDenotation { type Tpe = T }, T <: AnyType](tpe: T)(implicit
-      get: AnyApp1At[D findIn Vs, Vs] { type Y = D }
-    )
-    : D =
-      get(vs)
-
-    def getV[D <: AnyDenotation { type Tpe = T }, T <: AnyType](tpe: T)(implicit
-      get: AnyApp1At[D findIn Vs, Vs] { type Y = D }
-    )
-    : D#Value =
-      get(vs).value
-
-  }
-
   case class SubsetTypeSyntax[W <: AnyType, ST <: SubsetType[W]](val st: ST) extends AnyVal {
 
     final def apply[R <: W#Raw](raw: W := R): Option[ST := R] = {

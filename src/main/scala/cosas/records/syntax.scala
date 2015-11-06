@@ -1,9 +1,25 @@
-// package ohnosequences.cosas.records
-//
-// import ohnosequences.cosas._, fns._, types._, typeSets._, properties._
-//
-// case object syntax {
-//
+package ohnosequences.cosas.records
+
+import ohnosequences.cosas._, types._, fns._, klists._
+
+case object syntax {
+
+  final case class RecordTypeDenotationSyntax[RT <: AnyRecordType, Vs <: RT#Raw](val vs: Vs) extends AnyVal {
+
+    def get[D <: AnyDenotation { type Tpe = T }, T <: AnyType](tpe: T)(implicit
+      get: AnyApp1At[D findIn Vs, Vs] { type Y = D }
+    ): D =
+      get(vs)
+
+    def getV[D <: AnyDenotation { type Tpe = T }, T <: AnyType](tpe: T)(implicit
+      get: AnyApp1At[D findIn Vs, Vs] { type Y = D }
+    ): D#Value =
+      get(vs).value
+
+  }
+
+}
+
 //   case class RecordSyntax[RT <: AnyRecord](val recType: RT) extends AnyVal {
 //
 //     def apply(recEntry: RT#Raw): ValueOf[RT] = recType := recEntry

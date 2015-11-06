@@ -1,19 +1,27 @@
-package ohnosequences.cosas.types
+package ohnosequences.cosas.records
 
-import ohnosequences.cosas._, klists._, fns._, typeUnions._
+import ohnosequences.cosas._, types._, klists._, typeUnions._
 
 sealed trait AnyRecordType extends AnyType {
 
-  type Types <: AnyProductType
+  type Keys <: AnyProductType
+  val  keys: Keys
 
-  type Raw = Types#Raw
-}
+  // should be provided implicitly:
+  val noDuplicates: NoDuplicates[Keys#Types]
 
-class RecordType[Ts <: AnyProductType](val types: Ts)(implicit ev: NoDuplicates[Ts#Types]) extends AnyRecordType {
-
-  type Types = Ts
+  type Raw = Keys#Raw
 
   lazy val label: String = toString
+}
+
+class RecordType[Ks <: AnyProductType](
+  val keys: Ks
+)(implicit
+  val noDuplicates: NoDuplicates[Ks#Types]
+) extends AnyRecordType {
+
+  type Keys = Ks
 }
 
 case object AnyRecordType {
