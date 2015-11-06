@@ -43,9 +43,9 @@ case object recordTestsContext {
   )
 }
 //
-// class RecordTypeTests extends org.scalatest.FunSuite {
-//
-//   import recordTestsContext._
+class RecordTypeTests extends org.scalatest.FunSuite {
+
+  import recordTestsContext._
 //
 //   test("should fail when some properties are missing") {
 //     // you have to set _all_ properties
@@ -63,19 +63,17 @@ case object recordTestsContext {
 //     """)
 //   }
 //
-//   test("can access fields and field values") {
-//
-//     assert { (new Get[id.type,simpleUser.type])(simpleUserEntry)(Get.default(Lookup.foundInHead))   === id(123)     }
-//     assert { (simpleUserEntry get name) === name("foo") }
-//
-//     assert { (simpleUserEntry getV id) === 123 }
-//     assert { (simpleUserEntry getV name) === "foo" }
-//   }
-//
-//   test("can access fields from vals and volatile vals") {
-//
-//     assert{ (vRecordTypeEntry get email) === email("oh@buh.com") }
-//   }
+  test("can access fields and field values") {
+
+    assert { (simpleUserEntry get name) === name("foo") }
+    assert { (simpleUserEntry getV id) === 123 }
+    assert { (simpleUserEntry getV name) === "foo" }
+  }
+
+  test("can access fields from vals and volatile vals") {
+
+    assert{ (vRecordTypeEntry get email) === email("oh@buh.com") }
+  }
 //
 //   // test("can update fields") {
 //   //
@@ -243,4 +241,4 @@ case object recordTestsContext {
 //   //
 //   //   assert { simpleUserValuesAny === simpleUserValues.toList[Any] }
 //   // }
-// }
+}

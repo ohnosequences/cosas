@@ -16,6 +16,13 @@ class RecordType[Ts <: AnyProductType](val types: Ts)(implicit ev: NoDuplicates[
   lazy val label: String = toString
 }
 
+case object AnyRecordType {
+
+  implicit def recordDenotationSyntax[RT <: AnyRecordType,Vs <: RT#Raw](rv: RT := Vs)
+  : syntax.RecordTypeDenotationSyntax[RT,Vs] =
+    syntax.RecordTypeDenotationSyntax(rv.value)
+}
+
 // TODO move to predicate
 trait NoDuplicates[L <: AnyKList]
 
