@@ -59,7 +59,7 @@ case object syntax {
       get(new (RT#Types := Vs)(vs)).value
 
     def updateWith[Ds <: KList.Of[AnyDenotation]](ds: Ds)(implicit
-      updateRecord: App2[updateRecord[RT], Vs, Ds, RT := Vs]
+      updateRecord: AnyApp2At[updateRecord[RT], Vs, Ds] { type Y = RT := Vs }
     )
     : RT := Vs =
       updateRecord(vs, ds)

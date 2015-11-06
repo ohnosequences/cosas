@@ -23,7 +23,7 @@ case object AnyRecordType {
   implicit def altRecordSyntax[Ts <: AnyProductType, Vs <: Ts#Raw](rv: RecordType[Ts] := Vs)
   : syntax.RecordTypeDenotationSyntax[RecordType[Ts],Vs] =
     syntax.RecordTypeDenotationSyntax(rv.value)
-    
+
   implicit def recordDenotationSyntax[RT <: AnyRecordType,Vs <: RT#Types#Raw](rv: RT := Vs)
   : syntax.RecordTypeDenotationSyntax[RT,Vs] =
     syntax.RecordTypeDenotationSyntax(rv.value)
@@ -53,13 +53,13 @@ case object UpdateRecord {
   implicit def default[
     RT <: AnyRecordType,
     Ps <: KList.Of[AnyDenotation],
-    Vs <: RT#Raw
+    Vs <: RT#Types#Raw
   ]
   (implicit
     // check: Ps ⊂ RT#Raw,
-    replace: App2[replace[Vs], Vs, Ps, Vs]
+    replace: AnyApp2At[replace[Vs], Vs, Ps] { type Y = Vs }
   )
-  : App2[UpdateRecord[RT], Vs, Ps, RT := Vs] =
+  : AnyApp2At[UpdateRecord[RT], Vs, Ps] { type Y = RT := Vs }=
     App2 {
       (recV: Vs, propReps: Ps) => new (RT := Vs)(replace(recV, propReps))
     }
