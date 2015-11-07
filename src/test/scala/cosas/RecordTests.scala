@@ -89,30 +89,34 @@ class RecordTypeTests extends org.scalatest.FunSuite {
     // }
   }
 //
-//   // test("can update fields") {
-//   //
-//   //   assert {
-//   //
-//   //     ( normalUserEntry update color("albero") ) === normalUser (
-//   //       (normalUserEntry get id)    ::
-//   //       (normalUserEntry get name)  ::
-//   //       (normalUserEntry get email) ::
-//   //       color("albero")             ::
-//   //       KNil[AnyDenotation]
-//   //     )
-//   //   }
-//   //
-//   //   assert {
-//   //
-//   //     ( normalUserEntry update name("bar") :: id(321) :: KNil ) === normalUser (
-//   //         id(321)               ::
-//   //         name("bar")           ::
-//   //         email("foo@bar.qux")  ::
-//   //         color("orange")       ::
-//   //         KNil[AnyDenotation]
-//   //       )
-//   //   }
-//   // }
+  test("can update fields") {
+
+    assert {
+
+      (normalUserEntry update color("albero") :: *[AnyDenotation]) ===
+        (normalUser := (
+          (normalUserEntry get id)    ::
+          (normalUserEntry get name)  ::
+          (normalUserEntry get email) ::
+          color("albero")             ::
+          *[AnyDenotation]
+        )
+      )
+    }
+
+    assert {
+      // NOTE can update in any order
+      (normalUserEntry update name("bar") :: id(321) :: *[AnyDenotation]) === (
+        normalUser := (
+          id(321)               ::
+          name("bar")           ::
+          email("foo@bar.qux")  ::
+          color("orange")       ::
+          *[AnyDenotation]
+        )
+      )
+    }
+  }
 //
 //   // test("can see a record entry as another") {
 //   //

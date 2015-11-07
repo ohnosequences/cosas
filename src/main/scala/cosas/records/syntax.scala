@@ -18,6 +18,12 @@ case object syntax {
     : D#Value =
       p(vs).value
 
+    def update[S <: AnyKList { type Bound = AnyDenotation }](s: S)(implicit
+      repl: AnyApp2At[replace[Vs], Vs, S] { type Y = Vs }
+    )
+    : RT := Vs =
+      new (RT := Vs)(repl(vs,s))
+
   }
 
   final case class RecordTypeSyntax[RT <: AnyRecordType](val rt: RT) extends AnyVal {
