@@ -23,3 +23,24 @@ trait FoundInTail {
   : App1[A FindIn (H :: T), H :: T, A] =
     App1 { s: H :: T => findIn(s.tail) }
 }
+
+class FindS[A] extends DepFn1[AnyKList { type Bound >: A }, A]
+
+case object FindS extends FindSInTail {
+
+  implicit def foundInHead[E <: T#Bound, H <: E, T <: AnyKList]
+  : AnyApp1At[FindS[E], H :: T] { type Y = H } =
+    App1 { (s: H :: T) => s.head }
+}
+
+trait FindSInTail {
+
+  implicit def foundInTail[
+    X, E >: X, H <: T#Bound,
+    T  <: AnyKList { type Bound >: E }
+  ](implicit
+      l: AnyApp1At[FindS[E], T] { type Y = X }
+  )
+  : AnyApp1At[FindS[E], H :: T] { type Y = X } =
+    App1 { (s: H :: T) =>  l(s.tail) }
+}

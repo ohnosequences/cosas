@@ -4,12 +4,24 @@ import ohnosequences.cosas._, types._, fns._, klists._
 
 case object syntax {
 
-  final case class RecordTypeDenotationSyntax[RT <: AnyRecordType, Vs <: RT#Raw](val vs: Vs) extends AnyVal {
+  final case class RecordTypeDenotationSyntax[RT <: AnyRecordType, Vs <: RT#Keys#Raw](val vs: Vs) extends AnyVal {
 
     def get[D <: AnyDenotation { type Tpe = T }, T <: AnyType](tpe: T)(implicit
       get: AnyApp1At[D findIn Vs, Vs] { type Y = D }
     ): D =
       get(vs)
+
+    def altGet[D <: AnyDenotation { type Tpe = T }, T <: AnyType, O <: AnyKList](tpe: T)(implicit
+      p: AnyApp1At[PickS[AnyDenotation { type Tpe = T }], Vs] { type Y = (D,O) }
+    )
+    : D =
+      p(vs)._1
+
+      def altGet2[D <: AnyDenotation { type Tpe = T }, T <: AnyType](tpe: T)(implicit
+        p: AnyApp1At[FindS[AnyDenotation { type Tpe = T }], Vs] { type Y = D }
+      )
+      : D =
+        p(vs)
 
     def getV[D <: AnyDenotation { type Tpe = T }, T <: AnyType](tpe: T)(implicit
       get: AnyApp1At[D findIn Vs, Vs] { type Y = D }
