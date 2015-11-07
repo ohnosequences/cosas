@@ -26,7 +26,10 @@ trait EqualTypesYieldsAmbiguity {
   implicit def neqAmbig2[A]: A != A = throw new Exception {}
 }
 
-final case class SubtypeOf[A,B] private[cosas](val witness: SubtypeOf.type) extends AnyVal
+final case class SubtypeOf[A,B] private[cosas](val witness: SubtypeOf.type) extends AnyVal {
+
+  def asRight(a : A): A with B = a.asInstanceOf[A with B]
+}
 
 case object SubtypeOf extends WorksForSubtypesToo {
 

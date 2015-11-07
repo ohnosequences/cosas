@@ -12,12 +12,12 @@ case object TakeFirst {
 
   implicit def nonEmpty[
     TailToTake <: AnyKList { type Bound >: HeadToTake }, From <: AnyKList, Rest <: AnyKList,
-    HeadToTake
+    HeadToTake >: SHeadToTake, SHeadToTake
   ](implicit
-    pick: AnyApp1At[pick[HeadToTake], From] { type Y = (HeadToTake, Rest) },
+    pick: AnyApp1At[PickS[HeadToTake], From] { type Y = (SHeadToTake, Rest) },
     take: AnyApp1At[TakeFirst[TailToTake], Rest] { type Y = TailToTake }
   )
-  : AnyApp1At[TakeFirst[HeadToTake :: TailToTake], From] { type Y = HeadToTake :: TailToTake } =
+  : AnyApp1At[TakeFirst[HeadToTake :: TailToTake], From] { type Y = SHeadToTake :: TailToTake } =
     App1 { s: From => { val (h, t) = pick(s); h :: take(t) } }
 }
 

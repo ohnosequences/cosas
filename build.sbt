@@ -32,5 +32,6 @@ incOptions := incOptions.value.withNameHashing(false)
 
 wartremoverExcluded ++= Seq(
   baseDirectory.value / "src" / "main" / "scala" / "cosas" / "products" / "map.scala",
-  baseDirectory.value / "src" / "main" / "scala" / "cosas" / "products" / "klists.scala"
+  baseDirectory.value / "src" / "main" / "scala" / "cosas" / "products" / "klists.scala",
+  baseDirectory.value / "src" / "main" / "scala" / "cosas" / "subtyping.scala"
 )

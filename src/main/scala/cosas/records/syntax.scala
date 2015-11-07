@@ -7,34 +7,32 @@ case object syntax {
   final case class RecordTypeDenotationSyntax[RT <: AnyRecordType, Vs <: RT#Keys#Raw](val vs: Vs) extends AnyVal {
 
     def get[D <: AnyDenotation { type Tpe = T }, T <: AnyType](tpe: T)(implicit
-      get: AnyApp1At[D findIn Vs, Vs] { type Y = D }
-    ): D =
-      get(vs)
-
-    def altGet[D <: AnyDenotation { type Tpe = T }, T <: AnyType, O <: AnyKList](tpe: T)(implicit
-      p: AnyApp1At[PickS[AnyDenotation { type Tpe = T }], Vs] { type Y = (D,O) }
+      p: AnyApp1At[FindS[AnyDenotation { type Tpe = T }], Vs] { type Y = D }
     )
     : D =
-      p(vs)._1
-
-      def altGet2[D <: AnyDenotation { type Tpe = T }, T <: AnyType](tpe: T)(implicit
-        p: AnyApp1At[FindS[AnyDenotation { type Tpe = T }], Vs] { type Y = D }
-      )
-      : D =
-        p(vs)
+      p(vs)
 
     def getV[D <: AnyDenotation { type Tpe = T }, T <: AnyType](tpe: T)(implicit
-      get: AnyApp1At[D findIn Vs, Vs] { type Y = D }
-    ): D#Value =
-      get(vs).value
+      p: AnyApp1At[FindS[AnyDenotation { type Tpe = T }], Vs] { type Y = D }
+    )
+    : D#Value =
+      p(vs).value
 
   }
 
   final case class RecordTypeSyntax[RT <: AnyRecordType](val rt: RT) extends AnyVal {
 
-    def apply[Vs <: AnyKList { type Bound = AnyDenotation }](values: Vs)(implicit
-      reorder: AnyApp1At[TakeFirst[RT#Raw], Vs]
-    ): RT := RT#Raw = rt := reorder(values)
+    def apply[Vs <: AnyKList { type Bound = AnyDenotation }, O <: RT#Keys#Raw](values: Vs)(implicit
+      reorder: AnyApp1At[TakeFirst[Vs], Vs] { type Y = O }
+    ): RT := O = rt := reorder(values)
+  }
+
+  final case class RecordReorderSyntax[Vs <: AnyKList { type Bound = AnyDenotation }](val vs: Vs) extends AnyVal {
+
+    def as[RT <: AnyRecordType](rt: RT)(implicit
+      reorder: AnyApp1At[TakeFirst[RT#Raw], Vs] { type Y <: RT#Raw }
+      // sub: O ≤ RT#Keys#Raw
+    ): RT := reorder.Y = rt := (reorder(vs))
   }
 
 
