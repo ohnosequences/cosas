@@ -12,13 +12,13 @@ case object syntax {
       get(vs)
 
     def altGet[D <: AnyDenotation { type Tpe = T }, T <: AnyType, O <: AnyKList](tpe: T)(implicit
-      p: AnyApp1At[PickSubtype[D,AnyDenotation { type Tpe = T }], Vs] { type Y = (D,O) }
+      p: AnyApp1At[PickS[AnyDenotation { type Tpe = T }], Vs] { type Y = (D,O) }
     )
     : D =
       p(vs)._1
 
       def altGet2[D <: AnyDenotation { type Tpe = T }, T <: AnyType](tpe: T)(implicit
-        p: AnyApp1At[FindSubtypeOf[D, AnyDenotation { type Tpe = T }], Vs] { type Y = D }
+        p: AnyApp1At[FindS[AnyDenotation { type Tpe = T }], Vs] { type Y = D }
       )
       : D =
         p(vs)

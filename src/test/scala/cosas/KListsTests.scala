@@ -151,7 +151,7 @@ class KListTests extends org.scalatest.FunSuite {
     assert { sbi.span(_2, _2) === *[Any] }
     assert { sbi.span(_0, _0) === *[Any] }
 
-    def stupidSpan[N <: AnyNat, L <: AnyKList](l: L, n: N) = l.span(n, _0)
+    def stupidSpan[N <: AnyNat, L <: AnyKList](l: L, n: N): KNil[L#Bound] = l.span(n, _0)
 
     assert { stupidSpan(sbi, _4) === *[Any] }
   }
@@ -170,14 +170,16 @@ class KListTests extends org.scalatest.FunSuite {
 
     trait A
     trait B extends A
-    case object B1 extends B
-    case object B2 extends B
+    case object B1 extends B; type B1 = B1.type
+    case object B2 extends B; type B2 = B2.type
 
-    val ab1b2b = (new A {}) :: (B1: B1.type) :: B2 :: (new B {}) :: *[A]
+    val ab1b2b = (new A {}) :: (B1: B1) :: (B2: B2) :: (new B {}) :: *[A]
 
     // NOTE most specific type
-    val b1: B1.type = ab1b2b.pickSubtype(/[B])._1
-    assert { (ab1b2b pickSubtype /[B])._1 === B1 }
+    val b1: B1 = ab1b2b.pickS(/[B])._1
+    assert { (ab1b2b pickS /[B])._1 === B1 }
+
+    // assert { ab1b2b.takeFirstS(/[B :: *[A]]) === B1 :: *[A] }
   }
 
   test("can replace segments of Klists") {

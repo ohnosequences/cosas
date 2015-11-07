@@ -47,8 +47,8 @@ case object syntax {
     : (E,O) =
       p(l)
 
-    def pickSubtype[E, X <: E, O <: AnyKList](w: Witness[E])(implicit
-      p: AnyApp1At[PickSubtype[X,E], L] { type Y = (X,O)}
+    def pickS[E, X <: E, O <: AnyKList](w: Witness[E])(implicit
+      p: AnyApp1At[PickS[E], L] { type Y = (X,O)}
     )
     : (X,O) =
       p(l)
@@ -58,6 +58,12 @@ case object syntax {
     )
     : Q =
       takeFirst(l)
+
+    // def takeFirstS[Q >: QO <: KList.Of[L#Bound], QO](w: Witness[Q])(implicit
+    //   takeFirstS: AnyApp1At[TakeFirstS[Q], L] { type Y = QO }
+    // )
+    // : QO =
+    //   takeFirstS(l)
 
     def replaceFirst[S <: AnyKList { type Bound = L#Bound }](s: S)(implicit
       replaceFirst: AnyApp2At[replace[L], L, S] { type Y = L }
