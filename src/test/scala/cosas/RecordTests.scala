@@ -64,7 +64,7 @@ class RecordTypeTests extends org.scalatest.FunSuite {
   test("can access fields and field values") {
 
     assert { (simpleUserEntry get name) === name("foo") }
-    // assert { (normalUserEntry get email) === email("foo@bar.qux") }
+    assert { (normalUserEntry altGet2 email) === email("foo@bar.qux") }
     assert { (normalUserEntry altGet email) === email("foo@bar.qux") }
 
     assert { (simpleUserEntry getV id) === 123 }

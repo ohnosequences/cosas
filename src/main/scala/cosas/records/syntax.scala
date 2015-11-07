@@ -17,6 +17,12 @@ case object syntax {
     : D =
       p(vs)._1
 
+      def altGet2[D <: AnyDenotation { type Tpe = T }, T <: AnyType](tpe: T)(implicit
+        p: AnyApp1At[FindSubtypeOf[D, AnyDenotation { type Tpe = T }], Vs] { type Y = D }
+      )
+      : D =
+        p(vs)
+
     def getV[D <: AnyDenotation { type Tpe = T }, T <: AnyType](tpe: T)(implicit
       get: AnyApp1At[D findIn Vs, Vs] { type Y = D }
     ): D#Value =
