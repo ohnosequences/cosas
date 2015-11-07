@@ -11,8 +11,8 @@ case object TakeFirst {
     App1 { s: S => *[X] }
 
   implicit def nonEmpty[
-    TailToTake <: AnyKList, From <: AnyKList, Rest <: AnyKList,
-    HeadToTake <: TailToTake#Bound
+    TailToTake <: AnyKList { type Bound >: HeadToTake }, From <: AnyKList, Rest <: AnyKList,
+    HeadToTake
   ](implicit
     pick: AnyApp1At[pick[HeadToTake], From] { type Y = (HeadToTake, Rest) },
     take: AnyApp1At[TakeFirst[TailToTake], Rest] { type Y = TailToTake }
