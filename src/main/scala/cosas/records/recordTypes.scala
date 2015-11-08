@@ -33,11 +33,11 @@ case object AnyRecordType {
   : syntax.RecordTypeSyntax[RT] =
     syntax.RecordTypeSyntax(rt)
 
-    implicit def recordReorderSyntax[Vs <: AnyKList { type Bound = AnyDenotation}](vs: Vs)
-    : syntax.RecordReorderSyntax[Vs] =
-      syntax.RecordReorderSyntax(vs)
+  implicit def recordReorderSyntax[Vs <: AnyKList.withBound[AnyDenotation]](vs: Vs)
+  : syntax.RecordReorderSyntax[Vs] =
+    syntax.RecordReorderSyntax(vs)
 
-  implicit def recordDenotationSyntax[RT <: AnyRecordType,Vs <: RT#Raw](rv: RT := Vs)
-  : syntax.RecordTypeDenotationSyntax[RT,Vs] =
+  implicit def recordDenotationSyntax[RT <: AnyRecordType, Vs <: RT#Raw](rv: RT := Vs)
+  : syntax.RecordTypeDenotationSyntax[RT, Vs] =
     syntax.RecordTypeDenotationSyntax(rv.value)
 }

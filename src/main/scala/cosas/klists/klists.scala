@@ -9,16 +9,14 @@ trait AnyKList extends Any {
   type Length <: AnyNat
 
   type Types <: AnyTypeUnion
-  type Union >: Types#union <: Types#union // NOTE should be Types#union, but we can't set it here; scalac bugs
+  // NOTE: should be Types#union, but we can't set it here; scalac bugs
+  type Union >: Types#union <: Types#union
 }
 
 case object KList {
 
   // NOTE need to be here to drive type inference, cannot be in syntax
   def apply[F <: AnyDepFn1](f: F): mapKList[F] = mapKList[F]
-
-  // TODO decide between these two
-  type Of[+B] = AnyKList { type Bound <: B }
 }
 
 trait AnyEmptyKList extends Any with AnyKList {
@@ -50,9 +48,10 @@ trait AnyNonEmptyKList extends Any with AnyKList {
   type Length = Successor[Tail#Length]
 }
 
-case object NonEmptyKList {
+case object AnyNonEmptyKList {
 
   type Of[+B] = AnyNonEmptyKList { type Bound <: B }
+  type withBound[B] = AnyNonEmptyKList { type Bound = B }
 }
 
 case class KCons[+H <: T#Bound, +T <: AnyKList](val head: H, val tail: T) extends AnyNonEmptyKList {
@@ -63,6 +62,9 @@ case class KCons[+H <: T#Bound, +T <: AnyKList](val head: H, val tail: T) extend
 }
 
 case object AnyKList {
+
+  type Of[+B] = AnyKList { type Bound <: B }
+  type withBound[B] = AnyKList { type Bound = B }
 
   implicit def klistSyntax[L <: AnyKList](l: L)
   : syntax.KListSyntax[L] =

@@ -18,7 +18,7 @@ case object ToList {
     App1 { xs: H :: T => xs.head :: toList(xs.tail) }
 }
 
-class ToListOf[L <: KList.Of[B], B] extends DepFn1[L, List[B]]
+class ToListOf[L <: AnyKList.Of[B], B] extends DepFn1[L, List[B]]
 
 case object ToListOf {
 

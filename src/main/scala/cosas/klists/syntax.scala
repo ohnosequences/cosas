@@ -6,11 +6,11 @@ case object syntax {
 
   case class KListSyntax[L <: AnyKList](val l: L) extends AnyVal {
 
-    def head[H <: L#Bound, T <: KList.Of[L#Bound]](implicit c: IsKCons[L,H,T])
+    def head[H <: L#Bound, T <: AnyKList.Of[L#Bound]](implicit c: IsKCons[L,H,T])
     : H =
       c.h(l)
 
-    def tail[H <: L#Bound, T <: KList.Of[L#Bound]](implicit c: IsKCons[L,H,T])
+    def tail[H <: L#Bound, T <: AnyKList.Of[L#Bound]](implicit c: IsKCons[L,H,T])
     : T =
       c.t(l)
 
@@ -18,15 +18,15 @@ case object syntax {
     : Z =
       a(l)
 
-    def take[N <: AnyNat, Z <: KList.Of[L#Bound]](n: N)(implicit take: AnyApp1At[take[N], L] {type Y = Z })
+    def take[N <: AnyNat, Z <: AnyKList.Of[L#Bound]](n: N)(implicit take: AnyApp1At[take[N], L] {type Y = Z })
     : Z =
       take(l)
 
-    def drop[N <: AnyNat, Z <: KList.Of[L#Bound]](n: N)(implicit drop: AnyApp1At[drop[N], L] { type Y = Z })
+    def drop[N <: AnyNat, Z <: AnyKList.Of[L#Bound]](n: N)(implicit drop: AnyApp1At[drop[N], L] { type Y = Z })
     : Z =
       drop(l)
 
-    def span[A <: AnyNat, B <: AnyNat, Z <: KList.Of[L#Bound]](start: A, end: B)(implicit
+    def span[A <: AnyNat, B <: AnyNat, Z <: AnyKList.Of[L#Bound]](start: A, end: B)(implicit
       sp: AnyApp1At[span[A,B], L] { type Y = Z }
     )
     : Z =
@@ -41,7 +41,7 @@ case object syntax {
     : A =
       findIn(l)
 
-    def pick[E <: L#Bound, O <: KList.Of[L#Bound]](w: Witness[E])(implicit
+    def pick[E <: L#Bound, O <: AnyKList.Of[L#Bound]](w: Witness[E])(implicit
       p: AnyApp1At[pick[E], L] { type Y = (E,O) }
     )
     : (E,O) =
@@ -53,13 +53,13 @@ case object syntax {
     : (X,O) =
       p(l)
 
-    def takeFirst[Q <: KList.Of[L#Bound]](w: Witness[Q])(implicit
+    def takeFirst[Q <: AnyKList.Of[L#Bound]](w: Witness[Q])(implicit
       takeFirst: AnyApp1At[takeFirst[Q], L] { type Y = Q }
     )
     : Q =
       takeFirst(l)
 
-    // def takeFirstS[Q >: QO <: KList.Of[L#Bound], QO](w: Witness[Q])(implicit
+    // def takeFirstS[Q >: QO <: AnyKList.Of[L#Bound], QO](w: Witness[Q])(implicit
     //   takeFirstS: AnyApp1At[TakeFirstS[Q], L] { type Y = QO }
     // )
     // : QO =

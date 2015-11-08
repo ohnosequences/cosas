@@ -4,21 +4,21 @@ import ohnosequences.cosas._, types._, fns._, klists._
 
 case object syntax {
 
-  final case class RecordTypeDenotationSyntax[RT <: AnyRecordType, Vs <: RT#Keys#Raw](val vs: Vs) extends AnyVal {
+  final case class RecordTypeDenotationSyntax[RT <: AnyRecordType, Vs <: RT#Raw](val vs: Vs) extends AnyVal {
 
-    def get[D <: AnyDenotation { type Tpe = T }, T <: AnyType](tpe: T)(implicit
-      p: AnyApp1At[FindS[AnyDenotation { type Tpe = T }], Vs] { type Y = D }
+    def get[D <: AnyDenotationOf[T], T <: AnyType](tpe: T)(implicit
+      p: AnyApp1At[FindS[AnyDenotationOf[T]], Vs] { type Y = D }
     )
     : D =
       p(vs)
 
-    def getV[D <: AnyDenotation { type Tpe = T }, T <: AnyType](tpe: T)(implicit
-      p: AnyApp1At[FindS[AnyDenotation { type Tpe = T }], Vs] { type Y = D }
+    def getV[D <: AnyDenotationOf[T], T <: AnyType](tpe: T)(implicit
+      p: AnyApp1At[FindS[AnyDenotationOf[T]], Vs] { type Y = D }
     )
     : D#Value =
       p(vs).value
 
-    def update[S <: AnyKList { type Bound = AnyDenotation }](s: S)(implicit
+    def update[S <: AnyKList.withBound[AnyDenotation]](s: S)(implicit
       repl: AnyApp2At[replace[Vs], Vs, S] { type Y = Vs }
     )
     : RT := Vs =
@@ -28,17 +28,18 @@ case object syntax {
 
   final case class RecordTypeSyntax[RT <: AnyRecordType](val rt: RT) extends AnyVal {
 
-    def apply[Vs <: AnyKList { type Bound = AnyDenotation }, O <: RT#Keys#Raw](values: Vs)(implicit
-      reorder: AnyApp1At[TakeFirst[Vs], Vs] { type Y = O }
-    ): RT := O = rt := reorder(values)
+    def apply[Vs <: AnyKList.withBound[AnyDenotation], RTRaw <: RT#Raw](values: Vs)(implicit
+      reorder: AnyApp1At[TakeFirst[Vs], Vs] { type Y = RTRaw }
+    ): RT := RTRaw =
+       rt := reorder(values)
   }
 
-  final case class RecordReorderSyntax[Vs <: AnyKList { type Bound = AnyDenotation }](val vs: Vs) extends AnyVal {
+  final case class RecordReorderSyntax[Vs <: AnyKList.withBound[AnyDenotation]](val vs: Vs) extends AnyVal {
 
-    def as[RT <: AnyRecordType](rt: RT)(implicit
-      reorder: AnyApp1At[TakeFirst[RT#Raw], Vs] { type Y <: RT#Raw }
-      // sub: O ≤ RT#Keys#Raw
-    ): RT := reorder.Y = rt := (reorder(vs))
+    def as[RT <: AnyRecordType, RTRaw <: RT#Raw](rt: RT)(implicit
+      reorder: AnyApp1At[TakeFirst[RT#Raw], Vs] { type Y = RTRaw }
+    ): RT := RTRaw =
+       rt := (reorder(vs))
   }
 
 
