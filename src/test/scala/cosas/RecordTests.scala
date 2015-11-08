@@ -12,14 +12,11 @@ case object recordTestsContext {
   // funny square is an option too
   case object simpleUser extends RecordType(id :×: name :×: unit)
   case object normalUser extends RecordType(id :×: name :×: email :×: color :×: unit)
-  case object normalUser2 extends RecordType(color :×: id :×: email :×: name :×: unit)
 
-  val vProps  = email :×: color :×: unit
-  val vRecordType = new RecordType(vProps)
-  val vEmail = "oh@buh.com"
+  val volatileRec = new RecordType(email :×: color :×: unit)
 
-  val vRecordTypeEntry = vRecordType (
-    email(vEmail) ::
+  val volatileRecEntry = volatileRec (
+    email("oh@buh.com") ::
     color("blue") ::
     *[AnyDenotation]
   )
@@ -44,57 +41,51 @@ case object recordTestsContext {
 class RecordTypeTests extends org.scalatest.FunSuite {
 
   import recordTestsContext._
-//
-//   test("should fail when some properties are missing") {
-//     // you have to set _all_ properties
-//     assertTypeError("""
-//     val wrongAttrSet = simpleUser(id(123) :: KNil[AnyDenotation])
-//     """)
-//
-//     // but you still have to present all properties:
-//     assertTypeError("""
-//     val wrongAttrSet = normalUser(
-//       id(123)     ::
-//       name("foo") ::
-//       KNil[AnyDenotation]
-//     )
-//     """)
-//   }
-//
+
+  test("should fail when some properties are missing") {
+    assertTypeError("""
+    val wrongAttrSet = simpleUser(
+      id(123) ::
+      *[AnyDenotation]
+    )
+    """)
+
+    assertTypeError("""
+    val wrongAttrSet = normalUser(
+      id(123)     ::
+      name("foo") ::
+      *[AnyDenotation]
+    )
+    """)
+  }
+
   test("can access fields and field values") {
 
+    assert { (simpleUserEntry get id) === id(123) }
+    assert { (simpleUserEntry getV id) === 123 }
+
     assert { (simpleUserEntry get name) === name("foo") }
+    assert { (simpleUserEntry getV name) === "foo" }
+
     assert { (normalUserEntry get email) === email("foo@bar.qux") }
     assert { (normalUserEntry getV email) === "foo@bar.qux" }
 
-    assert { (simpleUserEntry getV id) === 123 }
-    assert { (simpleUserEntry getV name) === "foo" }
+    // FIXME: assert doesn't work as expected (value classes, etc.)
+    assert { (simpleUserEntry get name) === email("foo") }
   }
+
 
   test("can access fields from vals and volatile vals") {
 
-    assert{ (vRecordTypeEntry get email) === email("oh@buh.com") }
+    assert { (volatileRecEntry get color) === color("blue") }
+    assert { (volatileRecEntry get email) === email("oh@buh.com") }
   }
 
-  test("reordering record values") {
-
-    // assertResult(normalUserEntry) {
-    //   records.syntax.RecordReorderSyntax (
-    //     name("foo")           ::
-    //     color("orange")       ::
-    //     email("foo@bar.qux")  ::
-    //     id(123)               ::
-    //     *[AnyDenotation]
-    //   ).as(normalUser)
-    // }
-  }
-//
   test("can update fields") {
 
     assert {
-
-      (normalUserEntry update color("albero") :: *[AnyDenotation]) ===
-        (normalUser := (
+      (normalUserEntry update color("albero")) ===
+        (normalUser(
           (normalUserEntry get id)    ::
           (normalUserEntry get name)  ::
           (normalUserEntry get email) ::
@@ -107,22 +98,35 @@ class RecordTypeTests extends org.scalatest.FunSuite {
     assert {
       // NOTE can update in any order
       (normalUserEntry update name("bar") :: id(321) :: *[AnyDenotation]) === (
-        normalUser := (
-          id(321)               ::
-          name("bar")           ::
-          email("foo@bar.qux")  ::
-          color("orange")       ::
+        normalUser(
+          id(321)                     ::
+          name("bar")                 ::
+          (normalUserEntry get email) ::
+          (normalUserEntry get color) ::
           *[AnyDenotation]
         )
       )
     }
   }
-//
-//   // test("can see a record entry as another") {
-//   //
-//   //   assert { normalUserEntry === ( simpleUserEntry as (normalUser, email("foo@bar.qux") :: color("orange") :: KNil[AnyDenotation]) ) }
-//   // }
-//
+
+  ignore("can transform a klist of values as a record") {
+
+    // assertResult(normalUserEntry) {
+    //   records.syntax.RecordReorderSyntax (
+    //     name("foo")           ::
+    //     color("orange")       ::
+    //     email("foo@bar.qux")  ::
+    //     id(123)               ::
+    //     *[AnyDenotation]
+    //   ).as(normalUser)
+    // }
+  }
+
+  ignore("can see a record entry as another") {
+
+    // assert { simpleUserEntry === ( normalUserEntry as simpleUser ) }
+  }
+
 //   test("can provide properties in different order") {
 //
 //     // the declared property order
@@ -251,7 +255,7 @@ class RecordTypeTests extends org.scalatest.FunSuite {
 //   //   val vRecordTypeEntryValues = mapToListOf[String](
 //   //     denotationValue,
 //   //     // need to add the type here
-//   //     vRecordTypeEntry.value: ValueOf[email.type] :: ValueOf[color.type] :: KNil[AnyDenotation]
+//   //     volatileRecEntry.value: ValueOf[email.type] :: ValueOf[color.type] :: KNil[AnyDenotation]
 //   //   )
 //   //
 //   //   val simpleUserValues: Int :: String :: KNil[Any] = simpleUserEntry.value map denotationValue
