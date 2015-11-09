@@ -120,6 +120,16 @@ class RecordTypeTests extends org.scalatest.FunSuite {
         *[AnyDenotation]
       ).as(normalUser)
     }
+
+    assertResult(normalUserEntry) {
+      normalUser from (
+        name("foo")           ::
+        email("foo@bar.qux")  ::
+        color("orange")       ::
+        id(123)               ::
+        *[AnyDenotation]
+      )
+    }
   }
 
   ignore("can see a record entry as another") {
