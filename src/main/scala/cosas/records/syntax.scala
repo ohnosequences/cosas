@@ -45,8 +45,6 @@ case object syntax {
     ): RT := RTRaw =
        rt := (takeFirst(vs))
   }
-
-
 }
 
 //   /*

@@ -37,7 +37,7 @@ case object recordTestsContext {
     *[AnyDenotation]
   )
 }
-//
+
 class RecordTypeTests extends org.scalatest.FunSuite {
 
   import recordTestsContext._
@@ -109,15 +109,8 @@ class RecordTypeTests extends org.scalatest.FunSuite {
     }
   }
 
-  ignore("can transform a klist of values as a record") {
+  test("can transform a klist of values as a record") {
 
-    // val z = records.syntax.RecordReorderSyntax (
-    //       id(123)               ::
-    //       name("foo")           ::
-    //       email("foo@bar.qux")  ::
-    //       color("orange")       ::
-    //       *[AnyDenotation]
-    //     ).as(normalUser)
     assertResult(normalUserEntry) {
       records.syntax.RecordReorderSyntax (
         name("foo")           ::
