@@ -41,7 +41,7 @@ case object syntax {
   final case class RecordReorderSyntax[Vs <: AnyKList.withBound[AnyDenotation]](val vs: Vs) extends AnyVal {
 
     def as[RT <: AnyRecordType, RTRaw <: RT#Raw](rt: RT)(implicit
-      takeFirst: AnyApp1At[TakeFirst[RT#Raw], Vs] { type Y = RTRaw }
+      takeFirst: AnyApp1At[Reorder[RT#Keys, Vs], Vs] { type Y = RTRaw }
     ): RT := RTRaw =
        rt := (takeFirst(vs))
   }

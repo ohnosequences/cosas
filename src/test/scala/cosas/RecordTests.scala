@@ -111,15 +111,22 @@ class RecordTypeTests extends org.scalatest.FunSuite {
 
   ignore("can transform a klist of values as a record") {
 
-    // assertResult(normalUserEntry) {
-    //   records.syntax.RecordReorderSyntax (
-    //     name("foo")           ::
-    //     color("orange")       ::
-    //     email("foo@bar.qux")  ::
-    //     id(123)               ::
-    //     *[AnyDenotation]
-    //   ).as(normalUser)
-    // }
+    // val z = records.syntax.RecordReorderSyntax (
+    //       id(123)               ::
+    //       name("foo")           ::
+    //       email("foo@bar.qux")  ::
+    //       color("orange")       ::
+    //       *[AnyDenotation]
+    //     ).as(normalUser)
+    assertResult(normalUserEntry) {
+      records.syntax.RecordReorderSyntax (
+        name("foo")           ::
+        color("orange")       ::
+        email("foo@bar.qux")  ::
+        id(123)               ::
+        *[AnyDenotation]
+      ).as(normalUser)
+    }
   }
 
   ignore("can see a record entry as another") {
