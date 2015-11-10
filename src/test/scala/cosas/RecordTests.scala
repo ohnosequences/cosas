@@ -152,92 +152,87 @@ class RecordTypeTests extends org.scalatest.FunSuite {
     // assertTypeError { """implicitly[simpleUser.SetOfTypes HasProperties (email.type :: name.type :: color.type :: KNil)]""" }
   }
 
-  // case object propertyConverters {
-  //
-  //   val idVParser: String => Option[Int] = str => {
-  //     import scala.util.control.Exception._
-  //     catching(classOf[NumberFormatException]) opt str.toInt
-  //   }
-  //   implicit val idParser   = PropertyParser(id, id.label)(idVParser)
-  //   implicit val nameParser = PropertyParser(name, name.label){ str: String => Some(str) }
-  //
-  //   implicit val idSerializer   = PropertySerializer(id, id.label)( x => Some(x.toString) )
-  //   implicit val nameSerializer = PropertySerializer(name, name.label){ x: String => Some(x) }
-  // }
+  case object propertyConverters {
 
-  ignore("can parse records from Maps") {
+    val idVParser: String => Option[Int] = str => {
+      import scala.util.control.Exception._
+      catching(classOf[NumberFormatException]) opt str.toInt
+    }
+    implicit def idParser: DenotationParser[id.type, Int, String]  = new DenotationParser(id, id.label)(idVParser)
+    // NOTE not needed, generic parser works
+    // implicit def nameParser: DenotationParser[name.type, String, String] = new DenotationParser(name, name.label)( Some(_:String) )
 
-    // import propertyConverters._
-    //
-    // val simpleUserEntryMap =  Map(
-    //   "id" -> "29681",
-    //   "name" -> "Antonio"
-    // )
-    // val wrongKeyMap = Map(
-    //   "idd" -> "29681",
-    //   "name" -> "Antonio"
-    // )
-    //
-    // val notIntValueMap = Map(
-    //   "name" -> "Antonio",
-    //   "id" -> "twenty-two"
-    // )
-    //
-    // val mapWithOtherStuff = simpleUserEntryMap + ("other" -> "stuff")
-    //
-    // assert {
-    //   parseDenotations[String,simpleUser.Raw](simpleUserEntryMap) ===
-    //   Right(id(29681) :: name("Antonio") :: KNil[AnyDenotation])
-    // }
-    // assert {
-    //   parseDenotations[String,simpleUser.Raw](wrongKeyMap) ===
-    //   Left(KeyNotFound(id.label, wrongKeyMap))
-    // }
-    // assert {
-    //   parseDenotations[String,simpleUser.Raw](notIntValueMap) ===
-    //   Left(ErrorParsing(ErrorParsingValue(id)("twenty-two")))
-    // }
-    // assert {
-    //   parseDenotations[String,simpleUser.Raw](mapWithOtherStuff) ===
-    //   Right(id(29681) :: name("Antonio") :: KNil[AnyDenotation])
-    // }
+    implicit val idSerializer: DenotationSerializer[id.type, Int, String] = new DenotationSerializer(id, id.label)( { x: Int => Some(x.toString )} )
+    implicit val nameSerializer: DenotationSerializer[name.type, String, String] = new DenotationSerializer(name, name.label)(Some(_:String) )
   }
 
-  ignore("can serialize records to Maps") {
+  test("can parse records from Maps") {
 
-    // import propertyConverters._
-    //
-    // val simpleUserEntryMap =  Map(
-    //   "id" -> "29681",
-    //   "name" -> "Antonio"
-    // )
-    // assert {
-    //   Right(simpleUserEntryMap) ===
-    //   serializeDenotations[String,simpleUser.Raw](Map[String,String](), id(29681) :: name("Antonio") :: KNil[AnyDenotation])
-    // }
-    //
-    // val unrelatedMap = Map(
-    //   "lala" -> "hola!",
-    //   "ohno" -> "pigeons"
-    // )
-    //
-    // val mapWithKey = unrelatedMap + ("id" -> "1321")
-    //
-    // assert {
-    //   Right(simpleUserEntryMap ++ unrelatedMap) ===
-    //   serializeDenotations[String,simpleUser.Raw](
-    //     unrelatedMap,
-    //     id(29681) :: name("Antonio") :: KNil[AnyDenotation]
-    //   )
-    // }
-    //
-    // assert {
-    //   Left(KeyPresent(id.label, mapWithKey)) ===
-    //   serializeDenotations[String,simpleUser.Raw](
-    //     mapWithKey,
-    //     id(29681) :: name("Antonio") :: KNil[AnyDenotation]
-    //   )
-    // }
+    import propertyConverters._
+
+    val simpleUserEntryMap =  Map(
+      "id" -> "29681",
+      "name" -> "Antonio"
+    )
+    val wrongKeyMap = Map(
+      "idd" -> "29681",
+      "name" -> "Antonio"
+    )
+
+    val notIntValueMap = Map(
+      "name" -> "Antonio",
+      "id" -> "twenty-two"
+    )
+
+    val mapWithOtherStuff = simpleUserEntryMap + ("other" -> "stuff")
+
+    assert {
+      (simpleUser.parse(simpleUserEntryMap)) ===
+      Right(simpleUser := id(29681) :: name("Antonio") :: *[AnyDenotation])
+    }
+    assert {
+      simpleUser.parse(wrongKeyMap) ===
+      Left(KeyNotFound(id.label, wrongKeyMap))
+    }
+    assert {
+      simpleUser.parse(notIntValueMap) ===
+      Left(ErrorParsing(ErrorParsingValue(id)("twenty-two")))
+    }
+    assert {
+      simpleUser.parse(mapWithOtherStuff) ===
+      Right(simpleUser := id(29681) :: name("Antonio") :: *[AnyDenotation])
+    }
+  }
+
+  test("can serialize records to Maps") {
+
+    import propertyConverters._
+
+    val simpleUserEntryMap =  Map(
+      "id" -> "29681",
+      "name" -> "Antonio"
+    )
+    assert {
+      Right(simpleUserEntryMap) ===
+      (simpleUser := id(29681) :: name("Antonio") :: KNil[AnyDenotation]).serialize
+    }
+
+    val unrelatedMap = Map(
+      "lala" -> "hola!",
+      "ohno" -> "pigeons"
+    )
+
+    val mapWithKey = unrelatedMap + ("id" -> "1321")
+
+    assert {
+      Right(simpleUserEntryMap ++ unrelatedMap) ===
+        (simpleUser := id(29681) :: name("Antonio") :: KNil[AnyDenotation]).serializeUsing(unrelatedMap)
+    }
+
+    assert {
+      Left(KeyPresent(id.label, mapWithKey)) ===
+        (simpleUser := id(29681) :: name("Antonio") :: *[AnyDenotation]).serializeUsing(mapWithKey)
+    }
   }
 
 }

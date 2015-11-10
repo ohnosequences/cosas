@@ -1,5 +1,7 @@
 package ohnosequences.cosas.types
 
+import ohnosequences.cosas._, fns._, klists._
+
 // TODO update to DepFns
 trait AnyDenotationParser {
 
@@ -43,12 +45,52 @@ class DenotationParser[T <: AnyType, D0 <: T#Raw, V](
 extends AnyDenotationParser {
 
   type Type = T
-  type Value = V
   type D = D0
+  type Value = V
 }
 
 case object AnyDenotationParser {
 
-  implicit def genericParser[T <: AnyType, D <: T#Raw](implicit tpe: T): DenotationParser[T,D,D] =
+  implicit def genericParser[T <: AnyType { type Raw >: D }, D](implicit tpe: T): DenotationParser[T,D,D] =
     new DenotationParser(tpe, tpe.label)(d => Some(d))
+}
+
+trait ParseDenotationsError
+case class KeyNotFound[V](val key: String, val map: Map[String,V]) extends ParseDenotationsError
+case class ErrorParsing[PE <: DenotationParserError](val err: PE) extends ParseDenotationsError
+
+class ParseDenotations[V, Ts <: AnyProductType] extends DepFn1[Map[String,V], Either[ParseDenotationsError,Ts#Raw]]
+
+case object ParseDenotations {
+
+  implicit def empty[V,X]: AnyApp1At[ParseDenotations[V,unit], Map[String,V]] { type Y =  Either[ParseDenotationsError,*[AnyDenotation]] } =
+    App1 { map: Map[String,V] => Right(*[AnyDenotation]) }
+
+  implicit def nonEmpty[
+    V,
+    H <: AnyType { type Raw >: HR }, HR, Ts <: AnyProductType { type Raw >: Ds }, Ds <: AnyKList.withBound[AnyDenotation]
+  ](implicit
+    parseRest: AnyApp1At[ParseDenotations[V,Ts], Map[String,V]] { type Y  = Either[ParseDenotationsError,Ds] },
+    parseH: DenotationParser[H,HR,V]
+  )
+  : AnyApp1At[ParseDenotations[V, H :×: Ts], Map[String,V]] { type Y = Either[ParseDenotationsError, (H := HR) :: Ds] } =
+
+  App1 { map: Map[String,V] => {
+
+      map.get(parseH.labelRep).fold[Either[ParseDenotationsError, (H := HR) :: Ds]](
+        Left(KeyNotFound(parseH.labelRep, map))
+      )(
+        v => parseH(parseH.labelRep, v) fold (
+
+          l => Left(ErrorParsing(l)),
+
+          r => parseRest(map).fold[Either[ParseDenotationsError, (H := HR) :: Ds]] (
+            err => Left(err),
+            td  => Right(r :: (td: Ds))
+          )
+        )
+      )
+
+    }
+  }
 }
