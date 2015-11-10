@@ -30,6 +30,18 @@ case object syntax {
        qt := (takeFirst(vs))
 
     def toProduct: RT#Keys := Vs = new (RT#Keys := Vs)(vs)
+
+    def serialize[V](implicit
+      serialize: AnyApp2At[V SerializeDenotations Vs, Map[String,V], Vs] {
+        type Y = Either[SerializeDenotationsError, Map[String,V]]
+      }
+    ): Either[SerializeDenotationsError, Map[String,V]] = serialize(Map[String,V](), vs)
+
+    def serializeUsing[V](map: Map[String,V])(implicit
+      serialize: AnyApp2At[V SerializeDenotations Vs, Map[String,V], Vs] {
+        type Y = Either[SerializeDenotationsError, Map[String,V]]
+      }
+    ): Either[SerializeDenotationsError, Map[String,V]] = serialize(map, vs)
   }
 
   final case class RecordTypeSyntax[RT <: AnyRecordType](val rt: RT) extends AnyVal {
@@ -44,6 +56,16 @@ case object syntax {
     )
     : RT := RTRaw =
       rt := reorder(vs)
+
+    def parse[RTRaw <: RT#Raw, V](map: Map[String,V])(implicit
+      parse: AnyApp1At[V ParseDenotations RT#Keys, Map[String,V]] {
+        type Y = Either[ParseDenotationsError, RTRaw]
+      }
+    ): Either[ParseDenotationsError, RT := RTRaw] =
+      parse(map).fold[Either[ParseDenotationsError, RT := RTRaw]](
+        { err => Left(err) },
+        { vs => Right(rt := vs) }
+      )
   }
 
   final case class RecordReorderSyntax[Vs <: AnyKList.withBound[AnyDenotation]](val vs: Vs) extends AnyVal {
