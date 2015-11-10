@@ -40,25 +40,25 @@ class KListTests extends org.scalatest.FunSuite {
     trait Bar extends Foo { val x: String }
     trait Argh extends Bar { val z: Int }
 
-    def hola[L <: NonEmptyKList.Of[Bar]](l: L): String = l.head.x
-    def id[X <: NonEmptyKList.Of[Argh]](x: X): NonEmptyKList.Of[Bar] = x
-    def idHola[X <: NonEmptyKList.Of[Argh]](x: X): String = hola(id(x))
-    def as[B0 <: B, B, L <: KList.Of[B0]](l: L): KList.Of[B] = l
+    def hola[L <: AnyNonEmptyKList.Of[Bar]](l: L): String = l.head.x
+    def id[X <: AnyNonEmptyKList.Of[Argh]](x: X): AnyNonEmptyKList.Of[Bar] = x
+    def idHola[X <: AnyNonEmptyKList.Of[Argh]](x: X): String = hola(id(x))
+    def as[B0 <: B, B, L <: AnyKList.Of[B0]](l: L): AnyKList.Of[B] = l
 
   }
 
   test("KLists are covariant in bound and values") {
 
     val oh = A0 :: A1 :: A0 :: *[A]
-    val oh_any: KList.Of[Any] = oh
+    val oh_any: AnyKList.Of[Any] = oh
 
-    val uh: KList.Of[A0.type] = A0 :: A0 :: A0 :: *[A0.type]
-    val uh_A: KList.Of[A] = uh
+    val uh: AnyKList.Of[A0.type] = A0 :: A0 :: A0 :: *[A0.type]
+    val uh_A: AnyKList.Of[A] = uh
 
     assert{ oh.head.boo === true }
     assert{ oh.tail.head.boo === false }
 
-    def foo[L <: NonEmptyKList.Of[A]](l: L): Boolean = l.head.boo
+    def foo[L <: AnyNonEmptyKList.Of[A]](l: L): Boolean = l.head.boo
 
     assert{ foo(oh) === true }
   }

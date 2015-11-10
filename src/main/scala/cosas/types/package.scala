@@ -4,7 +4,6 @@ package object types {
 
   type :=[T <: AnyType, +V <: T#Raw] = Denotes[V,T]
 
-  // TODO alias for EmptyProductType
   type unit = EmptyProductType.type
   val  unit : unit = EmptyProductType
 
