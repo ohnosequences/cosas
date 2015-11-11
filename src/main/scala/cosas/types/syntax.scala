@@ -15,8 +15,8 @@ case object syntax {
 
   final case class AnyProductTypeSyntax[L <: AnyProductType](val l: L) extends AnyVal {
 
-    def :×:[H <: AnyType, T <: AnyProductType](h: H): H :×: L =
-      new :×:(h,l)
+    def :×:[H0 <: L#Types#Bound](h: H0): H0 :×: L =
+      new :×:[H0,L](h,l)
   }
 
   final case class AnyProductTypeDenotationSyntax[L <: AnyProductType, Vs <: L#Raw](val vs: Vs) extends AnyVal {

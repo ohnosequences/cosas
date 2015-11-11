@@ -68,7 +68,7 @@ case object ParseDenotations {
 
   implicit def nonEmpty[
     V,
-    H <: AnyType { type Raw >: HR }, HR, Ts <: AnyProductType { type Raw >: Ds }, Ds <: AnyKList.withBound[AnyDenotation]
+    H <: Ts#Types#Bound { type Raw >: HR }, HR, Ts <: AnyProductType { type Raw >: Ds }, Ds <: AnyKList.withBound[AnyDenotation]
   ](implicit
     parseRest: AnyApp1At[ParseDenotations[V,Ts], Map[String,V]] { type Y  = Either[ParseDenotationsError,Ds] },
     parseH: DenotationParser[H,HR,V]

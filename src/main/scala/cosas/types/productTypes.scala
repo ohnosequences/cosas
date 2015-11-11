@@ -2,9 +2,10 @@ package ohnosequences.cosas.types
 
 import ohnosequences.cosas._, klists._, fns._
 
+// TODO reproduce KList
 trait AnyProductType extends AnyType {
 
-  type  Types <: AnyKList { type Bound = AnyType }
+  type  Types <: AnyKList { type Bound <: AnyType }
   val   types: Types
 
   type Raw <: AnyKList { type Bound = AnyDenotation }
@@ -32,10 +33,10 @@ case object EmptyProductType extends AnyProductType {
   val label: String = "()"
 }
 
-case class :×:[H <: AnyType, T <: AnyProductType](val head: H, val tail: T) extends AnyProductType {
+case class :×:[H <: T#Types#Bound, T <: AnyProductType](val head: H, val tail: T) extends AnyProductType {
 
   type Types = H :: T#Types
-  val  types: Types = head :: tail.types
+  val  types: Types = head :: (tail.types: T#Types)
 
   type Raw = AnyDenotation { type Tpe = H } :: T#Raw
 
@@ -50,7 +51,7 @@ class Project[Ts <: AnyProductType, T <: AnyType] extends DepFn1[
 case object Project extends ProjectInTail {
 
   implicit def foundInHead[
-    H <: AnyType { type Raw >: V }, V,
+    H <: Ts#Types#Bound { type Raw >: V }, V,
     Ts <: AnyProductType { type Raw >: Ds }, Ds <: AnyKList { type Bound = AnyDenotation }
   ]
   : AnyApp1At[
@@ -63,7 +64,7 @@ case object Project extends ProjectInTail {
 trait ProjectInTail {
 
   implicit def foundInTail[
-    H <: AnyType { type Raw >: V }, V,
+    H <: Ts#Types#Bound { type Raw >: V }, V,
     Ts <: AnyProductType { type Raw >: Ds }, Ds <: AnyKList { type Bound = AnyDenotation },
     P <: AnyType { type Raw >: W }, W
   ]
