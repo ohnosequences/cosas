@@ -3,9 +3,11 @@ package ohnosequences.cosas.types
 import ohnosequences.cosas._, klists._, fns._
 
 // TODO reproduce KList
-trait AnyProductType extends AnyType {
+trait AnyProductType extends AnyType { prod =>
 
-  type  Types <: AnyKList { type Bound <: AnyType }
+  type Bound = Types#Bound
+
+  type  Types <: AnyKList { type Bound <: AnyType } //{ type Bound = prod.Bound }
   val   types: Types
 
   type Raw <: AnyKList { type Bound = AnyDenotation }
@@ -23,8 +25,20 @@ case object AnyProductType {
 
 }
 
+// TODO parametric on Type
+class EmptyProductType[E <: AnyType] extends AnyProductType {
+
+  // type Bound = E
+  type Types = *[E]
+  val types: Types = *[E]
+
+  type Raw = *[AnyDenotation]
+
+  val label: String = "()"
+}
 case object EmptyProductType extends AnyProductType {
 
+  // type Bound = AnyType
   type Types = *[AnyType]
   val  types = *[AnyType]
 
@@ -33,8 +47,9 @@ case object EmptyProductType extends AnyProductType {
   val label: String = "()"
 }
 
-case class :×:[H <: T#Types#Bound, T <: AnyProductType](val head: H, val tail: T) extends AnyProductType {
+case class :×:[H <: T#Bound, T <: AnyProductType](val head: H, val tail: T) extends AnyProductType {
 
+  // type Bound = T#Bound
   type Types = H :: T#Types
   val  types: Types = head :: (tail.types: T#Types)
 
