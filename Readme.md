@@ -1,5 +1,5 @@
 ## cosas
-[![Gitter](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/ohnosequences/cosas?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![Codacy Badge](https://api.codacy.com/project/badge/grade/0ead09f732564954b54700aa4e0feea4)](https://www.codacy.com/app/era7/cosas) [![Gitter](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/ohnosequences/cosas?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 * Records
 * Type union
@@ -21,7 +21,7 @@ The artifact is published only for scala `2.11.2`.
 
 ### Documentation
 
-Documentation is generated from the code by [literator](https://github.com/laughedelic/literator) 
+Documentation is generated from the code by [literator](https://github.com/laughedelic/literator)
 tool. See the `docs/` folder and tests for examples.
 
 Also, there are [API docs](http://ohnosequences.com/cosas/docs/api/0.5.0)
