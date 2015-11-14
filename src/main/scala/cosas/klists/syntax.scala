@@ -86,6 +86,15 @@ case object syntax {
     : LS =
       concatenate(l,s)
 
+    def map[
+      F <: AnyDepFn1 { type In1 >: L#Bound },
+      O <: AnyKList
+    ](f: F)(
+      implicit mapper: AnyApp1At[mapKList[F], L] { type Y = O }
+    )
+    : O =
+      mapper(l)
+
     def foldLeft[
       F <: AnyDepFn2,
       Z <: F#Out,
