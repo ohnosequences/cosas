@@ -4,8 +4,11 @@ package object types {
 
   type :=[T <: AnyType, +V <: T#Raw] = Denotes[V,T]
 
-  type unit = EmptyProductType.type
-  val  unit : unit = EmptyProductType
+  type unit = EmptyProductType[AnyType]
+  val  unit : unit = new EmptyProductType[AnyType]
+
+  type In[E <: AnyType] = EmptyProductType[E]
+  def In[E <: AnyType]: In[E] = new EmptyProductType[E]
 
   type Accepts[P <: AnyTypePredicate, X <: P#ArgBound] = P#Condition[X]
 }

@@ -2,9 +2,12 @@ package ohnosequences.cosas.types
 
 import ohnosequences.cosas._, klists._, fns._
 
-trait AnyProductType extends AnyType {
+// TODO reproduce KList
+trait AnyProductType extends AnyType { prod =>
 
-  type  Types <: AnyKList { type Bound = AnyType }
+  type Bound = Types#Bound
+
+  type  Types <: AnyKList { type Bound <: AnyType } //{ type Bound = prod.Bound }
   val   types: Types
 
   type Raw <: AnyKList { type Bound = AnyDenotation }
@@ -22,8 +25,20 @@ case object AnyProductType {
 
 }
 
+// TODO parametric on Type
+class EmptyProductType[E <: AnyType] extends AnyProductType {
+
+  // type Bound = E
+  type Types = *[E]
+  val types: Types = *[E]
+
+  type Raw = *[AnyDenotation]
+
+  val label: String = "()"
+}
 case object EmptyProductType extends AnyProductType {
 
+  // type Bound = AnyType
   type Types = *[AnyType]
   val  types = *[AnyType]
 
@@ -32,10 +47,11 @@ case object EmptyProductType extends AnyProductType {
   val label: String = "()"
 }
 
-case class :×:[H <: AnyType, T <: AnyProductType](val head: H, val tail: T) extends AnyProductType {
+case class :×:[H <: T#Bound, T <: AnyProductType](val head: H, val tail: T) extends AnyProductType {
 
+  // type Bound = T#Bound
   type Types = H :: T#Types
-  val  types: Types = head :: tail.types
+  val  types: Types = head :: (tail.types: T#Types)
 
   type Raw = AnyDenotation { type Tpe = H } :: T#Raw
 
@@ -50,7 +66,7 @@ class Project[Ts <: AnyProductType, T <: AnyType] extends DepFn1[
 case object Project extends ProjectInTail {
 
   implicit def foundInHead[
-    H <: AnyType { type Raw >: V }, V,
+    H <: Ts#Types#Bound { type Raw >: V }, V,
     Ts <: AnyProductType { type Raw >: Ds }, Ds <: AnyKList { type Bound = AnyDenotation }
   ]
   : AnyApp1At[
@@ -63,7 +79,7 @@ case object Project extends ProjectInTail {
 trait ProjectInTail {
 
   implicit def foundInTail[
-    H <: AnyType { type Raw >: V }, V,
+    H <: Ts#Types#Bound { type Raw >: V }, V,
     Ts <: AnyProductType { type Raw >: Ds }, Ds <: AnyKList { type Bound = AnyDenotation },
     P <: AnyType { type Raw >: W }, W
   ]

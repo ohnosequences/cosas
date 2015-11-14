@@ -16,7 +16,7 @@ case object Reorder {
   implicit def nonEmpty[
     TailToTake <: AnyProductType { type Raw >: STailToTake },
     From <: AnyKList { type Bound = AnyDenotation }, Rest <: AnyKList { type Bound = AnyDenotation },
-    HeadToTake <: AnyType { type Raw >: V}, V,
+    HeadToTake <: TailToTake#Types#Bound { type Raw >: V}, V,
     STailToTake <: AnyKList { type Bound = AnyDenotation }
   ](implicit
     pick: AnyApp1At[PickByType[HeadToTake], From] { type Y = ((HeadToTake := V), Rest) },
