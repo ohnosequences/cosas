@@ -11,7 +11,7 @@ class FoldLeft[L <: AnyKList, F <: AnyDepFn2, Z] extends DepFn3[
 case object FoldLeft {
 
   implicit def empty[
-    F <: AnyDepFn2 { type In2 = A; type Out >: Z },
+    F <: AnyDepFn2 { type In2 >: A; type Out >: Z },
     Z, A
   ]
   : AnyApp3At[FoldLeft[KNil[A],F,Z], KNil[A], Z, F] { type Y = Z } =
@@ -20,13 +20,10 @@ case object FoldLeft {
     }
 
   implicit def cons[
-    F <: AnyDepFn2 {
-      type In1 >: O; type In2 >: H; type Out >: FO
-    },
-    H <: T#Bound, T <: AnyKList,
+    F <: AnyDepFn2 { type In1 >: O; type In2 >: H; type Out >: FO },
     Z,
-    O,
-    FO
+    H <: T#Bound, T <: AnyKList,
+    O, FO
   ](implicit
     evF: AnyApp2At[F, O, H] { type Y = FO },
     foldLeft: AnyApp3At[FoldLeft[T,F,Z], T, Z, F] { type Y = O }
