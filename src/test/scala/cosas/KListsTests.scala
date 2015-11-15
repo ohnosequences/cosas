@@ -77,6 +77,18 @@ class KListTests extends org.scalatest.FunSuite {
     assert {
       ("hola" :: "scalac" :: *[String]).asList === ("hola" :: "scalac" :: Nil)
     }
+
+    @scala.annotation.tailrec
+    def buildKList_rec(size: Int, l: AnyKList.withBound[Int]): AnyKList.withBound[Int] = size match {
+
+      case 0 => l
+      case x: Int => buildKList_rec(x-1, x :: l)
+    }
+
+    def buildKList(size: Int): AnyKList.withBound[Int] = buildKList_rec(size, *[Int])
+
+    // no SO
+    val z = buildKList(1000000).asList
   }
 
   test("can convert KLists to lists of a supertype of their bound") {
