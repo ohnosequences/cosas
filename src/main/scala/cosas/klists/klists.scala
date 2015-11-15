@@ -2,7 +2,7 @@ package ohnosequences.cosas.klists
 
 import ohnosequences.cosas._, typeUnions._, fns._
 
-trait AnyKList extends Any {
+sealed trait AnyKList extends Any {
 
   type Bound
 
@@ -19,7 +19,7 @@ case object KList {
   def apply[F <: AnyDepFn1](f: F): mapKList[F] = mapKList[F]
 }
 
-trait AnyEmptyKList extends Any with AnyKList {
+sealed trait AnyEmptyKList extends Any with AnyKList {
 
   type Types = TypeUnion.empty
   type Union = Types#union
@@ -32,7 +32,7 @@ case class KNilOf[+A]() extends AnyEmptyKList {
   type Bound = A @uv
 }
 
-trait AnyNonEmptyKList extends Any with AnyKList {
+sealed trait AnyNonEmptyKList extends Any with AnyKList {
 
   type Head <: Bound
   val  head: Head

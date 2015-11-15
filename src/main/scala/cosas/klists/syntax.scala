@@ -71,11 +71,20 @@ case object syntax {
     : L =
       replaceFirst(l,s)
 
+    @scala.annotation.tailrec
+    final private def asList_rec[X](list: AnyKList.Of[X], acc: scala.collection.mutable.ListBuffer[X]): List[X] =
+      list match {
+        case KNilOf() => acc.toList
+        case xs: KCons[X,AnyKList.Of[X]] => asList_rec(xs.tail, acc += xs.head)
+      }
+
     // TODO tailrec
-    def asList: List[L#Bound] = l match {
-      case xs : KCons[L#Bound,AnyKList { type Bound <: L#Bound }] => xs.head :: xs.tail.asList
-      case _ : *[L#Bound] => Nil
-    }
+    def asList: List[L#Bound] = asList_rec(l,new scala.collection.mutable.ListBuffer)
+
+    //   l match {
+    //   case xs : KCons[L#Bound,AnyKList { type Bound <: L#Bound }] => xs.head :: xs.tail.asList
+    //   case _ : *[L#Bound] => Nil
+    // }
 
     def toList(implicit conv: App1[toList[L], L, List[L#Bound]])
     : List[L#Bound] =
@@ -111,4 +120,9 @@ case object syntax {
     : O =
       foldl(l,z,f)
   }
+}
+
+case object utils {
+
+
 }
