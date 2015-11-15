@@ -71,6 +71,7 @@ case object syntax {
     : L =
       replaceFirst(l,s)
 
+    // TODO tailrec
     def asList: List[L#Bound] = l match {
       case xs : KCons[L#Bound,AnyKList { type Bound <: L#Bound }] => xs.head :: xs.tail.asList
       case _ : *[L#Bound] => Nil
