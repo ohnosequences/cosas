@@ -270,6 +270,16 @@ class KListTests extends org.scalatest.FunSuite {
 
       (3 :: 2 :: 1 :: *[Int]).foldLeft(sum)(0) === 6
     }
+
+    val z = (1 :: *[Int]).foldLeft(snoc)(*[Int])(FoldLeft.cons[
+      snoc.type,
+      *[Int],
+      Int, *[Int],
+      *[Int], Int :: *[Int]
+      ])
+
+      assert { (1 :: 2 :: 3 :: *[Int]).foldLeft(snoc)(4 :: 5 :: 6 :: *[Int]) === (1 :: 2 :: 3 :: 4 :: 5 :: 6 :: *[Int]) }
+      assert { (1 :: "hola" :: 'b' :: true :: *[Any]).foldLeft(snoc)(*[Any]) === (1 :: "hola" :: 'b' :: true :: *[Any]) }
   }
 
   test("can filter KLists") {

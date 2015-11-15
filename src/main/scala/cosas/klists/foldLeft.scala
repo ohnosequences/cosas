@@ -3,7 +3,7 @@ package ohnosequences.cosas.klists
 import ohnosequences.cosas.fns._
 
 // TODO review this signature
-class FoldLeft[L <: AnyKList, F <: AnyDepFn2, Z] extends DepFn3[
+class FoldLeft[L <: AnyKList, F <: AnyDepFn2, Z <: F#Out] extends DepFn3[
   L, Z, F,
   F#Out
 ]
@@ -21,12 +21,12 @@ case object FoldLeft {
 
   implicit def cons[
     F <: AnyDepFn2 { type In1 >: O; type In2 >: H; type Out >: FO },
-    Z,
+    Z <: F#Out,
     H <: T#Bound, T <: AnyKList,
     O, FO
   ](implicit
-    evF: AnyApp2At[F, O, H] { type Y = FO },
-    foldLeft: AnyApp3At[FoldLeft[T,F,Z], T, Z, F] { type Y = O }
+    foldLeft: AnyApp3At[FoldLeft[T,F,Z], T, Z, F] { type Y = O },
+    evF: AnyApp2At[F, O, H] { type Y = FO }
   )
   : AnyApp3At[
       FoldLeft[H :: T,F,Z],

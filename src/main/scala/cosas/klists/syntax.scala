@@ -90,9 +90,10 @@ case object syntax {
 
     def ++[
       S   <: AnyKList { type Bound = L#Bound },
-      LS  <: AnyKList { type Bound = L#Bound }
-    ](s: S)(implicit concatenate: App2[concatenate[L], L, S, LS])
-    : LS =
+      LS  <: AnyKList
+    ](s: S)(implicit
+      concatenate: AnyApp2At[concatenate[L], L, S] { type Y = LS }
+    ): LS =
       concatenate(l,s)
 
     def map[
@@ -105,9 +106,9 @@ case object syntax {
       mapper(l)
 
     def foldLeft[
-      F <: AnyDepFn2,
+      F <: AnyDepFn2 { type Out >: O },
       Z <: F#Out,
-      O <: F#Out
+      O
     ](f: F)(z: Z)(implicit
       foldl: AnyApp3At[FoldLeft[L,F,Z],L,Z,F] { type Y = O }
     )
