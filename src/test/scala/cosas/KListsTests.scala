@@ -73,6 +73,10 @@ class KListTests extends org.scalatest.FunSuite {
     assert {
       ("hola" :: "scalac" :: *[String]).toList === ("hola" :: "scalac" :: Nil)
     }
+
+    assert {
+      ("hola" :: "scalac" :: *[String]).asList === ("hola" :: "scalac" :: Nil)
+    }
   }
 
   test("can convert KLists to lists of a supertype of their bound") {
@@ -87,6 +91,10 @@ class KListTests extends org.scalatest.FunSuite {
 
     assert {
       ("hola" :: "scalac" :: *[String]).toListOf[Any] === List[Any]("hola","scalac")
+    }
+
+    assert {
+      (("hola" :: "scalac" :: *[String]).asList : List[Any]) === List[Any]("hola","scalac")
     }
 
   }
