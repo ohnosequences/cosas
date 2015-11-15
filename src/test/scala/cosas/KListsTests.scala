@@ -73,6 +73,22 @@ class KListTests extends org.scalatest.FunSuite {
     assert {
       ("hola" :: "scalac" :: *[String]).toList === ("hola" :: "scalac" :: Nil)
     }
+
+    assert {
+      ("hola" :: "scalac" :: *[String]).asList === ("hola" :: "scalac" :: Nil)
+    }
+
+    @scala.annotation.tailrec
+    def buildKList_rec(size: Int, l: AnyKList.withBound[Int]): AnyKList.withBound[Int] = size match {
+
+      case 0 => l
+      case x: Int => buildKList_rec(x-1, x :: l)
+    }
+
+    def buildKList(size: Int): AnyKList.withBound[Int] = buildKList_rec(size, *[Int])
+
+    // no SO
+    val z = buildKList(1000000).asList
   }
 
   test("can convert KLists to lists of a supertype of their bound") {
@@ -87,6 +103,10 @@ class KListTests extends org.scalatest.FunSuite {
 
     assert {
       ("hola" :: "scalac" :: *[String]).toListOf[Any] === List[Any]("hola","scalac")
+    }
+
+    assert {
+      (("hola" :: "scalac" :: *[String]).asList : List[Any]) === List[Any]("hola","scalac")
     }
 
   }
@@ -203,7 +223,7 @@ class KListTests extends org.scalatest.FunSuite {
 
     case object f extends DepFn1[Any,String] {
 
-      implicit def default[X <: Any]: App1[f.type,X,String] = f at { a: X => a.toString }
+      implicit def default[X <: Any]: AnyApp1At[f.type,X] { type Y = String } = f at { a: X => a.toString }
     }
 
     val z: *[Any] = *[Any]
@@ -211,13 +231,12 @@ class KListTests extends org.scalatest.FunSuite {
     val zzz: Int :: Boolean :: *[Any] = 2 :: true :: *[Any]
 
     assert {
-
-      KList(identity)(zzz) === zzz
+      (zzz map identity) === zzz
     }
     assert {
       KList(f)(zzz) === "2" :: "true" :: *[String]
     }
-
+    //
     assert {
 
       KList(f)("hola" :: "scalac" :: *[Any]) === "hola" :: "scalac" :: *[String]
