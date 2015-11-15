@@ -78,13 +78,7 @@ case object syntax {
         case xs: KCons[X,AnyKList.Of[X]] => asList_rec(xs.tail, acc += xs.head)
       }
 
-    // TODO tailrec
     def asList: List[L#Bound] = asList_rec(l,new scala.collection.mutable.ListBuffer)
-
-    //   l match {
-    //   case xs : KCons[L#Bound,AnyKList { type Bound <: L#Bound }] => xs.head :: xs.tail.asList
-    //   case _ : *[L#Bound] => Nil
-    // }
 
     def toList(implicit conv: App1[toList[L], L, List[L#Bound]])
     : List[L#Bound] =
