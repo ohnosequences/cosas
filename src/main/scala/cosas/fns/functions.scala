@@ -121,6 +121,24 @@ case object Composition {
 
 }
 
+// Flips the arguments of a DepFn2, see snoc for example
+case class Flip[F <: AnyDepFn2](f: F) extends DepFn2[F#In2, F#In1, F#Out]
+
+case object Flip {
+
+  implicit def flip[
+    F <: AnyDepFn2 {
+      type In1 >: I1
+      type In2 >: I2
+      type Out >: O
+    },
+    I1, I2, O
+  ](implicit
+    appF: AnyApp2At[F, I1, I2] { type Y = O }
+  ): AnyApp2At[Flip[F], I2, I1] { type Y = O } =
+  App2 { (in2: I2, in1: I1) => appF(in1, in2) }
+}
+
 /* dependent function application machinery. These are to be thought of as the building blocks for terms of a dependent function type. */
 trait AnyApp extends Any {
 

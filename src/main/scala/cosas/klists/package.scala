@@ -35,4 +35,10 @@ package object klists {
 
   type  takeFirst[Q <: AnyKList] = TakeFirst[Q]
   def   takeFirst[Q <: AnyKList]: takeFirst[Q] = new TakeFirst[Q]
+
+  type cons = Cons.type
+  val  cons: cons = Cons
+
+  type snoc = Flip[cons.type]
+  val  snoc: snoc = Flip(cons)
 }

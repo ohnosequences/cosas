@@ -95,7 +95,7 @@ case object syntax {
       M <: AnyKList { type Bound = L#Bound },
       LM <: AnyKList
     ](m: M)(implicit
-      foldr: AnyApp3At[FoldRight[cons.type], cons.type, M, L] { type Y = LM }
+      foldr: AnyApp3At[FoldRight[cons], cons, M, L] { type Y = LM }
     ): LM =
       foldr(cons, m, l)
 
@@ -112,7 +112,7 @@ case object syntax {
     def reverse[
       R <: AnyKList.withBound[L#Bound]
     ](implicit
-      foldl: AnyApp3At[FoldLeft[snoc.type], snoc.type, *[L#Bound], L] { type Y = R }
+      foldl: AnyApp3At[FoldLeft[snoc], snoc, *[L#Bound], L] { type Y = R }
     ): R =
       foldl(snoc, *[L#Bound], l)
 
