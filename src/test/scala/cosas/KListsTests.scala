@@ -316,7 +316,7 @@ class KListTests extends org.scalatest.FunSuite {
   }
 
   test("can concatenate KLists") {
-    // NOTE: concat (L ++ M) is just a syntax for cons.foldRight(M)(L)
+    // NOTE: (l ++ m) is just a syntax for cons.foldRight(m)(l)
 
     val hola: Boolean :: String :: String :: *[Any] =
       (true :: "que tal" :: *[Any]) ++ ("hola" :: *[Any])
@@ -327,6 +327,22 @@ class KListTests extends org.scalatest.FunSuite {
 
     assertResult(1 :: 2 :: 3 :: 4 :: 5 :: 6 :: *[Int]) {
       (1 :: 2 :: 3 :: *[Int]) ++ (4 :: 5 :: 6 :: *[Int])
+    }
+
+  }
+
+  test("can reverse KLists") {
+    // NOTE: l.reverse is just a syntax for snoc.foldLeft(KNil)(l)
+
+    val hola: String :: String :: Boolean :: *[Any] =
+      (true :: "que tal" :: "hola" :: *[Any]).reverse
+
+    assertResult(2 :: *[Int]) {
+      (2 :: *[Int]).reverse
+    }
+
+    assertResult(1 :: 2 :: 3 :: 4 :: *[Int]) {
+      (4 :: 3 :: 2 :: 1 :: *[Int]).reverse
     }
 
   }

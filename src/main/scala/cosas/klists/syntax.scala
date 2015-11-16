@@ -108,6 +108,14 @@ case object syntax {
     : O =
       mapper(l)
 
+    // reverse = snoc.foldLeft(Nil)
+    def reverse[
+      R <: AnyKList.withBound[L#Bound]
+    ](implicit
+      foldl: AnyApp3At[FoldLeft[snoc.type], snoc.type, *[L#Bound], L] { type Y = R }
+    ): R =
+      foldl(snoc, *[L#Bound], l)
+
   }
 }
 
