@@ -280,6 +280,12 @@ class KListTests extends org.scalatest.FunSuite {
 
       assert { (1 :: 2 :: 3 :: *[Int]).foldLeft(snoc)(4 :: 5 :: 6 :: *[Int]) === (1 :: 2 :: 3 :: 4 :: 5 :: 6 :: *[Int]) }
       assert { (1 :: "hola" :: 'b' :: true :: *[Any]).foldLeft(snoc)(*[Any]) === (1 :: "hola" :: 'b' :: true :: *[Any]) }
+
+      val f: (String, Any) => String = { (str,a) => a.toString ++ str }
+      val f_flip: (Any,String) => String = { (a,str) => f(str,a) }
+
+      println { (1 :: "hola" :: 'b' :: true :: *[Any]).foldLeft(Fn2(f))("") }
+      println { (1 :: "hola" :: 'b' :: true :: *[Any]).asList.foldRight("")(f_flip) }
   }
 
   test("can filter KLists") {

@@ -2,9 +2,6 @@ package ohnosequences.cosas.fns
 
 trait AnyFn1 extends Any with AnyDepFn1 {
 
-  type In1
-  type Out
-
   def f: In1 => Out
 }
 // std functions as depfns
@@ -22,6 +19,12 @@ case object Fn1 {
     def apply(x: A): B = f(x)
   }
 }
+
+trait AnyFn2 extends Any with AnyDepFn2 {
+
+  def f: (In1,In2) => Out
+}
+case class Fn2[A,B,C](val f: (A,B) => C) extends AnyVal with AnyFn2 with DepFn2[A,B,C]
 
 case object identity extends DepFn1[Any, Any] {
 

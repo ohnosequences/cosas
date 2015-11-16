@@ -32,7 +32,7 @@ trait DepFn1[I,O] extends Any with AnyDepFn1 {
   type Out = O
 }
 
-trait AnyDepFn2 extends AnyDepFn {
+trait AnyDepFn2 extends Any with AnyDepFn {
   type In1
   type In2
 }
@@ -48,7 +48,7 @@ case object AnyDepFn2 {
   ](df: DF0): syntax.DepFn2ApplyAt[DF0,A0,B0] =
     syntax.DepFn2ApplyAt(df)
 }
-trait DepFn2[I1,I2,O] extends AnyDepFn2 {
+trait DepFn2[I1,I2,O] extends Any with AnyDepFn2 {
   type In1 = I1
   type In2 = I2
   type Out = O
