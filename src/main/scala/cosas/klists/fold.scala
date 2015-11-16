@@ -3,9 +3,9 @@ package ohnosequences.cosas.klists
 import ohnosequences.cosas.fns._
 
 /* Mnemonics:
-   - L for List
-   - Z for Zero
    - F for Function
+   - Z for Zero
+   - L for List
 */
 
 /* foldl :: (b -> a -> b) -> b -> [a] -> b
@@ -13,8 +13,8 @@ import ohnosequences.cosas.fns._
    foldl f z (x:xs) = foldl f (f z x) xs
 */
 class FoldLeft[F <: AnyDepFn2] extends DepFn3[
-  // list, zero, func:
-  AnyKList.Of[F#In2], F#Out, F,
+  // func, zero, list:
+  F, F#Out, AnyKList.Of[F#In2],
   F#Out
 ]
 
@@ -23,9 +23,9 @@ case object FoldLeft {
   implicit def forStdFunction[
     A, B, L <: AnyKList.Of[A]
   ]: AnyApp3At[FoldLeft[Fn2[B, A, B]],
-      L, B, Fn2[B, A, B]
+      Fn2[B, A, B], B, L
     ] { type Y = B } =
-    App3 { (l: L, z: B, f: Fn2[B, A, B]) =>
+    App3 { (f: Fn2[B, A, B], z: B, l: L) =>
 
       // TODO: remove this before release
       println { "using foldLeft from std List" }
@@ -38,10 +38,9 @@ case object FoldLeft {
     F <: AnyDepFn2
   ]: AnyApp3At[
       FoldLeft[F],
-      KNil[A], Z, F
-    ] { type Y = Z } = App3 {
-      (n: KNil[A], z: Z, f: F) => z
-    }
+      F, Z, KNil[A]
+    ] { type Y = Z } =
+    App3 { (_, z: Z, _) => z }
 
   implicit def cons[
     F <: AnyDepFn2 {
@@ -55,13 +54,13 @@ case object FoldLeft {
     FOut
   ](implicit
     appF: AnyApp2At[F, Z, H] { type Y = FOut },
-    rec: AnyApp3At[FoldLeft[F], T, FOut, F]
+    rec: AnyApp3At[FoldLeft[F], F, FOut, T]
   ): AnyApp3At[FoldLeft[F],
-      H :: T, Z, F
+      F, Z, H :: T
     ] { type Y = rec.Y } =
-    App3 { (xs: H :: T, z: Z, f: F) =>
+    App3 { (f: F, z: Z, xs: H :: T) =>
 
-      rec(xs.tail, appF(z, xs.head), f)
+      rec(f, appF(z, xs.head), xs.tail)
     }
 }
 
@@ -72,8 +71,8 @@ case object FoldLeft {
    foldr f z (x:xs) = f x (foldr f z xs)
 */
 class FoldRight[F <: AnyDepFn2] extends DepFn3[
-  // list, zero, func:
-  AnyKList.Of[F#In1], F#Out, F,
+  // func, zero, list:
+  F, F#Out, AnyKList.Of[F#In1],
   F#Out
 ]
 
@@ -82,9 +81,9 @@ case object FoldRight {
   implicit def forStdFunction[
     A, B, L <: AnyKList.Of[A]
   ]: AnyApp3At[FoldRight[Fn2[A, B, B]],
-      L, B, Fn2[A, B, B]
+      Fn2[A, B, B], B, L
     ] { type Y = B } =
-    App3 { (l: L, z: B, f: Fn2[A, B, B]) =>
+    App3 { (f: Fn2[A, B, B], z: B, l: L) =>
 
       // TODO: remove this before release
       println { "using foldRight from std List" }
@@ -97,10 +96,9 @@ case object FoldRight {
     F <: AnyDepFn2
   ]: AnyApp3At[
       FoldRight[F],
-      KNil[A], Z, F
-    ] { type Y = Z } = App3 {
-      (n: KNil[A], z: Z, f: F) => z
-    }
+      F, Z, KNil[A]
+    ] { type Y = Z } =
+    App3 { (_, z: Z, _) => z }
 
   implicit def cons[
     F <: AnyDepFn2 {
@@ -113,15 +111,15 @@ case object FoldRight {
     FoldOut, FOut
   ](implicit
     appFold: AnyApp3At[ FoldRight[F],
-      T, Z, F
+      F, Z, T
     ] { type Y = FoldOut },
     appF: AnyApp2At[F, H, FoldOut] { type Y = FOut }
   ): AnyApp3At[ FoldRight[F],
-      H :: T, Z, F
+      F, Z, H :: T
     ] { type Y = FOut } =
-    App3 { (xs: H :: T, z: Z, f: F) =>
+    App3 { (f: F, z: Z, xs: H :: T) =>
 
-      appF(xs.head, appFold(xs.tail, z, f))
+      appF(xs.head, appFold(f, z, xs.tail))
     }
 
 }

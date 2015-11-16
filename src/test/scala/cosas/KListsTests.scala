@@ -258,8 +258,8 @@ class KListTests extends org.scalatest.FunSuite {
     val flEmpty = new FoldLeft[sum.type]
     val flAgain = new FoldLeft[sum.type]
 
-    assertResult(0) { flEmpty(*[Int], 0, sum) }
-    assertResult(2) { flAgain(2 :: *[Int], 0, sum) }
+    assertResult(0) { flEmpty(sum, 0, *[Int]) }
+    assertResult(2) { flAgain(sum, 0, 2 :: *[Int]) }
 
     assertResult(6) {
       sum.foldLeft(0)(3 :: 2 :: 1 :: *[Int])
@@ -302,8 +302,8 @@ class KListTests extends org.scalatest.FunSuite {
     val flEmpty = new FoldRight[sum.type]
     val flAgain = new FoldRight[sum.type]
 
-    assertResult(0) { flEmpty(*[Int], 0, sum) }
-    assertResult(2) { flAgain(2 :: *[Int], 0, sum) }
+    assertResult(0) { flEmpty(sum, 0, *[Int]) }
+    assertResult(2) { flAgain(sum, 0, 2 :: *[Int]) }
 
     assertResult(6) {
       sum.foldRight(0)(3 :: 2 :: 1 :: *[Int])
