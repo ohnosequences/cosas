@@ -262,16 +262,16 @@ class KListTests extends org.scalatest.FunSuite {
       flEmpty(*[Int], 0, sum) === 0
     }
 
-    // assertResult(2) {
-    //   flAgain(2 :: *[Int],0,sum)
-    // }
+    assertResult(2) {
+      flAgain(2 :: *[Int],0,sum)
+    }
 
     assertResult(6) {
       (3 :: 2 :: 1 :: *[Int]).foldLeft(sum)(0)(FoldLeft.cons[
         Int, Int :: Int :: *[Int],
         Int,
         sum.type,
-        Int, Int
+        Int //, Int
       ])
     }
 
@@ -279,16 +279,17 @@ class KListTests extends org.scalatest.FunSuite {
       Int, *[Int],
       *[Int],
       snoc.type,
-      Int :: *[Int], Int :: *[Int]
+      Int :: *[Int] //, Int :: *[Int]
     ])
 
-    // assertResult(1 :: 2 :: 3 :: 4 :: 5 :: 6 :: *[Int]) {
-    //   (1 :: 2 :: 3 :: *[Int]).foldLeft(cons)(4 :: 5 :: 6 :: *[Int])
-    // }
+    assertResult(1 :: 2 :: 3 :: 4 :: 5 :: 6 :: *[Int]) {
+      (3 :: 2 :: 1 :: *[Int]).foldLeft(snoc)(4 :: 5 :: 6 :: *[Int])
+    }
 
-    // assertResult(1 :: "hola" :: 'b' :: true :: *[Any]) {
-    //   (1 :: "hola" :: 'b' :: true :: *[Any]).foldLeft(cons)(*[Any])
-    // }
+    // foldLeft(snoc) = reverse
+    assertResult(true :: 'b' :: "hola" :: 1 :: *[Any]) {
+      (1 :: "hola" :: 'b' :: true :: *[Any]).foldLeft(snoc)(*[Any])
+    }
   }
 
   test("can foldRight over KLists") {

@@ -34,17 +34,17 @@ case object FoldLeft {
     H <: T#Bound, T <: AnyKList,
     Z <: F#Out,
     F <: AnyDepFn2 { type In1 >: Z; type In2 >: H; type Out >: FOut },
-    FOut, RecOut <: F#Out
+    FOut
   ](implicit
     appF: AnyApp2At[F, Z, H] { type Y = FOut },
     foldLeft: AnyApp3At[
       FoldLeft[T, FOut, F],
       T, FOut, F
-    ] { type Y = RecOut }
+    ]
   ): AnyApp3At[
     FoldLeft[H :: T, Z, F],
     H :: T, Z, F
-  ] { type Y = RecOut } =
+  ] { type Y = foldLeft.Y } =
     App3 { (xs: H :: T, z: Z, f: F) =>
 
       val fout: FOut = appF(z, xs.head)
@@ -68,7 +68,7 @@ case object FoldRight {
     AnyApp3At[
       FoldLeft[L, B, Fn2[B,A,B]],
         L, B, Fn2[B,A,B]
-    ] { type Y = B } = 
+    ] { type Y = B } =
     App3 { (l: L, z: B, f: Fn2[B,A,B]) => {
 
       println { "using foldLeft from std List" }
