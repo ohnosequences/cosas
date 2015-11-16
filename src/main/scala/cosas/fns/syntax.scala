@@ -15,6 +15,36 @@ case object syntax {
 
     final def at[X1 <: DF#In1, X2 <: DF#In2, Y <: DF#Out](f: (X1,X2) => Y): App2[DF,X1,X2,Y] =
       App2(f)
+
+    import ohnosequences.cosas.klists._
+
+    def foldLeft[
+      L <: AnyKList.Of[DF#In2],
+      Z <: DF#Out,
+      O <: DF#Out
+    ](z: Z)(l: L)(implicit
+      foldl: AnyApp3At[FoldLeft[DF], L, Z, DF] { type Y = O }
+    ): O = foldl(l, z, df)
+
+    def foldRight[
+      L <: AnyKList.Of[DF#In1],
+      Z <: DF#Out,
+      O <: DF#Out
+    ](z: Z)(l: L)(implicit
+      foldr: AnyApp3At[FoldRight[DF], L, Z, DF] { type Y = O }
+    ): O = foldr(l, z, df)
+
+    // def foldRight[
+    //   DF <: AnyDepFn2 {
+    //     type In1 >: L#Bound
+    //     type In2 >: Z
+    //   },
+    //   Z <: DF#Out,
+    //   O <: DF#Out
+    // ](f: DF)(z: Z)(implicit
+    //   foldr: AnyApp3At[FoldRight[DF], L, Z, DF] { type Y = O }
+    // ): O = foldr(l, z, f)
+
   }
 
   case class DepFn3Syntax[DF <: AnyDepFn3](val df: DF) extends AnyVal {

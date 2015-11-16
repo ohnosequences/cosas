@@ -108,28 +108,6 @@ case object syntax {
     : O =
       mapper(l)
 
-    def foldLeft[
-      F <: AnyDepFn2 {
-        type In1 >: Z
-        type In2 >: L#Bound
-      },
-      Z <: F#Out,
-      O <: F#Out
-    ](f: F)(z: Z)(implicit
-      foldl: AnyApp3At[FoldLeft[F], L, Z, F] { type Y = O }
-    ): O = foldl(l, z, f)
-
-    def foldRight[
-      F <: AnyDepFn2 {
-        type In1 >: L#Bound
-        type In2 >: Z
-      },
-      Z <: F#Out,
-      O <: F#Out
-    ](f: F)(z: Z)(implicit
-      foldr: AnyApp3At[FoldRight[F], L, Z, F] { type Y = O }
-    ): O = foldr(l, z, f)
-
   }
 }
 

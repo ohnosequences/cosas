@@ -262,7 +262,7 @@ class KListTests extends org.scalatest.FunSuite {
     assertResult(2) { flAgain(2 :: *[Int], 0, sum) }
 
     assertResult(6) {
-      (3 :: 2 :: 1 :: *[Int]).foldLeft(sum)(0)
+      sum.foldLeft(0)(3 :: 2 :: 1 :: *[Int])
       // (FoldLeft.cons[
       //   Int, Int :: Int :: *[Int],
       //   Int,
@@ -271,7 +271,7 @@ class KListTests extends org.scalatest.FunSuite {
       // ])
     }
 
-    val z = (1 :: *[Int]).foldLeft(snoc)(*[Int])
+    val z = snoc.foldLeft(*[Int])(1 :: *[Int])
     // (FoldLeft.cons[
     //   Int, *[Int],
     //   *[Int],
@@ -280,20 +280,20 @@ class KListTests extends org.scalatest.FunSuite {
     // ])
 
     assertResult(1 :: 2 :: 3 :: 4 :: 5 :: 6 :: *[Int]) {
-      (3 :: 2 :: 1 :: *[Int]).foldLeft(snoc)(4 :: 5 :: 6 :: *[Int])
+      snoc.foldLeft(4 :: 5 :: 6 :: *[Int])(3 :: 2 :: 1 :: *[Int])
     }
 
-    // foldLeft(snoc) = reverse
+    // snoc.foldLeft(Nil) == reverse
     assertResult(true :: 'b' :: "hola" :: 1 :: *[Any]) {
-      (1 :: "hola" :: 'b' :: true :: *[Any]).foldLeft(snoc)(*[Any])
+      snoc.foldLeft(*[Any])(1 :: "hola" :: 'b' :: true :: *[Any])
     }
 
     val l = 1 :: "hola" :: 'b' :: true :: *[Any]
     val f: (String, Any) => String = { (str, a) => s"${a.toString} :: ${str}" }
 
     assert {
-      l.foldLeft(Fn2(f))("") ===
-      l.asList.foldLeft("")(f)
+      Fn2(f).foldLeft("")(l) ===
+      l.asList.foldLeft("")(f) // std
     }
   }
 
@@ -306,26 +306,31 @@ class KListTests extends org.scalatest.FunSuite {
     assertResult(2) { flAgain(2 :: *[Int], 0, sum) }
 
     assertResult(6) {
-      (3 :: 2 :: 1 :: *[Int]).foldRight(sum)(0)
+      sum.foldRight(0)(3 :: 2 :: 1 :: *[Int])
     }
 
-    val z = (1 :: *[Int]).foldRight(cons)(*[Int])(FoldRight.cons[
+    val z = cons.foldRight(*[Int])(1 :: *[Int])(FoldRight.cons[
       cons.type,
       *[Int],
       Int, *[Int],
       *[Int], Int :: *[Int]
     ])
 
-    assert { (1 :: 2 :: 3 :: *[Int]).foldRight(cons)(4 :: 5 :: 6 :: *[Int]) === (1 :: 2 :: 3 :: 4 :: 5 :: 6 :: *[Int]) }
-    assert { (1 :: "hola" :: 'b' :: true :: *[Any]).foldRight(cons)(*[Any]) === (1 :: "hola" :: 'b' :: true :: *[Any]) }
+    assertResult(1 :: 2 :: 3 :: 4 :: 5 :: 6 :: *[Int]) {
+      cons.foldRight(4 :: 5 :: 6 :: *[Int])(1 :: 2 :: 3 :: *[Int])
+    }
+
+    assertResult(1 :: "hola" :: 'b' :: true :: *[Any]) {
+      cons.foldRight(*[Any])(1 :: "hola" :: 'b' :: true :: *[Any])
+    }
 
 
     val l = 1 :: "hola" :: 'b' :: true :: *[Any]
     val f: (Any, String) => String = { (a, str) => s"${a.toString} :: ${str}" }
 
     assert {
-      l.foldRight(Fn2(f))("") ===
-      l.asList.foldRight("")(f)
+      Fn2(f).foldRight("")(l) ===
+      l.asList.foldRight("")(f) // std
     }
   }
 
