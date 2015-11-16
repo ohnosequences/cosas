@@ -92,12 +92,12 @@ case object syntax {
       conv(l)
 
     def ++[
-      S   <: AnyKList { type Bound = L#Bound },
-      LS  <: AnyKList
-    ](s: S)(implicit
-      concatenate: AnyApp2At[concatenate[L], L, S] { type Y = LS }
-    ): LS =
-      concatenate(l,s)
+      M <: AnyKList { type Bound = L#Bound },
+      LM <: AnyKList
+    ](m: M)(implicit
+      foldr: AnyApp3At[FoldRight[cons.type], cons.type, M, L] { type Y = LM }
+    ): LM =
+      foldr(cons, m, l)
 
     def map[
       F <: AnyDepFn1 { type In1 >: L#Bound },

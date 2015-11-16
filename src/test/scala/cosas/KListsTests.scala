@@ -111,25 +111,6 @@ class KListTests extends org.scalatest.FunSuite {
 
   }
 
-  test("can concatenate KLists") {
-
-    val concat = new Concatenate[Boolean :: String :: *[Any]]
-
-    assert {
-
-      concat(true :: "que tal" :: *[Any], "hola" :: 2 :: *[Any]) ===
-        (true :: "que tal" :: "hola" :: 2 :: *[Any])
-    }
-
-    assert {
-      (true :: "que tal" :: *[Any]) ++ ("hola" :: 2 :: *[Any]) ===
-        true :: "que tal" :: "hola" :: 2 :: *[Any]
-    }
-
-    val hola: Boolean :: String :: String :: *[Any] =
-      (true :: "que tal" :: *[Any]) ++ ("hola" :: *[Any])
-  }
-
   test("can access elements by index") {
 
     val sbi = "hola" :: true :: 2 :: *[Any]
@@ -332,6 +313,22 @@ class KListTests extends org.scalatest.FunSuite {
       Fn2(f).foldRight("")(l) ===
       l.asList.foldRight("")(f) // std
     }
+  }
+
+  test("can concatenate KLists") {
+    // NOTE: concat (L ++ M) is just a syntax for cons.foldRight(M)(L)
+
+    val hola: Boolean :: String :: String :: *[Any] =
+      (true :: "que tal" :: *[Any]) ++ ("hola" :: *[Any])
+
+    assertResult(true :: "que tal" :: "hola" :: 2 :: *[Any]) {
+      (true :: "que tal" :: *[Any]) ++ ("hola" :: 2 :: *[Any])
+    }
+
+    assertResult(1 :: 2 :: 3 :: 4 :: 5 :: 6 :: *[Int]) {
+      (1 :: 2 :: 3 :: *[Int]) ++ (4 :: 5 :: 6 :: *[Int])
+    }
+
   }
 
   test("can filter KLists") {
