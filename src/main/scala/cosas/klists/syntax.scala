@@ -116,8 +116,8 @@ case object syntax {
       Z <: F#Out,
       O <: F#Out
     ](f: F)(z: Z)(implicit
-      foldl: AnyApp2At[FoldL[F], L, Z] { type Y = O }
-    ): O = foldl(l, z)
+      foldl: AnyApp3At[FoldLeft[F], L, Z, F] { type Y = O }
+    ): O = foldl(l, z, f)
 
     def foldRight[
       F <: AnyDepFn2 { type Out >: O },

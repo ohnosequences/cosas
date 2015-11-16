@@ -255,15 +255,15 @@ class KListTests extends org.scalatest.FunSuite {
 
   test("can foldLeft over KLists") {
 
-    val flEmpty = new FoldL[sum.type]
-    val flAgain = new FoldL[sum.type]
+    val flEmpty = new FoldLeft[sum.type]
+    val flAgain = new FoldLeft[sum.type]
 
-    assert {
-      flEmpty(*[Int], 0) === 0
+    assertResult(0) {
+      flEmpty(*[Int], 0, sum)
     }
 
     assertResult(2) {
-      flAgain(2 :: *[Int], 0)
+      flAgain(2 :: *[Int], 0, sum)
     }
 
     assertResult(6) {
@@ -293,10 +293,13 @@ class KListTests extends org.scalatest.FunSuite {
       (1 :: "hola" :: 'b' :: true :: *[Any]).foldLeft(snoc)(*[Any])
     }
 
+    val l = 1 :: "hola" :: 'b' :: true :: *[Any]
     val f: (String, Any) => String = { (str, a) => s"${a.toString} :: ${str}" }
 
-    // println { (1 :: "hola" :: 'b' :: true :: *[Any]).foldLeft(Fn2(f))("") }
-    // println { (1 :: "hola" :: 'b' :: true :: *[Any]).asList.foldRight("")(f_flip) }
+    assert {
+      l.foldLeft(Fn2(f))("") ===
+      l.asList.foldLeft("")(f)
+    }
   }
 
   test("can foldRight over KLists") {
@@ -327,7 +330,7 @@ class KListTests extends org.scalatest.FunSuite {
 
     val f: (Any, String) => String = { (a, str) => s"${a.toString} :: ${str}" }
 
-    // println { (1 :: "hola" :: 'b' :: true :: *[Any]).foldRight(Fn2(f))("") }
+    println { (1 :: "hola" :: 'b' :: true :: *[Any]).foldRight(Fn2(f))("") }
     // println { (1 :: "hola" :: 'b' :: true :: *[Any]).asList.foldRight("")(f_flip) }
   }
 

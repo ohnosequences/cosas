@@ -24,7 +24,13 @@ trait AnyFn2 extends Any with AnyDepFn2 {
 
   def f: (In1,In2) => Out
 }
-case class Fn2[A,B,C](val f: (A,B) => C) extends AnyVal with AnyFn2 with DepFn2[A,B,C]
+case class Fn2[A, B, C](val f: (A,B) => C) extends AnyVal with AnyFn2 with DepFn2[A, B, C]
+
+case object Fn2 {
+
+  implicit def appForFn2[A, B, C](df: Fn2[A, B, C]):
+    App2[Fn2[A, B, C], A, B, C] = App2 { (a: A, b: B) => df.f(a, b) }
+}
 
 case object identity extends DepFn1[Any, Any] {
 
