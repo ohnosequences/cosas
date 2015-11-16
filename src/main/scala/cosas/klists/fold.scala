@@ -12,6 +12,7 @@ import ohnosequences.cosas.fns._
    foldl f z []     = z
    foldl f z (x:xs) = foldl f (f z x) xs
 */
+// class FoldLeft[F <: AnyDepFn2] extends DepFn3[AnyKList.Of[F#In2], F#Out, F, F#Out]
 class FoldLeft[L <: AnyKList, Z <: F#Out, F <: AnyDepFn2] extends DepFn3[
   L, Z, F,
   F#Out
@@ -19,13 +20,27 @@ class FoldLeft[L <: AnyKList, Z <: F#Out, F <: AnyDepFn2] extends DepFn3[
 
 case object FoldLeft {
 
+  implicit def forStdFunction[
+    A, B, L <: AnyKList.Of[A]
+  ]: AnyApp3At[
+      FoldLeft[L, B, Fn2[B, A, B]],
+               L, B, Fn2[B, A, B]
+    ] { type Y = B } =
+    App3 { (l: L, z: B, f: Fn2[B, A, B]) =>
+
+      // TODO: remove this before release
+      println { "using foldLeft from std List" }
+
+      l.asList.foldLeft(z)(f.f)
+    }
+
   implicit def empty[
     A, Z,
     F <: AnyDepFn2 { type In2 >: A; type Out >: Z }
   ]: AnyApp3At[
-    FoldLeft[KNil[A], Z, F],
-    KNil[A], Z, F
-  ] { type Y = Z } =
+      FoldLeft[KNil[A], Z, F],
+      KNil[A], Z, F
+    ] { type Y = Z } =
     App3 {
       (n: KNil[F#In2], z: Z, f: F) => z
     }
@@ -42,9 +57,9 @@ case object FoldLeft {
       T, FOut, F
     ]
   ): AnyApp3At[
-    FoldLeft[H :: T, Z, F],
-    H :: T, Z, F
-  ] { type Y = foldLeft.Y } =
+      FoldLeft[H :: T, Z, F],
+      H :: T, Z, F
+    ] { type Y = foldLeft.Y } =
     App3 { (xs: H :: T, z: Z, f: F) =>
 
       val fout: FOut = appF(z, xs.head)
@@ -57,58 +72,56 @@ case object FoldLeft {
    foldr f z []     = z
    foldr f z (x:xs) = f x (foldr f z xs)
 */
-class FoldRight[L <: AnyKList, Z <: F#Out, F <: AnyDepFn2] extends DepFn3[
-  L, Z, F,
-  F#Out
-]
+class FoldRight[L <: AnyKList, Z <: F#Out, F <: AnyDepFn2]
+  extends DepFn3[
+    L, Z, F,
+    F#Out
+  ]
 
 case object FoldRight {
 
-  implicit def forStdFunction[A, B, L <: AnyKList.Of[A]]:
-    AnyApp3At[
-      FoldLeft[L, B, Fn2[B,A,B]],
-        L, B, Fn2[B,A,B]
+  implicit def forStdFunction[
+    A, B, L <: AnyKList.Of[A]
+  ]: AnyApp3At[
+      FoldLeft[L, B, Fn2[A, B, B]],
+               L, B, Fn2[A, B, B]
     ] { type Y = B } =
-    App3 { (l: L, z: B, f: Fn2[B,A,B]) => {
+    App3 { (l: L, z: B, f: Fn2[A, B, B]) =>
 
-      println { "using foldLeft from std List" }
+      // TODO: remove this before release
+      println { "using foldRight from std List" }
 
-      l.asList.foldLeft(z)(f.f)
+      l.asList.foldRight(z)(f.f)
     }
-  }
 
   implicit def empty[
-    F <: AnyDepFn2 { type In2 >: A; type Out >: Z },
+    F <: AnyDepFn2 { type In1 >: A; type Out >: Z },
     Z, A
-  ]
-  : AnyApp3At[FoldRight[KNil[A], Z, F], KNil[A], Z, F] { type Y = Z } =
-    App3 {
-      (n: KNil[F#In2], z: Z, f: F) => z
+  ]: AnyApp3At[
+      FoldRight[KNil[A], Z, F],
+                KNil[A], Z, F
+    ] { type Y = Z } = App3 {
+
+      (n: KNil[A], z: Z, f: F) => z
     }
 
-  // FIXME: F should have arguments in another order
   implicit def cons[
-    F <: AnyDepFn2 { type In1 >: O; type In2 >: H; type Out >: TO },
+    F <: AnyDepFn2 { type In1 >: H; type In2 >: FoldOut; type Out >: FOut },
     Z <: F#Out,
     H <: T#Bound, T <: AnyKList,
-    O, TO
+    FoldOut, FOut
   ](implicit
     foldRight: AnyApp3At[
       FoldRight[T, Z, F],
       T, Z, F
-    ] { type Y = O },
-    evF: AnyApp2At[F, O, H] { type Y = TO }
-  )
-  : AnyApp3At[
+    ] { type Y = FoldOut },
+    appF: AnyApp2At[F, H, FoldOut] { type Y = FOut }
+  ): AnyApp3At[
       FoldRight[H :: T, Z, F],
-      H :: T, Z, F
-    ] { type Y = TO }=
-    App3 {
-      (xs: H :: T, z: Z, f: F) => {
+                H :: T, Z, F
+    ] { type Y = FOut } =
+    App3 { (xs: H :: T, z: Z, f: F) =>
 
-        val uh: H = xs.head
-        val oh = foldRight(xs.tail,z,f)
-        evF(oh,uh)
-      }
+      appF(xs.head, foldRight(xs.tail, z, f))
     }
 }
