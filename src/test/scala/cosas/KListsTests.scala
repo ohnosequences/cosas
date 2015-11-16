@@ -255,32 +255,34 @@ class KListTests extends org.scalatest.FunSuite {
 
   test("can foldLeft over KLists") {
 
-    val flEmpty = new FoldLeft[*[Int], Int, sum.type]
-    val flAgain = new FoldLeft[Int :: *[Int], Int, sum.type]
+    val flEmpty = new FoldL[sum.type]
+    val flAgain = new FoldL[sum.type]
 
     assert {
-      flEmpty(*[Int], 0, sum) === 0
+      flEmpty(*[Int], 0) === 0
     }
 
     assertResult(2) {
-      flAgain(2 :: *[Int],0,sum)
+      flAgain(2 :: *[Int], 0)
     }
 
     assertResult(6) {
-      (3 :: 2 :: 1 :: *[Int]).foldLeft(sum)(0)(FoldLeft.cons[
-        Int, Int :: Int :: *[Int],
-        Int,
-        sum.type,
-        Int //, Int
-      ])
+      (3 :: 2 :: 1 :: *[Int]).foldLeft(sum)(0)
+      // (FoldLeft.cons[
+      //   Int, Int :: Int :: *[Int],
+      //   Int,
+      //   sum.type,
+      //   Int //, Int
+      // ])
     }
 
-    val z = (1 :: *[Int]).foldLeft(snoc)(*[Int])(FoldLeft.cons[
-      Int, *[Int],
-      *[Int],
-      snoc.type,
-      Int :: *[Int] //, Int :: *[Int]
-    ])
+    val z = (1 :: *[Int]).foldLeft(snoc)(*[Int])
+    // (FoldLeft.cons[
+    //   Int, *[Int],
+    //   *[Int],
+    //   snoc.type,
+    //   Int :: *[Int] //, Int :: *[Int]
+    // ])
 
     assertResult(1 :: 2 :: 3 :: 4 :: 5 :: 6 :: *[Int]) {
       (3 :: 2 :: 1 :: *[Int]).foldLeft(snoc)(4 :: 5 :: 6 :: *[Int])
@@ -290,6 +292,11 @@ class KListTests extends org.scalatest.FunSuite {
     assertResult(true :: 'b' :: "hola" :: 1 :: *[Any]) {
       (1 :: "hola" :: 'b' :: true :: *[Any]).foldLeft(snoc)(*[Any])
     }
+
+    val f: (String, Any) => String = { (str, a) => s"${a.toString} :: ${str}" }
+
+    // println { (1 :: "hola" :: 'b' :: true :: *[Any]).foldLeft(Fn2(f))("") }
+    // println { (1 :: "hola" :: 'b' :: true :: *[Any]).asList.foldRight("")(f_flip) }
   }
 
   test("can foldRight over KLists") {
@@ -318,11 +325,10 @@ class KListTests extends org.scalatest.FunSuite {
     assert { (1 :: 2 :: 3 :: *[Int]).foldRight(cons)(4 :: 5 :: 6 :: *[Int]) === (1 :: 2 :: 3 :: 4 :: 5 :: 6 :: *[Int]) }
     assert { (1 :: "hola" :: 'b' :: true :: *[Any]).foldRight(cons)(*[Any]) === (1 :: "hola" :: 'b' :: true :: *[Any]) }
 
-    val f: (String, Any) => String = { (str,a) => a.toString ++ str }
-    val f_flip: (Any,String) => String = { (a,str) => f(str,a) }
+    val f: (Any, String) => String = { (a, str) => s"${a.toString} :: ${str}" }
 
     // println { (1 :: "hola" :: 'b' :: true :: *[Any]).foldRight(Fn2(f))("") }
-    println { (1 :: "hola" :: 'b' :: true :: *[Any]).asList.foldRight("")(f_flip) }
+    // println { (1 :: "hola" :: 'b' :: true :: *[Any]).asList.foldRight("")(f_flip) }
   }
 
   test("can filter KLists") {

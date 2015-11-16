@@ -12,7 +12,61 @@ import ohnosequences.cosas.fns._
    foldl f z []     = z
    foldl f z (x:xs) = foldl f (f z x) xs
 */
-// class FoldLeft[F <: AnyDepFn2] extends DepFn3[AnyKList.Of[F#In2], F#Out, F, F#Out]
+class FoldL[F <: AnyDepFn2] extends DepFn2[
+  // list, zero:
+  AnyKList.Of[F#In2], F#Out,
+  F#Out
+]
+
+case object FoldL {
+
+  implicit def forStdFunction[
+    A, B, L <: AnyKList.Of[A]
+  ](implicit
+    f: App2[Fn2[B, A, B], B, A, B]
+  ): AnyApp2At[FoldL[Fn2[B, A, B]],
+      L, B
+    ] { type Y = B } =
+    App2 { (l: L, z: B) =>
+
+      // TODO: remove this before release
+      println { "using foldLeft from std List" }
+
+      l.asList.foldLeft(z)(f.apply)
+    }
+
+  implicit def empty[
+    A <: F#In2, Z <: F#Out,
+    F <: AnyDepFn2
+  ]: AnyApp2At[
+      FoldL[F],
+      KNil[A], Z
+    ] { type Y = Z } = App2 {
+      (n: KNil[A], z: Z) => z
+    }
+
+  implicit def cons[
+    F <: AnyDepFn2 {
+      type In1 >: Z
+      type In2 >: H
+      type Out >: FOut
+    },
+    // NOTE: a funny fact: it doesn't work with T <: AnyKList.Of[F#In2]
+    H <: T#Bound, T <: AnyKList { type Bound <: F#In2},
+    Z <: F#Out,
+    FOut
+  ](implicit
+    f: AnyApp2At[F, Z, H] { type Y = FOut },
+    rec: AnyApp2At[FoldL[F], T, FOut]
+  ): AnyApp2At[FoldL[F],
+      H :: T, Z
+    ] { type Y = rec.Y } =
+    App2 { (xs: H :: T, z: Z) =>
+
+      rec(xs.tail, f(z, xs.head))
+    }
+}
+
 class FoldLeft[L <: AnyKList, Z <: F#Out, F <: AnyDepFn2] extends DepFn3[
   L, Z, F,
   F#Out
