@@ -257,29 +257,70 @@ class KListTests extends org.scalatest.FunSuite {
 
     val flEmpty = new FoldLeft[*[Int], Int, sum.type]
     val flAgain = new FoldLeft[Int :: *[Int], Int, sum.type]
+
+    assert {
+      flEmpty(*[Int], 0, sum) === 0
+    }
+
+    assertResult(2) {
+      flAgain(2 :: *[Int],0,sum)
+    }
+
+    assertResult(6) {
+      (3 :: 2 :: 1 :: *[Int]).foldLeft(sum)(0)(FoldLeft.cons[
+        Int, Int :: Int :: *[Int],
+        Int,
+        sum.type,
+        Int, Int
+      ])
+    }
+
+    val z = (1 :: *[Int]).foldLeft(snoc)(*[Int])(FoldLeft.cons[
+      Int, *[Int],
+      *[Int],
+      snoc.type,
+      Int :: *[Int], Int :: *[Int]
+    ])
+
+    // assertResult(1 :: 2 :: 3 :: 4 :: 5 :: 6 :: *[Int]) {
+    //   (1 :: 2 :: 3 :: *[Int]).foldLeft(cons)(4 :: 5 :: 6 :: *[Int])
+    // }
+
+    // assertResult(1 :: "hola" :: 'b' :: true :: *[Any]) {
+    //   (1 :: "hola" :: 'b' :: true :: *[Any]).foldLeft(cons)(*[Any])
+    // }
+  }
+
+  test("can foldRight over KLists") {
+
+    val flEmpty = new FoldRight[*[Int], Int, sum.type]
+    val flAgain = new FoldRight[Int :: *[Int], Int, sum.type]
     assert {
       flEmpty(*[Int],0,sum) === 0
     }
 
-    assert {
-
-      flAgain(2 :: *[Int],0,sum) === 2
+    assertResult(2) {
+      flAgain(2 :: *[Int],0,sum)
     }
 
-    assert {
-
-      (3 :: 2 :: 1 :: *[Int]).foldLeft(sum)(0) === 6
+    assertResult(6) {
+      (3 :: 2 :: 1 :: *[Int]).foldRight(sum)(0)
     }
 
-    val z = (1 :: *[Int]).foldLeft(snoc)(*[Int])(FoldLeft.cons[
+    val z = (1 :: *[Int]).foldRight(snoc)(*[Int])(FoldRight.cons[
       snoc.type,
       *[Int],
       Int, *[Int],
       *[Int], Int :: *[Int]
       ])
 
-      assert { (1 :: 2 :: 3 :: *[Int]).foldLeft(snoc)(4 :: 5 :: 6 :: *[Int]) === (1 :: 2 :: 3 :: 4 :: 5 :: 6 :: *[Int]) }
-      assert { (1 :: "hola" :: 'b' :: true :: *[Any]).foldLeft(snoc)(*[Any]) === (1 :: "hola" :: 'b' :: true :: *[Any]) }
+    assertResult(1 :: 2 :: 3 :: 4 :: 5 :: 6 :: *[Int]) {
+      (1 :: 2 :: 3 :: *[Int]).foldRight(snoc)(4 :: 5 :: 6 :: *[Int])
+    }
+
+    assertResult(1 :: "hola" :: 'b' :: true :: *[Any]) {
+      (1 :: "hola" :: 'b' :: true :: *[Any]).foldRight(snoc)(*[Any])
+    }
   }
 
   test("can filter KLists") {
