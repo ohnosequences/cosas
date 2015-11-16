@@ -50,7 +50,7 @@ case object FoldLeft {
       type Out >: FOut
     },
     // NOTE: a funny fact: it doesn't work with T <: AnyKList.Of[F#In2]
-    H <: T#Bound, T <: AnyKList { type Bound <: F#In2},
+    H <: T#Bound, T <: AnyKList { type Bound <: F#In2 },
     Z <: F#Out,
     FOut
   ](implicit
@@ -71,19 +71,18 @@ case object FoldLeft {
    foldr f z []     = z
    foldr f z (x:xs) = f x (foldr f z xs)
 */
-class FoldRight[L <: AnyKList, Z <: F#Out, F <: AnyDepFn2]
-  extends DepFn3[
-    L, Z, F,
-    F#Out
-  ]
+class FoldRight[F <: AnyDepFn2] extends DepFn3[
+  // list, zero, func:
+  AnyKList.Of[F#In1], F#Out, F,
+  F#Out
+]
 
 case object FoldRight {
 
   implicit def forStdFunction[
     A, B, L <: AnyKList.Of[A]
-  ]: AnyApp3At[
-      FoldRight[L, B, Fn2[A, B, B]],
-               L, B, Fn2[A, B, B]
+  ]: AnyApp3At[FoldRight[Fn2[A, B, B]],
+      L, B, Fn2[A, B, B]
     ] { type Y = B } =
     App3 { (l: L, z: B, f: Fn2[A, B, B]) =>
 
@@ -94,33 +93,35 @@ case object FoldRight {
     }
 
   implicit def empty[
-    F <: AnyDepFn2 { type In1 >: A; type Out >: Z },
-    Z, A
+    A <: F#In1, Z <: F#Out,
+    F <: AnyDepFn2
   ]: AnyApp3At[
-      FoldRight[KNil[A], Z, F],
-                KNil[A], Z, F
+      FoldRight[F],
+      KNil[A], Z, F
     ] { type Y = Z } = App3 {
-
       (n: KNil[A], z: Z, f: F) => z
     }
 
   implicit def cons[
-    F <: AnyDepFn2 { type In1 >: H; type In2 >: FoldOut; type Out >: FOut },
+    F <: AnyDepFn2 {
+      type In1 >: H
+      type In2 >: FoldOut
+      type Out >: FOut
+    },
     Z <: F#Out,
-    H <: T#Bound, T <: AnyKList,
+    H <: T#Bound, T <: AnyKList { type Bound <: F#In1 }, // .Of[F#In1]
     FoldOut, FOut
   ](implicit
-    foldRight: AnyApp3At[
-      FoldRight[T, Z, F],
+    appFold: AnyApp3At[ FoldRight[F],
       T, Z, F
     ] { type Y = FoldOut },
     appF: AnyApp2At[F, H, FoldOut] { type Y = FOut }
-  ): AnyApp3At[
-      FoldRight[H :: T, Z, F],
-                H :: T, Z, F
+  ): AnyApp3At[ FoldRight[F],
+      H :: T, Z, F
     ] { type Y = FOut } =
     App3 { (xs: H :: T, z: Z, f: F) =>
 
-      appF(xs.head, foldRight(xs.tail, z, f))
+      appF(xs.head, appFold(xs.tail, z, f))
     }
+
 }

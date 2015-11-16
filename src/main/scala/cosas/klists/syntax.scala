@@ -120,10 +120,14 @@ case object syntax {
     ): O = foldl(l, z, f)
 
     def foldRight[
-      F <: AnyDepFn2 { type Out >: O },
-      Z <: F#Out, O
+      F <: AnyDepFn2 {
+        type In1 >: L#Bound
+        type In2 >: Z
+      },
+      Z <: F#Out,
+      O <: F#Out
     ](f: F)(z: Z)(implicit
-      foldr: AnyApp3At[FoldRight[L, Z, F], L, Z, F] { type Y = O }
+      foldr: AnyApp3At[FoldRight[F], L, Z, F] { type Y = O }
     ): O = foldr(l, z, f)
 
   }
