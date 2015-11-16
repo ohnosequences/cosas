@@ -110,7 +110,7 @@ case object syntax {
       Z <: F#Out,
       O
     ](f: F)(z: Z)(implicit
-      foldl: AnyApp3At[FoldLeft[L,F,Z],L,Z,F] { type Y = O }
+      foldl: AnyApp3At[FoldLeft[L, Z, F], L, Z, F] { type Y = O }
     )
     : O =
       foldl(l,z,f)

@@ -255,8 +255,8 @@ class KListTests extends org.scalatest.FunSuite {
 
   test("can foldLeft over KLists") {
 
-    val flEmpty = new FoldLeft[*[Int], sum.type, Int]
-    val flAgain = new FoldLeft[Int :: *[Int], sum.type, Int]
+    val flEmpty = new FoldLeft[*[Int], Int, sum.type]
+    val flAgain = new FoldLeft[Int :: *[Int], Int, sum.type]
     assert {
       flEmpty(*[Int],0,sum) === 0
     }
