@@ -64,6 +64,19 @@ class FoldRight[L <: AnyKList, Z <: F#Out, F <: AnyDepFn2] extends DepFn3[
 
 case object FoldRight {
 
+  implicit def forStdFunction[A, B, L <: AnyKList.Of[A]]:
+    AnyApp3At[
+      FoldLeft[L, B, Fn2[B,A,B]],
+        L, B, Fn2[B,A,B]
+    ] { type Y = B } = 
+    App3 { (l: L, z: B, f: Fn2[B,A,B]) => {
+
+      println { "using foldLeft from std List" }
+
+      l.asList.foldLeft(z)(f.f)
+    }
+  }
+
   implicit def empty[
     F <: AnyDepFn2 { type In2 >: A; type Out >: Z },
     Z, A
