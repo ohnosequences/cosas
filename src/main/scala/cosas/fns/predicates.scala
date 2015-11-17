@@ -10,8 +10,12 @@ case object AnyPredicate {
 
   // NOTE: any predicate is False by default
   implicit def default[P <: AnyPredicate { type In1 >: X }, X]:
-    AnyApp1At[P, X] { type Y = False } =
-    App1 { _: X => False }
+    P isFalseOn X = App1 { _: X => False }
+
+
+  implicit def predicateSyntax[P <: AnyPredicate](p: P):
+    syntax.PredicateSyntax[P] =
+    syntax.PredicateSyntax(p)
 }
 
 trait PredicateOver[T] extends AnyPredicate { type In1 = T }
