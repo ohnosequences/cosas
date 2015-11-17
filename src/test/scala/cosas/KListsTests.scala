@@ -367,7 +367,7 @@ class KListTests extends org.scalatest.FunSuite {
     assert { isAnyVal('x') === True }
 
     assertResult('b' :: true :: 2 :: 'a' :: *[Any]) {
-      (new filter[isAnyVal.type])(isAnyVal, 'b' :: true :: "hola" :: 2 :: 'a' :: *[Any])
+      ('b' :: true :: "hola" :: 2 :: 'a' :: *[Any]).filter(isAnyVal)
     }
   }
 }

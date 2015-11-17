@@ -11,6 +11,8 @@ case object syntax {
       new Composition[F,DF]
   }
 
+  case class PredicateSyntax[P <: AnyPredicate](val p: P) extends AnyVal {}
+
   case class DepFn2Syntax[DF <: AnyDepFn2](val df: DF) extends AnyVal {
 
     final def at[X1 <: DF#In1, X2 <: DF#In2, Y <: DF#Out](f: (X1,X2) => Y): App2[DF,X1,X2,Y] =

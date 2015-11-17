@@ -123,6 +123,12 @@ case object syntax {
     ): R =
       foldl(snoc, *[L#Bound], l)
 
+    def filter[
+      P <: AnyPredicate { type In1 >: L#Bound },
+      O <: AnyKList.Of[P#In1]
+    ](p: P)(implicit
+      appFilter: AnyApp2At[filter[P], P, L] { type Y = O }
+    ): O = appFilter(p, l)
   }
 }
 
