@@ -92,8 +92,8 @@ case object syntax {
       conv(l)
 
     def ++[
-      M <: AnyKList { type Bound = L#Bound },
-      LM <: AnyKList
+      M <: AnyKList { type Bound >: L#Bound },
+      LM <: AnyKList { type Bound = M#Bound }
     ](m: M)(implicit
       foldr: AnyApp3At[FoldRight[cons], cons, M, L] { type Y = LM }
     ): LM =
