@@ -325,6 +325,11 @@ class KListTests extends org.scalatest.FunSuite {
       (true :: "que tal" :: *[Any]) ++ ("hola" :: 2 :: *[Any])
     }
 
+    // with less specific type
+    assertResult(1 :: 2 :: 3 :: 4 :: 5 :: 6 :: *[Any]) {
+      (1 :: 2 :: 3 :: *[Int]) ++ (4 :: 5 :: 6 :: *[Any])
+    }
+
     assertResult(1 :: 2 :: 3 :: 4 :: 5 :: 6 :: *[Int]) {
       (1 :: 2 :: 3 :: *[Int]) ++ (4 :: 5 :: 6 :: *[Int])
     }
