@@ -21,8 +21,8 @@ package object klists {
   type  toList[L <: AnyKList] = ToList[L]
   def   toList[L <: AnyKList] : toList[L] = new ToList[L]
 
-  type  findIn[A <: L#Bound, L <: AnyKList] = (A FindIn L)
-  def   findIn[A <: L#Bound, L <: AnyKList] : (A findIn L) = new (A FindIn L)
+  type  findIn[A] = FindIn[A]
+  def   findIn[A] : findIn[A] = new FindIn[A]
 
   type  pick[E] = Pick[E]
   def   pick[E] : pick[E] = new Pick[E]
