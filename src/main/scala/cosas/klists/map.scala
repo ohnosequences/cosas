@@ -2,6 +2,7 @@ package ohnosequences.cosas.klists
 
 import ohnosequences.cosas._, fns._
 
+// TODO signature as in fold
 class MapKListOf[
   F <: AnyDepFn1,
   Y
@@ -20,7 +21,7 @@ case object MapKListOf {
   ]
   : AnyApp1At[MapKListOf[F,B0],KNil[A]] { type Y = KNil[B0] } =
     App1 { (e: KNil[A]) => KNil[B0] }
-    
+
   implicit def kcons[
     F <: AnyDepFn1 { type Out >: O },
     H <: InT#Bound, InT <: AnyKList { type Bound <: F#In1 },

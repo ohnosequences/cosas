@@ -2,6 +2,7 @@ package ohnosequences.cosas.klists
 
 import ohnosequences.cosas._, fns._
 
+// TODO signature as in FindS
 class FindIn[A <: L#Bound, L <: AnyKList] extends DepFn1[L,A]
 
 case object FindIn extends FoundInTail {

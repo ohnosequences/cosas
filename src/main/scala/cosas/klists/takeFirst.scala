@@ -2,6 +2,7 @@ package ohnosequences.cosas.klists
 
 import ohnosequences.cosas._, fns._
 
+// TODO this is not a good name. l pick /[Int :: String :: *[Any]]
 class TakeFirst[Q <: AnyKList] extends DepFn1[AnyKList, Q]
 
 case object TakeFirst {

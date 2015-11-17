@@ -2,6 +2,7 @@ package ohnosequences.cosas.klists
 
 import ohnosequences.cosas._, fns._
 
+// TODO depend only on F (the predicate)
 class Filter[A] extends DepFn2[
   AnyDepFn1 { type In1 = A; type Out = AnyBool },
   AnyKList { type Bound = A },

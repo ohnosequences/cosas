@@ -2,6 +2,7 @@ package ohnosequences.cosas.klists
 
 import ohnosequences.cosas._, typeUnions._
 
+// TODO make this a predicate on KList
 trait NoDuplicates[L <: AnyKList]
 
 case object NoDuplicates {

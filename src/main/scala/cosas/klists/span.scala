@@ -2,7 +2,7 @@ package ohnosequences.cosas.klists
 
 import ohnosequences.cosas._, fns._, typeUnions._
 
-// this is simply amazing. Can provide overrides/optimizations here
+// TODO rename this to slice
 class span[N <: AnyNat, M <: AnyNat]
 extends Composition[drop[N], take[M]]
 

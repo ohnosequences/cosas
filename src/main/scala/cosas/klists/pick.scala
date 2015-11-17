@@ -2,7 +2,7 @@ package ohnosequences.cosas.klists
 
 import ohnosequences.cosas._, fns._
 
-// TODO a version with (Left, E, Right) as output
+// TODO a version with (Left, E, Right) as output, name it split
 class Pick[E] extends DepFn1[AnyKList, (E, AnyKList)]
 
 case object Pick extends PickFoundInTail {

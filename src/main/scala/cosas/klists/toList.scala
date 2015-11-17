@@ -2,6 +2,7 @@ package ohnosequences.cosas.klists
 
 import ohnosequences.cosas.fns._
 
+// TODO remove this. Useless.
 class ToList[L <: AnyKList] extends DepFn1[L, List[L#Bound]]
 
 case object ToList {
