@@ -9,6 +9,7 @@ package object fns {
 
   implicit def toDepFn2[A, B, C](f: (A, B) => C): Fn2[A, B, C] = Fn2(f)
 
-  type Predicate = AnyDepFn1 { type Out = AnyBool }
-  type PredicateOver[B] = AnyDepFn1 { type In1 = B; type Out = AnyBool }
+  type AnyPredicate = AnyDepFn1 { type Out = AnyBool }
+  type AnyPredicateOver[B] = AnyDepFn1 { type In1 = B; type Out = AnyBool }
+  type PredicateOver[B] = DepFn1[B, AnyBool]
 }

@@ -354,7 +354,7 @@ class KListTests extends org.scalatest.FunSuite {
 
   test("can filter KLists") {
 
-    case object isPrimitive extends DepFn1[Any, AnyBool] {
+    case object isPrimitive extends PredicateOver[Any] {
 
       implicit val intPrimitive: AnyApp1At[isPrimitive.type, Int] { type Y = True } =
         this at { x: Int => True }
@@ -362,8 +362,8 @@ class KListTests extends org.scalatest.FunSuite {
         this at { x: Boolean => True }
     }
 
-    assert {
-      filter[Any](isPrimitive, 'b' :: true :: "hola" :: 2 :: 'b' :: *[Any]) === (true :: 2 :: *[Any])
+    assertResult(true :: 2 :: *[Any]) {
+      (new filter[isPrimitive.type])(isPrimitive, 'b' :: true :: "hola" :: 2 :: 'b' :: *[Any])
     }
   }
 }

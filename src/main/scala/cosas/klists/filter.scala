@@ -2,40 +2,55 @@ package ohnosequences.cosas.klists
 
 import ohnosequences.cosas._, fns._
 
-// TODO depend only on F (the predicate)
-class Filter[A] extends DepFn2[
-  AnyDepFn1 { type In1 = A; type Out = AnyBool },
-  AnyKList { type Bound = A },
-  AnyKList { type Bound = A }
+class consIf[P <: AnyPredicate](p: P) extends DepFn2[
+  P#In1, AnyKList.Of[P#In1],
+  AnyKList.Of[P#In1]
 ]
 
-case object Filter extends SkipIfFalse {
+case object consIf extends consIf_false {
 
-  implicit def empty[P <: AnyDepFn1 { type Out = AnyBool; type In1 = A }, A]
-  : App2[filter[A], P, KNil[A], KNil[A]] =
-    filter[A] at { (p: P, nil: KNil[A]) => KNil[A] }
-
-  implicit def nonEmpty[
-    P <: AnyDepFn1 { type Out = AnyBool; type In1 = A },
-    H <: A, T <: AnyKList { type Bound = A }, A
+  implicit def pTrue[
+    P <: AnyPredicate { type In1 >: H },
+    H <: T#Bound, T <: AnyKList { type Bound <: P#In1 }
   ](implicit
-    ev: AnyApp2At[filter[A], P, T],
-    h: AnyApp1At[P, H] { type Y = True }
-  )
-  : App2[filter[A], P, H :: T, H :: ev.Y] =
-    App2 { (p: P, hs: H :: T) => hs.head :: (ev(p,hs.tail): ev.Y) }
+    ev: AnyApp1At[P, H] { type Y = True }
+  ): AnyApp2At[consIf[P],
+      H, T
+    ] { type Y = H :: T } =
+    App2 { (h: H, t: T) => h :: t }
 }
 
-trait SkipIfFalse {
+trait consIf_false {
 
-  implicit def skip[
-    H <: A, T <: AnyKList { type Bound = A },
-    P <: AnyDepFn1 { type Out = AnyBool; type In1 = A },
-    A
-    // TO <: AnyKList { type Bound = X0 }
+  implicit def pFalse[
+    P <: AnyPredicate { type In1 >: H },
+    H <: T#Bound, T <: AnyKList { type Bound <: P#In1 }
+  // ](implicit
+  //   ev: AnyApp1At[P, H] { type Y = False }
+  ]: AnyApp2At[consIf[P],
+      H, T
+    ] { type Y = T } =
+    App2 { (_, t: T) => t }
+}
+
+
+class filter[P <: AnyPredicate] extends DepFn2[
+  P, AnyKList.Of[P#In1],
+  AnyKList.Of[P#In1]
+]
+
+case object filter {
+
+  implicit def default[
+    P <: AnyPredicate { type In1 >: O#Bound },
+    L <: AnyKList { type Bound <: P#In1 },
+    O <: AnyKList //{ type Bound <: P#In1 }
   ](implicit
-    ev: AnyApp2At[filter[A], P, T]
-  )
-  : App2[filter[A], P, H :: T, ev.Y] =
-    App2 { (p: P, s: H :: T) => ev(p,s.tail) }
+    appFold: AnyApp3At[ FoldRight[consIf[P]],
+      consIf[P], *[L#Bound], L
+    ] { type Y = O }
+  ): AnyApp2At[filter[P],
+      P, L
+    ] { type Y = O } =
+    App2 { (p: P, l: L) => appFold(new consIf[P](p), *[L#Bound], l) }
 }

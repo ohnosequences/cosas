@@ -27,9 +27,6 @@ package object klists {
   type  pick[E] = Pick[E]
   def   pick[E] : pick[E] = new Pick[E]
 
-  type  filter[A] = Filter[A]
-  def   filter[A]: filter[A] = new Filter[A]
-
   type  replace[L <: AnyKList] = Replace[L]
   def   replace[L <: AnyKList]: replace[L] = new Replace[L]
 
