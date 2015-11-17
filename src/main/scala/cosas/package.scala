@@ -27,9 +27,9 @@ package object cosas {
   // ...
 
   type True = TRUE.type
-  val True: True = TRUE
+  val  True: True = TRUE
   type False = FALSE.type
-  val False: False = FALSE
+  val  False: False = FALSE
 
   def ofType[X]: Witness[X] = Witness(Witness)
   def witness[A]: Witness[A] = new Witness[A](Witness)

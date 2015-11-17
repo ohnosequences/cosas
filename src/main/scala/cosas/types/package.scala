@@ -10,5 +10,4 @@ package object types {
   type In[E <: AnyType] = EmptyProductType[E]
   def In[E <: AnyType]: In[E] = new EmptyProductType[E]
 
-  type Accepts[P <: AnyTypePredicate, X <: P#ArgBound] = P#Condition[X]
 }
