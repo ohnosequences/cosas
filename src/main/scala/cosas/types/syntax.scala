@@ -34,12 +34,12 @@ case object syntax {
       getAt(vs)
 
     def getFirst[D <: AnyDenotation { type Tpe = T }, T <: AnyType](tpe: T)(implicit
-      get: AnyApp1At[D findIn Vs, Vs] { type Y = D }
+      get: AnyApp1At[findIn[D], Vs] { type Y = D }
     )
     : D =
       get(vs)
   }
-  
+
   case class SubsetTypeSyntax[W <: AnyType, ST <: SubsetType[W]](val st: ST) extends AnyVal {
 
     final def apply[R <: W#Raw](raw: W := R): Option[ST := R] = {

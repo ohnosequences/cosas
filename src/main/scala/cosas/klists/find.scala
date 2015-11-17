@@ -3,12 +3,12 @@ package ohnosequences.cosas.klists
 import ohnosequences.cosas._, fns._
 
 // TODO signature as in FindS
-class FindIn[A <: L#Bound, L <: AnyKList] extends DepFn1[L,A]
+class FindIn[A] extends DepFn1[AnyKList,A]
 
 case object FindIn extends FoundInTail {
 
   implicit def foundInHead[H <: A, T <: AnyKList, A <: T#Bound]
-  : App1[A FindIn (H :: T), H :: T, A] =
+  : AnyApp1At[FindIn[A], H :: T] { type Y = A } =
     App1 { s: H :: T => s.head }
 }
 
@@ -19,17 +19,17 @@ trait FoundInTail {
     T <: AnyKList { type Bound >: A },
     A
   ](implicit
-    findIn: App1[A FindIn T, T, A]
+    findIn: AnyApp1At[FindIn[A], T] { type Y = A }
   )
-  : App1[A FindIn (H :: T), H :: T, A] =
+  : AnyApp1At[FindIn[A], H :: T] { type Y = A } =
     App1 { s: H :: T => findIn(s.tail) }
 }
 
-class FindS[A] extends DepFn1[AnyKList { type Bound >: A }, A]
+class FindS[A] extends DepFn1[AnyKList, A]
 
 case object FindS extends FindSInTail {
 
-  implicit def foundInHead[E <: T#Bound, H <: E, T <: AnyKList]
+  implicit def foundInHead[E, H <: E, T <: AnyKList { type Bound >: E }]
   : AnyApp1At[FindS[E], H :: T] { type Y = H } =
     App1 { (s: H :: T) => s.head }
 }
