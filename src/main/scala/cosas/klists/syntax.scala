@@ -37,8 +37,14 @@ case object syntax {
     : E :: L =
       KCons[E,L](e, l)
 
-    def find[A <: L#Bound](implicit findIn: App1[A findIn L, L, A])
+    def find[A <: L#Bound](implicit findIn: AnyApp1At[findIn[A], L] { type Y = A })
     : A =
+      findIn(l)
+
+    def findS[Z, X <: Z](w: Witness[Z])(implicit
+      findIn: AnyApp1At[FindS[Z], L] { type Y = X }
+    )
+    : X =
       findIn(l)
 
     def pick[E <: L#Bound, O <: AnyKList.Of[L#Bound]](w: Witness[E])(implicit
@@ -100,13 +106,14 @@ case object syntax {
       foldr(cons, m, l)
 
     def map[
-      F <: AnyDepFn1 { type In1 >: L#Bound },
-      O <: AnyKList
+      F <: AnyDepFn1 { type In1 >: L#Bound; type Out >: U0 },
+      U0,
+      O0 <: AnyKList { type Bound = U0 }
     ](f: F)(
-      implicit mapper: AnyApp1At[mapKList[F], L] { type Y = O }
+      implicit mapper: AnyApp2At[MapKListOf[F,U0], F, L] { type Y = O0 }
     )
-    : O =
-      mapper(l)
+    : O0 =
+      mapper(f,l)
 
     // reverse = snoc.foldLeft(Nil)
     def reverse[

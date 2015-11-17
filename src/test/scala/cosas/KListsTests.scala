@@ -180,6 +180,9 @@ class KListTests extends org.scalatest.FunSuite {
     val b1: B1 = ab1b2b.pickS(/[B])._1
     assert { (ab1b2b pickS /[B])._1 === B1 }
 
+    val b1a = (B1: B1) :: *[A]
+    val b1_bis: B1 = b1a.findS(/[B])
+
     // assert { ab1b2b.takeFirstS(/[B :: *[A]]) === B1 :: *[A] }
   }
 
@@ -212,20 +215,19 @@ class KListTests extends org.scalatest.FunSuite {
     val zzz: Int :: Boolean :: *[Any] = 2 :: true :: *[Any]
 
     assert {
-      (zzz map identity) === zzz
-    }
-    assert {
-      KList(f)(zzz) === "2" :: "true" :: *[String]
-    }
-    //
-    assert {
-
-      KList(f)("hola" :: "scalac" :: *[Any]) === "hola" :: "scalac" :: *[String]
+      zzz.map(identity) === zzz
     }
 
     assert {
+      (zzz map f) === "2" :: "true" :: *[String]
+    }
 
-      KList(as[String,Any])("hola" :: "scalac" :: *[String]) === "hola" :: "scalac" :: *[Any]
+    assert {
+      ("hola" :: "scalac" :: *[Any]).map(f) === "hola" :: "scalac" :: *[String]
+    }
+
+    assert {
+      ("hola" :: "scalac" :: *[String]).map(as[String,Any]) === "hola" :: "scalac" :: *[Any]
     }
   }
 

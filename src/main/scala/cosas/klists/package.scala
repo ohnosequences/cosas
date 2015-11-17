@@ -12,7 +12,7 @@ package object klists {
 
   type  ::[+H <: T#Bound, +T <: AnyKList] = KCons[H,T]
 
-  type  mapKList[F <: AnyDepFn1] = MapKListOf[F, F#Out]
+  type  mapKList[F <: AnyDepFn1] = MapKListOf[F,F#Out]
   def   mapKList[F <: AnyDepFn1] : mapKList[F] = new mapKList[F]
 
   type  toListOf[L <: AnyKList.Of[B], B] = ToListOf[L,B]
@@ -21,8 +21,8 @@ package object klists {
   type  toList[L <: AnyKList] = ToList[L]
   def   toList[L <: AnyKList] : toList[L] = new ToList[L]
 
-  type  findIn[A <: L#Bound, L <: AnyKList] = (A FindIn L)
-  def   findIn[A <: L#Bound, L <: AnyKList] : (A findIn L) = new (A FindIn L)
+  type  findIn[A] = FindIn[A]
+  def   findIn[A] : findIn[A] = new FindIn[A]
 
   type  pick[E] = Pick[E]
   def   pick[E] : pick[E] = new Pick[E]
