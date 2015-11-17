@@ -71,14 +71,17 @@ case object syntax {
     : L =
       replaceFirst(l,s)
 
+    // so tailrec, much constant append, very mutable
     @scala.annotation.tailrec
-    final private def asList_rec[X](list: AnyKList.Of[X], acc: scala.collection.mutable.ListBuffer[X]): List[X] =
-      list match {
-        case KNilOf() => acc.toList
-        case xs: KCons[X,AnyKList.Of[X]] => asList_rec(xs.tail, acc += xs.head)
-      }
+    final private def asList_rec[X](
+      list: AnyKList.Of[X],
+      acc: scala.collection.mutable.ListBuffer[X]
+    ): List[X] = list match {
+      case KNilOf() => acc.toList
+      case xs: KCons[X,AnyKList.Of[X]] => asList_rec(xs.tail, acc += xs.head)
+    }
 
-    def asList: List[L#Bound] = asList_rec(l,new scala.collection.mutable.ListBuffer)
+    def asList: List[L#Bound] = asList_rec(l, new scala.collection.mutable.ListBuffer())
 
     def toList(implicit conv: App1[toList[L], L, List[L#Bound]])
     : List[L#Bound] =
@@ -89,11 +92,12 @@ case object syntax {
       conv(l)
 
     def ++[
-      S   <: AnyKList { type Bound = L#Bound },
-      LS  <: AnyKList { type Bound = L#Bound }
-    ](s: S)(implicit concatenate: App2[concatenate[L], L, S, LS])
-    : LS =
-      concatenate(l,s)
+      M <: AnyKList { type Bound >: L#Bound },
+      LM <: AnyKList { type Bound = M#Bound }
+    ](m: M)(implicit
+      foldr: AnyApp3At[FoldRight[cons], cons, M, L] { type Y = LM }
+    ): LM =
+      foldr(cons, m, l)
 
     def map[
       F <: AnyDepFn1 { type In1 >: L#Bound },
@@ -104,15 +108,14 @@ case object syntax {
     : O =
       mapper(l)
 
-    def foldLeft[
-      F <: AnyDepFn2,
-      Z <: F#Out,
-      O <: F#Out
-    ](f: F)(z: Z)(implicit
-      foldl: AnyApp3At[FoldLeft[L,F,Z],L,Z,F] { type Y = O }
-    )
-    : O =
-      foldl(l,z,f)
+    // reverse = snoc.foldLeft(Nil)
+    def reverse[
+      R <: AnyKList.withBound[L#Bound]
+    ](implicit
+      foldl: AnyApp3At[FoldLeft[snoc], snoc, *[L#Bound], L] { type Y = R }
+    ): R =
+      foldl(snoc, *[L#Bound], l)
+
   }
 }
 

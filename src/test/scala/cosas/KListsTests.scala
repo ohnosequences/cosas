@@ -111,25 +111,6 @@ class KListTests extends org.scalatest.FunSuite {
 
   }
 
-  test("can concatenate KLists") {
-
-    val concat = new Concatenate[Boolean :: String :: *[Any]]
-
-    assert {
-
-      concat(true :: "que tal" :: *[Any], "hola" :: 2 :: *[Any]) ===
-        (true :: "que tal" :: "hola" :: 2 :: *[Any])
-    }
-
-    assert {
-      (true :: "que tal" :: *[Any]) ++ ("hola" :: 2 :: *[Any]) ===
-        true :: "que tal" :: "hola" :: 2 :: *[Any]
-    }
-
-    val hola: Boolean :: String :: String :: *[Any] =
-      (true :: "que tal" :: *[Any]) ++ ("hola" :: *[Any])
-  }
-
   test("can access elements by index") {
 
     val sbi = "hola" :: true :: 2 :: *[Any]
@@ -255,21 +236,120 @@ class KListTests extends org.scalatest.FunSuite {
 
   test("can foldLeft over KLists") {
 
-    val flEmpty = new FoldLeft[*[Int], sum.type, Int]
-    val flAgain = new FoldLeft[Int :: *[Int], sum.type, Int]
-    assert {
-      flEmpty(*[Int],0,sum) === 0
+    val flEmpty = new FoldLeft[sum.type]
+    val flAgain = new FoldLeft[sum.type]
+
+    assertResult(0) { flEmpty(sum, 0, *[Int]) }
+    assertResult(2) { flAgain(sum, 0, 2 :: *[Int]) }
+
+    assertResult(6) {
+      sum.foldLeft(0)(3 :: 2 :: 1 :: *[Int])
+      // (FoldLeft.cons[
+      //   Int, Int :: Int :: *[Int],
+      //   Int,
+      //   sum.type,
+      //   Int //, Int
+      // ])
     }
 
-    assert {
+    val z = snoc.foldLeft(*[Int])(1 :: *[Int])
+    // (FoldLeft.cons[
+    //   Int, *[Int],
+    //   *[Int],
+    //   snoc.type,
+    //   Int :: *[Int] //, Int :: *[Int]
+    // ])
 
-      flAgain(2 :: *[Int],0,sum) === 2
+    assertResult(1 :: 2 :: 3 :: 4 :: 5 :: 6 :: *[Int]) {
+      snoc.foldLeft(4 :: 5 :: 6 :: *[Int])(3 :: 2 :: 1 :: *[Int])
     }
 
-    assert {
-
-      (3 :: 2 :: 1 :: *[Int]).foldLeft(sum)(0) === 6
+    // snoc.foldLeft(Nil) == reverse
+    assertResult(true :: 'b' :: "hola" :: 1 :: *[Any]) {
+      snoc.foldLeft(*[Any])(1 :: "hola" :: 'b' :: true :: *[Any])
     }
+
+    val l = 1 :: "hola" :: 'b' :: true :: *[Any]
+    val f: (String, Any) => String = { (str, a) => s"${a.toString} :: ${str}" }
+
+    assert {
+      Fn2(f).foldLeft("")(l) ===
+      l.asList.foldLeft("")(f) // std
+    }
+  }
+
+  test("can foldRight over KLists") {
+
+    val flEmpty = new FoldRight[sum.type]
+    val flAgain = new FoldRight[sum.type]
+
+    assertResult(0) { flEmpty(sum, 0, *[Int]) }
+    assertResult(2) { flAgain(sum, 0, 2 :: *[Int]) }
+
+    assertResult(6) {
+      sum.foldRight(0)(3 :: 2 :: 1 :: *[Int])
+    }
+
+    val z = cons.foldRight(*[Int])(1 :: *[Int])(FoldRight.cons[
+      cons.type,
+      *[Int],
+      Int, *[Int],
+      *[Int], Int :: *[Int]
+    ])
+
+    assertResult(1 :: 2 :: 3 :: 4 :: 5 :: 6 :: *[Int]) {
+      cons.foldRight(4 :: 5 :: 6 :: *[Int])(1 :: 2 :: 3 :: *[Int])
+    }
+
+    assertResult(1 :: "hola" :: 'b' :: true :: *[Any]) {
+      cons.foldRight(*[Any])(1 :: "hola" :: 'b' :: true :: *[Any])
+    }
+
+
+    val l = 1 :: "hola" :: 'b' :: true :: *[Any]
+    val f: (Any, String) => String = { (a, str) => s"${a.toString} :: ${str}" }
+
+    assert {
+      Fn2(f).foldRight("")(l) ===
+      l.asList.foldRight("")(f) // std
+    }
+  }
+
+  test("can concatenate KLists") {
+    // NOTE: (l ++ m) is just a syntax for cons.foldRight(m)(l)
+
+    val hola: Boolean :: String :: String :: *[Any] =
+      (true :: "que tal" :: *[Any]) ++ ("hola" :: *[Any])
+
+    assertResult(true :: "que tal" :: "hola" :: 2 :: *[Any]) {
+      (true :: "que tal" :: *[Any]) ++ ("hola" :: 2 :: *[Any])
+    }
+
+    // with less specific type
+    assertResult(1 :: 2 :: 3 :: 4 :: 5 :: 6 :: *[Any]) {
+      (1 :: 2 :: 3 :: *[Int]) ++ (4 :: 5 :: 6 :: *[Any])
+    }
+
+    assertResult(1 :: 2 :: 3 :: 4 :: 5 :: 6 :: *[Int]) {
+      (1 :: 2 :: 3 :: *[Int]) ++ (4 :: 5 :: 6 :: *[Int])
+    }
+
+  }
+
+  test("can reverse KLists") {
+    // NOTE: l.reverse is just a syntax for snoc.foldLeft(KNil)(l)
+
+    val hola: String :: String :: Boolean :: *[Any] =
+      (true :: "que tal" :: "hola" :: *[Any]).reverse
+
+    assertResult(2 :: *[Int]) {
+      (2 :: *[Int]).reverse
+    }
+
+    assertResult(1 :: 2 :: 3 :: 4 :: *[Int]) {
+      (4 :: 3 :: 2 :: 1 :: *[Int]).reverse
+    }
+
   }
 
   test("can filter KLists") {

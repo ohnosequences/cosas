@@ -32,7 +32,7 @@ trait DepFn1[I,O] extends Any with AnyDepFn1 {
   type Out = O
 }
 
-trait AnyDepFn2 extends AnyDepFn {
+trait AnyDepFn2 extends Any with AnyDepFn {
   type In1
   type In2
 }
@@ -48,7 +48,7 @@ case object AnyDepFn2 {
   ](df: DF0): syntax.DepFn2ApplyAt[DF0,A0,B0] =
     syntax.DepFn2ApplyAt(df)
 }
-trait DepFn2[I1,I2,O] extends AnyDepFn2 {
+trait DepFn2[I1,I2,O] extends Any with AnyDepFn2 {
   type In1 = I1
   type In2 = I2
   type Out = O
@@ -97,18 +97,7 @@ extends AnyDepFn1Composition {
 }
 case object Composition {
 
-  // implicit def appForComposition[
-  //   F <: AnyDepFn1 { type Out >: M },
-  //   S <: AnyDepFn1 { type In1 >: F#Out },
-  //   X1 <: F#In1,
-  //   M,
-  //   O <: S#Out
-  // ](implicit
-  //   appF: AnyApp1At[F,X1] { type Y = M },
-  //   appS: AnyApp1At[S,M]
-  // ): App1[Composition[F,S],X1,appS.Y] = App1 { x1: X1 => appS(appF(x1)) }
-
-  implicit def appForComposition2[
+  implicit def appForComposition[
     SF <: AnyDepFn1Composition { type Second <: AnyDepFn1 { type In1 >: M0; type Out >: O } },
     X10 <: SF#First#In1,
     M0,
@@ -119,6 +108,34 @@ case object Composition {
   )
   : AnyApp1At[SF,X10] { type Y = O } = App1 { x1: X10 => appS(appF(x1)) }
 
+}
+
+// Flips the arguments of a DepFn2, see snoc for example
+trait AnyFlip extends AnyDepFn2 {
+
+  type FlippedF <: AnyDepFn2
+
+  type In1 = FlippedF#In2
+  type In2 = FlippedF#In1
+
+  type Out = FlippedF#Out
+}
+class Flip[F <: AnyDepFn2] extends AnyFlip {
+
+  type FlippedF = F
+}
+
+case object AnyFlip {
+
+  implicit def flip[
+    F <: AnyFlip {
+      type FlippedF <: AnyDepFn2 { type In1 >: I2; type In2 >: I1; type Out >: O }
+    },
+    I1, I2, O
+  ](implicit
+    appF: AnyApp2At[F#FlippedF, I2, I1] { type Y = O }
+  ): AnyApp2At[F, I1, I2] { type Y = O } =
+  App2 { (in1: I1, in2: I2) => appF(in2, in1) }
 }
 
 /* dependent function application machinery. These are to be thought of as the building blocks for terms of a dependent function type. */

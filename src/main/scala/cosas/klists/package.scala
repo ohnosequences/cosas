@@ -15,9 +15,6 @@ package object klists {
   type  mapKList[F <: AnyDepFn1] = MapKListOf[F, F#Out]
   def   mapKList[F <: AnyDepFn1] : mapKList[F] = new mapKList[F]
 
-  type  concatenate[L <: AnyKList] = Concatenate[L]
-  def   concatenate[L <: AnyKList] : Concatenate[L] = new Concatenate[L]
-
   type  toListOf[L <: AnyKList.Of[B], B] = ToListOf[L,B]
   def   toListOf[L <: AnyKList.Of[B], B] : toListOf[L,B] = new ToListOf[L,B]
 
@@ -38,4 +35,10 @@ package object klists {
 
   type  takeFirst[Q <: AnyKList] = TakeFirst[Q]
   def   takeFirst[Q <: AnyKList]: takeFirst[Q] = new TakeFirst[Q]
+
+  type cons = Cons.type
+  val  cons: cons = Cons
+
+  type snoc = Snoc.type
+  val  snoc: snoc = Snoc
 }
