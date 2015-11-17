@@ -39,6 +39,6 @@ package object klists {
   type cons = Cons.type
   val  cons: cons = Cons
 
-  type snoc = Flip[cons.type]
-  val  snoc: snoc = Flip(cons)
+  type snoc = Snoc.type
+  val  snoc: snoc = Snoc
 }

@@ -8,3 +8,5 @@ case object Cons extends DepFn2[Any, AnyKList, AnyKList] {
     AnyApp2At[Cons.type, X, L] { type Y = X :: L } =
     App2 { (x: X, l: L) => x :: l }
 }
+
+case object Snoc extends Flip[Cons.type]
