@@ -34,7 +34,7 @@ case object Fn2 {
 
 case object identity extends DepFn1[Any, Any] {
 
-  implicit def default[X <: In1]: App1[identity.type,X,X] = identity at { x: X => x }
+  implicit def default[X]: AnyApp1At[identity.type,X] { type Y = X } = identity at { x: X => x }
 }
 
 class As[X, Y >: X] extends DepFn1[X,Y]

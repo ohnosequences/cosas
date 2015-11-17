@@ -100,13 +100,14 @@ case object syntax {
       foldr(cons, m, l)
 
     def map[
-      F <: AnyDepFn1 { type In1 >: L#Bound },
-      O <: AnyKList
+      F <: AnyDepFn1 { type In1 >: L#Bound; type Out >: U0 },
+      U0,
+      O0 <: AnyKList { type Bound = U0 }
     ](f: F)(
-      implicit mapper: AnyApp1At[mapKList[F], L] { type Y = O }
+      implicit mapper: AnyApp2At[MapKListOf[F,U0], F, L] { type Y = O0 }
     )
-    : O =
-      mapper(l)
+    : O0 =
+      mapper(f,l)
 
     // reverse = snoc.foldLeft(Nil)
     def reverse[

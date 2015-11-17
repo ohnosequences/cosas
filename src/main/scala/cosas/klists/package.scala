@@ -12,7 +12,7 @@ package object klists {
 
   type  ::[+H <: T#Bound, +T <: AnyKList] = KCons[H,T]
 
-  type  mapKList[F <: AnyDepFn1] = MapKListOf[F, F#Out]
+  type  mapKList[F <: AnyDepFn1] = MapKListOf[F,F#Out]
   def   mapKList[F <: AnyDepFn1] : mapKList[F] = new mapKList[F]
 
   type  toListOf[L <: AnyKList.Of[B], B] = ToListOf[L,B]
