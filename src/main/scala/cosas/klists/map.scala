@@ -2,7 +2,6 @@ package ohnosequences.cosas.klists
 
 import ohnosequences.cosas._, fns._
 
-// TODO signature as in fold
 class MapKListOf[F <: AnyDepFn1, Y <: F#Out] extends DepFn2[
   F,
   AnyKList,
