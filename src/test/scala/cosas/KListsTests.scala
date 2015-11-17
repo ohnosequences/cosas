@@ -358,9 +358,8 @@ class KListTests extends org.scalatest.FunSuite {
 
     case object isAnyVal extends PredicateOver[Any] {
 
-      implicit def yes[X <: AnyVal]:
-        AnyApp1At[this.type, X] { type Y = True } =
-        App1 { _ => True }
+      implicit def yes[X <: AnyVal]: isAnyVal.type isTrueOn X =
+        isAnyVal.isTrueOn[X]
     }
 
     assert { isAnyVal("foo") === False }

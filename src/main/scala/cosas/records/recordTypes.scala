@@ -1,6 +1,6 @@
 package ohnosequences.cosas.records
 
-import ohnosequences.cosas._, types._, klists._
+import ohnosequences.cosas._, fns._, types._, klists._
 
 sealed trait AnyRecordType extends AnyType {
 
@@ -8,7 +8,7 @@ sealed trait AnyRecordType extends AnyType {
   val  keys: Keys
 
   // should be provided implicitly:
-  val noDuplicates: NoDuplicates[Keys#Types]
+  val noDuplicates: noDuplicates isTrueOn Keys#Types
 
   type Raw = Keys#Raw
 
@@ -18,7 +18,7 @@ sealed trait AnyRecordType extends AnyType {
 class RecordType[Ks <: AnyProductType](
   val keys: Ks
 )(implicit
-  val noDuplicates: NoDuplicates[Ks#Types]
+  val noDuplicates: noDuplicates isTrueOn Ks#Types
 ) extends AnyRecordType {
 
   type Keys = Ks

@@ -1,5 +1,7 @@
 package ohnosequences.cosas.fns
 
+import ohnosequences.cosas._
+
 case object syntax {
 
   case class DepFn1Syntax[DF <: AnyDepFn1](val df: DF) extends AnyVal {
@@ -11,7 +13,12 @@ case object syntax {
       new Composition[F,DF]
   }
 
-  case class PredicateSyntax[P <: AnyPredicate](val p: P) extends AnyVal {}
+  case class PredicateSyntax[P <: AnyPredicate](val p: P) extends AnyVal {
+
+    // for constructing evidences
+    def isTrueOn[X <: P#In1]:  P isTrueOn X  = App1 { _: X => True }
+    def isFalseOn[X <: P#In1]: P isFalseOn X = App1 { _: X => False }
+  }
 
   case class DepFn2Syntax[DF <: AnyDepFn2](val df: DF) extends AnyVal {
 
