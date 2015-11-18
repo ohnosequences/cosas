@@ -42,16 +42,16 @@ case object syntax {
     : (OL, E, OR) =
       split(l)
 
-      def splitS[
-        E >: X <: L#Bound,
-        OL <: AnyKList,
-        X,
-        OR <: AnyKList  {type Bound = OL#Bound }
-      ](w: Witness[E])(implicit
-        splitS: AnyApp1At[SplitS[E], L] { type Y = (OL,X,OR) }
-      )
-      : (OL, X, OR) =
-        splitS(l)
+    def splitS[
+      E >: X <: L#Bound,
+      OL <: AnyKList,
+      X,
+      OR <: AnyKList  {type Bound = OL#Bound }
+    ](w: Witness[E])(implicit
+      splitS: AnyApp1At[SplitS[E], L] { type Y = (OL,X,OR) }
+    )
+    : (OL, X, OR) =
+      splitS(l)
 
     def ::[E <: L#Bound](e: E)
     : E :: L =
