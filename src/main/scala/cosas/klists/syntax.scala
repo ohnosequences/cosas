@@ -32,6 +32,15 @@ case object syntax {
     : Z =
       sp(l)
 
+    def split[
+      OL <: AnyKList,
+      E <: L#Bound,
+      OR <: AnyKList  {type Bound = OL#Bound }
+    ](w: Witness[E])(implicit
+      split: AnyApp1At[Split[E], L] { type Y = (OL,E,OR) }
+    )
+    : (OL, E, OR) =
+      split(l)
 
     def ::[E <: L#Bound](e: E)
     : E :: L =

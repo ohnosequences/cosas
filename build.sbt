@@ -26,7 +26,7 @@ dependencyOverrides += "org.scala-lang.modules" %% "scala-xml" % "1.0.4"
 // shows time for each test:
 testOptions in Test += Tests.Argument("-oD")
 
-// scalacOptions ++= Seq("-Xlog-implicits")
+scalacOptions ++= Seq("-Xlog-implicits")
 
 incOptions := incOptions.value.withNameHashing(false)
 

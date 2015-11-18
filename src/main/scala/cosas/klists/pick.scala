@@ -2,16 +2,42 @@ package ohnosequences.cosas.klists
 
 import ohnosequences.cosas._, fns._
 
+class Split[E] extends DepFn1[AnyKList, (AnyKList, E, AnyKList)]
+
+case object Split extends SplitFoundInTail {
+
+  implicit def foundInHead[
+    E <: T#Bound,
+    T <: AnyKList
+  ]: AnyApp1At[Split[E], E :: T] { type Y = (*[T#Bound], E, T) } =
+     App1 { (s: E :: T) => (*[T#Bound], s.head, s.tail) }
+}
+
+sealed trait SplitFoundInTail {
+
+  implicit def foundInTail[
+    E <: T#Bound,
+    // picking from H :: T
+    H <: OL#Bound, T  <: AnyKList { type Bound = OL#Bound },
+    OL <: AnyKList,
+    OR <: AnyKList  {type Bound = OL#Bound }
+  ](implicit
+      l: AnyApp1At[Split[E], T] { type Y = (OL, E, OR) }
+  )
+  : AnyApp1At[Split[E], H :: T] { type Y = (H :: OL, E, OR) } =
+    App1 { (s: H :: T) => val (lo, e, ro) = l(s.tail); (s.head :: lo, e, ro) }
+}
+
 // TODO a version with (Left, E, Right) as output, name it split
 class Pick[E] extends DepFn1[AnyKList, (E, AnyKList)]
 
 case object Pick extends PickFoundInTail {
 
   implicit def foundInHead[
-    E, H <: E,
-    T <: AnyKList { type Bound >: E}
-  ]: AnyApp1At[Pick[E], H :: T] { type Y = (E, T) } =
-     App1 { (s: H :: T) => (s.head, s.tail) }
+    E,
+    T <: AnyKList { type Bound >: E }
+  ]: AnyApp1At[Pick[E], E :: T] { type Y = (E, T) } =
+     App1 { (s: E :: T) => (s.head, s.tail) }
 }
 
 sealed trait PickFoundInTail {
