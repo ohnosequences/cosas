@@ -27,7 +27,7 @@ case object syntax {
     def as[QT <: AnyRecordType, QTRaw <: QT#Raw](qt: QT)(implicit
       takeFirst: AnyApp1At[TakeFirst[QT#Raw], Vs] { type Y = QTRaw }
     ): QT := QTRaw =
-       qt := (takeFirst(vs))
+       qt := (takeFirst(vs): QTRaw)
 
     def toProduct: RT#Keys := Vs = new (RT#Keys := Vs)(vs)
 
@@ -49,13 +49,13 @@ case object syntax {
     def reorder[Vs <: AnyKList.withBound[AnyDenotation], RTRaw <: RT#Raw](values: Vs)(implicit
       takeFirst: AnyApp1At[TakeFirst[Vs], Vs] { type Y = RTRaw }
     ): RT := RTRaw =
-       rt := takeFirst(values)
+       rt := (takeFirst(values): RTRaw)
 
     def from[Vs <: AnyKList.withBound[AnyDenotation], RTRaw <: RT#Raw](vs: Vs)(implicit
       reorder: AnyApp1At[Reorder[RT#Keys, Vs], Vs] { type Y = RTRaw }
     )
     : RT := RTRaw =
-      rt := reorder(vs)
+      rt := (reorder(vs): RTRaw)
 
     def parse[RTRaw <: RT#Raw, V](map: Map[String,V])(implicit
       parse: AnyApp1At[V ParseDenotations RT#Keys, Map[String,V]] {
@@ -73,7 +73,7 @@ case object syntax {
     def as[RT <: AnyRecordType, RTRaw <: RT#Raw](rt: RT)(implicit
       takeFirst: AnyApp1At[Reorder[RT#Keys, Vs], Vs] { type Y = RTRaw }
     ): RT := RTRaw =
-       rt := (takeFirst(vs))
+       rt := (takeFirst(vs): RTRaw)
   }
 }
 
