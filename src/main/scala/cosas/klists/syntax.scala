@@ -97,17 +97,20 @@ case object syntax {
     : L =
       replaceFirst(l,s)
 
-    // so tailrec, much constant append, very mutable
-    @scala.annotation.tailrec
-    final private def asList_rec[X](
-      list: AnyKList.Of[X],
-      acc: scala.collection.mutable.ListBuffer[X]
-    ): List[X] = list match {
-      case KNilOf() => acc.toList
-      case xs: KCons[X,AnyKList.Of[X]] => asList_rec(xs.tail, acc += xs.head)
-    }
+    def asList: List[L#Bound] = {
 
-    def asList: List[L#Bound] = asList_rec(l, new scala.collection.mutable.ListBuffer())
+      // so tailrec, much constant append, very mutable
+      @scala.annotation.tailrec
+      def asList_rec[X](
+        list: AnyKList.Of[X],
+        acc: scala.collection.mutable.ListBuffer[X]
+      ): List[X] = list match {
+        case KNilOf() => acc.toList
+        case xs: KCons[X,AnyKList.Of[X]] => asList_rec[X](xs.tail, acc += xs.head)
+      }
+
+      asList_rec(l, new scala.collection.mutable.ListBuffer())
+    }
 
     def toList(implicit conv: App1[toList[L], L, List[L#Bound]])
     : List[L#Bound] =

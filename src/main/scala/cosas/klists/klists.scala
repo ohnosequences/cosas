@@ -35,10 +35,10 @@ case class KNilOf[+A]() extends AnyEmptyKList {
 sealed trait AnyNonEmptyKList extends Any with AnyKList {
 
   type Head <: Bound
-  val  head: Head
+  def  head: Head
 
   type Tail <: AnyKList
-  val  tail: Tail
+  def  tail: Tail
 
   type Bound >: Tail#Bound <: Tail#Bound // NOTE again this is for forcing type inference
 
