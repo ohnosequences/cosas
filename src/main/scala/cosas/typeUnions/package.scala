@@ -2,9 +2,7 @@ package ohnosequences.cosas
 
 package object typeUnions {
 
-  private[cosas] type not[-T]
   private[cosas] type just[+T] = not[not[T]]
-
   type empty = either[Nothing]
 
   type or[T <: AnyTypeUnion, S] = T#or[S]

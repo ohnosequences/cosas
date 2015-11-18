@@ -2,11 +2,14 @@
 language: scala
 scala:
   - 2.11.7
-  - 2.10.5
 jdk:
   - oraclejdk8
+# see http://docs.travis-ci.com/user/encryption-keys
+env:
+  # codacy stuff
+  - secure: "bs5UYzuaxgXfRlgNMy3lyFoE4MxccR8GcZqlHncC2uFsH24tWKqB0RuHisxk0KRhB/zmISgCf+Ut6PRyXZbSsr62O3EuCDJPlxz3pHOsATC5I1jzn01ABwJa1XK41fLY8hj3MEdXaOjVywqWkn/jmgCTNbc8ZhLeWbhDX5GdUGI="
 script:
-  - sbt ++$TRAVIS_SCALA_VERSION compile test
+  - sbt ++$TRAVIS_SCALA_VERSION compile clean coverage test coverageReport coverageAggregate codacyCoverage
   # Tricks to avoid unnecessary cache updates
   - find $HOME/.sbt -name "*.lock" | xargs rm
   - find $HOME/.ivy2 -name "ivydata-*.properties" | xargs rm
