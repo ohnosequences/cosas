@@ -7,7 +7,7 @@ description   := "esas cosas raras con muchos tipos"
 bucketSuffix := "era7.com"
 
 scalaVersion        := "2.11.7"
-crossScalaVersions  := Seq("2.10.5")
+crossScalaVersions  := Seq("2.10.5", "2.10.4")
 
 libraryDependencies += {
   CrossVersion.partialVersion(scalaVersion.value) match {
