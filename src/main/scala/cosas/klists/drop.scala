@@ -5,7 +5,7 @@ import ohnosequences.cosas._, fns._
 class drop[N <: AnyNat] extends DepFn1[AnyKList, AnyKList]
 
 case object drop extends dropAtN {
-  
+
   implicit def atN[
     H <: Z#Bound, T <: AnyKList { type Bound = Z#Bound },
     Z <: AnyKList,
@@ -15,8 +15,6 @@ case object drop extends dropAtN {
   )
   : AnyApp1At[drop[Successor[N0]], H :: T] { type Y = Z } =
     App1 { ht: H :: T => dropN(ht.tail) }
-
-
 }
 
 trait dropAtN {

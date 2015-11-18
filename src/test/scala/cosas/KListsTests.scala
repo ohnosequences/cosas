@@ -1,6 +1,7 @@
 package ohnosequences.cosas.tests
 
 import ohnosequences.cosas._, klists._, fns._
+import KListTestsContext._
 
 case object KListTestsContext {
 
@@ -12,8 +13,6 @@ case object KListTestsContext {
 }
 
 class KListTests extends org.scalatest.FunSuite {
-
-  import KListTestsContext._
 
   test("HLists are KLists with bound Any") {
 

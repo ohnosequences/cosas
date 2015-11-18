@@ -80,7 +80,7 @@ trait IsKCons[L <: AnyKList, H <: L#Bound, T <: AnyKList] {
 
 case object IsKCons {
 
-  implicit def klistIsKCons[
+  implicit def default[
     H0 <: T0#Bound,
     T0 <: AnyKList
   ]
