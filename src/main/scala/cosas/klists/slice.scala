@@ -2,7 +2,6 @@ package ohnosequences.cosas.klists
 
 import ohnosequences.cosas._, fns._, typeUnions._
 
-// TODO rename this to slice
 class slice[N <: AnyNat, M <: AnyNat]
 extends Composition[drop[N], take[M]]
 
@@ -17,5 +16,4 @@ case object slice {
   )
   : AnyApp1At[slice[N,M], L] { type Y = KNil[L#Bound] } =
     App1 { l: L => { println{"optimizing empty segment: left ≥ right"}; KNil[L#Bound] } }
-
 }
