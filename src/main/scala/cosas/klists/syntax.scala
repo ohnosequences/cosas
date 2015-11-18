@@ -26,8 +26,8 @@ case object syntax {
     : Z =
       drop(l)
 
-    def span[A <: AnyNat, B <: AnyNat, Z <: AnyKList.Of[L#Bound]](start: A, end: B)(implicit
-      sp: AnyApp1At[span[A,B], L] { type Y = Z }
+    def slice[A <: AnyNat, B <: AnyNat, Z <: AnyKList.Of[L#Bound]](start: A, end: B)(implicit
+      sp: AnyApp1At[slice[A,B], L] { type Y = Z }
     )
     : Z =
       sp(l)

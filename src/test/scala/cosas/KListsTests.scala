@@ -146,13 +146,13 @@ class KListTests extends org.scalatest.FunSuite {
     val sbi: SBI = "hola" :: true :: 2 :: *[Any]
 
     assert { (z drop _2 take _3) ===  true :: 2 :: "cd" :: *[Any] }
-    assert { (z drop _2 take _3) ===  z.span(_2, _3) }
+    assert { (z drop _2 take _3) ===  z.slice(_2, _3) }
 
     // empty segments will be optimized
-    assert { sbi.span(_2, _2) === *[Any] }
-    assert { sbi.span(_0, _0) === *[Any] }
+    assert { sbi.slice(_2, _2) === *[Any] }
+    assert { sbi.slice(_0, _0) === *[Any] }
 
-    def stupidSpan[N <: AnyNat, L <: AnyKList](l: L, n: N): KNil[L#Bound] = l.span(n, _0)
+    def stupidSpan[N <: AnyNat, L <: AnyKList](l: L, n: N): KNil[L#Bound] = l.slice(n, _0)
 
     assert { stupidSpan(sbi, _4) === *[Any] }
   }
