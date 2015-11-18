@@ -52,6 +52,36 @@ sealed trait PickFoundInTail {
      App1 { (s: H :: T) => val (e, t) = l(s.tail); (e, s.head :: t) }
 }
 
+
+
+
+class SplitS[E] extends DepFn1[AnyKList, (AnyKList, E, AnyKList)]
+
+case object SplitS extends SplitSFoundInTail {
+
+  implicit def foundInHead[
+    E <: T#Bound, H <: E,
+    T <: AnyKList { type Bound >: H }
+  ]: AnyApp1At[SplitS[E], H :: T] { type Y = (*[T#Bound], H, T) } =
+     App1 { (s: H :: T) => (*[T#Bound], s.head, s.tail) }
+}
+
+sealed trait SplitSFoundInTail {
+
+  implicit def foundInTail[
+    E >: X <: T#Bound,
+    // picking from H :: T
+    H <: OL#Bound, T  <: AnyKList { type Bound = OL#Bound },
+    OL <: AnyKList,
+    X,
+    OR <: AnyKList  {type Bound = OL#Bound }
+  ](implicit
+      l: AnyApp1At[SplitS[E], T] { type Y = (OL, X, OR) }
+  )
+  : AnyApp1At[SplitS[E], H :: T] { type Y = (H :: OL, X, OR) } =
+    App1 { (s: H :: T) => val (lo, x, ro) = l(s.tail); (s.head :: lo, x, ro) }
+}
+
 class PickS[E] extends DepFn1[AnyKList, (E, AnyKList)]
 
 case object PickS extends PickSFoundInTail  {
