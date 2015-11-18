@@ -9,7 +9,7 @@ case class Fn1[A,B](val f: A => B) extends AnyVal with AnyFn1 with DepFn1[A,B]
 
 case object Fn1 {
 
-  implicit def appForFn1[A,B](df: Fn1[A,B]): AnyApp1At[DepFn1[A,B], A] { type Y = B } =
+  implicit def defaultApp[A,B](df: Fn1[A,B]): AnyApp1At[DepFn1[A,B], A] { type Y = B } =
     AppFn1(df.f)
 
   case class AppFn1[A,B](val f: A => B) extends AnyVal with AnyApp1At[DepFn1[A,B],A] {
@@ -28,7 +28,7 @@ case class Fn2[A, B, C](val f: (A,B) => C) extends AnyVal with AnyFn2 with DepFn
 
 case object Fn2 {
 
-  implicit def appForFn2[A, B, C](df: Fn2[A, B, C]):
+  implicit def defaultApp[A, B, C](df: Fn2[A, B, C]):
     AnyApp2At[Fn2[A, B, C], A, B] { type Y = C } = App2 { (a: A, b: B) => df.f(a, b) }
 }
 
