@@ -181,8 +181,6 @@ class KListTests extends org.scalatest.FunSuite {
 
     val b1a = (B1: B1) :: *[A]
     val b1_bis: B1 = b1a.findS(/[B])
-
-    // assert { ab1b2b.takeFirstS(/[B :: *[A]]) === B1 :: *[A] }
   }
 
   test("KList split/splitS") {
@@ -274,21 +272,9 @@ class KListTests extends org.scalatest.FunSuite {
 
     assertResult(6) {
       sum.foldLeft(0)(3 :: 2 :: 1 :: *[Int])
-      // (FoldLeft.cons[
-      //   Int, Int :: Int :: *[Int],
-      //   Int,
-      //   sum.type,
-      //   Int //, Int
-      // ])
     }
 
     val z = snoc.foldLeft(*[Int])(1 :: *[Int])
-    // (FoldLeft.cons[
-    //   Int, *[Int],
-    //   *[Int],
-    //   snoc.type,
-    //   Int :: *[Int] //, Int :: *[Int]
-    // ])
 
     assertResult(1 :: 2 :: 3 :: 4 :: 5 :: 6 :: *[Int]) {
       snoc.foldLeft(4 :: 5 :: 6 :: *[Int])(3 :: 2 :: 1 :: *[Int])

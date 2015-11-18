@@ -25,7 +25,7 @@ final class EqualsTests extends org.scalatest.FunSuite {
     implicitly[List[llstringAgain] <≃> List[List[List[String]]]]
     implicitly[Map[String,Boolean] <≃> Map[String,Boolean] ]
     implicitly[Map[_,_] <≃> Map[_,_]]
-    object two
+    case object two
     val y = two
     implicitly[two.type <≃> y.type]
   }

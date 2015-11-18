@@ -61,8 +61,6 @@ class DenotationTests extends org.scalatest.FunSuite {
 
     assertTaggedEq(u1, u1)
     assertTaggedEq(u1, u1Again)
-    // assertTaggedEq { u2, v } // not there in ScalaTest :-/
-    // assertTaggedEq { u1, u2 }
     assertTypeError("u1 =~= u2")
     assert{ !(v =~= u2) }
   }
