@@ -1,5 +1,5 @@
 ## cosas
-[![Codacy Badge](https://api.codacy.com/project/badge/grade/0ead09f732564954b54700aa4e0feea4)](https://www.codacy.com/app/era7/cosas) [![Travis status](https://img.shields.io/travis/ohnosequences/cosas.svg)] [![Gitter](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/ohnosequences/cosas?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![Codacy Badge](https://api.codacy.com/project/badge/grade/0ead09f732564954b54700aa4e0feea4)](https://www.codacy.com/app/era7/cosas) ![Travis status](https://img.shields.io/travis/ohnosequences/cosas.svg) [![Gitter](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/ohnosequences/cosas?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 * Records
 * Type union
