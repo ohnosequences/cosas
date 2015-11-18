@@ -17,3 +17,5 @@ trait TypeUnion[T] extends AnyTypeUnion {
 case object TypeUnion {
   type empty = either[Nothing]
 }
+
+private[cosas] sealed trait not[-T]
