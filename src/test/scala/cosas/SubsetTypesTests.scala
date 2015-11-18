@@ -2,19 +2,20 @@ package ohnosequences.cosas.tests
 
 import ohnosequences.cosas._, types._, syntax.SubsetTypeSyntax
 import ohnosequences.cosas.tests.asserts._
+import nelists._
 
-object nelists {
+case object nelists {
 
   final case class WrappedList[E]() extends AnyType {
 
     type Raw = List[E]
 
-    val label = "WrappedList"
+    val label: String = "WrappedList"
   }
 
   class NEList[E] extends SubsetType[WrappedList[E]] {
 
-    lazy val label = "NEList"
+    lazy val label: String = "NEList"
     def predicate(l: WrappedList[E] := List[E]): Boolean = ! l.value.isEmpty
 
     def from(e: E): NEList[E] := List[E] = new (NEList[E] := List[E])(e :: Nil)
@@ -39,7 +40,6 @@ class SubsetTypesTests extends org.scalatest.FunSuite {
 
   test("naive nonempty lists") {
 
-    import nelists._
     // this is Some(...) but we don't know at runtime. What about a macro for this? For literals of course
     val oh = NEListOf[Int](
       WrappedList[Int] := 12 :: 232 :: Nil
