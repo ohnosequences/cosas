@@ -1,4 +1,8 @@
-# cosas [![Build Status](https://travis-ci.org/ohnosequences/cosas.svg?branch=master)](https://travis-ci.org/ohnosequences/cosas) [![Codacy code quality](https://api.codacy.com/project/badge/grade/0ead09f732564954b54700aa4e0feea4)](https://www.codacy.com/app/era7/cosas) [![Codacy coverage](https://api.codacy.com/project/badge/coverage/0ead09f732564954b54700aa4e0feea4)](https://www.codacy.com/app/era7/cosas) [![License](https://img.shields.io/badge/license-AGPLv3-blue.svg)](https://tldrlegal.com/license/gnu-affero-general-public-license-v3-%28agpl-3.0%29) [![Gitter](https://img.shields.io/badge/gitter-chat-yellowgreen.svg)](https://gitter.im/ohnosequences/cosas)
+# cosas [![Build Status](https://travis-ci.org/ohnosequences/cosas.svg?branch=master)](https://travis-ci.org/ohnosequences/cosas) [![Codacy code quality](https://api.codacy.com/project/badge/grade/0ead09f732564954b54700aa4e0feea4)](https://www.codacy.com/app/era7/cosas) [![Codacy coverage](https://api.codacy.com/project/badge/coverage/0ead09f732564954b54700aa4e0feea4)](https://www.codacy.com/app/era7/cosas) [![github tag](https://img.shields.io/github/tag/ohnosequences/cosas.svg)](https://github.com/ohnosequences.cosas/tags) [![License](https://img.shields.io/badge/license-AGPLv3-blue.svg)](https://tldrlegal.com/license/gnu-affero-general-public-license-v3-%28agpl-3.0%29) [![Gitter](https://img.shields.io/badge/gitter-chat-yellowgreen.svg)](https://gitter.im/ohnosequences/cosas)
+
+
+<!-- GitHub release: 		https://img.shields.io/github/release/qubyte/rubidium.svg
+GitHub commits: 		https://img.shields.io/github/commits-since/SubtitleEdit/subtitleedit/3.4.7.svg -->
 
 * Records
 * Type union
