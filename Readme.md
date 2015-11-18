@@ -1,4 +1,4 @@
-## cosas [![Travis status](https://img.shields.io/travis/ohnosequences/cosas.svg)](https://travis-ci.org/ohnosequences/cosas) [![Codacy Badge](https://api.codacy.com/project/badge/grade/0ead09f732564954b54700aa4e0feea4)](https://www.codacy.com/app/era7/cosas)  [![License](https://img.shields.io/badge/license-AGPLv3-blue.svg)](https://tldrlegal.com/license/gnu-affero-general-public-license-v3-%28agpl-3.0%29) [![Gitter](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/ohnosequences/cosas?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+## cosas [![Travis status](https://img.shields.io/travis/ohnosequences/cosas.svg)](https://travis-ci.org/ohnosequences/cosas) [![Codacy Badge](https://api.codacy.com/project/badge/grade/0ead09f732564954b54700aa4e0feea4)](https://www.codacy.com/app/era7/cosas)  [![License](https://img.shields.io/badge/license-AGPLv3-blue.svg)](https://tldrlegal.com/license/gnu-affero-general-public-license-v3-%28agpl-3.0%29) [![Gitter](https://img.shields.io/badge/gitter-chat-yellowgreen.svg)](https://gitter.im/ohnosequences/cosas)
 
 * Records
 * Type union
