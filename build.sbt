@@ -7,7 +7,7 @@ description   := "esas cosas raras con muchos tipos"
 bucketSuffix := "era7.com"
 
 scalaVersion        := "2.11.7"
-crossScalaVersions  := Seq("2.10.5")
+crossScalaVersions  := Seq("2.10.5", "2.10.4")
 
 libraryDependencies += {
   CrossVersion.partialVersion(scalaVersion.value) match {
@@ -26,7 +26,7 @@ dependencyOverrides += "org.scala-lang.modules" %% "scala-xml" % "1.0.4"
 // shows time for each test:
 testOptions in Test += Tests.Argument("-oD")
 
-// scalacOptions ++= Seq("-Xlog-implicits")
+scalacOptions ++= Seq("-Xlog-implicits")
 
 incOptions := incOptions.value.withNameHashing(false)
 

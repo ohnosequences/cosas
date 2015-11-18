@@ -186,6 +186,35 @@ class KListTests extends org.scalatest.FunSuite {
     // assert { ab1b2b.takeFirstS(/[B :: *[A]]) === B1 :: *[A] }
   }
 
+  test("KList split/splitS") {
+
+    // WIP
+    assertResult((
+      true :: 'b' :: List(2,3) :: *[Any],
+      "hola",
+      32 :: 'a' :: *[Any]
+    )) {
+      (true :: 'b' :: List(2,3) :: "hola" :: 32 :: 'a' :: *[Any]) split /[String]
+    }
+
+    trait A
+    trait B extends A
+    case object B1 extends B; type B1 = B1.type
+    case object B2 extends B; type B2 = B2.type
+    val a: A = new A {}
+    val b: B = new B {}
+
+    val ab1b2b = a :: (B1: B1) :: (B2: B2) :: b :: *[A]
+
+    assertResult((
+      a :: *[A],
+      B1,
+      (B2: B2) :: b :: *[A]
+    )) {
+      ab1b2b splitS /[B]
+    }
+  }
+
   test("can replace segments of Klists") {
 
     val z = "a" :: 'b' :: true :: 2 :: "cd" :: false :: *[Any]
