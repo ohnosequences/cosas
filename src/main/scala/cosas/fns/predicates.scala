@@ -18,6 +18,5 @@ case object AnyPredicate {
     syntax.PredicateSyntax(p)
 }
 
-trait PredicateOver[T] extends AnyPredicate { type In1 = T }
-
 // TODO: add Not, And, Or
+trait PredicateOver[T] extends AnyPredicate { type In1 = T }

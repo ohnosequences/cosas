@@ -22,7 +22,7 @@ case object syntax {
   final case class AnyProductTypeDenotationSyntax[L <: AnyProductType, Vs <: L#Raw](val vs: Vs) extends AnyVal {
 
     def project[T <: AnyType, V <: T#Raw](t: T)(implicit
-      p: App1[Project[L,T], L := Vs, T := V]
+      p: AnyApp1At[Project[L,T], L := Vs] { type Y = T := V }
     )
     : T := V =
       p( new (L := Vs)(vs) )

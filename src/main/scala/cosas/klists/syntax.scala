@@ -14,7 +14,7 @@ case object syntax {
     : T =
       c.t(l)
 
-    def at[N <: AnyNat, Z <: L#Bound](n: N)(implicit a: App1[L at N, L, Z])
+    def at[N <: AnyNat, Z <: L#Bound](n: N)(implicit a: AnyApp1At[L at N, L] { type Y = Z })
     : Z =
       a(l)
 
@@ -153,9 +153,4 @@ case object syntax {
       appFilter: AnyApp2At[filter[P], P, L] { type Y = O }
     ): O = appFilter(p, l)
   }
-}
-
-case object utils {
-
-
 }
