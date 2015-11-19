@@ -7,7 +7,7 @@ sealed trait AnyRecordType extends AnyType {
   type Keys <: AnyProductType
   val  keys: Keys
 
-  // should be provided implicitly:
+  // NOTE should be provided implicitly:
   val noDuplicates: noDuplicates isTrueOn Keys#Types
 
   type Raw = Keys#Raw
@@ -22,7 +22,6 @@ class RecordType[Ks <: AnyProductType](
 ) extends AnyRecordType {
 
   type Keys = Ks
-  // type Raw = Ks#Raw
 }
 
 case object AnyRecordType {
@@ -32,10 +31,6 @@ case object AnyRecordType {
   implicit def recordTypeSyntax[RT <: AnyRecordType](rt: RT)
   : syntax.RecordTypeSyntax[RT] =
     syntax.RecordTypeSyntax(rt)
-
-  implicit def recordReorderSyntax[Vs <: AnyKList.withBound[AnyDenotation]](vs: Vs)
-  : syntax.RecordReorderSyntax[Vs] =
-    syntax.RecordReorderSyntax(vs)
 
   implicit def recordDenotationSyntax[RT <: AnyRecordType, Vs <: RT#Raw](rv: RT := Vs)
   : syntax.RecordTypeDenotationSyntax[RT, Vs] =

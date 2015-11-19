@@ -28,7 +28,6 @@ case object recordTestsContext {
     *[AnyDenotation]
   )
 
-  // this way the order of properties does not matter
   val normalUserEntry = normalUser := (
     id(123)               ::
     name("foo")           ::
@@ -111,13 +110,13 @@ class RecordTypeTests extends org.scalatest.FunSuite {
   test("can transform a klist of values as a record") {
 
     assertResult(normalUserEntry) {
-      records.syntax.RecordReorderSyntax (
+      (
         name("foo")           ::
         color("orange")       ::
         email("foo@bar.qux")  ::
         id(123)               ::
         *[AnyDenotation]
-      ).as(normalUser)
+      ) as normalUser
     }
 
     assertResult(normalUserEntry) {
@@ -158,7 +157,7 @@ class RecordTypeTests extends org.scalatest.FunSuite {
       catching(classOf[NumberFormatException]) opt str.toInt
     }
     implicit def idParser: DenotationParser[id.type, Int, String]  = new DenotationParser(id, id.label)(idVParser)
-    
+
     implicit val idSerializer: DenotationSerializer[id.type, Int, String] = new DenotationSerializer(id, id.label)( { x: Int => Some(x.toString )} )
     implicit val nameSerializer: DenotationSerializer[name.type, String, String] = new DenotationSerializer(name, name.label)(Some(_:String) )
   }
