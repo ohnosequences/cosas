@@ -63,7 +63,8 @@ class ParseDenotations[V, Ts <: AnyProductType] extends DepFn1[Map[String,V], Ei
 
 case object ParseDenotations {
 
-  implicit def empty[V,X]: AnyApp1At[ParseDenotations[V,unit], Map[String,V]] { type Y =  Either[ParseDenotationsError,*[AnyDenotation]] } =
+  implicit def empty[V,X]
+  : AnyApp1At[ParseDenotations[V,unit], Map[String,V]] { type Y =  Either[ParseDenotationsError,*[AnyDenotation]] } =
     App1 { map: Map[String,V] => Right(*[AnyDenotation]) }
 
   implicit def nonEmpty[
@@ -74,8 +75,7 @@ case object ParseDenotations {
     parseH: DenotationParser[H,HR,V]
   )
   : AnyApp1At[ParseDenotations[V, H :×: Ts], Map[String,V]] { type Y = Either[ParseDenotationsError, (H := HR) :: Ds] } =
-
-  App1 { map: Map[String,V] => {
+    App1 { map: Map[String,V] => {
 
       map.get(parseH.labelRep).fold[Either[ParseDenotationsError, (H := HR) :: Ds]](
         Left(KeyNotFound(parseH.labelRep, map))
@@ -90,7 +90,6 @@ case object ParseDenotations {
           )
         )
       )
-
     }
   }
 }

@@ -1,6 +1,7 @@
 package ohnosequences.cosas.tests
 
 import ohnosequences.cosas._, types._, klists._, records._
+import recordTestsContext._
 
 case object recordTestsContext {
 
@@ -9,7 +10,6 @@ case object recordTestsContext {
   case object email extends Type[String]("email")
   case object color extends Type[String]("color")
 
-  // funny square is an option too
   case object simpleUser extends RecordType(id :×: name :×: unit)
   case object normalUser extends RecordType(id :×: name :×: email :×: color :×: unit)
 
@@ -40,7 +40,6 @@ case object recordTestsContext {
 
 class RecordTypeTests extends org.scalatest.FunSuite {
 
-  import recordTestsContext._
 
   test("should fail when some properties are missing") {
     assertTypeError("""
@@ -159,9 +158,7 @@ class RecordTypeTests extends org.scalatest.FunSuite {
       catching(classOf[NumberFormatException]) opt str.toInt
     }
     implicit def idParser: DenotationParser[id.type, Int, String]  = new DenotationParser(id, id.label)(idVParser)
-    // NOTE not needed, generic parser works
-    // implicit def nameParser: DenotationParser[name.type, String, String] = new DenotationParser(name, name.label)( Some(_:String) )
-
+    
     implicit val idSerializer: DenotationSerializer[id.type, Int, String] = new DenotationSerializer(id, id.label)( { x: Int => Some(x.toString )} )
     implicit val nameSerializer: DenotationSerializer[name.type, String, String] = new DenotationSerializer(name, name.label)(Some(_:String) )
   }
