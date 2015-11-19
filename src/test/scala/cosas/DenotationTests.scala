@@ -147,7 +147,7 @@ class DenotationTests extends org.scalatest.FunSuite {
     // NOTE a bounded product type
     val FranceFlag = Blue :×: White :×: Red :×: In[Colors]
 
-    val viveLaFrance = FranceFlag :=  (Blue := "Vive")    :: 
+    val viveLaFrance = FranceFlag :=  (Blue := "Vive")    ::
                                       (White := "la")     ::
                                       (Red := "France!")  :: *[AnyDenotation]
   }
