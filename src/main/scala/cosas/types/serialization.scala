@@ -61,7 +61,7 @@ class SerializeDenotations[V, Denotations <: AnyKList.withBound[AnyDenotation]] 
 case object SerializeDenotations {
 
   implicit def atEmpty[V]
-  : App2[SerializeDenotations[V,*[AnyDenotation]], Map[String,V], *[AnyDenotation], Either[SerializeDenotationsError, Map[String,V]]] =
+  : AnyApp2At[SerializeDenotations[V,*[AnyDenotation]], Map[String,V], *[AnyDenotation]] { type Y = Either[SerializeDenotationsError, Map[String,V]] } =
     App2 { (map: Map[String,V],nil: *[AnyDenotation]) => Right(map): Either[SerializeDenotationsError, Map[String,V]] }
 
   implicit def atCons[
@@ -70,12 +70,12 @@ case object SerializeDenotations {
     HR <: H#Raw
   ](implicit
     serializeH: DenotationSerializer[H,HR,V],
-    serializeT: App2[SerializeDenotations[V,TD], Map[String,V], TD, Either[SerializeDenotationsError, Map[String,V]]]
+    serializeT: AnyApp2At[SerializeDenotations[V,TD], Map[String,V], TD] { type Y = Either[SerializeDenotationsError, Map[String,V]] }
   )
-  : App2[
+  : AnyApp2At[
       SerializeDenotations[V,(H := HR) :: TD],
-      Map[String,V], (H := HR) :: TD, Either[SerializeDenotationsError, Map[String,V]]
-    ] =
+      Map[String,V], (H := HR) :: TD
+    ] { type Y = Either[SerializeDenotationsError, Map[String,V]] } =
   App2 { (map: Map[String,V], denotations: (H := HR) :: TD) => serializeH(denotations.head).fold(
       l => Left(ErrorSerializing(l)),
       kv => (map get kv._1) match {

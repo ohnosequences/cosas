@@ -31,10 +31,8 @@ package object cosas {
   type False = FALSE.type
   val  False: False = FALSE
 
-  def ofType[X]: Witness[X] = Witness(Witness)
-  def witness[A]: Witness[A] = new Witness[A](Witness)
-  def /[A]: Witness[A] = new Witness[A](Witness)
-  type /[A] = Witness[A]
+  type  /[A] = Witness[A]
+  def   /[A] : Witness[A] = new Witness[A](Witness)
 
   private[cosas] type uv = scala.annotation.unchecked.uncheckedVariance
 }

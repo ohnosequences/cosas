@@ -56,8 +56,6 @@ sealed trait SplitSFoundInTail {
 }
 
 
-
-
 class Pick[E] extends DepFn1[AnyKList, (E, AnyKList)]
 
 case object Pick extends PickFoundInTail {

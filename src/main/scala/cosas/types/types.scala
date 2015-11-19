@@ -23,5 +23,5 @@ class Type[V](val label: String) extends AnyType { type Raw = V }
 
 case object typeLabel extends DepFn1[AnyType, String] {
 
-  implicit def atType[T <: AnyType]: App1[typeLabel.type,T,String] = typeLabel at { t: T => t.label }
+  implicit def atType[T <: AnyType]: AnyApp1At[typeLabel.type,T] { type Y = String } = typeLabel at { t: T => t.label }
 }

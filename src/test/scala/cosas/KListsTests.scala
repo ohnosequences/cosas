@@ -233,7 +233,7 @@ class KListTests extends org.scalatest.FunSuite {
 
     case object f extends DepFn1[Any,String] {
 
-      implicit def default[X <: Any]: AnyApp1At[f.type,X] { type Y = String } = f at { a: X => a.toString }
+      implicit def atAny[X <: Any]: AnyApp1At[f.type,X] { type Y = String } = f at { a: X => a.toString }
     }
 
     val z: *[Any] = *[Any]
