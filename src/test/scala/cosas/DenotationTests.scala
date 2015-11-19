@@ -116,7 +116,8 @@ class DenotationTests extends org.scalatest.FunSuite {
 
     val f = { x: Any => "blue" }
 
-    val alwaysBlue = FavoriteColor := Fn1(f)
+    // NOTE using implicit conversion
+    val alwaysBlue = FavoriteColor := (f: Fn1[Any,String])
     val alwaysBlueAgain = (User ==> Color) := Fn1(f)
 
     assertTypeError("""FavoriteColor := Fn1 { x: Int => "hola" }""")
