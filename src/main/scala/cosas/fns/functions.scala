@@ -22,9 +22,6 @@ case object AnyDepFn1 {
     X10 <: DF0#In1
   ](df: DF0): syntax.DepFn1ApplyAt[DF0,X10] =
     syntax.DepFn1ApplyAt(df)
-
-  implicit def appForFn1[A,B](fn: Fn1[A,B]): Fn1.AppFn1[A,B] =
-    Fn1.AppFn1(fn.f)
 }
 
 trait DepFn1[I,O] extends Any with AnyDepFn1 {
