@@ -95,7 +95,7 @@ extends AnyDepFn1Composition {
   type First = F
   type Second = S
 }
-case object Composition {
+case object AnyDepFn1Composition {
 
   implicit def appForComposition[
     SF <: AnyDepFn1Composition { type Second <: AnyDepFn1 { type In1 >: M0; type Out >: O } },
@@ -106,8 +106,8 @@ case object Composition {
     appF: AnyApp1At[SF#First, X10] { type Y = M0 },
     appS: AnyApp1At[SF#Second, M0] { type Y = O }
   )
-  : AnyApp1At[SF,X10] { type Y = O } = App1 { x1: X10 => appS(appF(x1)) }
-
+  : AnyApp1At[SF,X10] { type Y = O } =
+    App1 { x1: X10 => appS(appF(x1)) }
 }
 
 // Flips the arguments of a DepFn2, see snoc for example
