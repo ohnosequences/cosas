@@ -62,7 +62,7 @@ case object SerializeDenotations {
 
   implicit def atEmpty[V]
   : AnyApp2At[SerializeDenotations[V,*[AnyDenotation]], Map[String,V], *[AnyDenotation]] { type Y = Either[SerializeDenotationsError, Map[String,V]] } =
-    App2 { (map: Map[String,V],nil: *[AnyDenotation]) => Right(map): Either[SerializeDenotationsError, Map[String,V]] }
+    App2 { (map: Map[String,V], nil: *[AnyDenotation]) => Right(map): Either[SerializeDenotationsError, Map[String,V]] }
 
   implicit def atCons[
     V,
