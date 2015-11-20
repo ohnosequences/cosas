@@ -67,6 +67,10 @@ case object ParseDenotations {
   : AnyApp1At[ParseDenotations[V,unit], Map[String,V]] { type Y =  Either[ParseDenotationsError,*[AnyDenotation]] } =
     App1 { map: Map[String,V] => Right(*[AnyDenotation]) }
 
+  implicit def emptyParam[V, T <: AnyType, X]
+  : AnyApp1At[ParseDenotations[V,In[T]], Map[String,V]] { type Y =  Either[ParseDenotationsError,*[AnyDenotation]] } =
+    App1 { map: Map[String,V] => Right(*[AnyDenotation]) }
+
   implicit def nonEmpty[
     V,
     H <: Ts#Types#Bound { type Raw >: HR }, HR, Ts <: AnyProductType { type Raw >: Ds }, Ds <: AnyKList.withBound[AnyDenotation]
