@@ -197,7 +197,7 @@ One set consists of representations of the types in another
 
   type ∪[S <: AnyTypeSet, Q <: AnyTypeSet] = ops.typeSets.Union[S, Q]
 
-  type ToListOf[S <: AnyTypeSet, T] = ops.typeSets.ToList[S] { type O = T }
+  type toListOf[S <: AnyTypeSet, T] = ops.typeSets.toList[S] { type O = T }
 
 
   trait AnyTypePredicate {
@@ -248,9 +248,9 @@ Conversions
 
     def toHList(implicit toHList: ToHList[S]): toHList.Out = toHList(s)
 
-    def  toList(implicit  toList:  ToList[S]):  toList.Out =  toList(s)
+    def  toList(implicit  toList:  toList[S]):  toList.Out =  toList(s)
 
-    def toListOf[T](implicit toListOf: S ToListOf T): List[T] = toListOf(s)
+    def toListOf[T](implicit toListOf: S toListOf T): List[T] = toListOf(s)
 
     def getTypes[X](implicit types: TypesOf[S] { type Out = X }): X = types(s)
 ```
@@ -260,7 +260,7 @@ Mappers
 ```scala
     def mapToHList[F <: Poly1](f: F)(implicit mapF: F MapToHList S): mapF.Out = mapF(s)
 
-    def  mapToList[F <: Poly1](f: F)(implicit mapF: F  MapToList S): mapF.Out = mapF(s)
+    def  maptoList[F <: Poly1](f: F)(implicit mapF: F  MaptoList S): mapF.Out = mapF(s)
 
     def        map[F <: Poly1](f: F)(implicit mapF: F     MapSet S): mapF.Out = mapF(s)
 

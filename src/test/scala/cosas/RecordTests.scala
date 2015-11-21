@@ -130,9 +130,9 @@ class RecordTypeTests extends org.scalatest.FunSuite {
     }
   }
 
-  ignore("can see a record entry as another") {
+  test("product type interop") {
 
-    // assert { simpleUserEntry === ( normalUserEntry as simpleUser ) }
+    assert { (simpleUser := simpleUserEntry.toProduct.value) === simpleUserEntry }
   }
 
 

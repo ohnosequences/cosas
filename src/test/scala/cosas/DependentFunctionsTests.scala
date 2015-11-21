@@ -31,10 +31,11 @@ class DependentFunctionsTests extends org.scalatest.FunSuite {
 
     val f: List[String] => Int = { x: List[String] => x.size }
     val df: Fn1[List[String], Int] = f
+    assert { df(List("hola", "scalac")) === f(List("hola", "scalac")) }
 
-    assert {
-      df(List("hola", "scalac")) === f(List("hola", "scalac"))
-    }
+    val f2: (String,Int) => Int = (str,n) => str.size + n
+    val df2: Fn2[String,Int,Int] = f2
+    assert { df2("hola",2) === f2("hola",2) }
   }
 
   test("composition?") {

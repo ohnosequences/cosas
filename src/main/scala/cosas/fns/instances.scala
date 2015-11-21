@@ -37,9 +37,11 @@ case object identity extends DepFn1[Any, Any] {
   implicit def default[X]: AnyApp1At[identity.type,X] { type Y = X } = identity at { x: X => x }
 }
 
-class As[X, Y >: X] extends DepFn1[X,Y]
+class as[X, Y >: X] extends DepFn1[X,Y]
 
-case object As {
+case object as {
 
-  implicit def default[A, B >: A]: App1[As[A,B],A,B] = App1 { a: A =>  a}
+  def apply[X,Y >: X]: as[X,Y] = new as[X,Y]
+
+  implicit def default[A, B >: A]: AnyApp1At[as[A,B],A] {type Y = B } = App1 { a: A => a }
 }

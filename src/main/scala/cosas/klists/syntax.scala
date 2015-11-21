@@ -37,7 +37,7 @@ case object syntax {
       E <: L#Bound,
       OR <: AnyKList  {type Bound = OL#Bound }
     ](w: Witness[E])(implicit
-      split: AnyApp1At[Split[E], L] { type Y = (OL,E,OR) }
+      split: AnyApp1At[split[E], L] { type Y = (OL,E,OR) }
     )
     : (OL, E, OR) =
       split(l)
@@ -48,7 +48,7 @@ case object syntax {
       X,
       OR <: AnyKList  {type Bound = OL#Bound }
     ](w: Witness[E])(implicit
-      splitS: AnyApp1At[SplitS[E], L] { type Y = (OL,X,OR) }
+      splitS: AnyApp1At[splitS[E], L] { type Y = (OL,X,OR) }
     )
     : (OL, X, OR) =
       splitS(l)
@@ -57,15 +57,15 @@ case object syntax {
     : E :: L =
       KCons[E,L](e, l)
 
-    def find[A <: L#Bound](implicit findIn: AnyApp1At[findIn[A], L] { type Y = A })
+    def find[A <: L#Bound](implicit find: AnyApp1At[find[A], L] { type Y = A })
     : A =
-      findIn(l)
+      find(l)
 
     def findS[Z, X <: Z](w: Witness[Z])(implicit
-      findIn: AnyApp1At[FindS[Z], L] { type Y = X }
+      find: AnyApp1At[FindS[Z], L] { type Y = X }
     )
     : X =
-      findIn(l)
+      find(l)
 
     def pick[E <: L#Bound, O <: AnyKList.Of[L#Bound]](w: Witness[E])(implicit
       p: AnyApp1At[pick[E], L] { type Y = (E,O) }
@@ -74,7 +74,7 @@ case object syntax {
       p(l)
 
     def pickS[E, X <: E, O <: AnyKList](w: Witness[E])(implicit
-      p: AnyApp1At[PickS[E], L] { type Y = (X,O)}
+      p: AnyApp1At[pickS[E], L] { type Y = (X,O)}
     )
     : (X,O) =
       p(l)
@@ -86,7 +86,7 @@ case object syntax {
       takeFirst(l)
 
     // def takeFirstS[Q >: QO <: AnyKList.Of[L#Bound], QO](w: Witness[Q])(implicit
-    //   takeFirstS: AnyApp1At[TakeFirstS[Q], L] { type Y = QO }
+    //   takeFirstS: AnyApp1At[takeFirstS[Q], L] { type Y = QO }
     // )
     // : QO =
     //   takeFirstS(l)
@@ -133,7 +133,7 @@ case object syntax {
       U0,
       O0 <: AnyKList { type Bound = U0 }
     ](f: F)(
-      implicit mapper: AnyApp2At[MapKListOf[F,U0], F, L] { type Y = O0 }
+      implicit mapper: AnyApp2At[mapKList[F,U0], F, L] { type Y = O0 }
     )
     : O0 =
       mapper(f,l)

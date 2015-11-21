@@ -9,5 +9,4 @@ package object types {
 
   type In[E <: AnyType] = EmptyProductType[E]
   def In[E <: AnyType]: In[E] = new EmptyProductType[E]
-
 }

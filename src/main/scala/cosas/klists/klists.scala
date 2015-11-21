@@ -15,8 +15,7 @@ sealed trait AnyKList extends Any {
 
 case object KList {
 
-  // NOTE need to be here to drive type inference, cannot be in syntax
-  def apply[F <: AnyDepFn1](f: F): mapKList[F] = mapKList[F]
+  def apply[F <: AnyDepFn1](f: F): mapKList[F, F#Out] = new mapKList[F, F#Out]
 }
 
 sealed trait AnyEmptyKList extends Any with AnyKList {

@@ -2,18 +2,18 @@ package ohnosequences.cosas.klists
 
 import ohnosequences.cosas._, fns._
 
-class Split[E] extends DepFn1[AnyKList, (AnyKList, E, AnyKList)]
+class split[E] extends DepFn1[AnyKList, (AnyKList, E, AnyKList)]
 
-case object Split extends SplitFoundInTail {
+case object split extends splitFoundInTail {
 
   implicit def foundInHead[
     E <: T#Bound,
     T <: AnyKList
-  ]: AnyApp1At[Split[E], E :: T] { type Y = (*[T#Bound], E, T) } =
+  ]: AnyApp1At[split[E], E :: T] { type Y = (*[T#Bound], E, T) } =
      App1 { (s: E :: T) => (*[T#Bound], s.head, s.tail) }
 }
 
-sealed trait SplitFoundInTail {
+sealed trait splitFoundInTail {
 
   implicit def foundInTail[
     E <: T#Bound,
@@ -22,24 +22,24 @@ sealed trait SplitFoundInTail {
     OL <: AnyKList,
     OR <: AnyKList  {type Bound = OL#Bound }
   ](implicit
-      l: AnyApp1At[Split[E], T] { type Y = (OL, E, OR) }
+      l: AnyApp1At[split[E], T] { type Y = (OL, E, OR) }
   )
-  : AnyApp1At[Split[E], H :: T] { type Y = (H :: OL, E, OR) } =
+  : AnyApp1At[split[E], H :: T] { type Y = (H :: OL, E, OR) } =
     App1 { (s: H :: T) => val (lo, e, ro) = l(s.tail); (s.head :: lo, e, ro) }
 }
 
-class SplitS[E] extends DepFn1[AnyKList, (AnyKList, E, AnyKList)]
+class splitS[E] extends DepFn1[AnyKList, (AnyKList, E, AnyKList)]
 
-case object SplitS extends SplitSFoundInTail {
+case object splitS extends splitSFoundInTail {
 
   implicit def foundInHead[
     E <: T#Bound, H <: E,
     T <: AnyKList { type Bound >: H }
-  ]: AnyApp1At[SplitS[E], H :: T] { type Y = (*[T#Bound], H, T) } =
+  ]: AnyApp1At[splitS[E], H :: T] { type Y = (*[T#Bound], H, T) } =
      App1 { (s: H :: T) => (*[T#Bound], s.head, s.tail) }
 }
 
-sealed trait SplitSFoundInTail {
+sealed trait splitSFoundInTail {
 
   implicit def foundInTail[
     E >: X <: T#Bound,
@@ -49,55 +49,55 @@ sealed trait SplitSFoundInTail {
     X,
     OR <: AnyKList  {type Bound = OL#Bound }
   ](implicit
-      l: AnyApp1At[SplitS[E], T] { type Y = (OL, X, OR) }
+      l: AnyApp1At[splitS[E], T] { type Y = (OL, X, OR) }
   )
-  : AnyApp1At[SplitS[E], H :: T] { type Y = (H :: OL, X, OR) } =
+  : AnyApp1At[splitS[E], H :: T] { type Y = (H :: OL, X, OR) } =
     App1 { (s: H :: T) => val (lo, x, ro) = l(s.tail); (s.head :: lo, x, ro) }
 }
 
 
-class Pick[E] extends DepFn1[AnyKList, (E, AnyKList)]
+class pick[E] extends DepFn1[AnyKList, (E, AnyKList)]
 
-case object Pick extends PickFoundInTail {
+case object pick extends pickFoundInTail {
 
   implicit def foundInHead[
     E,
     T <: AnyKList { type Bound >: E }
-  ]: AnyApp1At[Pick[E], E :: T] { type Y = (E, T) } =
+  ]: AnyApp1At[pick[E], E :: T] { type Y = (E, T) } =
      App1 { (s: E :: T) => (s.head, s.tail) }
 }
 
-sealed trait PickFoundInTail {
+sealed trait pickFoundInTail {
 
   implicit def foundInTail[
     E, H <: TO#Bound,
     T  <: AnyKList { type Bound = TO#Bound },
     TO <: AnyKList
   ](implicit
-      l: AnyApp1At[Pick[E], T] { type Y = (E, TO) }
-  ): AnyApp1At[Pick[E], H :: T] { type Y = (E, H :: TO) } =
+      l: AnyApp1At[pick[E], T] { type Y = (E, TO) }
+  ): AnyApp1At[pick[E], H :: T] { type Y = (E, H :: TO) } =
      App1 { (s: H :: T) => val (e, t) = l(s.tail); (e, s.head :: t) }
 }
 
 
-class PickS[E] extends DepFn1[AnyKList, (E, AnyKList)]
+class pickS[E] extends DepFn1[AnyKList, (E, AnyKList)]
 
-case object PickS extends PickSFoundInTail  {
+case object pickS extends pickSFoundInTail  {
 
   implicit def foundInHead[E <: T#Bound, H <: E, T <: AnyKList { type Bound >: H }]
-  : AnyApp1At[PickS[E], H :: T] { type Y = (H, T) } =
+  : AnyApp1At[pickS[E], H :: T] { type Y = (H, T) } =
     App1 { (s: H :: T) => (s.head, s.tail) }
 }
 
-trait PickSFoundInTail {
+trait pickSFoundInTail {
 
   implicit def foundInTail[
     X, E >: X, H <: TO#Bound,
     T  <: AnyKList { type Bound >: H },
     TO <: AnyKList
   ](implicit
-      l: AnyApp1At[PickS[E], T] { type Y = (X, TO) }
+      l: AnyApp1At[pickS[E], T] { type Y = (X, TO) }
   )
-  : AnyApp1At[PickS[E], H :: T] { type Y = (X, H :: TO) } =
+  : AnyApp1At[pickS[E], H :: T] { type Y = (X, H :: TO) } =
     App1 { (s: H :: T) => val (e, t) = l(s.tail); (e, s.head :: t) }
 }

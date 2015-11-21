@@ -68,13 +68,19 @@ final class EqualsTests extends org.scalatest.FunSuite {
     assert(z === z2)
   }
 
-  test("equality is transitive") {
+  test("distinct types, subtypes") {
 
-    def shouldWork[A >: B <: B, B >: C <: C, C](a: A): C = {
+    trait Uh; class Oh extends Uh
 
-      val ac = implicitly[A ≃ C]; import ac._
+    val neq = implicitly[Uh != Oh]
 
-      a: C
-    }
+    assertTypeError { """ implicitly[ Uh != Uh ] """ }
+
+    val x: Oh = new Oh
+    val p: Oh ≤ Uh = implicitly[Oh ≤ Uh]
+
+    assert { (x: Uh) === p.asRight(x) }
   }
+
+
 }

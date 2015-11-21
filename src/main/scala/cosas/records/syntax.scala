@@ -24,10 +24,11 @@ case object syntax {
     ):   RT := Vs =
     new (RT := Vs)(repl(vs, n :: *[AnyDenotation]))
 
-    def as[QT <: AnyRecordType, QTRaw <: QT#Raw](qt: QT)(implicit
-      takeFirst: AnyApp1At[TakeFirst[QT#Raw], Vs] { type Y = QTRaw }
-    ): QT := QTRaw =
-       qt := (takeFirst(vs): QTRaw)
+    // TODO see if this is really needed
+    // def as[QT <: AnyRecordType, QTRaw <: QT#Raw](qt: QT)(implicit
+    //   takeFirst: AnyApp1At[takeFirst[QT#Raw], Vs] { type Y = QTRaw }
+    // ): QT := QTRaw =
+    //    qt := (takeFirst(vs): QTRaw)
 
     def toProduct: RT#Keys := Vs = new (RT#Keys := Vs)(vs)
 
@@ -46,10 +47,11 @@ case object syntax {
 
   final case class RecordTypeSyntax[RT <: AnyRecordType](val rt: RT) extends AnyVal {
 
-    def reorder[Vs <: AnyKList.withBound[AnyDenotation], RTRaw <: RT#Raw](values: Vs)(implicit
-      takeFirst: AnyApp1At[TakeFirst[Vs], Vs] { type Y = RTRaw }
-    ): RT := RTRaw =
-       rt := (takeFirst(values): RTRaw)
+    // TODO was this ever used?
+    // def reorder[Vs <: AnyKList.withBound[AnyDenotation], RTRaw <: RT#Raw](values: Vs)(implicit
+    //   takeFirst: AnyApp1At[takeFirst[Vs], Vs] { type Y = RTRaw }
+    // ): RT := RTRaw =
+    //    rt := (takeFirst(values): RTRaw)
 
     def from[Vs <: AnyKList.withBound[AnyDenotation], RTRaw <: RT#Raw](vs: Vs)(implicit
       reorder: AnyApp1At[Reorder[RT#Keys, Vs], Vs] { type Y = RTRaw }
