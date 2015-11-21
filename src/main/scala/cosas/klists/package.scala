@@ -13,8 +13,8 @@ package object klists {
   type  KNil[+A] = KNilOf[A]
   def   KNil[A]: KNil[A] = new KNilOf[A]
 
-  type  findIn[A] = FindIn[A]
-  def   findIn[A] : findIn[A] = new FindIn[A]
+  // type  find[A] = find[A]
+  // def   find[A] : find[A] = new find[A]
 
   type  pick[E] = Pick[E]
   def   pick[E] : pick[E] = new Pick[E]
