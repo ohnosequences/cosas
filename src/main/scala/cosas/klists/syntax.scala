@@ -133,7 +133,7 @@ case object syntax {
       U0,
       O0 <: AnyKList { type Bound = U0 }
     ](f: F)(
-      implicit mapper: AnyApp2At[MapKListOf[F,U0], F, L] { type Y = O0 }
+      implicit mapper: AnyApp2At[mapKList[F,U0], F, L] { type Y = O0 }
     )
     : O0 =
       mapper(f,l)

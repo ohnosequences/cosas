@@ -2,20 +2,20 @@ package ohnosequences.cosas.klists
 
 import ohnosequences.cosas._, fns._
 
-class MapKListOf[F <: AnyDepFn1, Y <: F#Out] extends DepFn2[
+class mapKList[F <: AnyDepFn1, Y <: F#Out] extends DepFn2[
   F,
   AnyKList,
   AnyKList { type Bound = Y }
 ]
 
-case object MapKListOf extends WithSameType {
+case object mapKList extends WithSameType {
 
   implicit def empty[
     F <: AnyDepFn1 { type Out >: B },
     A,
     B
   ]
-  : AnyApp2At[MapKListOf[F,B], F, KNil[A]] { type Y = KNil[B] } =
+  : AnyApp2At[mapKList[F,B], F, KNil[A]] { type Y = KNil[B] } =
     App2 { (f: F, e: KNil[A]) => KNil[B] }
 
   implicit def kconsBis[
@@ -26,13 +26,13 @@ case object MapKListOf extends WithSameType {
   ](implicit
     evF: AnyApp1At[F,H] { type Y = O },
     mapof: AnyApp2At[
-      MapKListOf[F,U],
+      mapKList[F,U],
       F,
       InT
     ]
   )
-  : AnyApp2At[MapKListOf[F,U], F, H :: InT] { type Y = O :: mapof.Y } =
-    App2[MapKListOf[F,U], F, H :: InT, O :: mapof.Y] {
+  : AnyApp2At[mapKList[F,U], F, H :: InT] { type Y = O :: mapof.Y } =
+    App2[mapKList[F,U], F, H :: InT, O :: mapof.Y] {
       (f: F, s: H :: InT) => evF(s.head) :: mapof(f,s.tail)
     }
 }
@@ -46,13 +46,13 @@ trait WithSameType {
   ](implicit
     evF: AnyApp1At[F,H] { type Y = O },
     mapof: AnyApp2At[
-      MapKListOf[F,F#Out],
+      mapKList[F,F#Out],
       F,
       InT
     ]
   )
-  : AnyApp2At[MapKListOf[F,F#Out], F, H :: InT] { type Y = O :: mapof.Y } =
-    App2[MapKListOf[F,F#Out], F, H :: InT, O :: mapof.Y] {
+  : AnyApp2At[mapKList[F,F#Out], F, H :: InT] { type Y = O :: mapof.Y } =
+    App2[mapKList[F,F#Out], F, H :: InT, O :: mapof.Y] {
       (f: F, s: H :: InT) => evF(s.head) :: mapof(f,s.tail)
     }
 }
