@@ -13,9 +13,6 @@ package object klists {
   type  KNil[+A] = KNilOf[A]
   def   KNil[A]: KNil[A] = new KNilOf[A]
 
-  type  takeFirst[Q <: AnyKList] = TakeFirst[Q]
-  def   takeFirst[Q <: AnyKList]: takeFirst[Q] = new TakeFirst[Q]
-
   type cons = Cons.type
   val  cons: cons = Cons
 

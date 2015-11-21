@@ -86,7 +86,7 @@ case object syntax {
       takeFirst(l)
 
     // def takeFirstS[Q >: QO <: AnyKList.Of[L#Bound], QO](w: Witness[Q])(implicit
-    //   takeFirstS: AnyApp1At[TakeFirstS[Q], L] { type Y = QO }
+    //   takeFirstS: AnyApp1At[takeFirstS[Q], L] { type Y = QO }
     // )
     // : QO =
     //   takeFirstS(l)

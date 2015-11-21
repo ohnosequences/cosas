@@ -25,7 +25,7 @@ case object syntax {
     new (RT := Vs)(repl(vs, n :: *[AnyDenotation]))
 
     def as[QT <: AnyRecordType, QTRaw <: QT#Raw](qt: QT)(implicit
-      takeFirst: AnyApp1At[TakeFirst[QT#Raw], Vs] { type Y = QTRaw }
+      takeFirst: AnyApp1At[takeFirst[QT#Raw], Vs] { type Y = QTRaw }
     ): QT := QTRaw =
        qt := (takeFirst(vs): QTRaw)
 
@@ -47,7 +47,7 @@ case object syntax {
   final case class RecordTypeSyntax[RT <: AnyRecordType](val rt: RT) extends AnyVal {
 
     def reorder[Vs <: AnyKList.withBound[AnyDenotation], RTRaw <: RT#Raw](values: Vs)(implicit
-      takeFirst: AnyApp1At[TakeFirst[Vs], Vs] { type Y = RTRaw }
+      takeFirst: AnyApp1At[takeFirst[Vs], Vs] { type Y = RTRaw }
     ): RT := RTRaw =
        rt := (takeFirst(values): RTRaw)
 
