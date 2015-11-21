@@ -33,13 +33,8 @@ final case class Refl[A]() extends (A ≃ A) {
   final def sym: A ≃ A = this
 }
 
-case object ≃ extends EqualityIsSymmetric {
+case object ≃ {
 
   implicit def refl[A >: B <: B, B]: (A <≃> B) = x => Refl[B]()
   implicit def reflInst[B]: B ≃ B = Refl[B]()
-}
-
-trait EqualityIsSymmetric {
-
-  implicit def sym[A, B](implicit p: B <≃> A): A <≃> B = x => (p(x.swap).sym)
 }

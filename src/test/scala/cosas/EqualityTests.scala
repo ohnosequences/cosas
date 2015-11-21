@@ -67,14 +67,4 @@ final class EqualsTests extends org.scalatest.FunSuite {
 
     assert(z === z2)
   }
-
-  test("equality is transitive") {
-
-    def shouldWork[A >: B <: B, B >: C <: C, C](a: A): C = {
-
-      val ac = implicitly[A ≃ C]; import ac._
-
-      a: C
-    }
-  }
 }
