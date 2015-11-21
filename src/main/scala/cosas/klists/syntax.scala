@@ -37,7 +37,7 @@ case object syntax {
       E <: L#Bound,
       OR <: AnyKList  {type Bound = OL#Bound }
     ](w: Witness[E])(implicit
-      split: AnyApp1At[Split[E], L] { type Y = (OL,E,OR) }
+      split: AnyApp1At[split[E], L] { type Y = (OL,E,OR) }
     )
     : (OL, E, OR) =
       split(l)
@@ -48,7 +48,7 @@ case object syntax {
       X,
       OR <: AnyKList  {type Bound = OL#Bound }
     ](w: Witness[E])(implicit
-      splitS: AnyApp1At[SplitS[E], L] { type Y = (OL,X,OR) }
+      splitS: AnyApp1At[splitS[E], L] { type Y = (OL,X,OR) }
     )
     : (OL, X, OR) =
       splitS(l)
