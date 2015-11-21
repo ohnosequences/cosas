@@ -13,12 +13,6 @@ package object klists {
   type  KNil[+A] = KNilOf[A]
   def   KNil[A]: KNil[A] = new KNilOf[A]
 
-  type  toListOf[L <: AnyKList.Of[B], B] = ToListOf[L,B]
-  def   toListOf[L <: AnyKList.Of[B], B] : toListOf[L,B] = new ToListOf[L,B]
-
-  type  toList[L <: AnyKList] = ToList[L]
-  def   toList[L <: AnyKList] : toList[L] = new ToList[L]
-
   type  findIn[A] = FindIn[A]
   def   findIn[A] : findIn[A] = new FindIn[A]
 

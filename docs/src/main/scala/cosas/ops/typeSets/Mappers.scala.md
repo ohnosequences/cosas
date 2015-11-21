@@ -40,21 +40,21 @@ Mapping a set to a List: normally, when you are mapping everything to one type
 
 ```scala
 @annotation.implicitNotFound(msg = "Can't map ${F} over ${S} to a List")
-trait MapToList[F <: Poly1, S <: AnyTypeSet] extends Fn1[S] with OutInContainer[List] 
+trait MaptoList[F <: Poly1, S <: AnyTypeSet] extends Fn1[S] with OutInContainer[List] 
 
-object MapToList {
+object MaptoList {
 
   def apply[F <: Poly1, S <: AnyTypeSet]
-    (implicit mapper: MapToList[F, S]): MapToList[F, S] = mapper
+    (implicit mapper: MaptoList[F, S]): MaptoList[F, S] = mapper
   
   implicit def empty[F <: Poly1, X]: 
-        MapToList[F, ∅] with InContainer[X] = 
-    new MapToList[F, ∅] with InContainer[X] { def apply(s: ∅): Out = Nil }
+        MaptoList[F, ∅] with InContainer[X] = 
+    new MaptoList[F, ∅] with InContainer[X] { def apply(s: ∅): Out = Nil }
   
   implicit def one[H, F <: Poly1, X]
     (implicit h: Case1.Aux[F, H, X]): 
-          MapToList[F, H :~: ∅] with InContainer[X] = 
-      new MapToList[F, H :~: ∅] with InContainer[X] { 
+          MaptoList[F, H :~: ∅] with InContainer[X] = 
+      new MaptoList[F, H :~: ∅] with InContainer[X] { 
 
         def apply(s: H :~: ∅): Out = List[X](h(s.head))
       }
@@ -62,9 +62,9 @@ object MapToList {
   implicit def cons2[H1, H2, T <: AnyTypeSet, F <: Poly1, X]
     (implicit
       h: Case1.Aux[F, H1, X], 
-      t: MapToList[F, H2 :~: T] { type O = X }
-    ):  MapToList[F, H1 :~: H2 :~: T] with InContainer[X] = 
-    new MapToList[F, H1 :~: H2 :~: T] with InContainer[X] {
+      t: MaptoList[F, H2 :~: T] { type O = X }
+    ):  MaptoList[F, H1 :~: H2 :~: T] with InContainer[X] = 
+    new MaptoList[F, H1 :~: H2 :~: T] with InContainer[X] {
 
       def apply(s: H1 :~: H2 :~: T): Out = h(s.head) :: t(s.tail)
     }
@@ -106,7 +106,7 @@ object MapSet {
 Map-folder for sets 
   
 Just a copy of MapFolder for `HList`s from shapeless. 
-It can be done as a combination of MapToList and list fold, but we don't want traverse it twice.
+It can be done as a combination of MaptoList and list fold, but we don't want traverse it twice.
 
 
 ```scala

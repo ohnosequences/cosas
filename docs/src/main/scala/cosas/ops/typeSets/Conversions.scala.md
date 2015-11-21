@@ -53,32 +53,32 @@ object FromHList {
 
 
 @annotation.implicitNotFound(msg = "Can't convert ${S} to a List")
-trait ToList[S <: AnyTypeSet] extends Fn1[S] with OutInContainer[List]
+trait toList[S <: AnyTypeSet] extends Fn1[S] with OutInContainer[List]
 
-object ToList {
+object toList {
 
-  def apply[S <: AnyTypeSet](implicit toList: ToList[S]): ToList[S] = toList
+  def apply[S <: AnyTypeSet](implicit toList: toList[S]): toList[S] = toList
 
   // case object id_ extends Poly1 { implicit def default[T <: X, X] = at[T]{ (t: T) => (t: X) } }
 
   // implicit def any[S <: AnyTypeSet, O](implicit
-  //     mapper: (id_.type MapToList S) with wrapped[O]
-  //   ):  ToList[S] with InContainer[O] =
-  //   new ToList[S] with InContainer[O] { def apply(s: S): Out = mapper(s) }
+  //     mapper: (id_.type MaptoList S) with wrapped[O]
+  //   ):  toList[S] with InContainer[O] =
+  //   new toList[S] with InContainer[O] { def apply(s: S): Out = mapper(s) }
 
   implicit def empty[X]:
-        ToList[∅] with InContainer[X] =
-    new ToList[∅] with InContainer[X] { def apply(s: ∅): Out = Nil }
+        toList[∅] with InContainer[X] =
+    new toList[∅] with InContainer[X] { def apply(s: ∅): Out = Nil }
 
   implicit def one[X, H <: X]:
-        ToList[H :~: ∅] with InContainer[X] =
-    new ToList[H :~: ∅] with InContainer[X] { def apply(s: H :~: ∅): Out = List[X](s.head) }
+        toList[H :~: ∅] with InContainer[X] =
+    new toList[H :~: ∅] with InContainer[X] { def apply(s: H :~: ∅): Out = List[X](s.head) }
 
   implicit def cons2[X, H1 <: X, H2 <: X, T <: AnyTypeSet]
     (implicit
-      lt: ToList[H2 :~: T] { type O = X }
-    ):  ToList[H1 :~: H2 :~: T] with InContainer[X] =
-    new ToList[H1 :~: H2 :~: T] with InContainer[X] {
+      lt: toList[H2 :~: T] { type O = X }
+    ):  toList[H1 :~: H2 :~: T] with InContainer[X] =
+    new toList[H1 :~: H2 :~: T] with InContainer[X] {
 
       def apply(s: H1 :~: H2 :~: T): Out = s.head :: lt(s.tail.head :~: s.tail.tail)
     }
