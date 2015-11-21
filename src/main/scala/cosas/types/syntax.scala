@@ -39,14 +39,4 @@ case object syntax {
     : D =
       get(vs)
   }
-
-  case class SubsetTypeSyntax[W <: AnyType, ST <: SubsetType[W]](val st: ST) extends AnyVal {
-
-    final def apply[R <: W#Raw](raw: W := R): Option[ST := R] = {
-
-      if ( st predicate raw ) None else Some( new (ST := R)(raw.value) )
-    }
-
-    final def withValue[R <: W#Raw](raw: W := R): Option[ST := R] = apply(raw)
-  }
 }
