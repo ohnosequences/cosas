@@ -25,22 +25,11 @@ case object AnyProductType {
 
 }
 
-// TODO parametric on Type
 class EmptyProductType[E <: AnyType] extends AnyProductType {
 
   // type Bound = E
   type Types = *[E]
   val types: Types = *[E]
-
-  type Raw = *[AnyDenotation]
-
-  val label: String = "()"
-}
-case object EmptyProductType extends AnyProductType {
-
-  // type Bound = AnyType
-  type Types = *[AnyType]
-  val  types = *[AnyType]
 
   type Raw = *[AnyDenotation]
 
