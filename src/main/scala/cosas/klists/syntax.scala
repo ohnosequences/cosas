@@ -74,7 +74,7 @@ case object syntax {
       p(l)
 
     def pickS[E, X <: E, O <: AnyKList](w: Witness[E])(implicit
-      p: AnyApp1At[PickS[E], L] { type Y = (X,O)}
+      p: AnyApp1At[pickS[E], L] { type Y = (X,O)}
     )
     : (X,O) =
       p(l)

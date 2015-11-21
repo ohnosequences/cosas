@@ -19,31 +19,31 @@ case object Reorder {
     HeadToTake <: TailToTake#Types#Bound { type Raw >: V}, V,
     STailToTake <: AnyKList { type Bound = AnyDenotation }
   ](implicit
-    pick: AnyApp1At[PickByType[HeadToTake], From] { type Y = ((HeadToTake := V), Rest) },
+    pick: AnyApp1At[pickByType[HeadToTake], From] { type Y = ((HeadToTake := V), Rest) },
     take: AnyApp1At[Reorder[TailToTake, Rest], Rest] { type Y = STailToTake }
   )
   : AnyApp1At[Reorder[HeadToTake :×: TailToTake, From], From] { type Y = (HeadToTake := V) :: STailToTake } =
     App1 { s: From => { val (h, t) = pick(s); h :: take(t) } }
 }
 
-class PickByType[T <: AnyType] extends DepFn1[
+class pickByType[T <: AnyType] extends DepFn1[
   AnyKList { type Bound = AnyDenotation},
   (AnyDenotation { type Tpe = T }, AnyKList { type Bound = AnyDenotation})
 ]
 
-case object PickByType extends PickInTailReally {
+case object pickByType extends pickInTailReally {
   implicit def foundInHead[
     H <: AnyType { type Raw >: V }, V,
     Ds <: AnyKList { type Bound = AnyDenotation }
   ]
   : AnyApp1At[
-      PickByType[H],
+      pickByType[H],
       (H := V) :: Ds
     ] { type Y = (H := V, Ds) } =
     App1 { x: (H := V) :: Ds => (x.head, x.tail)  }
 }
 
-trait PickInTailReally {
+trait pickInTailReally {
 
 implicit def foundInTail[
   H <: AnyType { type Raw >: V }, V,
@@ -52,10 +52,10 @@ implicit def foundInTail[
   P <: AnyType { type Raw >: W }, W
 ]
 (implicit
-  pick: AnyApp1At[PickByType[P], Ds] { type Y = (P := W, Rest) }
+  pick: AnyApp1At[pickByType[P], Ds] { type Y = (P := W, Rest) }
 )
 : AnyApp1At[
-  PickByType[P],
+  pickByType[P],
   (H := V) :: Ds
 ] {type Y = (P := W, (H := V) :: Rest) } =
   App1 { x: (H := V) :: Ds => (pick(x.tail)._1, x.head :: pick(x.tail)._2 ) }

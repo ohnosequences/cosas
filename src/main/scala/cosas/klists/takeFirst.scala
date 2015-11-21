@@ -15,7 +15,7 @@ case object TakeFirst {
     TailToTake <: AnyKList { type Bound >: HeadToTake }, From <: AnyKList, Rest <: AnyKList,
     HeadToTake >: SHeadToTake, SHeadToTake
   ](implicit
-    pick: AnyApp1At[PickS[HeadToTake], From] { type Y = (SHeadToTake, Rest) },
+    pick: AnyApp1At[pickS[HeadToTake], From] { type Y = (SHeadToTake, Rest) },
     take: AnyApp1At[TakeFirst[TailToTake], Rest] { type Y = TailToTake }
   )
   : AnyApp1At[TakeFirst[HeadToTake :: TailToTake], From] { type Y = SHeadToTake :: TailToTake } =
@@ -35,7 +35,7 @@ case object TakeFirst {
 //     SHeadToTake, HeadToTake >: SHeadToTake <: TailToTake#Bound,
 //     STailToTake <: TailToTake, TailToTake >: STailToTake <: AnyKList { type Bound >: SHeadToTake }
 //   ](implicit
-//     pick: AnyApp1At[PickS[HeadToTake], From] { type Y = (SHeadToTake, Rest) },
+//     pick: AnyApp1At[pickS[HeadToTake], From] { type Y = (SHeadToTake, Rest) },
 //     take: AnyApp1At[TakeFirstS[TailToTake], Rest] { type Y = STailToTake }
 //   )
 //   : AnyApp1At[TakeFirstS[HeadToTake :: TailToTake], From] { type Y = SHeadToTake :: STailToTake } =

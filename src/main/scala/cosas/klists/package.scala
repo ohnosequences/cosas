@@ -13,9 +13,6 @@ package object klists {
   type  KNil[+A] = KNilOf[A]
   def   KNil[A]: KNil[A] = new KNilOf[A]
 
-  type  pick[E] = Pick[E]
-  def   pick[E] : pick[E] = new Pick[E]
-
   type  replace[L <: AnyKList] = Replace[L]
   def   replace[L <: AnyKList]: replace[L] = new Replace[L]
 
