@@ -67,4 +67,20 @@ final class EqualsTests extends org.scalatest.FunSuite {
 
     assert(z === z2)
   }
+
+  test("distinct types, subtypes") {
+
+    trait Uh; class Oh extends Uh
+
+    val neq = implicitly[Uh != Oh]
+
+    assertTypeError { """ implicitly[ Uh != Uh ] """ }
+
+    val x: Oh = new Oh
+    val p: Oh ≤ Uh = implicitly[Oh ≤ Uh]
+
+    assert { (x: Uh) === p.asRight(x) }
+  }
+
+
 }
