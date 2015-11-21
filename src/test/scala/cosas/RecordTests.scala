@@ -159,7 +159,6 @@ class RecordTypeTests extends org.scalatest.FunSuite {
     implicit def idParser: DenotationParser[id.type, Int, String]  = new DenotationParser(id, id.label)(idVParser)
 
     implicit val idSerializer: DenotationSerializer[id.type, Int, String] = new DenotationSerializer(id, id.label)( { x: Int => Some(x.toString )} )
-    implicit val nameSerializer: DenotationSerializer[name.type, String, String] = new DenotationSerializer(name, name.label)(Some(_:String) )
   }
 
   test("can parse records from Maps") {
@@ -230,5 +229,4 @@ class RecordTypeTests extends org.scalatest.FunSuite {
         (simpleUser := id(29681) :: name("Antonio") :: *[AnyDenotation]).serializeUsing(mapWithKey)
     }
   }
-
 }

@@ -4,6 +4,12 @@ import ohnosequences.cosas._
 
 final class NatTests extends org.scalatest.FunSuite {
 
+  test("aliases for numbers") {
+
+    assert { Successor(_0) === _1 }
+    assert { _1.pred === _0 }
+  }
+
   test("can sum nat vals and types") {
 
     assert { sum(_1, _0) === sum(_0, _1) }
