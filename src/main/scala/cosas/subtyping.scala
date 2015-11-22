@@ -1,6 +1,6 @@
 package ohnosequences.cosas
 
-// NOTE all these could be predicates on witnesses?
+// NOTE all these will be predicates on witnesses.
 final case class NotSubtypeOf[A,B] private(val witness: NotSubtypeOf.type) extends AnyVal
 
 case object NotSubtypeOf extends SubtypeYieldsAmbiguity {

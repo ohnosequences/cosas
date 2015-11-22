@@ -264,7 +264,8 @@ class KListTests extends org.scalatest.FunSuite {
 
   case object sum extends DepFn2[Int,Int,Int] {
 
-    implicit val default: App2[sum.type, Int,Int,Int] = App2 { (a: Int, b: Int) => (a + b): Int }
+    implicit lazy val default: App2[sum.type, Int,Int,Int] =
+      sum at { (a: Int, b: Int) => (a + b): Int }
   }
 
   test("can foldLeft over KLists") {
@@ -379,10 +380,14 @@ class KListTests extends org.scalatest.FunSuite {
 
       implicit def yes[X <: AnyVal]: isAnyVal.type isTrueOn X =
         isAnyVal.isTrueOn[X]
+
+      // redundant
+      implicit def nono: isAnyVal.type isFalseOn String = isAnyVal.isFalseOn[String]
     }
 
     assert { isAnyVal("foo") === False }
     assert { isAnyVal('x') === True }
+    assert { isAnyVal( new AnyRef) === False }
 
     assertResult('b' :: true :: 2 :: 'a' :: *[Any]) {
       ('b' :: true :: "hola" :: 2 :: 'a' :: *[Any]).filter(isAnyVal)

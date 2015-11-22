@@ -13,7 +13,10 @@ final class EqualsTests extends org.scalatest.FunSuite {
     type llstringAgain = List[lstring]
     // import coercion._
 
-    implicitly[string <≃> stringAgain]
+    val z = implicitly[string <≃> stringAgain]
+    // get an instance
+    val eqString = z(Left(""))
+
     implicitly[stringAgain <≃> string]
     implicitly[string <≃> string]
     implicitly[stringAgain <≃> stringAgain]
