@@ -11,16 +11,9 @@ case object Cons extends DepFn2[Any, AnyKList, AnyKList] {
 
 case object Snoc extends Flip[cons]
 
-case object Uncons extends DepFn1[AnyKList, (Any,AnyKList)] with unconsNEKList {
+case object Uncons extends DepFn1[AnyKList, (Any,AnyKList)] {
 
   implicit def default[H <: T#Bound, T <: AnyKList]
   : AnyApp1At[Uncons.type, H :: T] { type Y = (H,T) } =
     App1 { ht: H :: T => (ht.head, ht.tail) }
-}
-
-trait unconsNEKList {
-
-  implicit def nempty[L <: AnyNonEmptyKList]
-  : AnyApp1At[Uncons.type, L] { type Y = (L#Head,L#Tail) } =
-    App1 { ht: L => (ht.head, ht.tail) }
 }
