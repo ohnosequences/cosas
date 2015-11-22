@@ -41,6 +41,7 @@ class RecordTypeTests extends org.scalatest.FunSuite {
 
 
   test("should fail when some properties are missing") {
+
     assertTypeError("""
     val wrongAttrSet = simpleUser(
       id(123) ::
@@ -55,6 +56,11 @@ class RecordTypeTests extends org.scalatest.FunSuite {
       *[AnyDenotation]
     )
     """)
+  }
+
+  test("labels and typeLabel") {
+
+    assert { simpleUser.label === typeLabel(simpleUser) }
   }
 
   test("can access fields and field values") {
