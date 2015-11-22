@@ -13,11 +13,6 @@ sealed trait AnyKList extends Any {
   type Union >: Types#union <: Types#union
 }
 
-case object KList {
-
-  def apply[F <: AnyDepFn1](f: F): mapKList[F, F#Out] = new mapKList[F, F#Out]
-}
-
 sealed trait AnyEmptyKList extends Any with AnyKList {
 
   type Types = TypeUnion.empty
