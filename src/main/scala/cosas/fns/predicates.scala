@@ -20,3 +20,36 @@ case object AnyPredicate {
 
 // TODO: add Not, And, Or
 trait PredicateOver[T] extends AnyPredicate { type In1 = T }
+
+trait AnyAnd extends AnyPredicate { and =>
+
+  type In1 = First#In1 //<: First#In1
+
+  type First <: AnyPredicate
+  val first: First
+
+  type Second <: AnyPredicate { type In1 = and.First#In1 }
+  val second: Second
+}
+case class and[
+  P1 <: AnyPredicate,
+  P2 <: AnyPredicate { type In1 = P1#In1 }
+](val first: P1, val second: P2) extends AnyAnd {
+
+  // type In1 = P1#In1
+  type First = P1; type Second = P2
+}
+
+case object AnyAnd {
+
+  implicit def bothTrue[
+    AP <: AnyAnd,
+    V <: AP#In1
+  ](implicit
+    p1: AP#First isTrueOn V,
+    // NOTE this is really strange
+    p2: AnyApp1At[AP#Second,V with AP#Second#In1] { type Y = True }
+  )
+  : AP isTrueOn V =
+    App1 { _: V => True }
+}
