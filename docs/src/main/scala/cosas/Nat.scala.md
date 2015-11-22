@@ -2,43 +2,54 @@
 ```scala
 package ohnosequences.cosas
 
-@annotation.implicitNotFound( msg =
-"""
-No proof of equality found for types:
+import ohnosequences.cosas._, fns._, typeUnions._
 
-  ${A}
+trait AnyNat { n =>
 
-  ${B}
-""")
-sealed trait ≃[A, B] {
+  type Next <: AnyNat
+  val next: Next
 
-  type Left = A
-  type Right = B
-  type Out >: A with B <: A with B
+  type StrictlySmaller <: AnyTypeUnion
 
-  implicit def inL(a: A): Out
-  implicit def inR(b: B): Out
-
-  final implicit def elimL(o: Out): A = o
-  final implicit def elimR(o: Out): B = o
-
-  def sym: ≃[B, A]
+  implicit val me = this
 }
 
-final case class Refl[A]() extends (A ≃ A) {
+case object zero extends AnyNat {
 
-  final type Out = A
+  type Next = Successor[zero.type]
+  lazy val next: Next = Successor(zero)
 
-  final implicit def inL(a: A): Out = a
-  final implicit def inR(b: A): Out = b
+  type StrictlySmaller = empty
+}
+trait AnyNonZeroNat extends AnyNat { nz =>
 
-  final def sym: A ≃ A = this
+  type Next <: AnyNonZeroNat
+  type Pred <: AnyNat
+  val pred: Pred
+
+  type StrictlySmaller = Pred#StrictlySmaller or Pred
 }
 
-case object ≃ {
+case class Successor[N <: AnyNat](val pred: N) extends AnyNonZeroNat {
 
-  implicit def refl[A >: B <: B, B]: (A <≃> B) = x => Refl[B]()
-  implicit def reflInst[B]: B ≃ B = Refl[B]()
+  type Next = Successor[Successor[N]]
+  lazy val next: Next = Successor(this)
+  type Pred = N
+}
+
+// TODO build nat rec depfn0
+
+case object sum extends DepFn2[AnyNat, AnyNat, AnyNat] {
+
+  implicit def zeroPlusAnything[N <: AnyNat]
+  : AnyApp2At[sum.type, N, _0] { type Y = N } =
+    App2 { (n: N, o: _0) => n }
+
+  implicit def rec[X <: AnyNat, Y <: AnyNat, Z <: AnyNat](implicit
+    sumN: AnyApp2At[sum.type, Successor[X], Y] { type Y = Z }
+  )
+  : AnyApp2At[sum.type, X, Successor[Y]] { type Y = Z }=
+    App2 { (n: X, o: Successor[Y]) => sumN( Successor(n), o.pred ) }
 }
 
 ```

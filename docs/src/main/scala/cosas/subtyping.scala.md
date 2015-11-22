@@ -2,43 +2,46 @@
 ```scala
 package ohnosequences.cosas
 
-@annotation.implicitNotFound( msg =
-"""
-No proof of equality found for types:
+// NOTE all these could be predicates on witnesses?
+final case class NotSubtypeOf[A,B] private(val witness: NotSubtypeOf.type) extends AnyVal
 
-  ${A}
+case object NotSubtypeOf extends SubtypeYieldsAmbiguity {
 
-  ${B}
-""")
-sealed trait ≃[A, B] {
-
-  type Left = A
-  type Right = B
-  type Out >: A with B <: A with B
-
-  implicit def inL(a: A): Out
-  implicit def inR(b: B): Out
-
-  final implicit def elimL(o: Out): A = o
-  final implicit def elimR(o: Out): B = o
-
-  def sym: ≃[B, A]
+  implicit def nsub[A, B]: A !< B = new (A !< B)(this)
 }
 
-final case class Refl[A]() extends (A ≃ A) {
+trait SubtypeYieldsAmbiguity {
 
-  final type Out = A
-
-  final implicit def inL(a: A): Out = a
-  final implicit def inR(b: A): Out = b
-
-  final def sym: A ≃ A = this
+  implicit def nsubAmbig1[A, B >: A]: A !< B = throw new Exception {}
+  implicit def nsubAmbig2[A, B >: A]: A !< B = throw new Exception {}
 }
 
-case object ≃ {
+final case class Distinct[A, B] private(val witness: Distinct.type) extends AnyVal
 
-  implicit def refl[A >: B <: B, B]: (A <≃> B) = x => Refl[B]()
-  implicit def reflInst[B]: B ≃ B = Refl[B]()
+case object Distinct extends EqualTypesYieldsAmbiguity {
+
+  implicit def neq[A, B] : A != B = new (A != B)(this)
+}
+
+trait EqualTypesYieldsAmbiguity {
+
+  implicit def neqAmbig1[A]: A != A = throw new Exception {}
+  implicit def neqAmbig2[A]: A != A = throw new Exception {}
+}
+
+final case class SubtypeOf[A,B] private[cosas](val witness: SubtypeOf.type) extends AnyVal {
+
+  def asRight(a : A): A with B = a.asInstanceOf[A with B]
+}
+
+case object SubtypeOf extends WorksForSubtypesToo {
+
+  implicit def refl[A]: A ≤ A = new (A ≤ A)(this)
+}
+
+trait WorksForSubtypesToo {
+
+  implicit def subtype[A, B <: A]: B ≤ A = new (B ≤ A)(SubtypeOf)
 }
 
 ```

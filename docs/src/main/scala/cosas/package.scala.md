@@ -1,44 +1,42 @@
 
 ```scala
-package ohnosequences.cosas
+package ohnosequences
 
-@annotation.implicitNotFound( msg =
-"""
-No proof of equality found for types:
+package object cosas {
 
-  ${A}
+  type ?≃[X, Y] = Either[X,Y]
+  type <≃>[A, B] = (A ?≃ B) => (A ≃ B)
 
-  ${B}
-""")
-sealed trait ≃[A, B] {
 
-  type Left = A
-  type Right = B
-  type Out >: A with B <: A with B
+  type !=[A,B]  = Distinct[A,B]
+  type !<[A,B]  = A NotSubtypeOf B
+  type ≤[A,B]   = A SubtypeOf B
 
-  implicit def inL(a: A): Out
-  implicit def inR(b: B): Out
+  type  _0 = zero.type
+  val   _0: _0 = zero
 
-  final implicit def elimL(o: Out): A = o
-  final implicit def elimR(o: Out): B = o
+  type  _1 = Successor[_0]
+  val   _1: _1 = Successor(_0)
 
-  def sym: ≃[B, A]
-}
+  type  _2 = Successor[_1]
+  val   _2: _2 = Successor(_1)
 
-final case class Refl[A]() extends (A ≃ A) {
+  type  _3 = Successor[_2]
+  val   _3: _3 = Successor(_2)
 
-  final type Out = A
+  type  _4 = Successor[_3]
+  val   _4 = Successor(_3)
+  // ...
 
-  final implicit def inL(a: A): Out = a
-  final implicit def inR(b: A): Out = b
+  type True = TRUE.type
+  val  True: True = TRUE
+  type False = FALSE.type
+  val  False: False = FALSE
 
-  final def sym: A ≃ A = this
-}
+  type  /[A] = Witness[A]
+  def   /[A] : Witness[A] = new Witness[A](Witness)
 
-case object ≃ {
-
-  implicit def refl[A >: B <: B, B]: (A <≃> B) = x => Refl[B]()
-  implicit def reflInst[B]: B ≃ B = Refl[B]()
+  private[cosas] type uv = scala.annotation.unchecked.uncheckedVariance
 }
 
 ```
