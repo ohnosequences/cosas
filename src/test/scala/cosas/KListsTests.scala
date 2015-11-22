@@ -62,7 +62,6 @@ class KListTests extends org.scalatest.FunSuite {
     assert{ foo(oh) === true }
   }
 
-
   test("can convert KLists to lists of their bound") {
 
     assert {
@@ -108,6 +107,14 @@ class KListTests extends org.scalatest.FunSuite {
       (("hola" :: "scalac" :: *[String]).asList : List[Any]) === List[Any]("hola","scalac")
     }
 
+  }
+
+  test("KList cons/uncons") {
+
+    val z = true :: "hola" :: 2 :: *[Any]
+
+    // TODO better syntax for this
+    assert{ cons(z.uncons._1, z.uncons._2) === z }
   }
 
   test("can access elements by index") {
