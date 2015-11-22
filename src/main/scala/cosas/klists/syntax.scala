@@ -12,16 +12,6 @@ case object syntax {
     : (H,T) =
       uncons(l)
 
-    def head[H <: L#Bound, T <: AnyKList](
-      implicit uncons: AnyApp1At[uncons, L] { type Y = (H,T) })
-    : H =
-      uncons(l)._1
-
-    def tail[H <: T#Bound, T <: AnyKList](
-      implicit uncons: AnyApp1At[uncons, L] { type Y = (H,T) })
-    : T =
-      uncons(l)._2
-
     def at[N <: AnyNat, Z <: L#Bound](n: N)(implicit a: AnyApp1At[L at N, L] { type Y = Z })
     : Z =
       a(l)
