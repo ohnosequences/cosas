@@ -1,5 +1,7 @@
 package ohnosequences.cosas.fns
 
+import ohnosequences.cosas._
+
 trait AnyFn1 extends Any with AnyDepFn1 {
 
   def f: In1 => Out
@@ -44,4 +46,11 @@ case object as {
   def apply[X,Y >: X]: as[X,Y] = new as[X,Y]
 
   implicit def default[A, B >: A]: AnyApp1At[as[A,B],A] {type Y = B } = App1 { a: A => a }
+}
+
+case object sub extends AnyPredicate {
+
+  type In1 = (Any,Any)
+
+  implicit def buh[A,B](implicit ev: A SubtypeOf B): sub.type isTrueOn (A,B) = this.isTrueOn[(A,B)]
 }

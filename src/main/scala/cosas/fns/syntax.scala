@@ -13,7 +13,7 @@ case object syntax {
       new Composition[F,DF]
   }
 
-  case class PredicateLikeSyntax[DF <: AnyDepFn1 { type Out = AnyBool }](val df: DF) extends AnyVal {
+  case class PredicateLikeSyntax[DF <: AnyDepFn1 { type Out = Unit }](val df: DF) extends AnyVal {
 
     final def asPredicate: asPredicate[DF] = new asPredicate[DF](df)
   }
@@ -21,8 +21,8 @@ case object syntax {
   case class PredicateSyntax[P <: AnyPredicate](val p: P) extends AnyVal {
 
     // for constructing evidences
-    def isTrueOn[X <: P#In1]:  P isTrueOn X  = App1 { _: X => True }
-    def isFalseOn[X <: P#In1]: P isFalseOn X = App1 { _: X => False }
+    def isTrueOn[X <: P#In1]:  P isTrueOn X  = App1 { _: X => () }
+    // def isFalseOn[X <: P#In1]: P isFalseOn X = App1 { _: X => False }
 
     def ∧[O <: AnyPredicate { type In1 = P#In1 }](o: O): P and O = and(p,o)
 
