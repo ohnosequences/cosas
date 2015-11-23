@@ -3,18 +3,18 @@ package ohnosequences.cosas
 // import fns._
 
 // NOTE all these could be predicates on witnesses?
-final case class NotSubtypeOf[A,B] private(val witness: NotSubtypeOf.type) extends AnyVal
-
-case object NotSubtypeOf extends SubtypeYieldsAmbiguity {
-
-  implicit def nsub[A, B]: A !< B = new (A !< B)(this)
-}
-
-trait SubtypeYieldsAmbiguity {
-
-  implicit def nsubAmbig1[A, B >: A]: A !< B = throw new Exception {}
-  implicit def nsubAmbig2[A, B >: A]: A !< B = throw new Exception {}
-}
+// final case class NotSubtypeOf[A,B] private(val witness: NotSubtypeOf.type) extends AnyVal
+//
+// case object NotSubtypeOf extends SubtypeYieldsAmbiguity {
+//
+//   implicit def nsub[A, B]: A NotSubtypeOf B = new (A NotSubtypeOf B)(this)
+// }
+//
+// trait SubtypeYieldsAmbiguity {
+//
+//   implicit def nsubAmbig1[A, B >: A]: A NotSubtypeOf B = throw new Exception {}
+//   implicit def nsubAmbig2[A, B >: A]: A NotSubtypeOf B = throw new Exception {}
+// }
 
 final case class Distinct[A, B] private(val witness: Distinct.type) extends AnyVal
 

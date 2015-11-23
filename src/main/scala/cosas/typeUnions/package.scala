@@ -1,5 +1,7 @@
 package ohnosequences.cosas
 
+import fns._
+
 package object typeUnions {
 
   private[cosas] type just[+T] = not[not[T]]
@@ -11,7 +13,7 @@ package object typeUnions {
   type    isOneOf[X, U <: AnyTypeUnion] = just[X] ≤  U#union
 
   @annotation.implicitNotFound(msg = "Can't prove that ${X} is not one of ${U}")
-  type isNotOneOf[X, U <: AnyTypeUnion] = just[X] !< U#union
+  type isNotOneOf[X, U <: AnyTypeUnion] = notSub.type isTrueOn (just[X], U#union)
 
   final type oneOf[U <: AnyTypeUnion] = {
     type    is[X] = X    isOneOf U
