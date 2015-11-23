@@ -90,3 +90,24 @@ case object AnyOr {
   : AP isTrueOn V =
     App1 { x: V => True }
 }
+
+trait AnyNot extends AnyPredicate {
+
+  type Pred <: AnyPredicate
+
+  type In1 = Pred#In1
+}
+
+case class Not[P <: AnyPredicate](val pred: P) extends AnyNot {
+
+  type Pred = P
+}
+
+case object AnyNot {
+
+  implicit def ifFalse[P <: AnyNot, V0 <: P#In1](implicit
+    p: P#Pred isFalseOn V0
+  )
+  : P isTrueOn V0 =
+    App1[P,V0,True] { x: V0 => True }
+}

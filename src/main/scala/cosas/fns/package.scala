@@ -7,4 +7,5 @@ package object fns {
 
   type isTrueOn[P <: AnyPredicate, X <: P#In1] = AnyApp1At[P, X] { type Y = True }
   type isFalseOn[P <: AnyPredicate, X <: P#In1] = AnyApp1At[P, X] { type Y = False }
+  def ¬[P <: AnyPredicate](p: P): Not[P] = Not(p)
 }

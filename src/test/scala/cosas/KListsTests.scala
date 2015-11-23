@@ -403,5 +403,15 @@ class KListTests extends org.scalatest.FunSuite {
     assertResult(2 :: *[Any]) {
       ('b' :: Set("a") :: true :: "hola" :: List(1,2,3) :: 2 :: 'a' :: *[Any]).filter(isAnyVal ∧ isInt)
     }
+
+    assertResult('b' :: Set("a") :: true :: "hola" :: List(1,2,3) :: 2 :: 'a' :: *[Any]) {
+      ('b' :: Set("a") :: true :: "hola" :: List(1,2,3) :: 2 :: 'a' :: *[Any])
+        .filter( ¬(isAnyVal ∧ isInt) )
+    }
+
+    assert {
+      ('b' :: true :: "hola" :: 2 :: 'a' :: *[Any]).filter( ¬(isAnyVal) ∨ ¬(isString) ) ===
+      ('b' :: true :: "hola" :: 2 :: 'a' :: *[Any]).filter( ¬(isAnyVal ∧ isString) )
+    }
   }
 }
