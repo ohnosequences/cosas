@@ -1,5 +1,29 @@
 package ohnosequences.cosas
 
+import fns._
+
+case object test {
+
+  // TODO add syntax for A ≤ B === sub.type isTrueOn (A,B)
+  case object sub extends PredicateOver[(Any,Any)] {
+
+    implicit def trueAt[A, B <: A]: sub.type isTrueOn (A,B) = sub.isTrueOn[(A,B)]
+  }
+
+  val notSub = ¬(sub)
+
+  case object typeEq extends PredicateOver[(Any,Any)] {
+
+    implicit def trueAt[A]: typeEq.type isTrueOn (A,A) = typeEq.isTrueOn[(A,A)]
+  }
+
+  val notTypeEq = ¬(typeEq)
+
+}
+
+
+
+
 // NOTE all these could be predicates on witnesses?
 final case class NotSubtypeOf[A,B] private(val witness: NotSubtypeOf.type) extends AnyVal
 
