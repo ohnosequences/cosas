@@ -15,9 +15,7 @@ case object syntax {
 
   final case class DenotationSyntax[T <: AnyType, V <: T#Raw](val v: V) extends AnyVal {
 
-    def =~=[W <: T#Raw](w: T := W): Boolean = v == w.value
-    // this is probably too much:
-    // def =~=[W <: T#Raw](w: T := W)(implicit typesEq: V ≃ W): Boolean = v == w.value
+    def =~=(w: T := V): Boolean = v == w.value
   }
 
   final case class AnyProductTypeSyntax[L <: AnyProductType](val l: L) extends AnyVal {
