@@ -13,11 +13,20 @@ case object syntax {
       new Composition[F,DF]
   }
 
+  case class PredicateLikeSyntax[DF <: AnyDepFn1 { type Out = AnyBool }](val df: DF) extends AnyVal {
+
+    final def asPredicate: asPredicate[DF] = new asPredicate[DF](df)
+  }
+
   case class PredicateSyntax[P <: AnyPredicate](val p: P) extends AnyVal {
 
     // for constructing evidences
     def isTrueOn[X <: P#In1]:  P isTrueOn X  = App1 { _: X => True }
     def isFalseOn[X <: P#In1]: P isFalseOn X = App1 { _: X => False }
+
+    def ∧[O <: AnyPredicate { type In1 = P#In1 }](o: O): P and O = and(p,o)
+
+    def ∨[O <: AnyPredicate { type In1 = P#In1 }](o: O): P Or O = Or(p,o)
   }
 
   case class DepFn2Syntax[DF <: AnyDepFn2](val df: DF) extends AnyVal {
@@ -40,7 +49,6 @@ case object syntax {
     ](z: Z)(l: L)(implicit
       foldr: AnyApp3At[FoldRight[DF], DF, Z, L] { type Y = O }
     ): O = foldr(df, z, l)
-
   }
 
   case class DepFn3Syntax[DF <: AnyDepFn3](val df: DF) extends AnyVal {
