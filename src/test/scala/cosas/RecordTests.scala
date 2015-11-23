@@ -10,10 +10,10 @@ case object recordTestsContext {
   case object email extends Type[String]("email")
   case object color extends Type[String]("color")
 
-  case object simpleUser extends RecordType(id :×: name :×: unit)
-  case object normalUser extends RecordType(id :×: name :×: email :×: color :×: unit)
+  case object simpleUser extends RecordType(id :×: name :×: |[AnyType])
+  case object normalUser extends RecordType(id :×: name :×: email :×: color :×: |[AnyType])
 
-  val volatileRec = new RecordType(email :×: color :×: unit)
+  val volatileRec = new RecordType(email :×: color :×: |[AnyType])
 
   val volatileRecEntry = volatileRec (
     email("oh@buh.com") ::

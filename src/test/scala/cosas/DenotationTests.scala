@@ -16,7 +16,7 @@ case object DenotationTestsContext {
 
   val FavoriteColor = (User ==> Color)
 
-  val colorAndFriend = Color :×: Friend :×: unit
+  val colorAndFriend = Color :×: Friend :×: |[AnyType]
 
   sealed trait Colors extends AnyType { type Raw = Any; lazy val label: String = toString }
   case object Blue    extends Colors
@@ -145,7 +145,7 @@ class DenotationTests extends org.scalatest.FunSuite {
     assert { (zz getFirst Friend) === (zz at _1) }
 
     // NOTE a bounded product type
-    val FranceFlag = Blue :×: White :×: Red :×: In[Colors]
+    val FranceFlag = Blue :×: White :×: Red :×: |[Colors]
 
     val viveLaFrance = FranceFlag :=  (Blue := "Vive")    ::
                                       (White := "la")     ::
