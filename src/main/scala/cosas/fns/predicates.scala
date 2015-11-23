@@ -2,7 +2,7 @@ package ohnosequences.cosas.fns
 
 import ohnosequences.cosas._
 
-trait AnyPredicate extends AnyDepFn1 { type Out = AnyBool }
+trait AnyPredicate extends Any with AnyDepFn1 { type Out = AnyBool }
 
 case object AnyPredicate {
 
@@ -12,14 +12,26 @@ case object AnyPredicate {
   implicit def default[P <: AnyPredicate { type In1 >: X }, X]:
     P isFalseOn X = App1 { _: X => False }
 
-
   implicit def predicateSyntax[P <: AnyPredicate](p: P):
     syntax.PredicateSyntax[P] =
     syntax.PredicateSyntax(p)
 }
 
-// TODO: add Not, And, Or
 trait PredicateOver[T] extends AnyPredicate { type In1 = T }
+
+case class asPredicate[F <: AnyDepFn1 { type Out = AnyBool }](val f: F) extends AnyVal with AnyPredicate {
+
+  type In1 = F#In1
+}
+
+case object asPredicate {
+
+  implicit def fromF[F <: AnyDepFn1 { type Out = AnyBool}, V <: F#In1](implicit
+    p: AnyApp1At[F,V] { type Y = True }
+  )
+  : asPredicate[F] isTrueOn V =
+    App1 { v: V => True }
+}
 
 trait AnyAnd extends AnyPredicate { and =>
 
