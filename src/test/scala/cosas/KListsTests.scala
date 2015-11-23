@@ -400,7 +400,8 @@ class KListTests extends org.scalatest.FunSuite {
     assert { trueOnLists(List("hola")) === True }
 
     assert {
-      ( (List(2) :: 2 :: List("hola") :: "hola" :: *[Any]).filter(asPredicate(trueOnLists)) ) === (List(2) :: List("hola") :: *[Any]) }
+      ( List(2) :: 2 :: List("hola") :: "hola" :: *[Any] filter trueOnLists.asPredicate ) === (List(2) :: List("hola") :: *[Any])
+    }
 
     assertResult('b' :: true :: 2 :: 'a' :: *[Any]) {
       ('b' :: true :: "hola" :: 2 :: 'a' :: *[Any]).filter(isAnyVal)

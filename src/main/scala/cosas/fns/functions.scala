@@ -1,5 +1,7 @@
 package ohnosequences.cosas.fns
 
+import ohnosequences.cosas._
+
 /* Dependent functions aka dependent products */
 trait AnyDepFn extends Any {
   type Out
@@ -22,6 +24,9 @@ case object AnyDepFn1 {
     X10 <: DF0#In1
   ](df: DF0): syntax.DepFn1ApplyAt[DF0,X10] =
     syntax.DepFn1ApplyAt(df)
+
+  implicit def asPredicateSyntax[DF <: AnyDepFn1 { type Out = AnyBool }](f: DF): syntax.PredicateLikeSyntax[DF] =
+    syntax.PredicateLikeSyntax(f)
 }
 
 trait DepFn1[I,O] extends Any with AnyDepFn1 {

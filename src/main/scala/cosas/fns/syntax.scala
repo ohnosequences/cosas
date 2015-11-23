@@ -13,6 +13,11 @@ case object syntax {
       new Composition[F,DF]
   }
 
+  case class PredicateLikeSyntax[DF <: AnyDepFn1 { type Out = AnyBool }](val df: DF) extends AnyVal {
+
+    final def asPredicate: asPredicate[DF] = new asPredicate[DF](df)
+  }
+
   case class PredicateSyntax[P <: AnyPredicate](val p: P) extends AnyVal {
 
     // for constructing evidences
@@ -44,7 +49,6 @@ case object syntax {
     ](z: Z)(l: L)(implicit
       foldr: AnyApp3At[FoldRight[DF], DF, Z, L] { type Y = O }
     ): O = foldr(df, z, l)
-
   }
 
   case class DepFn3Syntax[DF <: AnyDepFn3](val df: DF) extends AnyVal {
