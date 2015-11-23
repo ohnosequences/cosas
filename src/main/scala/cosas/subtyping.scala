@@ -58,10 +58,10 @@ final case class SubtypeOf[A,B] private[cosas](val witness: SubtypeOf.type) exte
 
 case object SubtypeOf extends WorksForSubtypesToo {
 
-  implicit def refl[A]: A ≤ A = new (A ≤ A)(this)
+  implicit def refl[A]: A SubtypeOf A = new (A SubtypeOf A)(this)
 }
 
 trait WorksForSubtypesToo {
 
-  implicit def subtype[A, B <: A]: B ≤ A = new (B ≤ A)(SubtypeOf)
+  implicit def subtype[A, B <: A]: B SubtypeOf A = new (B SubtypeOf A)(SubtypeOf)
 }

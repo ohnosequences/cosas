@@ -15,6 +15,7 @@ libraryDependencies ++= Seq (
 // shows time for each test:
 testOptions in Test += Tests.Argument("-oD")
 
+// for debugging
 // scalacOptions ++= Seq("-Xlog-implicits")
 
 incOptions := incOptions.value.withNameHashing(false)
