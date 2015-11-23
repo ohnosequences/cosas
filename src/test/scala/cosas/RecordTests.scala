@@ -59,30 +59,27 @@ class RecordTypeTests extends org.scalatest.FunSuite {
 
   test("can access fields and field values") {
 
-    assert { (simpleUserEntry get id) === id(123) }
+    assert { (simpleUserEntry get id) =~= id(123) }
     assert { (simpleUserEntry getV id) === 123 }
 
-    assert { (simpleUserEntry get name) === name("foo") }
+    assert { (simpleUserEntry get name) =~= name("foo") }
     assert { (simpleUserEntry getV name) === "foo" }
 
-    assert { (normalUserEntry get email) === email("foo@bar.qux") }
+    assert { (normalUserEntry get email) =~= email("foo@bar.qux") }
     assert { (normalUserEntry getV email) === "foo@bar.qux" }
-
-    // FIXME: assert doesn't work as expected (value classes, etc.)
-    assert { (simpleUserEntry get name) === email("foo") }
   }
 
 
   test("can access fields from vals and volatile vals") {
 
-    assert { (volatileRecEntry get color) === color("blue") }
-    assert { (volatileRecEntry get email) === email("oh@buh.com") }
+    assert { (volatileRecEntry get color) =~= color("blue") }
+    assert { (volatileRecEntry get email) =~= email("oh@buh.com") }
   }
 
   test("can update fields") {
 
     assert {
-      (normalUserEntry update color("albero")) ===
+      (normalUserEntry update color("albero")) =~=
         (normalUser(
           (normalUserEntry get id)    ::
           (normalUserEntry get name)  ::
@@ -95,7 +92,7 @@ class RecordTypeTests extends org.scalatest.FunSuite {
 
     assert {
       // NOTE can update in any order
-      (normalUserEntry update name("bar") :: id(321) :: *[AnyDenotation]) === (
+      (normalUserEntry update name("bar") :: id(321) :: *[AnyDenotation]) =~= (
         normalUser(
           id(321)                     ::
           name("bar")                 ::
@@ -132,7 +129,7 @@ class RecordTypeTests extends org.scalatest.FunSuite {
 
   test("product type interop") {
 
-    assert { (simpleUser := simpleUserEntry.toProduct.value) === simpleUserEntry }
+    assert { (simpleUser := simpleUserEntry.toProduct.value) =~= simpleUserEntry }
   }
 
 
