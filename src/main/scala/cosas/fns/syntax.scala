@@ -18,6 +18,8 @@ case object syntax {
     // for constructing evidences
     def isTrueOn[X <: P#In1]:  P isTrueOn X  = App1 { _: X => True }
     def isFalseOn[X <: P#In1]: P isFalseOn X = App1 { _: X => False }
+
+    def ∧[O <: AnyPredicate { type In1 = P#In1 }](o: O): P and O = and(p,o)
   }
 
   case class DepFn2Syntax[DF <: AnyDepFn2](val df: DF) extends AnyVal {

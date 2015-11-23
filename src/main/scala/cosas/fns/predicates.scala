@@ -43,13 +43,13 @@ case class and[
 case object AnyAnd {
 
   implicit def bothTrue[
-    AP <: AnyAnd,
+    AP <: AnyAnd { type Second <: AnyPredicate {  type In1 >: V } },
     V <: AP#In1
   ](implicit
     p1: AP#First isTrueOn V,
+    p2: AP#Second isTrueOn V
     // NOTE this is really strange
-    p2: AnyApp1At[AP#Second,V with AP#Second#In1] { type Y = True }
   )
   : AP isTrueOn V =
-    App1 { _: V => True }
+    App1 { x: V => True }
 }
