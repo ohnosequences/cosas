@@ -382,12 +382,22 @@ class KListTests extends org.scalatest.FunSuite {
         isInt.isTrueOn[Int]
     }
 
+    case object isString extends PredicateOver[Any] {
+
+      implicit lazy val itis: isString.type isTrueOn String =
+        isString.isTrueOn[String]
+    }
+
     assert { isAnyVal("foo") === False }
     assert { isAnyVal('x') === True }
     assert { isInt("foo") === False }
 
     assertResult('b' :: true :: 2 :: 'a' :: *[Any]) {
       ('b' :: true :: "hola" :: 2 :: 'a' :: *[Any]).filter(isAnyVal)
+    }
+
+    assertResult('b' :: true :: "hola" :: 2 :: 'a' :: *[Any]) {
+      ('b' :: true :: "hola" :: 2 :: 'a' :: *[Any]).filter(isAnyVal ∨ isString)
     }
 
     assertResult(2 :: *[Any]) {

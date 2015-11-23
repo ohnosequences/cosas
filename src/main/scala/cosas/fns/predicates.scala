@@ -23,7 +23,7 @@ trait PredicateOver[T] extends AnyPredicate { type In1 = T }
 
 trait AnyAnd extends AnyPredicate { and =>
 
-  type In1 = First#In1 //<: First#In1
+  type In1 = First#In1
 
   type First <: AnyPredicate
   val first: First
@@ -36,7 +36,6 @@ case class and[
   P2 <: AnyPredicate { type In1 = P1#In1 }
 ](val first: P1, val second: P2) extends AnyAnd {
 
-  // type In1 = P1#In1
   type First = P1; type Second = P2
 }
 
@@ -48,7 +47,45 @@ case object AnyAnd {
   ](implicit
     p1: AP#First isTrueOn V,
     p2: AP#Second isTrueOn V
-    // NOTE this is really strange
+  )
+  : AP isTrueOn V =
+    App1 { x: V => True }
+}
+
+trait AnyOr extends AnyPredicate { and =>
+
+  type In1 = First#In1
+
+  type First <: AnyPredicate
+  val first: First
+
+  type Second <: AnyPredicate { type In1 = and.First#In1 }
+  val second: Second
+}
+case class Or[
+  P1 <: AnyPredicate,
+  P2 <: AnyPredicate { type In1 = P1#In1 }
+](val first: P1, val second: P2) extends AnyOr {
+
+  type First = P1; type Second = P2
+}
+
+case object AnyOr {
+
+  implicit def firstTrue[
+    AP <: AnyOr,
+    V <: AP#In1
+  ](implicit
+    p1: AP#First isTrueOn V
+  )
+  : AP isTrueOn V =
+    App1 { x: V => True }
+
+  implicit def secondTrue[
+    AP <: AnyOr { type Second <: AnyPredicate {  type In1 >: V } },
+    V <: AP#In1
+  ](implicit
+    p1: AP#Second isTrueOn V
   )
   : AP isTrueOn V =
     App1 { x: V => True }
