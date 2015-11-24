@@ -411,6 +411,11 @@ class KListTests extends org.scalatest.FunSuite {
       ('b' :: true :: "hola" :: 2 :: 'a' :: *[Any]).filter(isAnyVal ∨ isString)
     }
 
+    // this is to check that ∨ is not ambiguous:
+    assertResult('b' :: true :: 2 :: 'a' :: *[Any]) {
+      ('b' :: true :: "hola" :: 2 :: 'a' :: *[Any]).filter(isInt ∨ isAnyVal)
+    }
+
     assertResult(2 :: *[Any]) {
       ('b' :: Set("a") :: true :: "hola" :: List(1,2,3) :: 2 :: 'a' :: *[Any]).filter(isAnyVal ∧ isInt)
     }
