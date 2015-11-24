@@ -6,13 +6,11 @@ case object syntax {
 
   case class KListSyntax[L <: AnyKList](val l: L) extends AnyVal {
 
-    def head[H <: L#Bound, T <: AnyKList.Of[L#Bound]](implicit c: IsKCons[L,H,T])
-    : H =
-      c.h(l)
-
-    def tail[H <: L#Bound, T <: AnyKList.Of[L#Bound]](implicit c: IsKCons[L,H,T])
-    : T =
-      c.t(l)
+    def uncons[H <: T#Bound, T <: AnyKList](implicit
+      uncons: AnyApp1At[uncons, L] { type Y = (H,T) }
+    )
+    : (H,T) =
+      uncons(l)
 
     def at[N <: AnyNat, Z <: L#Bound](n: N)(implicit a: AnyApp1At[L at N, L] { type Y = Z })
     : Z =

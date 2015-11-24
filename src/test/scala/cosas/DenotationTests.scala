@@ -93,7 +93,9 @@ class DenotationTests extends org.scalatest.FunSuite {
 
     assert { s"(${typeLabel(Color)} := ${azul.value})" == azul.show }
 
-    assert { typeLabel(User ==> Color) == s"${User.label} ==> ${Color.label}" }
+    assert { typeLabel(User ==> Color) === s"${User.label} ==> ${Color.label}" }
+
+    assert { typeLabel(colorAndFriend) === colorAndFriend.label }
   }
 
   test("Denotation covariant on Value") {

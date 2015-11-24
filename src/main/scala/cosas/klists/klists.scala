@@ -13,11 +13,6 @@ sealed trait AnyKList extends Any {
   type Union >: Types#union <: Types#union
 }
 
-case object KList {
-
-  def apply[F <: AnyDepFn1](f: F): mapKList[F, F#Out] = new mapKList[F, F#Out]
-}
-
 sealed trait AnyEmptyKList extends Any with AnyKList {
 
   type Types = TypeUnion.empty
@@ -68,25 +63,4 @@ case object AnyKList {
   implicit def klistSyntax[L <: AnyKList](l: L)
   : syntax.KListSyntax[L] =
     syntax.KListSyntax[L](l)
-}
-
-// TODO should be a depfn
-trait IsKCons[L <: AnyKList, H <: L#Bound, T <: AnyKList] {
-
-  def h(l: L): H
-  def t(l: L): T
-}
-
-case object IsKCons {
-
-  implicit def default[
-    H0 <: T0#Bound,
-    T0 <: AnyKList
-  ]
-  : IsKCons[KCons[H0,T0], H0, T0] =
-    new IsKCons[KCons[H0,T0], H0, T0] {
-
-    def h(l: KCons[H0,T0]): H0 = l.head
-    def t(l: KCons[H0,T0]): T0 = l.tail
-  }
 }

@@ -62,7 +62,6 @@ class KListTests extends org.scalatest.FunSuite {
     assert{ foo(oh) === true }
   }
 
-
   test("can convert KLists to lists of their bound") {
 
     assert {
@@ -108,6 +107,14 @@ class KListTests extends org.scalatest.FunSuite {
       (("hola" :: "scalac" :: *[String]).asList : List[Any]) === List[Any]("hola","scalac")
     }
 
+  }
+
+  test("KList cons/uncons") {
+
+    val z = true :: "hola" :: 2 :: *[Any]
+
+    // TODO better syntax for this
+    assert{ cons(z.uncons._1, z.uncons._2) === z }
   }
 
   test("can access elements by index") {
@@ -240,9 +247,7 @@ class KListTests extends org.scalatest.FunSuite {
     val zz: Boolean :: *[Any] = true :: *[Any]
     val zzz: Int :: Boolean :: *[Any] = 2 :: true :: *[Any]
 
-    assert {
-      zzz.map(identity) === zzz
-    }
+    assert { zzz.map(identity) === zzz }
 
     assert {
       (zzz map f) === "2" :: "true" :: *[String]
@@ -259,7 +264,8 @@ class KListTests extends org.scalatest.FunSuite {
 
   case object sum extends DepFn2[Int,Int,Int] {
 
-    implicit val default: App2[sum.type, Int,Int,Int] = App2 { (a: Int, b: Int) => (a + b): Int }
+    implicit lazy val default: App2[sum.type, Int,Int,Int] =
+      sum at { (a: Int, b: Int) => (a + b): Int }
   }
 
   test("can foldLeft over KLists") {
@@ -394,9 +400,7 @@ class KListTests extends org.scalatest.FunSuite {
         trueOnLists at { x: List[X] => () }
     }
 
-    // assert { isAnyVal("foo") === False }
     assert { isAnyVal('x') === () }
-    // assertTypeError { isInt("foo") === False }
     assert { trueOnLists(List("hola")) === () }
 
     assert {

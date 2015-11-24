@@ -41,6 +41,7 @@ class RecordTypeTests extends org.scalatest.FunSuite {
 
 
   test("should fail when some properties are missing") {
+
     assertTypeError("""
     val wrongAttrSet = simpleUser(
       id(123) ::
@@ -55,6 +56,11 @@ class RecordTypeTests extends org.scalatest.FunSuite {
       *[AnyDenotation]
     )
     """)
+  }
+
+  test("labels and typeLabel") {
+
+    assert { simpleUser.label === typeLabel(simpleUser) }
   }
 
   test("can access fields and field values") {
@@ -153,6 +159,7 @@ class RecordTypeTests extends org.scalatest.FunSuite {
       import scala.util.control.Exception._
       catching(classOf[NumberFormatException]) opt str.toInt
     }
+
     implicit def idParser: DenotationParser[id.type, Int, String]  = new DenotationParser(id, id.label)(idVParser)
 
     implicit val idSerializer: DenotationSerializer[id.type, Int, String] = new DenotationSerializer(id, id.label)( { x: Int => Some(x.toString )} )
@@ -161,6 +168,8 @@ class RecordTypeTests extends org.scalatest.FunSuite {
   test("can parse records from Maps") {
 
     import propertyConverters._
+
+    assert { idParser("hola", "2") === Left(WrongKey(id, "hola", id.label)) }
 
     val simpleUserEntryMap =  Map(
       "id" -> "29681",

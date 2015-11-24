@@ -19,6 +19,9 @@ package object klists {
   type snoc = Snoc.type
   val  snoc: snoc = Snoc
 
+  type uncons = Uncons.type
+  val uncons: uncons = Uncons
+
   type noDuplicates = NoDuplicates.type
   val  noDuplicates: noDuplicates = NoDuplicates
 }

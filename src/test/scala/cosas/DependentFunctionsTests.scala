@@ -17,6 +17,14 @@ case object sampleFunctions {
     implicit val atInt    : App1[print.type,Int,String]     = print at { n: Int => s"${n}: Int" }
     implicit val atString : App1[print.type,String,String]  = print at { str: String => s"""'${str}': String""" }
   }
+
+  class listFold[X,Z] extends DepFn3[List[X], Z, (Z,X) => Z, Z]
+  case object listFold {
+
+    implicit def default[X,Z]
+    : AnyApp3At[listFold[X,Z], List[X], Z, (Z,X) => Z] { type Y = Z } =
+      new listFold[X,Z] at { (l: List[X], z: Z, op: (Z,X) => Z) => l.foldLeft(z)(op) }
+  }
 }
 
 class DependentFunctionsTests extends org.scalatest.FunSuite {
@@ -25,6 +33,8 @@ class DependentFunctionsTests extends org.scalatest.FunSuite {
 
     assert { 2 === size(size("bu")) }
     assert { size(4) === size("four") }
+
+    assert { (new listFold[Int,Int])(List(1,2,3,4,5), 0, (_:Int) + (_:Int)) === 15 }
   }
 
   test("can apply functions as dependent functions") {

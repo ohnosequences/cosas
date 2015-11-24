@@ -4,8 +4,8 @@ final case class NotSubtypeOf[A, B] private[cosas](val witness: NotSubtypeOf.typ
 
 case object NotSubtypeOf extends WorksIfNoAmbiguity {
 
-  implicit def nsubAmbig1[A, B >: A]: A NotSubtypeOf B = throw new Exception {}
-  implicit def nsubAmbig2[A, B >: A]: A NotSubtypeOf B = throw new Exception {}
+  implicit def nsubAmbig1[A, B >: A]: A NotSubtypeOf B = ???
+  implicit def nsubAmbig2[A, B >: A]: A NotSubtypeOf B = ???
 }
 trait WorksIfNoAmbiguity {
 
@@ -16,8 +16,8 @@ final case class Distinct[A, B] private[cosas](val witness: Distinct.type) exten
 
 case object Distinct extends AllDistinctIfNoAmbiguity {
 
-  implicit def neqAmbig1[A]: A != A = throw new Exception {}
-  implicit def neqAmbig2[A]: A != A = throw new Exception {}
+  implicit def neqAmbig1[A]: A != A = ???
+  implicit def neqAmbig2[A]: A != A = ???
 }
 trait AllDistinctIfNoAmbiguity {
 
