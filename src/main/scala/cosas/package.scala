@@ -9,7 +9,7 @@ package object cosas {
   type !=[A,B]  = Distinct[A,B]
   type !<[A,B]  = A NotSubtypeOf B
 
-  type ≤[A,B]   = fns.isTrueOn[fns.sub.type, (A,B)]
+  type ≤[A,B]   = A SubtypeOf B
 
   type  _0 = zero.type
   val   _0: _0 = zero
