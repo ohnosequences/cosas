@@ -16,7 +16,6 @@ class TypeUnionTests extends org.scalatest.FunSuite {
     type Uh     = either[Byte]#or[Int]#or[Boolean]#or[String]
 
     implicitly[just[String] ≤ Uh#union]
-    implicitly[ sub.type isTrueOn (just[String], Uh#union) ]
     implicitly[just[Boolean] ≤ Uh#union]
     implicitly[just[Int] ≤ Uh#union]
 

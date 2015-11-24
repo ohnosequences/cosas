@@ -4,7 +4,7 @@ import ohnosequences.cosas._, types._, klists._
 
 package object records {
 
-  type EmptyRecordType = AnyRecordType.withKeys[unit]
+  type EmptyRecordType = AnyRecordType.withKeys[|[AnyType]]
 
   implicit def recordReorderSyntax[Vs <: AnyKList.withBound[AnyDenotation]](vs: Vs)
   : syntax.RecordReorderSyntax[Vs] =

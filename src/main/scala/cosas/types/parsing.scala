@@ -64,11 +64,11 @@ class ParseDenotations[V, Ts <: AnyProductType] extends DepFn1[Map[String,V], Ei
 case object ParseDenotations {
 
   implicit def empty[V,X]
-  : AnyApp1At[ParseDenotations[V,unit], Map[String,V]] { type Y =  Either[ParseDenotationsError,*[AnyDenotation]] } =
+  : AnyApp1At[ParseDenotations[V, |[AnyType]], Map[String,V]] { type Y =  Either[ParseDenotationsError,*[AnyDenotation]] } =
     App1 { map: Map[String,V] => Right(*[AnyDenotation]) }
 
   implicit def emptyParam[V, T <: AnyType, X]
-  : AnyApp1At[ParseDenotations[V,In[T]], Map[String,V]] { type Y =  Either[ParseDenotationsError,*[AnyDenotation]] } =
+  : AnyApp1At[ParseDenotations[V, |[T]], Map[String,V]] { type Y =  Either[ParseDenotationsError,*[AnyDenotation]] } =
     App1 { map: Map[String,V] => Right(*[AnyDenotation]) }
 
   implicit def nonEmpty[
