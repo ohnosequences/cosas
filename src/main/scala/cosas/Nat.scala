@@ -23,9 +23,9 @@ trait AnyNonZeroNat extends AnyNat { nz =>
 
   type Next <: AnyNonZeroNat
   type Pred <: AnyNat
-  val pred: Pred
+  val  pred: Pred
 
-  type StrictlySmaller = Pred#StrictlySmaller or Pred
+  type StrictlySmaller = Pred#StrictlySmaller#or[Pred]
 }
 
 case class Successor[N <: AnyNat](val pred: N) extends AnyNonZeroNat {

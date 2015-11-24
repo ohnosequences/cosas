@@ -5,8 +5,6 @@ package object typeUnions {
   private[cosas] type just[+T] = not[not[T]]
   type empty = either[Nothing]
 
-  type or[T <: AnyTypeUnion, S] = T#or[S]
-
   @annotation.implicitNotFound(msg = "Can't prove that ${X} is one of ${U}")
   type    isOneOf[X, U <: AnyTypeUnion] = just[X] ≤  U#union
 

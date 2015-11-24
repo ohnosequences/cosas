@@ -380,17 +380,48 @@ class KListTests extends org.scalatest.FunSuite {
 
       implicit def yes[X <: AnyVal]: isAnyVal.type isTrueOn X =
         isAnyVal.isTrueOn[X]
-
-      // redundant
-      implicit def nono: isAnyVal.type isFalseOn String = isAnyVal.isFalseOn[String]
     }
 
-    assert { isAnyVal("foo") === False }
-    assert { isAnyVal('x') === True }
-    assert { isAnyVal( new AnyRef) === False }
+    case object isInt extends PredicateOver[Any] {
+
+      implicit lazy val itis: isInt.type isTrueOn Int =
+        isInt.isTrueOn[Int]
+    }
+
+    case object isString extends PredicateOver[Any] {
+
+      implicit lazy val itis: isString.type isTrueOn String =
+        isString.isTrueOn[String]
+    }
+
+    case object trueOnLists extends DepFn1[Any,Unit] {
+
+      implicit def buh[X]: AnyApp1At[trueOnLists.type, List[X]] { type Y = Unit } =
+        trueOnLists at { x: List[X] => () }
+    }
+
+    assert { isAnyVal('x') === () }
+    assert { trueOnLists(List("hola")) === () }
+
+    assert {
+      ( List(2) :: 2 :: List("hola") :: "hola" :: *[Any] filter trueOnLists.asPredicate ) === (List(2) :: List("hola") :: *[Any])
+    }
 
     assertResult('b' :: true :: 2 :: 'a' :: *[Any]) {
       ('b' :: true :: "hola" :: 2 :: 'a' :: *[Any]).filter(isAnyVal)
+    }
+
+    assertResult('b' :: true :: "hola" :: 2 :: 'a' :: *[Any]) {
+      ('b' :: true :: "hola" :: 2 :: 'a' :: *[Any]).filter(isAnyVal ∨ isString)
+    }
+
+    // this is to check that ∨ is not ambiguous:
+    assertResult('b' :: true :: 2 :: 'a' :: *[Any]) {
+      ('b' :: true :: "hola" :: 2 :: 'a' :: *[Any]).filter(isInt ∨ isAnyVal)
+    }
+
+    assertResult(2 :: *[Any]) {
+      ('b' :: Set("a") :: true :: "hola" :: List(1,2,3) :: 2 :: 'a' :: *[Any]).filter(isAnyVal ∧ isInt)
     }
   }
 }

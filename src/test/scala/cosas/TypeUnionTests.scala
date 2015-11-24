@@ -1,6 +1,6 @@
 package ohnosequences.cosas.tests
 
-import ohnosequences.cosas._, typeUnions._
+import ohnosequences.cosas._, typeUnions._, fns._
 
 
 class TypeUnionTests extends org.scalatest.FunSuite {
@@ -8,12 +8,12 @@ class TypeUnionTests extends org.scalatest.FunSuite {
   test("check bounds") {
 
     type S      = either[String]
-    type SB     = either[String] or Boolean
-    type SB2    = either[String] or Boolean
-    type SBI    = either[String] or Boolean or Int
+    type SB     = either[String]#or[Boolean]
+    type SB2    = either[String]#or[Boolean]
+    type SBI    = either[String]#or[Boolean]#or[Int]
     trait Bar
-    type BarBIS = either[String] or Int or Boolean or Bar
-    type Uh     = either[Byte] or Int or Boolean or String
+    type BarBIS = either[String]#or[Int]#or[Boolean]#or[Bar]
+    type Uh     = either[Byte]#or[Int]#or[Boolean]#or[String]
 
     implicitly[just[String] ≤ Uh#union]
     implicitly[just[Boolean] ≤ Uh#union]
@@ -50,14 +50,14 @@ class TypeUnionTests extends org.scalatest.FunSuite {
     trait Dog extends Animal
 
     // everyone fits here
-    type DCA = either[Dog] or Cat or Animal
+    type DCA = either[Dog]#or[Cat]#or[Animal]
     implicitly[Dog isOneOf DCA]
     implicitly[Cat isOneOf DCA]
     implicitly[UglyCat isOneOf DCA]
     implicitly[pipo.type isOneOf DCA]
     implicitly[uglyCat.type isOneOf DCA]
 
-    type DC = either[Dog] or Cat
+    type DC = either[Dog]#or[Cat]
     implicitly[Dog isOneOf DC]
     implicitly[Cat isOneOf DC]
     implicitly[UglyCat isOneOf DC]
@@ -66,7 +66,7 @@ class TypeUnionTests extends org.scalatest.FunSuite {
     // not here
     implicitly[animal.type isNotOneOf DC]
 
-    type DUC = either[Dog] or UglyCat
+    type DUC = either[Dog]#or[UglyCat]
     implicitly[Dog isOneOf DUC]
     implicitly[UglyCat isOneOf DUC]
     implicitly[pipo.type isOneOf DUC]
@@ -75,8 +75,8 @@ class TypeUnionTests extends org.scalatest.FunSuite {
     implicitly[Cat isNotOneOf DUC]
     implicitly[animal.type isNotOneOf DUC]
 
-    type ISDUC = either[String] or Int or Dog or UglyCat
-    type DUCIS = either[Dog] or UglyCat or String or Int
+    type ISDUC = either[String]#or[Int]#or[Dog]#or[UglyCat]
+    type DUCIS = either[Dog]#or[UglyCat]#or[String]#or[Int]
     implicitly[Dog isOneOf ISDUC]
     implicitly[UglyCat isOneOf ISDUC]
     implicitly[pipo.type isOneOf ISDUC]
