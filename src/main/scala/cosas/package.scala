@@ -7,7 +7,7 @@ package object cosas {
 
 
   type !=[A,B]  = Distinct[A,B]
-  type !<[A,B]  = fns.isTrueOn[fns.notSub.type, (A,B)] // A NotSubtypeOf B
+  type !<[A,B]  = A NotSubtypeOf B
 
   type ≤[A,B]   = fns.isTrueOn[fns.sub.type, (A,B)]
 
