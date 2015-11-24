@@ -40,10 +40,10 @@ trait AnyAnd extends AnyPredicate { and =>
   type First <: AnyPredicate
   val first: First
 
-  type Second <: AnyPredicate { type In1 = and.First#In1 }
+  type Second <: AnyPredicate { type In1 = and.In1 }
   val second: Second
 }
-case class and[
+case class And[
   P1 <: AnyPredicate,
   P2 <: AnyPredicate { type In1 = P1#In1 }
 ](val first: P1, val second: P2) extends AnyAnd {
@@ -64,14 +64,14 @@ case object AnyAnd {
     App1 { x: V => () }
 }
 
-trait AnyOr extends AnyPredicate { and =>
+trait AnyOr extends AnyPredicate { or =>
 
   type In1 = First#In1
 
   type First <: AnyPredicate
   val first: First
 
-  type Second <: AnyPredicate { type In1 = and.First#In1 }
+  type Second <: AnyPredicate { type In1 = or.In1 }
   val second: Second
 }
 case class Or[
@@ -94,7 +94,7 @@ case object AnyOr {
     App1 { x: V => () }
 
   implicit def secondTrue[
-    AP <: AnyOr { type Second <: AnyPredicate {  type In1 >: V } },
+    AP <: AnyOr { type Second <: AnyPredicate { type In1 >: V } },
     V <: AP#In1
   ](implicit
     p1: AP#Second isTrueOn V
