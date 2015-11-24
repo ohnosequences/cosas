@@ -10,6 +10,13 @@ trait AnyDenotation extends Any {
   def  value: Value
 }
 
+case object AnyDenotation {
+
+  implicit def denotationSyntax[T <: AnyType, V <: T#Raw](d: T := V):
+    syntax.DenotationSyntax[T, V] =
+    syntax.DenotationSyntax[T, V](d.value)
+}
+
 /* Bound the denoted type */
 trait AnyDenotationOf[T <: AnyType] extends Any with AnyDenotation { type Tpe = T }
 

@@ -1,7 +1,6 @@
 package ohnosequences.cosas.tests
 
 import ohnosequences.cosas._, types._, fns._, klists._
-import ohnosequences.cosas.tests.asserts._
 import DenotationTestsContext._
 
 case object DenotationTestsContext {
@@ -36,18 +35,18 @@ class DenotationTests extends org.scalatest.FunSuite {
 
     val x1 = Color := "yellow"
 
-    assert(azul.value === "blue")
-    assert(verde.value === "green")
-    assert(amarillo.value === "yellow")
-    assertTaggedEq(amarillo, x1)
+    assert { azul.value == "blue" }
+    assert { verde.value == "green" }
+    assert { amarillo.value == "yellow" }
+    assert { amarillo =~= x1 }
 
     val z = User := 2423423
     val uh: User := userInfo = User := userInfo(id = "adqwr32141", name = "Salustiano", age = 143)
     val oh = User := userInfo(id = "adqwr32141", name = "Salustiano", age = 143)
     val ah = User := userInfo(id = "adqwr32141", name = "Salustiano", age = 143)
 
-    assert { uh === oh }
-    assert { oh === ah }
+    assert { uh =~= oh }
+    assert { oh =~= ah }
   }
 
   test(" denotation =~= denotation") {
@@ -61,8 +60,8 @@ class DenotationTests extends org.scalatest.FunSuite {
     val u2 = Friend := paco
     val v = Friend := jose
 
-    assertTaggedEq(u1, u1)
-    assertTaggedEq(u1, u1Again)
+    assert { u1 =~= u1 }
+    assert { u1 =~= u1Again }
     assert { u1 =~= u1Again }
     assertTypeError("u1 =~= u2")
     assert { !(v =~= u2) }
@@ -70,31 +69,31 @@ class DenotationTests extends org.scalatest.FunSuite {
 
   test("denotation show") {
 
-    assert{ (User := "hola").show === "(User := hola)" }
+    assert{ (User := "hola").show == "(User := hola)" }
 
     val azul = Color := "blue"
 
-    assert{ azul.show === "(Color := blue)" }
+    assert{ azul.show == "(Color := blue)" }
   }
 
   test("denotationValue") {
 
-    assert { "blue" === denotationValue(User := "blue") }
+    assert { "blue" == denotationValue(User := "blue") }
   }
 
   test("typeOf") {
 
-    assert { typeOf(Color := "blue") === Color }
-    assert { typeOf(User := "LALALA") === typeOf(User := 23) }
+    assert { typeOf(Color := "blue") == Color }
+    assert { typeOf(User := "LALALA") == typeOf(User := 23) }
   }
 
   test("typeLabel") {
 
     val azul = Color := "blue"
 
-    assert { s"(${typeLabel(Color)} := ${azul.value})" === azul.show }
+    assert { s"(${typeLabel(Color)} := ${azul.value})" == azul.show }
 
-    assert { typeLabel(User ==> Color) === s"${User.label} ==> ${Color.label}" }
+    assert { typeLabel(User ==> Color) == s"${User.label} ==> ${Color.label}" }
   }
 
   test("Denotation covariant on Value") {
@@ -140,9 +139,9 @@ class DenotationTests extends org.scalatest.FunSuite {
 
     val friend = (zz getFirst Friend)
 
-    assert { (zz getFirst Friend) === (zz project Friend)  }
+    assert { (zz getFirst Friend) =~= (zz project Friend)  }
     // NOTE 0-based indexes
-    assert { (zz getFirst Friend) === (zz at _1) }
+    assert { (zz getFirst Friend) =~= (zz at _1) }
 
     // NOTE a bounded product type
     val FranceFlag = Blue :×: White :×: Red :×: |[Colors]
