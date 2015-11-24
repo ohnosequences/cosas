@@ -26,9 +26,8 @@ trait consIf_false {
   implicit def pFalse[
     P <: AnyPredicate { type In1 >: H },
     H <: T#Bound, T <: AnyKList { type Bound <: P#In1 }
-  ](implicit
-    ev: P isFalseOn H
-  ): AnyApp2At[consIf[P],
+  ]
+  : AnyApp2At[consIf[P],
       H, T
     ] { type Y = T } =
     App2 { (_, t: T) => t }

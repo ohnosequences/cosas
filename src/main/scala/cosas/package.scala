@@ -8,6 +8,7 @@ package object cosas {
 
   type !=[A,B]  = Distinct[A,B]
   type !<[A,B]  = A NotSubtypeOf B
+
   type ≤[A,B]   = A SubtypeOf B
 
   type  _0 = zero.type

@@ -388,16 +388,16 @@ class KListTests extends org.scalatest.FunSuite {
         isString.isTrueOn[String]
     }
 
-    case object trueOnLists extends DepFn1[Any,AnyBool] {
+    case object trueOnLists extends DepFn1[Any,Unit] {
 
-      implicit def buh[X]: AnyApp1At[trueOnLists.type, List[X]] { type Y = True } =
-        trueOnLists at { x: List[X] => True }
+      implicit def buh[X]: AnyApp1At[trueOnLists.type, List[X]] { type Y = Unit } =
+        trueOnLists at { x: List[X] => () }
     }
 
-    assert { isAnyVal("foo") === False }
-    assert { isAnyVal('x') === True }
-    assert { isInt("foo") === False }
-    assert { trueOnLists(List("hola")) === True }
+    // assert { isAnyVal("foo") === False }
+    assert { isAnyVal('x') === () }
+    // assertTypeError { isInt("foo") === False }
+    assert { trueOnLists(List("hola")) === () }
 
     assert {
       ( List(2) :: 2 :: List("hola") :: "hola" :: *[Any] filter trueOnLists.asPredicate ) === (List(2) :: List("hola") :: *[Any])
@@ -413,16 +413,6 @@ class KListTests extends org.scalatest.FunSuite {
 
     assertResult(2 :: *[Any]) {
       ('b' :: Set("a") :: true :: "hola" :: List(1,2,3) :: 2 :: 'a' :: *[Any]).filter(isAnyVal ∧ isInt)
-    }
-
-    assertResult('b' :: Set("a") :: true :: "hola" :: List(1,2,3) :: 2 :: 'a' :: *[Any]) {
-      ('b' :: Set("a") :: true :: "hola" :: List(1,2,3) :: 2 :: 'a' :: *[Any])
-        .filter( ¬(isAnyVal ∧ isInt) )
-    }
-
-    assert {
-      ('b' :: true :: "hola" :: 2 :: 'a' :: *[Any]).filter( ¬(isAnyVal) ∨ ¬(isString) ) ===
-      ('b' :: true :: "hola" :: 2 :: 'a' :: *[Any]).filter( ¬(isAnyVal ∧ isString) )
     }
   }
 }

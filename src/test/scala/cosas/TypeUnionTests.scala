@@ -1,6 +1,6 @@
 package ohnosequences.cosas.tests
 
-import ohnosequences.cosas._, typeUnions._
+import ohnosequences.cosas._, typeUnions._, fns._
 
 
 class TypeUnionTests extends org.scalatest.FunSuite {

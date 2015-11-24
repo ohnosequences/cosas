@@ -25,7 +25,7 @@ case object AnyDepFn1 {
   ](df: DF0): syntax.DepFn1ApplyAt[DF0,X10] =
     syntax.DepFn1ApplyAt(df)
 
-  implicit def asPredicateSyntax[DF <: AnyDepFn1 { type Out = AnyBool }](f: DF): syntax.PredicateLikeSyntax[DF] =
+  implicit def asPredicateSyntax[DF <: AnyDepFn1 { type Out = Unit }](f: DF): syntax.PredicateLikeSyntax[DF] =
     syntax.PredicateLikeSyntax(f)
 }
 
