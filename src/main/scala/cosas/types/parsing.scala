@@ -67,16 +67,16 @@ case object ParseDenotations {
   : AnyApp1At[ParseDenotations[V, |[AnyType]], Map[String,V]] { type Y =  Either[ParseDenotationsError,*[AnyDenotation]] } =
     App1 { map: Map[String,V] => Right(*[AnyDenotation]) }
 
-  implicit def emptyParam[V, T <: AnyType, X]
-  : AnyApp1At[ParseDenotations[V, |[T]], Map[String,V]] { type Y =  Either[ParseDenotationsError,*[AnyDenotation]] } =
-    App1 { map: Map[String,V] => Right(*[AnyDenotation]) }
+  implicit def emptyParam[V, T <: AnyType, X, D <: AnyDenotation]
+  : AnyApp1At[ParseDenotations[V, |[T]], Map[String,V]] { type Y =  Either[ParseDenotationsError,*[D]] } =
+    App1 { map: Map[String,V] => Right(*[D]) }
 
   implicit def nonEmpty[
     V,
-    H <: Ts#Types#Bound { type Raw >: HR }, HR, Ts <: AnyProductType { type Raw >: Ds }, Ds <: AnyKList.withBound[AnyDenotation]
+    H <: Ts#Types#Bound { type Raw >: HR }, HR, Ts <: AnyProductType { type Raw >: Ds }, Ds <: AnyKList { type Bound >: H := HR }
   ](implicit
-    parseRest: AnyApp1At[ParseDenotations[V,Ts], Map[String,V]] { type Y  = Either[ParseDenotationsError,Ds] },
-    parseH: DenotationParser[H,HR,V]
+    parseH: DenotationParser[H,HR,V],
+    parseRest: AnyApp1At[ParseDenotations[V,Ts], Map[String,V]] { type Y  = Either[ParseDenotationsError,Ds] }
   )
   : AnyApp1At[ParseDenotations[V, H :×: Ts], Map[String,V]] { type Y = Either[ParseDenotationsError, (H := HR) :: Ds] } =
     App1 { map: Map[String,V] => {
