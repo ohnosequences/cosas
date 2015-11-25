@@ -42,7 +42,7 @@ case class :×:[H <: T#Bound, T <: AnyProductType](val head: H, val tail: T) ext
   type Types = H :: T#Types
   val  types: Types = head :: (tail.types: T#Types)
 
-  type Raw = AnyDenotation { type Tpe = H } :: T#Raw
+  type Raw = (H := H#Raw) :: T#Raw
 
   lazy val label: String = s"${head.label} :×: ${tail.label}"
 }
