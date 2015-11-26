@@ -13,6 +13,10 @@ case object recordTestsContext {
   case object simpleUser extends RecordType(id :×: name :×: |[AnyType])
   case object normalUser extends RecordType(id :×: name :×: email :×: color :×: |[AnyType])
 
+  case class FastaSeq(val id: String) extends Type[(String,Seq[String])](label = s"${id}")
+
+  def parametricRecord(fs: FastaSeq): RecordType[FastaSeq :×: color.type :×: |[AnyType]] =
+    new RecordType(fs :×: color :×: |[AnyType])
   val volatileRec = new RecordType(email :×: color :×: |[AnyType])
 
   val volatileRecEntry = volatileRec (
@@ -38,7 +42,6 @@ case object recordTestsContext {
 }
 
 class RecordTypeTests extends org.scalatest.FunSuite {
-
 
   test("should fail when some properties are missing") {
 
@@ -80,6 +83,22 @@ class RecordTypeTests extends org.scalatest.FunSuite {
 
     assert { (volatileRecEntry get color) =~= color("blue") }
     assert { (volatileRecEntry get email) =~= email("oh@buh.com") }
+
+    val fs = FastaSeq("hola")
+    val fsD = fs := ( (">asdf", List("ATCTGCTC")) )
+    val zz = parametricRecord(fs) := (
+      fsD                 ::
+      (color := "green")  :: *[AnyDenotation]
+    )
+
+    val zz2 = parametricRecord(fs) := (
+      fsD                 ::
+      (color := "green")  :: *[AnyDenotation]
+    )
+
+    assert { zz =~= zz2 }
+    assert { (zz get fs) =~= fsD }
+    assert { (typeLabel(fs) === "hola") }
   }
 
   test("can update fields") {
