@@ -15,14 +15,18 @@ libraryDependencies ++= Seq (
 // shows time for each test:
 testOptions in Test += Tests.Argument("-oD")
 
+// scoverage conf
+coverageEnabled := true
+coverageMinimum := 90.0
+coverageFailOnMinimum := true
+coverageHighlighting := true
+// ambiguous implicit trick => untestable
+coverageExcludedPackages := "ohnosequences.cosas.Distinct;ohnosequences.cosas.NotSubtypeOf"
+
 // for debugging
 // scalacOptions ++= Seq("-Xlog-implicits")
-
 incOptions := incOptions.value.withNameHashing(false)
-
 wartremoverExcluded ++= Seq(
-  baseDirectory.value / "src" / "main" / "scala" / "cosas" / "products" / "map.scala",
-  baseDirectory.value / "src" / "main" / "scala" / "cosas" / "products" / "klists.scala",
   baseDirectory.value / "src" / "main" / "scala" / "cosas" / "subtyping.scala"
 )
 
