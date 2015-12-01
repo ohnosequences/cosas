@@ -21,7 +21,7 @@ case object AnyProductType {
 
   implicit def productTypeDenotationSyntax[L <: AnyProductType, Vs <: L#Raw](ds: L := Vs)
   : syntax.AnyProductTypeDenotationSyntax[L,Vs] =
-    syntax.AnyProductTypeDenotationSyntax(ds.value)
+    syntax.AnyProductTypeDenotationSyntax(ds)
 
 }
 

@@ -34,5 +34,5 @@ case object AnyRecordType {
 
   implicit def recordDenotationSyntax[RT <: AnyRecordType, Vs <: RT#Raw](rv: RT := Vs)
   : syntax.RecordTypeDenotationSyntax[RT, Vs] =
-    syntax.RecordTypeDenotationSyntax(rv.value)
+    syntax.RecordTypeDenotationSyntax(rv)
 }

@@ -423,5 +423,11 @@ class KListTests extends org.scalatest.FunSuite {
     assertResult(2 :: *[Any]) {
       ('b' :: Set("a") :: true :: "hola" :: List(1,2,3) :: 2 :: 'a' :: *[Any]).filter(isAnyVal ∧ isInt)
     }
+
+    // for completeness on predicate tests
+    val z1 = trueOnLists.asPredicate(List("hola"))
+    val z2 = (isAnyVal ∧ isInt)(2)
+    val z3 = (isInt ∨ isAnyVal)(2)
+    val z4 = (isAnyVal ∨ isInt)(true)
   }
 }
