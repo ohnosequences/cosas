@@ -42,6 +42,6 @@ case object denotationValue extends DepFn1[AnyDenotation,Any] {
 
 case object typeOf extends DepFn1[AnyDenotation,AnyType] {
 
-  implicit def default[D <: AnyDenotation](implicit tpe: D#Tpe): AnyApp1At[typeOf.type, D] { type Y = D#Tpe } =
-    typeOf at { d: D => tpe }
+  implicit def default[D <: AnyDenotation]: AnyApp1At[typeOf.type, D] { type Y = D#Tpe } =
+    typeOf at { d: D => d.tpe }
 }
