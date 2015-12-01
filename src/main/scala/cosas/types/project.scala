@@ -33,6 +33,6 @@ trait ProjectInTail {
   : AnyApp1At[
     Project[H :×: Ts, P],
     (H :×: Ts) := ((H := V) :: Ds)
-  ] { type Y = P := W } = 
-    App1 { x: (H :×: Ts) := ((H := V) :: Ds) => proj( new (Ts := Ds)(x.value.tail)) }
+  ] { type Y = P := W } =
+    App1 { x: (H :×: Ts) := ((H := V) :: Ds) => proj( x.tpe.tail := x.value.tail ) }
 }

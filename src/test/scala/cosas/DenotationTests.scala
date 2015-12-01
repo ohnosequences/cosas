@@ -117,7 +117,7 @@ class DenotationTests extends org.scalatest.FunSuite {
 
     trait Boundless extends AnyType { type Raw = Any }
 
-    def buh[Val, B <: Boundless](v: Val): B := Val = new (B := Val)(v)
+    def buh[Val, B <: Boundless](b: B, v: Val): B := Val = b := v
   }
 
   test("T ==> S") {
