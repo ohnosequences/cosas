@@ -7,21 +7,20 @@ case object syntax {
 
   final case class TypeSyntax[T <: AnyType](val tpe: T) extends AnyVal {
 
-    final def :=[@specialized V <: T#Raw](v: V): T := V = new (V Denotes T)(tpe, v)
-    final def apply[@specialized V <: T#Raw](v: V): T := V = new (V Denotes T)(tpe, v)
+    final def :=[@specialized V <: T#Raw](v: V): T := V = Denotation[T, V](tpe, v)
+    final def apply[@specialized V <: T#Raw](v: V): T := V = Denotation[T, V](tpe, v)
 
     final def ==>[S <: AnyType](s: S): T ==> S = new (T ==> S)(tpe, s)
   }
 
-  final case class DenotationSyntax[T <: AnyType, V <: T#Raw](val v: V) extends AnyVal {
+  final case class DenotationSyntax[D <: AnyDenotation](val d: D) extends AnyVal {
 
-    def =~=(w: T := V): Boolean = v == w.value
+    def =~=(w: D#Tpe := D#Value): Boolean = d.value == w.value
   }
 
   final case class AnyProductTypeSyntax[L <: AnyProductType](val l: L) extends AnyVal {
 
-    def :×:[H0 <: L#Types#Bound](h: H0): H0 :×: L =
-      new :×:[H0,L](h,l)
+    def :×:[H0 <: L#Types#Bound](h: H0): H0 :×: L = new :×:[H0,L](h,l)
   }
 
   final case class AnyProductTypeDenotationSyntax[L <: AnyProductType, Vs <: L#Raw](val vs: L := Vs) extends AnyVal {
