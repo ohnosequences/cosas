@@ -67,13 +67,13 @@ class DenotationTests extends org.scalatest.FunSuite {
     assert { !(v =~= u2) }
   }
 
-  test("denotation show") {
+  test("denotation toString") {
 
-    assert{ (User := "hola").show == "(User := hola)" }
+    assert{ (User := "hola").toString == "(User := hola)" }
 
     val azul = Color := "blue"
 
-    assert{ azul.show == "(Color := blue)" }
+    assert{ azul.toString == "(Color := blue)" }
   }
 
   test("denotationValue") {
@@ -91,7 +91,7 @@ class DenotationTests extends org.scalatest.FunSuite {
 
     val azul = Color := "blue"
 
-    assert { s"(${typeLabel(Color)} := ${azul.value})" == azul.show }
+    assert { s"(${typeLabel(Color)} := ${azul.value})" == azul.toString }
 
     assert { typeLabel(User ==> Color) === s"${User.label} ==> ${Color.label}" }
 
