@@ -10,6 +10,24 @@ class mapKList[F <: AnyDepFn1, Y <: F#Out] extends DepFn2[
 
 case object mapKList extends WithSameType {
 
+  def fromList[X](l: List[X]): AnyKList { type Bound = X } = fromList_rec(l,*[X])
+
+  @scala.annotation.tailrec
+  private def fromList_rec[X](
+    list: List[X],
+    acc: AnyKList.withBound[X]
+  )
+  : AnyKList.withBound[X] = list.reverse match {
+    case x :: xs  => fromList_rec[X](xs, x :: acc)
+    case Nil      => acc
+  }
+
+  implicit def optimizeFn1[
+    A0 >: L#Bound, B, L <: AnyKList
+  ]
+  : AnyApp2At[mapKList[Fn1[A0,B], B], Fn1[A0,B], L] { type Y = AnyKList.withBound[B] } =
+    App2 { (fn: Fn1[A0,B], l: L) => fromList( (l.asList: List[A0]) map fn.f ) }
+
   implicit def empty[
     F <: AnyDepFn1 { type Out >: B },
     A,

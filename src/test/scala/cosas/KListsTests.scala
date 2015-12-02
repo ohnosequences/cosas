@@ -247,6 +247,11 @@ class KListTests extends org.scalatest.FunSuite {
     val zz: Boolean :: *[Any] = true :: *[Any]
     val zzz: Int :: Boolean :: *[Any] = 2 :: true :: *[Any]
 
+    val uh: Int :: Boolean :: *[AnyVal] = 2 :: true :: *[AnyVal]
+    val tostr: Fn1[Any,String] = Fn1 { x: Any => x.toString }
+
+    assert { (uh  map tostr) === "2" :: "true" :: *[String] }
+
     assert { zzz.map(identity) === zzz }
 
     assert {
