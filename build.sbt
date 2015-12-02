@@ -16,7 +16,7 @@ libraryDependencies ++= Seq (
 testOptions in Test += Tests.Argument("-oD")
 
 // scoverage conf
-coverageEnabled := true
+// coverageEnabled := true
 coverageMinimum := 90.0
 coverageFailOnMinimum := true
 coverageHighlighting := true
