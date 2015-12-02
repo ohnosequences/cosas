@@ -63,4 +63,17 @@ case object AnyKList {
   implicit def klistSyntax[L <: AnyKList](l: L)
   : syntax.KListSyntax[L] =
     syntax.KListSyntax[L](l)
+
+    def fromList[X](l: List[X]): AnyKList { type Bound = X } = fromList_rec(l,*[X])
+
+    @scala.annotation.tailrec
+    private def fromList_rec[X](
+      list: List[X],
+      acc: AnyKList.withBound[X]
+    )
+    : AnyKList.withBound[X] = list.reverse match {
+      case x :: xs  => fromList_rec[X](xs, x :: acc)
+      case Nil      => acc
+    }
+
 }
