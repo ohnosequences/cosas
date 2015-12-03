@@ -7,11 +7,11 @@ case object syntax {
   final case class RecordTypeDenotationSyntax[RT <: AnyRecordType, Vs <: RT#Raw](val vs: RT := Vs) extends AnyVal {
 
     def get[D <: AnyDenotation.Of[T], T <: AnyType](tpe: T)(implicit
-      p: AnyApp1At[FindS[AnyDenotation.Of[T]], Vs] { type Y = D }
+      p: AnyApp1At[findS[AnyDenotation.Of[T]], Vs] { type Y = D }
     ): D = p(vs.value)
 
     def getV[D <: AnyDenotation.Of[T], T <: AnyType](tpe: T)(implicit
-      p: AnyApp1At[FindS[AnyDenotation.Of[T]], Vs] { type Y = D }
+      p: AnyApp1At[findS[AnyDenotation.Of[T]], Vs] { type Y = D }
     ): D#Value = p(vs.value).value
 
     def update[S <: AnyKList.withBound[AnyDenotation]](s: S)(implicit
