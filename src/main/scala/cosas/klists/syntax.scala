@@ -60,7 +60,7 @@ case object syntax {
       find(l)
 
     def findS[Z, X <: Z](w: Witness[Z])(implicit
-      find: AnyApp1At[FindS[Z], L] { type Y = X }
+      find: AnyApp1At[findS[Z], L] { type Y = X }
     )
     : X =
       find(l)
