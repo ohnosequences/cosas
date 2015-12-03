@@ -61,7 +61,7 @@ case object AnyDenotationParser {
 
 
 
-/* This is a DepFn which parses a _KList of denotations_ (with the common supertype `V`) from a Map of pairs (type label -> value) */
+/* This is a DepFn which parses a _KList of denotations_ from a Map of pairs (type label -> value: V) */
 class ParseDenotations[V, Ts <: AnyProductType] extends DepFn1[
   Map[String, V],
   Either[ParseDenotationsError, Ts#Raw]
@@ -90,8 +90,8 @@ case object ParseDenotations {
     H <: Ts#Types#Bound { type Raw >: HR }, HR, Ts <: AnyProductType { type Raw >: Ds },
     Ds <: AnyKList { type Bound >: H := HR }
   ](implicit
-    parseH: DenotationParser[H,HR,V],
-    parseRest: AnyApp1At[ParseDenotations[V,Ts], Map[String,V]] { type Y  = Either[ParseDenotationsError,Ds] }
+    parseRest: AnyApp1At[ParseDenotations[V,Ts], Map[String,V]] { type Y  = Either[ParseDenotationsError,Ds] },
+    parseH: DenotationParser[H,HR,V]
   )
   : AnyApp1At[ParseDenotations[V, H :×: Ts], Map[String,V]] { type Y = Either[ParseDenotationsError, (H := HR) :: Ds] } =
     App1 { map: Map[String,V] => {
