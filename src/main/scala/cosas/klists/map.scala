@@ -10,6 +10,12 @@ class mapKList[F <: AnyDepFn1, Y <: F#Out] extends DepFn2[
 
 case object mapKList extends WithSameType {
 
+  implicit def optimizeFn1[
+    A0 >: L#Bound, B, L <: AnyKList
+  ]
+  : AnyApp2At[mapKList[Fn1[A0,B], B], Fn1[A0,B], L] { type Y = AnyKList.withBound[B] } =
+    App2 { (fn: Fn1[A0,B], l: L) => AnyKList.fromList( (l.asList: List[A0]) map fn.f ) }
+
   implicit def empty[
     F <: AnyDepFn1 { type Out >: B },
     A,
