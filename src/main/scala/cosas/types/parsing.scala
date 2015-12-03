@@ -75,23 +75,18 @@ case class ErrorParsing[PE <: DenotationParserError](val err: PE) extends ParseD
 
 case object ParseDenotations {
 
-  implicit def empty[V,X]
-  : AnyApp1At[ParseDenotations[V, |[AnyType]], Map[String,V]] { type Y =  Either[ParseDenotationsError,*[AnyDenotation]] } =
+  implicit def emptyParam[V, T <: AnyType]
+  : AnyApp1At[ParseDenotations[V, |[T]], Map[String,V]] { type Y =  Either[ParseDenotationsError,*[AnyDenotation]] } =
     App1 { map: Map[String,V] => Right(*[AnyDenotation]) }
-
-  // TODO: what is the difference between empty and emptyParam? why both are needed?
-  implicit def emptyParam[V, T <: AnyType, X, D <: AnyDenotation]
-  : AnyApp1At[ParseDenotations[V, |[T]], Map[String,V]] { type Y =  Either[ParseDenotationsError,*[D]] } =
-    App1 { map: Map[String,V] => Right(*[D]) }
 
   // TODO: improve parameters names
   implicit def nonEmpty[
     V,
     H <: Ts#Types#Bound { type Raw >: HR }, HR, Ts <: AnyProductType { type Raw >: Ds },
-    Ds <: AnyKList { type Bound >: H := HR }
+    Ds <: AnyKList.withBound[AnyDenotation]
   ](implicit
-    parseRest: AnyApp1At[ParseDenotations[V,Ts], Map[String,V]] { type Y  = Either[ParseDenotationsError,Ds] },
-    parseH: DenotationParser[H,HR,V]
+    parseH: DenotationParser[H,HR,V],
+    parseRest: AnyApp1At[ParseDenotations[V,Ts], Map[String,V]] { type Y  = Either[ParseDenotationsError,Ds] }
   )
   : AnyApp1At[ParseDenotations[V, H :×: Ts], Map[String,V]] { type Y = Either[ParseDenotationsError, (H := HR) :: Ds] } =
     App1 { map: Map[String,V] => {
