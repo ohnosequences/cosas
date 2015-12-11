@@ -10,7 +10,7 @@ case object NoDuplicates extends PredicateOver[AnyKList] {
 
   implicit def nonEmpty[H <: T#Bound, T <: AnyKList]
     (implicit
-      noH: H isNotOneOf T#Types,
+      noH: H isNotOneOf T#AllTypes,
       ev: noDuplicates isTrueOn T
     ): noDuplicates isTrueOn(H :: T) =
        noDuplicates.isTrueOn[H :: T]
