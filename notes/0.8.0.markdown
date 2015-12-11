@@ -1,0 +1,8 @@
+This release introduces **breaking changes** basically **everywhere**. The good part: it is the first step towards cosas 1.0, and we don't expect the API to change much. An executive summary:
+
+1. **Dependent functions** which can be parametric and composed. All operations are implemented as dependent functions. They can wrap std `FunctionX`s.
+2. **KLists** as heterogeneous lists with a bound on the their types, covariant on both element types and bound. They are now a basic building block of the library. Interoperable with std `List`s. Support for basic dependently typed operations on them: `foldLeft` and `foldRight`, `map`, etc. Common functions on KLists implemented in terms of these combinators.
+3. **Types** include now product and function types. **Records** are wrappers over product types with no duplicate elements. **Denotation**s are covariant on the value. Removed subset types.
+4. **code reorg** there are now separate packages instead of objects
+5. **test coverage** is almost 100% now. Set up codacy and scoverage.
+6. **drop Scala 2.10** due to the amazing amount of workarounds needed, and 2.12 being already in milestone stage.
