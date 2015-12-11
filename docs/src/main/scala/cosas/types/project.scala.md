@@ -35,8 +35,8 @@ trait ProjectInTail {
   : AnyApp1At[
     Project[H :×: Ts, P],
     (H :×: Ts) := ((H := V) :: Ds)
-  ] { type Y = P := W } = 
-    App1 { x: (H :×: Ts) := ((H := V) :: Ds) => proj( new (Ts := Ds)(x.value.tail)) }
+  ] { type Y = P := W } =
+    App1 { x: (H :×: Ts) := ((H := V) :: Ds) => proj( x.tpe.tail := x.value.tail ) }
 }
 
 ```
@@ -44,7 +44,6 @@ trait ProjectInTail {
 
 
 
-[test/scala/cosas/asserts.scala]: ../../../../test/scala/cosas/asserts.scala.md
 [test/scala/cosas/DenotationTests.scala]: ../../../../test/scala/cosas/DenotationTests.scala.md
 [test/scala/cosas/EqualityTests.scala]: ../../../../test/scala/cosas/EqualityTests.scala.md
 [test/scala/cosas/DependentFunctionsTests.scala]: ../../../../test/scala/cosas/DependentFunctionsTests.scala.md

@@ -12,10 +12,14 @@ case object recordTestsContext {
   case object email extends Type[String]("email")
   case object color extends Type[String]("color")
 
-  case object simpleUser extends RecordType(id :×: name :×: unit)
-  case object normalUser extends RecordType(id :×: name :×: email :×: color :×: unit)
+  case object simpleUser extends RecordType(id :×: name :×: |[AnyType])
+  case object normalUser extends RecordType(id :×: name :×: email :×: color :×: |[AnyType])
 
-  val volatileRec = new RecordType(email :×: color :×: unit)
+  case class FastaSeq(val id: String) extends Type[(String,Seq[String])](label = s"${id}")
+
+  def parametricRecord(fs: FastaSeq): RecordType[FastaSeq :×: color.type :×: |[AnyType]] =
+    new RecordType(fs :×: color :×: |[AnyType])
+  val volatileRec = new RecordType(email :×: color :×: |[AnyType])
 
   val volatileRecEntry = volatileRec (
     email("oh@buh.com") ::
@@ -41,8 +45,8 @@ case object recordTestsContext {
 
 class RecordTypeTests extends org.scalatest.FunSuite {
 
-
   test("should fail when some properties are missing") {
+
     assertTypeError("""
     val wrongAttrSet = simpleUser(
       id(123) ::
@@ -59,32 +63,50 @@ class RecordTypeTests extends org.scalatest.FunSuite {
     """)
   }
 
+  test("labels and typeLabel") {
+
+    assert { simpleUser.label === typeLabel(simpleUser) }
+  }
+
   test("can access fields and field values") {
 
-    assert { (simpleUserEntry get id) === id(123) }
+    assert { (simpleUserEntry get id) =~= id(123) }
     assert { (simpleUserEntry getV id) === 123 }
 
-    assert { (simpleUserEntry get name) === name("foo") }
+    assert { (simpleUserEntry get name) =~= name("foo") }
     assert { (simpleUserEntry getV name) === "foo" }
 
-    assert { (normalUserEntry get email) === email("foo@bar.qux") }
+    assert { (normalUserEntry get email) =~= email("foo@bar.qux") }
     assert { (normalUserEntry getV email) === "foo@bar.qux" }
-
-    // FIXME: assert doesn't work as expected (value classes, etc.)
-    assert { (simpleUserEntry get name) === email("foo") }
   }
 
 
   test("can access fields from vals and volatile vals") {
 
-    assert { (volatileRecEntry get color) === color("blue") }
-    assert { (volatileRecEntry get email) === email("oh@buh.com") }
+    assert { (volatileRecEntry get color) =~= color("blue") }
+    assert { (volatileRecEntry get email) =~= email("oh@buh.com") }
+
+    val fs = FastaSeq("hola")
+    val fsD = fs := ( (">asdf", List("ATCTGCTC")) )
+    val zz = parametricRecord(fs) := (
+      fsD                 ::
+      (color := "green")  :: *[AnyDenotation]
+    )
+
+    val zz2 = parametricRecord(fs) := (
+      fsD                 ::
+      (color := "green")  :: *[AnyDenotation]
+    )
+
+    assert { zz =~= zz2 }
+    assert { (zz get fs) =~= fsD }
+    assert { (typeLabel(fs) === "hola") }
   }
 
   test("can update fields") {
 
     assert {
-      (normalUserEntry update color("albero")) ===
+      (normalUserEntry update color("albero")) =~=
         (normalUser(
           (normalUserEntry get id)    ::
           (normalUserEntry get name)  ::
@@ -97,7 +119,7 @@ class RecordTypeTests extends org.scalatest.FunSuite {
 
     assert {
       // NOTE can update in any order
-      (normalUserEntry update name("bar") :: id(321) :: *[AnyDenotation]) === (
+      (normalUserEntry update name("bar") :: id(321) :: *[AnyDenotation]) =~= (
         normalUser(
           id(321)                     ::
           name("bar")                 ::
@@ -134,7 +156,7 @@ class RecordTypeTests extends org.scalatest.FunSuite {
 
   test("product type interop") {
 
-    assert { (simpleUser := simpleUserEntry.toProduct.value) === simpleUserEntry }
+    assert { (simpleUser := simpleUserEntry.toProduct.value) =~= simpleUserEntry }
   }
 
 
@@ -158,6 +180,7 @@ class RecordTypeTests extends org.scalatest.FunSuite {
       import scala.util.control.Exception._
       catching(classOf[NumberFormatException]) opt str.toInt
     }
+
     implicit def idParser: DenotationParser[id.type, Int, String]  = new DenotationParser(id, id.label)(idVParser)
 
     implicit val idSerializer: DenotationSerializer[id.type, Int, String] = new DenotationSerializer(id, id.label)( { x: Int => Some(x.toString )} )
@@ -166,6 +189,8 @@ class RecordTypeTests extends org.scalatest.FunSuite {
   test("can parse records from Maps") {
 
     import propertyConverters._
+
+    assert { idParser("hola", "2") === Left(WrongKey(id, "hola", id.label)) }
 
     val simpleUserEntryMap =  Map(
       "id" -> "29681",
@@ -238,7 +263,6 @@ class RecordTypeTests extends org.scalatest.FunSuite {
 
 
 
-[test/scala/cosas/asserts.scala]: asserts.scala.md
 [test/scala/cosas/DenotationTests.scala]: DenotationTests.scala.md
 [test/scala/cosas/EqualityTests.scala]: EqualityTests.scala.md
 [test/scala/cosas/DependentFunctionsTests.scala]: DependentFunctionsTests.scala.md

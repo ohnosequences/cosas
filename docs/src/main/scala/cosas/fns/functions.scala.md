@@ -1,6 +1,8 @@
 
 ```scala
 package ohnosequences.cosas.fns
+
+import ohnosequences.cosas._
 ```
 
 Dependent functions aka dependent products
@@ -27,6 +29,9 @@ case object AnyDepFn1 {
     X10 <: DF0#In1
   ](df: DF0): syntax.DepFn1ApplyAt[DF0,X10] =
     syntax.DepFn1ApplyAt(df)
+
+  implicit def asPredicateSyntax[DF <: AnyDepFn1 { type Out = Unit }](f: DF): syntax.PredicateLikeSyntax[DF] =
+    syntax.PredicateLikeSyntax(f)
 }
 
 trait DepFn1[I,O] extends Any with AnyDepFn1 {
@@ -243,7 +248,6 @@ case class App3[
 
 
 
-[test/scala/cosas/asserts.scala]: ../../../../test/scala/cosas/asserts.scala.md
 [test/scala/cosas/DenotationTests.scala]: ../../../../test/scala/cosas/DenotationTests.scala.md
 [test/scala/cosas/EqualityTests.scala]: ../../../../test/scala/cosas/EqualityTests.scala.md
 [test/scala/cosas/DependentFunctionsTests.scala]: ../../../../test/scala/cosas/DependentFunctionsTests.scala.md

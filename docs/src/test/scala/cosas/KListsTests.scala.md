@@ -64,7 +64,6 @@ class KListTests extends org.scalatest.FunSuite {
     assert{ foo(oh) === true }
   }
 
-
   test("can convert KLists to lists of their bound") {
 
     assert {
@@ -110,6 +109,14 @@ class KListTests extends org.scalatest.FunSuite {
       (("hola" :: "scalac" :: *[String]).asList : List[Any]) === List[Any]("hola","scalac")
     }
 
+  }
+
+  test("KList cons/uncons") {
+
+    val z = true :: "hola" :: 2 :: *[Any]
+
+    // TODO better syntax for this
+    assert{ cons(z.uncons._1, z.uncons._2) === z }
   }
 
   test("can access elements by index") {
@@ -242,9 +249,12 @@ class KListTests extends org.scalatest.FunSuite {
     val zz: Boolean :: *[Any] = true :: *[Any]
     val zzz: Int :: Boolean :: *[Any] = 2 :: true :: *[Any]
 
-    assert {
-      zzz.map(identity) === zzz
-    }
+    val uh: Int :: Boolean :: *[AnyVal] = 2 :: true :: *[AnyVal]
+    val tostr: Fn1[Any,String] = Fn1 { x: Any => x.toString }
+
+    assert { (uh  map tostr) === "2" :: "true" :: *[String] }
+
+    assert { zzz.map(identity) === zzz }
 
     assert {
       (zzz map f) === "2" :: "true" :: *[String]
@@ -261,7 +271,8 @@ class KListTests extends org.scalatest.FunSuite {
 
   case object sum extends DepFn2[Int,Int,Int] {
 
-    implicit val default: App2[sum.type, Int,Int,Int] = App2 { (a: Int, b: Int) => (a + b): Int }
+    implicit lazy val default: App2[sum.type, Int,Int,Int] =
+      sum at { (a: Int, b: Int) => (a + b): Int }
   }
 
   test("can foldLeft over KLists") {
@@ -378,12 +389,53 @@ class KListTests extends org.scalatest.FunSuite {
         isAnyVal.isTrueOn[X]
     }
 
-    assert { isAnyVal("foo") === False }
-    assert { isAnyVal('x') === True }
+    case object isInt extends PredicateOver[Any] {
+
+      implicit lazy val itis: isInt.type isTrueOn Int =
+        isInt.isTrueOn[Int]
+    }
+
+    case object isString extends PredicateOver[Any] {
+
+      implicit lazy val itis: isString.type isTrueOn String =
+        isString.isTrueOn[String]
+    }
+
+    case object trueOnLists extends DepFn1[Any,Unit] {
+
+      implicit def buh[X]: AnyApp1At[trueOnLists.type, List[X]] { type Y = Unit } =
+        trueOnLists at { x: List[X] => () }
+    }
+
+    assert { isAnyVal('x') === () }
+    assert { trueOnLists(List("hola")) === () }
+
+    assert {
+      ( List(2) :: 2 :: List("hola") :: "hola" :: *[Any] filter trueOnLists.asPredicate ) === (List(2) :: List("hola") :: *[Any])
+    }
 
     assertResult('b' :: true :: 2 :: 'a' :: *[Any]) {
       ('b' :: true :: "hola" :: 2 :: 'a' :: *[Any]).filter(isAnyVal)
     }
+
+    assertResult('b' :: true :: "hola" :: 2 :: 'a' :: *[Any]) {
+      ('b' :: true :: "hola" :: 2 :: 'a' :: *[Any]).filter(isAnyVal ∨ isString)
+    }
+
+    // this is to check that ∨ is not ambiguous:
+    assertResult('b' :: true :: 2 :: 'a' :: *[Any]) {
+      ('b' :: true :: "hola" :: 2 :: 'a' :: *[Any]).filter(isInt ∨ isAnyVal)
+    }
+
+    assertResult(2 :: *[Any]) {
+      ('b' :: Set("a") :: true :: "hola" :: List(1,2,3) :: 2 :: 'a' :: *[Any]).filter(isAnyVal ∧ isInt)
+    }
+
+    // for completeness on predicate tests
+    val z1 = trueOnLists.asPredicate(List("hola"))
+    val z2 = (isAnyVal ∧ isInt)(2)
+    val z3 = (isInt ∨ isAnyVal)(2)
+    val z4 = (isAnyVal ∨ isInt)(true)
   }
 }
 
@@ -392,7 +444,6 @@ class KListTests extends org.scalatest.FunSuite {
 
 
 
-[test/scala/cosas/asserts.scala]: asserts.scala.md
 [test/scala/cosas/DenotationTests.scala]: DenotationTests.scala.md
 [test/scala/cosas/EqualityTests.scala]: EqualityTests.scala.md
 [test/scala/cosas/DependentFunctionsTests.scala]: DependentFunctionsTests.scala.md

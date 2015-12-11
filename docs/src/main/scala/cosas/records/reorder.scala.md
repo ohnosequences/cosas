@@ -12,7 +12,7 @@ class Reorder[Ts <: AnyProductType, Vs <: AnyKList { type Bound = AnyDenotation 
 case object Reorder {
 
   implicit def empty[S <: AnyKList { type Bound = AnyDenotation }]
-  : AnyApp1At[Reorder[unit, S], S] { type Y = *[AnyDenotation] } =
+  : AnyApp1At[Reorder[|[AnyType], S], S] { type Y = *[AnyDenotation] } =
     App1 { s: S => *[AnyDenotation] }
 
   implicit def nonEmpty[
@@ -68,7 +68,6 @@ implicit def foundInTail[
 
 
 
-[test/scala/cosas/asserts.scala]: ../../../../test/scala/cosas/asserts.scala.md
 [test/scala/cosas/DenotationTests.scala]: ../../../../test/scala/cosas/DenotationTests.scala.md
 [test/scala/cosas/EqualityTests.scala]: ../../../../test/scala/cosas/EqualityTests.scala.md
 [test/scala/cosas/DependentFunctionsTests.scala]: ../../../../test/scala/cosas/DependentFunctionsTests.scala.md

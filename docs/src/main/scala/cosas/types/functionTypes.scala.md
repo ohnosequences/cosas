@@ -28,7 +28,6 @@ case class ==>[A <: AnyType, B <: AnyType](val domain: A, val codomain: B) exten
 
 
 
-[test/scala/cosas/asserts.scala]: ../../../../test/scala/cosas/asserts.scala.md
 [test/scala/cosas/DenotationTests.scala]: ../../../../test/scala/cosas/DenotationTests.scala.md
 [test/scala/cosas/EqualityTests.scala]: ../../../../test/scala/cosas/EqualityTests.scala.md
 [test/scala/cosas/DependentFunctionsTests.scala]: ../../../../test/scala/cosas/DependentFunctionsTests.scala.md
