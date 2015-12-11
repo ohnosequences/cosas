@@ -10,6 +10,7 @@ package object cosas {
 
   type !=[A,B]  = Distinct[A,B]
   type !<[A,B]  = A NotSubtypeOf B
+
   type ≤[A,B]   = A SubtypeOf B
 
   type  _0 = zero.type
@@ -44,7 +45,6 @@ package object cosas {
 
 
 
-[test/scala/cosas/asserts.scala]: ../../../test/scala/cosas/asserts.scala.md
 [test/scala/cosas/DenotationTests.scala]: ../../../test/scala/cosas/DenotationTests.scala.md
 [test/scala/cosas/EqualityTests.scala]: ../../../test/scala/cosas/EqualityTests.scala.md
 [test/scala/cosas/DependentFunctionsTests.scala]: ../../../test/scala/cosas/DependentFunctionsTests.scala.md

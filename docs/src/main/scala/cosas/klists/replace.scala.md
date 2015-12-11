@@ -12,7 +12,7 @@ case object replace extends replaceInTail {
     AnyApp2At[replace[S], S, *[X]] { type Y = S } =
     App2 { (s: S, q: *[S#Bound]) => s }
 
-  implicit def replaceHead[
+  implicit def foundAtHead[
     H <: T#Bound, T <: AnyKList,
     Q <: AnyKList, QOut <: AnyKList
   ](implicit
@@ -40,7 +40,6 @@ trait replaceInTail {
 
 
 
-[test/scala/cosas/asserts.scala]: ../../../../test/scala/cosas/asserts.scala.md
 [test/scala/cosas/DenotationTests.scala]: ../../../../test/scala/cosas/DenotationTests.scala.md
 [test/scala/cosas/EqualityTests.scala]: ../../../../test/scala/cosas/EqualityTests.scala.md
 [test/scala/cosas/DependentFunctionsTests.scala]: ../../../../test/scala/cosas/DependentFunctionsTests.scala.md

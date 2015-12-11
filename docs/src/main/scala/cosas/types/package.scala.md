@@ -4,13 +4,10 @@ package ohnosequences.cosas
 
 package object types {
 
-  type :=[T <: AnyType, +V <: T#Raw] = Denotes[V,T]
+  type :=[T <: AnyType, +V <: T#Raw] = Denotation[T, V]
 
-  type unit = EmptyProductType[AnyType]
-  val  unit : unit = new EmptyProductType[AnyType]
-
-  type In[E <: AnyType] = EmptyProductType[E]
-  def In[E <: AnyType]: In[E] = new EmptyProductType[E]
+  type |[E <: AnyType] = EmptyProductType[E]
+  def  |[E <: AnyType]: |[E] = new EmptyProductType[E]
 }
 
 ```
@@ -18,7 +15,6 @@ package object types {
 
 
 
-[test/scala/cosas/asserts.scala]: ../../../../test/scala/cosas/asserts.scala.md
 [test/scala/cosas/DenotationTests.scala]: ../../../../test/scala/cosas/DenotationTests.scala.md
 [test/scala/cosas/EqualityTests.scala]: ../../../../test/scala/cosas/EqualityTests.scala.md
 [test/scala/cosas/DependentFunctionsTests.scala]: ../../../../test/scala/cosas/DependentFunctionsTests.scala.md

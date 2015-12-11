@@ -31,9 +31,8 @@ trait consIf_false {
   implicit def pFalse[
     P <: AnyPredicate { type In1 >: H },
     H <: T#Bound, T <: AnyKList { type Bound <: P#In1 }
-  ](implicit
-    ev: P isFalseOn H
-  ): AnyApp2At[consIf[P],
+  ]
+  : AnyApp2At[consIf[P],
       H, T
     ] { type Y = T } =
     App2 { (_, t: T) => t }
@@ -69,7 +68,6 @@ case object filter {
 
 
 
-[test/scala/cosas/asserts.scala]: ../../../../test/scala/cosas/asserts.scala.md
 [test/scala/cosas/DenotationTests.scala]: ../../../../test/scala/cosas/DenotationTests.scala.md
 [test/scala/cosas/EqualityTests.scala]: ../../../../test/scala/cosas/EqualityTests.scala.md
 [test/scala/cosas/DependentFunctionsTests.scala]: ../../../../test/scala/cosas/DependentFunctionsTests.scala.md

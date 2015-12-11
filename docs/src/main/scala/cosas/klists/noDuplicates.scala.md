@@ -12,7 +12,7 @@ case object NoDuplicates extends PredicateOver[AnyKList] {
 
   implicit def nonEmpty[H <: T#Bound, T <: AnyKList]
     (implicit
-      noH: H isNotOneOf T#Types,
+      noH: H isNotOneOf T#AllTypes,
       ev: noDuplicates isTrueOn T
     ): noDuplicates isTrueOn(H :: T) =
        noDuplicates.isTrueOn[H :: T]
@@ -23,7 +23,6 @@ case object NoDuplicates extends PredicateOver[AnyKList] {
 
 
 
-[test/scala/cosas/asserts.scala]: ../../../../test/scala/cosas/asserts.scala.md
 [test/scala/cosas/DenotationTests.scala]: ../../../../test/scala/cosas/DenotationTests.scala.md
 [test/scala/cosas/EqualityTests.scala]: ../../../../test/scala/cosas/EqualityTests.scala.md
 [test/scala/cosas/DependentFunctionsTests.scala]: ../../../../test/scala/cosas/DependentFunctionsTests.scala.md

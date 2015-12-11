@@ -25,9 +25,9 @@ trait AnyNonZeroNat extends AnyNat { nz =>
 
   type Next <: AnyNonZeroNat
   type Pred <: AnyNat
-  val pred: Pred
+  val  pred: Pred
 
-  type StrictlySmaller = Pred#StrictlySmaller or Pred
+  type StrictlySmaller = Pred#StrictlySmaller#or[Pred]
 }
 
 case class Successor[N <: AnyNat](val pred: N) extends AnyNonZeroNat {
@@ -57,7 +57,6 @@ case object sum extends DepFn2[AnyNat, AnyNat, AnyNat] {
 
 
 
-[test/scala/cosas/asserts.scala]: ../../../test/scala/cosas/asserts.scala.md
 [test/scala/cosas/DenotationTests.scala]: ../../../test/scala/cosas/DenotationTests.scala.md
 [test/scala/cosas/EqualityTests.scala]: ../../../test/scala/cosas/EqualityTests.scala.md
 [test/scala/cosas/DependentFunctionsTests.scala]: ../../../test/scala/cosas/DependentFunctionsTests.scala.md

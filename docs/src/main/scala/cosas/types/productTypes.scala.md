@@ -5,14 +5,13 @@ package ohnosequences.cosas.types
 import ohnosequences.cosas._, klists._, fns._
 
 // TODO reproduce KList
-trait AnyProductType extends AnyType { prod =>
+trait AnyProductType extends AnyType {
 
-  type Bound = Types#Bound
-
-  type  Types <: AnyKList { type Bound <: AnyType } //{ type Bound = prod.Bound }
+  type TypesBound = Types#Bound
+  type  Types <: AnyKList { type Bound <: AnyType } //{ type Bound = prod.Bound } thanks scalac
   val   types: Types
 
-  type Raw <: AnyKList { type Bound = AnyDenotation }
+  type Raw <: AnyKList.withBound[AnyDenotation]
 }
 
 case object AnyProductType {
@@ -23,13 +22,12 @@ case object AnyProductType {
 
   implicit def productTypeDenotationSyntax[L <: AnyProductType, Vs <: L#Raw](ds: L := Vs)
   : syntax.AnyProductTypeDenotationSyntax[L,Vs] =
-    syntax.AnyProductTypeDenotationSyntax(ds.value)
+    syntax.AnyProductTypeDenotationSyntax(ds)
 
 }
 
 class EmptyProductType[E <: AnyType] extends AnyProductType {
 
-  // type Bound = E
   type Types = *[E]
   val types: Types = *[E]
 
@@ -38,11 +36,10 @@ class EmptyProductType[E <: AnyType] extends AnyProductType {
   val label: String = "()"
 }
 
-case class :×:[H <: T#Bound, T <: AnyProductType](val head: H, val tail: T) extends AnyProductType {
+case class :×:[H <: T#Types#Bound, T <: AnyProductType](val head: H, val tail: T) extends AnyProductType {
 
-  // type Bound = T#Bound
-  type Types = H :: T#Types
-  val  types: Types = head :: (tail.types: T#Types)
+  type            Types = H :: T#Types
+  lazy val types: Types = head :: (tail.types: T#Types)
 
   type Raw = AnyDenotation { type Tpe = H } :: T#Raw
 
@@ -54,7 +51,6 @@ case class :×:[H <: T#Bound, T <: AnyProductType](val head: H, val tail: T) ext
 
 
 
-[test/scala/cosas/asserts.scala]: ../../../../test/scala/cosas/asserts.scala.md
 [test/scala/cosas/DenotationTests.scala]: ../../../../test/scala/cosas/DenotationTests.scala.md
 [test/scala/cosas/EqualityTests.scala]: ../../../../test/scala/cosas/EqualityTests.scala.md
 [test/scala/cosas/DependentFunctionsTests.scala]: ../../../../test/scala/cosas/DependentFunctionsTests.scala.md

@@ -6,25 +6,25 @@ import ohnosequences.cosas._, types._, fns._, klists._
 
 case object syntax {
 
-  final case class RecordTypeDenotationSyntax[RT <: AnyRecordType, Vs <: RT#Raw](val vs: Vs) extends AnyVal {
+  final case class RecordTypeDenotationSyntax[RT <: AnyRecordType, Vs <: RT#Raw](val vs: RT := Vs) extends AnyVal {
 
-    def get[D <: AnyDenotationOf[T], T <: AnyType](tpe: T)(implicit
-      p: AnyApp1At[FindS[AnyDenotationOf[T]], Vs] { type Y = D }
-    ): D = p(vs)
+    def get[D <: AnyDenotation.Of[T], T <: AnyType](tpe: T)(implicit
+      p: AnyApp1At[findS[AnyDenotation.Of[T]], Vs] { type Y = D }
+    ): D = p(vs.value)
 
-    def getV[D <: AnyDenotationOf[T], T <: AnyType](tpe: T)(implicit
-      p: AnyApp1At[FindS[AnyDenotationOf[T]], Vs] { type Y = D }
-    ): D#Value = p(vs).value
+    def getV[D <: AnyDenotation.Of[T], T <: AnyType](tpe: T)(implicit
+      p: AnyApp1At[findS[AnyDenotation.Of[T]], Vs] { type Y = D }
+    ): D#Value = p(vs.value).value
 
     def update[S <: AnyKList.withBound[AnyDenotation]](s: S)(implicit
       repl: AnyApp2At[replace[Vs], Vs, S] { type Y = Vs }
     ):   RT := Vs =
-    new (RT := Vs)(repl(vs,s))
+    vs.tpe := repl(vs.value, s)
 
     def update[N <: AnyDenotation](n: N)(implicit
       repl: AnyApp2At[replace[Vs], Vs, N :: *[AnyDenotation]] { type Y = Vs }
     ):   RT := Vs =
-    new (RT := Vs)(repl(vs, n :: *[AnyDenotation]))
+    vs.tpe := repl(vs.value, n :: *[AnyDenotation])
 
     // TODO see if this is really needed
     // def as[QT <: AnyRecordType, QTRaw <: QT#Raw](qt: QT)(implicit
@@ -32,19 +32,19 @@ case object syntax {
     // ): QT := QTRaw =
     //    qt := (takeFirst(vs): QTRaw)
 
-    def toProduct: RT#Keys := Vs = new (RT#Keys := Vs)(vs)
+    def toProduct: RT#Keys := Vs = (vs.tpe.keys: RT#Keys) := vs.value
 
     def serialize[V](implicit
       serialize: AnyApp2At[V SerializeDenotations Vs, Map[String,V], Vs] {
         type Y = Either[SerializeDenotationsError, Map[String,V]]
       }
-    ): Either[SerializeDenotationsError, Map[String,V]] = serialize(Map[String,V](), vs)
+    ): Either[SerializeDenotationsError, Map[String,V]] = serialize(Map[String,V](), vs.value)
 
     def serializeUsing[V](map: Map[String,V])(implicit
       serialize: AnyApp2At[V SerializeDenotations Vs, Map[String,V], Vs] {
         type Y = Either[SerializeDenotationsError, Map[String,V]]
       }
-    ): Either[SerializeDenotationsError, Map[String,V]] = serialize(map, vs)
+    ): Either[SerializeDenotationsError, Map[String,V]] = serialize(map, vs.value)
   }
 
   final case class RecordTypeSyntax[RT <: AnyRecordType](val rt: RT) extends AnyVal {
@@ -86,7 +86,6 @@ case object syntax {
 
 
 
-[test/scala/cosas/asserts.scala]: ../../../../test/scala/cosas/asserts.scala.md
 [test/scala/cosas/DenotationTests.scala]: ../../../../test/scala/cosas/DenotationTests.scala.md
 [test/scala/cosas/EqualityTests.scala]: ../../../../test/scala/cosas/EqualityTests.scala.md
 [test/scala/cosas/DependentFunctionsTests.scala]: ../../../../test/scala/cosas/DependentFunctionsTests.scala.md

@@ -10,20 +10,15 @@ sealed trait AnyKList extends Any {
 
   type Length <: AnyNat
 
-  type Types <: AnyTypeUnion
-  // NOTE: should be Types#union, but we can't set it here; scalac bugs
-  type Union >: Types#union <: Types#union
-}
-
-case object KList {
-
-  def apply[F <: AnyDepFn1](f: F): mapKList[F, F#Out] = new mapKList[F, F#Out]
+  type AllTypes <: AnyTypeUnion
+  // NOTE: should be AllTypes#union, but we can't set it here; scalac bugs
+  type Union >: AllTypes#union <: AllTypes#union
 }
 
 sealed trait AnyEmptyKList extends Any with AnyKList {
 
-  type Types = TypeUnion.empty
-  type Union = Types#union
+  type AllTypes = TypeUnion.empty
+  type Union = AllTypes#union
 
   type Length = _0
 }
@@ -43,8 +38,8 @@ sealed trait AnyNonEmptyKList extends Any with AnyKList {
 
   type Bound >: Tail#Bound <: Tail#Bound // NOTE again this is for forcing type inference
 
-  type Types = Tail#Types#or[Head]
-  type Union = Types#union
+  type AllTypes = Tail#AllTypes#or[Head]
+  type Union = AllTypes#union
 
   type Length = Successor[Tail#Length]
 }
@@ -70,27 +65,19 @@ case object AnyKList {
   implicit def klistSyntax[L <: AnyKList](l: L)
   : syntax.KListSyntax[L] =
     syntax.KListSyntax[L](l)
-}
 
-// TODO should be a depfn
-trait IsKCons[L <: AnyKList, H <: L#Bound, T <: AnyKList] {
+    def fromList[X](l: List[X]): AnyKList { type Bound = X } = fromList_rec(l,*[X])
 
-  def h(l: L): H
-  def t(l: L): T
-}
+    @scala.annotation.tailrec
+    private def fromList_rec[X](
+      list: List[X],
+      acc: AnyKList.withBound[X]
+    )
+    : AnyKList.withBound[X] = list.reverse match {
+      case x :: xs  => fromList_rec[X](xs, x :: acc)
+      case Nil      => acc
+    }
 
-case object IsKCons {
-
-  implicit def default[
-    H0 <: T0#Bound,
-    T0 <: AnyKList
-  ]
-  : IsKCons[KCons[H0,T0], H0, T0] =
-    new IsKCons[KCons[H0,T0], H0, T0] {
-
-    def h(l: KCons[H0,T0]): H0 = l.head
-    def t(l: KCons[H0,T0]): T0 = l.tail
-  }
 }
 
 ```
@@ -98,7 +85,6 @@ case object IsKCons {
 
 
 
-[test/scala/cosas/asserts.scala]: ../../../../test/scala/cosas/asserts.scala.md
 [test/scala/cosas/DenotationTests.scala]: ../../../../test/scala/cosas/DenotationTests.scala.md
 [test/scala/cosas/EqualityTests.scala]: ../../../../test/scala/cosas/EqualityTests.scala.md
 [test/scala/cosas/DependentFunctionsTests.scala]: ../../../../test/scala/cosas/DependentFunctionsTests.scala.md
