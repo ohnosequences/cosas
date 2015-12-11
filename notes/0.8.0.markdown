@@ -6,3 +6,4 @@ This release introduces **breaking changes** basically **everywhere**. The good 
 4. **code reorg** there are now separate packages instead of objects
 5. **test coverage** is almost 100% now. Set up codacy and scoverage.
 6. **drop Scala 2.10** due to the amazing amount of workarounds needed, and 2.12 being already in milestone stage.
+7. **drop shapeless dependency** cosas is now dependency-free.
