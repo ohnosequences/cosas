@@ -405,6 +405,13 @@ class KListTests extends org.scalatest.FunSuite {
         trueOnLists at { x: List[X] => () }
     }
 
+    // TODO add a proper test
+    any(isString)(2 :: true :: "hola" :: *[Any])
+    any(isString)(*[Any])
+
+    all(isString)("hola" :: "scalac" :: *[Any])
+    assertTypeError { """ all(isString)("hola" :: 2 :: *[Any]) """ }
+
     assert { isAnyVal('x') === () }
     assert { trueOnLists(List("hola")) === () }
 
