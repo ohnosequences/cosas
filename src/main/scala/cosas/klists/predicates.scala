@@ -19,7 +19,7 @@ case object any extends TrueSomewhereInTail {
 trait TrueSomewhereInTail {
 
   implicit def trueAtTail[
-    H <: L#Bound, L <: AnyKList { type Bound = P#In1 },
+    H <: L#Bound, L <: AnyNonEmptyKList { type Bound = P#In1 },
     P <: AnyPredicate
   ](implicit
     p: any[P] isTrueOn L
