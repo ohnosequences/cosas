@@ -405,6 +405,7 @@ class KListTests extends org.scalatest.FunSuite {
 
   test("KList any") {
 
+    assert { any(isString)("hola" :: *[Any]) === (()) }
     assert { any(isString)(2 :: true :: "hola" :: *[Any]) === (()) }
     assert { any(isString)(*[Any]) === (()) }
 
