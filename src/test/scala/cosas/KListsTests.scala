@@ -379,34 +379,51 @@ class KListTests extends org.scalatest.FunSuite {
 
   }
 
+  case object isAnyVal extends PredicateOver[Any] {
+
+    implicit def yes[X <: AnyVal]: isAnyVal.type isTrueOn X =
+      isAnyVal.isTrueOn[X]
+  }
+
+  case object isInt extends PredicateOver[Any] {
+
+    implicit lazy val itis: isInt.type isTrueOn Int =
+      isInt.isTrueOn[Int]
+  }
+
+  case object isString extends PredicateOver[Any] {
+
+    implicit lazy val itis: isString.type isTrueOn String =
+      isString.isTrueOn[String]
+  }
+
+  case object trueOnLists extends DepFn1[Any,Unit] {
+
+    implicit def buh[X]: AnyApp1At[trueOnLists.type, List[X]] { type Y = Unit } =
+      trueOnLists at { x: List[X] => () }
+  }
+
+  test("KList any") {
+
+    assert { any(isString)("hola" :: *[Any]) === (()) }
+    assert { any(isString)(2 :: true :: "hola" :: *[Any]) === (()) }
+    assert { any(isString)(*[Any]) === (()) }
+
+    assertTypeError { """ any(isString)(true :: 2 :: *[Any]) """ }
+  }
+
+  test("KList all") {
+
+    assert { all(isString)("hola" :: "scalac" :: *[Any]) === (()) }
+    assert { all(isString)(*[Any]) === (()) }
+
+    assertTypeError { """ all(isString)("hola" :: 2 :: *[Any]) """ }
+  }
+
   test("can filter KLists") {
 
-    case object isAnyVal extends PredicateOver[Any] {
-
-      implicit def yes[X <: AnyVal]: isAnyVal.type isTrueOn X =
-        isAnyVal.isTrueOn[X]
-    }
-
-    case object isInt extends PredicateOver[Any] {
-
-      implicit lazy val itis: isInt.type isTrueOn Int =
-        isInt.isTrueOn[Int]
-    }
-
-    case object isString extends PredicateOver[Any] {
-
-      implicit lazy val itis: isString.type isTrueOn String =
-        isString.isTrueOn[String]
-    }
-
-    case object trueOnLists extends DepFn1[Any,Unit] {
-
-      implicit def buh[X]: AnyApp1At[trueOnLists.type, List[X]] { type Y = Unit } =
-        trueOnLists at { x: List[X] => () }
-    }
-
-    assert { isAnyVal('x') === () }
-    assert { trueOnLists(List("hola")) === () }
+    assert { isAnyVal('x') === (()) }
+    assert { trueOnLists(List("hola")) === (()) }
 
     assert {
       ( List(2) :: 2 :: List("hola") :: "hola" :: *[Any] filter trueOnLists.asPredicate ) === (List(2) :: List("hola") :: *[Any])
