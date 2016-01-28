@@ -12,7 +12,7 @@ trait AnyProductType extends AnyType {
 }
 
 case object AnyProductType {
-  type Of[B <: AnyType] = AnyProductType { type Types <: AnyKList.Of[B] }
+  type Of[+B <: AnyType] = AnyProductType { type Types <: AnyKList.Of[B] }
   type withBound[B <: AnyType] = AnyProductType { type Types <: AnyKList.withBound[B] }
 
   implicit def productTypeSyntax[L <: AnyProductType](l: L)
