@@ -26,6 +26,9 @@ class RecordType[Ks <: AnyProductType](
 
 case object AnyRecordType {
 
+  type Of[+B <: AnyType] = AnyRecordType { type Keys <: AnyProductType.Of[B] }
+  type withBound[B <: AnyType] = AnyRecordType { type Keys <: AnyProductType.withBound[B] }
+
   type withKeys[Ks <: AnyProductType] = AnyRecordType { type Keys = Ks }
 
   implicit def recordTypeSyntax[RT <: AnyRecordType](rt: RT)

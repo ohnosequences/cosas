@@ -5,14 +5,15 @@ import ohnosequences.cosas._, klists._, fns._
 // TODO reproduce KList
 trait AnyProductType extends AnyType {
 
-  type TypesBound = Types#Bound
-  type  Types <: AnyKList { type Bound <: AnyType } //{ type Bound = prod.Bound } thanks scalac
-  val   types: Types
+  type Types <: AnyKList { type Bound <: AnyType } //{ type Bound = prod.Bound } thanks scalac
+  val  types: Types
 
   type Raw <: AnyKList.withBound[AnyDenotation]
 }
 
 case object AnyProductType {
+  type Of[+B <: AnyType] = AnyProductType { type Types <: AnyKList.Of[B] }
+  type withBound[B <: AnyType] = AnyProductType { type Types <: AnyKList.withBound[B] }
 
   implicit def productTypeSyntax[L <: AnyProductType](l: L)
   : syntax.AnyProductTypeSyntax[L] =
