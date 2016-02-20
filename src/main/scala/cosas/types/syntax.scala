@@ -18,9 +18,13 @@ case object syntax {
     def =~=(w: D#Tpe := D#Value): Boolean = d.value == w.value
   }
 
-  final case class AnyProductTypeSyntax[L <: AnyProductType](val l: L) extends AnyVal {
+  final case class AnyProductTypeSyntax[T0 <: AnyProductType {
+    type Types <: AnyKList { type Bound <: AnyType };
+    type B = Types#Bound;
+    type Raw <: AnyKList { type Bound = AnyDenotation { type Tpe <: Types#Bound } }
+  }](val l: T0) extends AnyVal {
 
-    def :×:[H0 <: L#Types#Bound](h: H0): H0 :×: L = new :×:[H0,L](h,l)
+    def :×:[H0 <: T0#Types#Bound](h: H0): H0 :×: T0 = new :×:[H0,T0](h,l)
   }
 
   final case class AnyProductTypeDenotationSyntax[L <: AnyProductType, Vs <: L#Raw](val vs: L := Vs) extends AnyVal {
