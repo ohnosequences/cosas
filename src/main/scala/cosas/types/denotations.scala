@@ -2,7 +2,7 @@ package ohnosequences.cosas.types
 
 import ohnosequences.cosas._, fns._
 
-trait AnyDenotation extends Any {
+trait AnyDenotation {
 
   type Tpe <: AnyType
   def tpe: Tpe
