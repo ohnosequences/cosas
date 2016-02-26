@@ -29,11 +29,11 @@ case object syntax {
 
   final case class AnyProductTypeDenotationSyntax[L <: AnyProductType, Vs <: L#Raw](val vs: L := Vs) extends AnyVal {
 
-    def project[T <: AnyType, V <: T#Raw](t: T)(implicit
-      p: AnyApp1At[Project[L,T], L := Vs] { type Y = T := V }
-    )
-    : T := V =
-      p( vs )
+    // def project[T <: AnyType, V <: T#Raw](t: T)(implicit
+    //   p: AnyApp1At[Project[L,T], L := Vs] { type Y = T := V }
+    // )
+    // : T := V =
+    //   p( vs )
 
     def at[D <: AnyDenotation, N <: AnyNat](position: N)(implicit
       getAt: AnyApp1At[Vs at N, Vs] { type Y = D }
