@@ -9,21 +9,21 @@ trait AnyProductType extends AnyType {
   type Types <: AnyKList { type Bound = B }// { type Bound = B } //{ type Bound = prod.Bound } thanks scalac
   val  types: Types
 
-  type Raw <: AnyKList // { type Bound = AnyDenotation { type Tpe <: Types#Bound }}
+  type Raw <: AnyKList { type Bound <: AnyDenotation { type Tpe <: B; type Value <: B#Raw } }
 }
 
 case object AnyProductType {
   type Of[+B <: AnyType] = AnyProductType { type Types <: AnyKList.Of[B] }
   type withBound[B <: AnyType] = AnyProductType { type Types <: AnyKList.withBound[B] }
 
-  implicit def productTypeSyntax[L <: AnyProductType {
-      type Types <: AnyKList { type Bound <: AnyType };
-      type B = Types#Bound;
-      type Raw <: AnyKList { type Bound = AnyDenotation { type Tpe <: Types#Bound } }
-    }
-  ](l: L)
-  : syntax.AnyProductTypeSyntax[L] =
-    syntax.AnyProductTypeSyntax(l)
+  // implicit def productTypeSyntax[L <: AnyProductType {
+  //     type Types <: AnyKList { type Bound <: AnyType };
+  //     type B = Types#Bound;
+  //     type Raw <: AnyKList { type Bound = AnyDenotation { type Tpe <: Types#Bound } }
+  //   }
+  // ](l: L)
+  // : syntax.AnyProductTypeSyntax[L] =
+  //   syntax.AnyProductTypeSyntax(l)
 
   implicit def productTypeDenotationSyntax[L <: AnyProductType, Vs <: L#Raw](ds: L := Vs)
   : syntax.AnyProductTypeDenotationSyntax[L,Vs] =
@@ -53,11 +53,11 @@ trait AnyNonEmptyProductType extends AnyProductType { nept =>
 }
 
 case class :×:[
-  H0 <: T0#Types#Bound,
+  H0 <: AnyType,
   T0 <: AnyProductType {
-    type Types <: AnyKList { type Bound <: AnyType };
-    type B = Types#Bound;
-    type Raw <: AnyKList { type Bound = AnyDenotation { type Tpe <: Types#Bound } }
+
+    type Types <: AnyKList { type Bound >: H0 <: AnyType }
+    type Raw <: AnyKList { type Bound >: (H0 := H0#Raw) <: AnyDenotation { type Tpe <: Types#Bound }  }
   }
 ](val head: H0, val tail: T0) extends AnyProductType {
 
@@ -65,7 +65,7 @@ case class :×:[
   type B = T0#Types#Bound
   type Head = H0
 
-  type Types = Head :: T0#Types // <: Head :: Tail#Types //<: Head :: Tail#Types
+  type Types = Head :: T0#Types // T0#Types#Bound // <: Head :: Tail#Types //<: Head :: Tail#Types
   lazy val types: Types = head  :: (tail.types: T0#Types)
 
   // type Raw = (AnyDenotation { type Tpe = H0; type Value <: H0#Raw}) :: Tail#Raw

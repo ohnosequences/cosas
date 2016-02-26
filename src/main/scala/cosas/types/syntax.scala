@@ -24,7 +24,7 @@ case object syntax {
     type Raw <: AnyKList { type Bound = AnyDenotation { type Tpe <: Types#Bound } }
   }](val l: T0) extends AnyVal {
 
-    def :×:[H0 <: T0#Types#Bound](h: H0): H0 :×: T0 = new :×:[H0,T0](h,l)
+    // def :×:[H0 <: T0#Types#Bound](h: H0): H0 :×: T0 = new :×:[H0,T0](h,l)
   }
 
   final case class AnyProductTypeDenotationSyntax[L <: AnyProductType, Vs <: L#Raw](val vs: L := Vs) extends AnyVal {
