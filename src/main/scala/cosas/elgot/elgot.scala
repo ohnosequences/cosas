@@ -16,7 +16,7 @@ case class Tailrec[I,U,O](val elgot: Elgot[I,U,O]) extends AnyVal {
   def tailrec: I ⇒ O = {
 
     @scala.annotation.tailrec
-    def recurse_aux(u: U): O = elgot.iter(u) match {
+    final def recurse_aux(u: U): O = elgot.iter(u) match {
 
       case Right(o) => o
       case Left(u)  => recurse_aux(u)

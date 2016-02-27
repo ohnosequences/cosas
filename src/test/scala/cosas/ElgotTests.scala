@@ -20,10 +20,9 @@ class ElgotTests extends org.scalatest.FunSuite {
 
   val sumL = Elgot[List[Int], (List[Int], Int), Int](
     init = { xs => recurse(xs, 0) },
-    iter = { case (rest, acc) => rest match {
-        case Nil    => output(acc)
-        case h :: t => recurse(t, h + acc)
-      }
+    iter = {
+      case (Nil,    acc) => output(acc)
+      case (h :: t, acc) => recurse(t, h + acc)
     }
   )
 
