@@ -14,6 +14,7 @@ libraryDependencies ++= Seq (
 
 // shows time for each test:
 testOptions in Test += Tests.Argument("-oD")
+parallelExecution in Test := false
 
 // scoverage conf
 // coverageEnabled := true
@@ -27,7 +28,8 @@ coverageExcludedPackages := "ohnosequences.cosas.Distinct;ohnosequences.cosas.No
 // scalacOptions ++= Seq("-Xlog-implicits")
 incOptions := incOptions.value.withNameHashing(false)
 wartremoverExcluded ++= Seq(
-  baseDirectory.value / "src" / "main" / "scala" / "cosas" / "subtyping.scala"
+  baseDirectory.value / "src" / "main" / "scala" / "cosas" / "subtyping.scala",
+  baseDirectory.value / "src" / "main" / "scala" / "cosas" / "elgot"/"elgot.scala"
 )
 
 bucketSuffix  := "era7.com"
