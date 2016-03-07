@@ -13,20 +13,25 @@ case object Reorder {
   : AnyApp1At[Reorder[|[AnyType], S], S] { type Y = *[AnyDenotation { type Tpe <: AnyType; type Raw <: AnyType#Raw }] } =
     App1 { s: S => *[AnyDenotation { type Tpe <: AnyType; type Raw <: AnyType#Raw }] }
 
-  // implicit def nonEmpty[
-  //   TailToTake <: AnyProductType {
-  //     type Types <: AnyKList { type Bound >: HeadToTake <: AnyType }
-  //     type Raw <: AnyKList { type Bound >: (HeadToTake := HeadToTake#Raw) <: AnyDenotation { type Tpe <: Types#Bound } }
-  //   },
-  //   From <: AnyKList { type Bound <: AnyDenotation }, Rest <: AnyKList { type Bound <: AnyDenotation },
-  //   HeadToTake <: AnyType { type Raw >: V }, V,
-  //   STailToTake <: AnyKList { type Bound >: (HeadToTake := V) <: AnyDenotation }
-  // ](implicit
-  //   pick: AnyApp1At[pickByType[HeadToTake], From] { type Y = (HeadToTake := V, Rest) },
-  //   take: AnyApp1At[Reorder[TailToTake, Rest], Rest] { type Y = STailToTake }
-  // )
-  // : AnyApp1At[Reorder[HeadToTake × TailToTake, From], From] { type Y = (HeadToTake := V) :: STailToTake } =
-  //   App1 { s: From => { val (h, t) = pick(s); h :: take(t) } }
+  implicit def nonEmpty[
+    TailToTake <: AnyProductType {
+      type Types <: AnyKList { type Bound >: HeadToTake <: AnyType }
+      type Raw <: AnyKList { type Bound >: (HeadToTake := HeadToTake#Raw) <: AnyDenotation { type Tpe <: Types#Bound } }
+    },
+    From <: AnyKList { type Bound <: AnyDenotation }, Rest <: AnyKList { type Bound <: AnyDenotation },
+    HeadToTake <: AnyType { type Raw >: V }, V,
+    STailToTake <: TailToTake#Raw //AnyKList { type Bound >: (HeadToTake := V) <: AnyDenotation }
+  ](implicit
+    pick: AnyApp1At[pickByType[HeadToTake], From] { type Y = (HeadToTake := V, Rest) },
+    take: AnyApp1At[Reorder[TailToTake, Rest], Rest] { type Y = STailToTake }
+  )
+  : AnyApp1At[Reorder[HeadToTake × TailToTake, From], From] { type Y = (HeadToTake := V) :: STailToTake } =
+    App1 {
+      s: From => {
+        val (h, t): (HeadToTake := V, Rest) = pick(s)
+        h :: take(t)
+      }
+    }
 }
 
 class pickByType[T <: AnyType] extends DepFn1[
