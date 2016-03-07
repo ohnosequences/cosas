@@ -59,7 +59,7 @@ case class ×[
   H0 <: AnyType,
   T0 <: AnyProductType {
     type Types <: AnyKList { type Bound >: H0 <: AnyType }
-    type Raw <: AnyKList { type Bound >: (H0 := H0#Raw) <: AnyDenotation { type Tpe <: Types#Bound; type Value <: Types#Bound#Raw } }
+    type Raw <: AnyKList { type Bound >: (H0 := H0#Raw) <: AnyDenotation { type Tpe <: Types#Bound } }
   }
 ](val tail: T0, val head: H0) extends AnyProductType {
 

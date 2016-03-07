@@ -211,6 +211,7 @@ class RecordTypeTests extends org.scalatest.FunSuite {
       (simpleUser.parse(simpleUserEntryMap)(ParseDenotations.nonEmpty(idParser, ParseDenotations.nonEmpty(AnyDenotationParser.genericParser, ParseDenotations.emptyParam)))) ===
       Right(simpleUser := id(29681) :: name("Antonio") :: *[AnyDenotation { type Tpe <: AnyType}])
     }
+    // TODO fix parsing
     // assert {
     //   simpleUser.parse(wrongKeyMap) ===
     //   Left(KeyNotFound(id.label, wrongKeyMap))

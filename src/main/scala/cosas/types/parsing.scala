@@ -73,8 +73,10 @@ case class ErrorParsing[PE <: DenotationParserError](val err: PE) extends ParseD
 case object ParseDenotations {
 
   implicit def emptyParam[V, T <: AnyType]
-  : AnyApp1At[ParseDenotations[V, |[T]], Map[String,V]] { type Y =  Either[ParseDenotationsError,*[AnyDenotation { type Tpe <: T }]] } =
-    App1 { map: Map[String,V] => Right(*[AnyDenotation { type Tpe <: T }]) }
+  : AnyApp1At[ParseDenotations[V, |[T]], Map[String,V]] {
+    type Y =  Either[ParseDenotationsError, *[AnyDenotation { type Tpe <: T }]]
+  } =
+    App1 { map: Map[String,V] => Right(*[AnyDenotation { type Tpe <: T; type Value <: T#Raw }]) }
 
   // TODO: improve parameters names
   implicit def nonEmpty[
