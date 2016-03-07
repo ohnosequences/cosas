@@ -16,6 +16,10 @@ case object AnyType {
   type withRaw[V] = AnyType { type Raw = V }
 
   implicit def typeSyntax[T <: AnyType](tpe: T): syntax.TypeSyntax[T] = syntax.TypeSyntax(tpe)
+
+  implicit def productTypeSyntax[H <: AnyType](h: H)
+  : syntax.AnyProductTypeSyntax[H] =
+    syntax.AnyProductTypeSyntax(h)
 }
 
 class Type[V](val label: String) extends AnyType { type Raw = V }
