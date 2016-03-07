@@ -9,9 +9,9 @@ class Reorder[Ts <: AnyProductType, Vs <: AnyKList { type Bound <: AnyDenotation
 
 case object Reorder {
 
-  implicit def empty[S <: AnyKList { type Bound <: AnyDenotation }]
-  : AnyApp1At[Reorder[|[AnyType], S], S] { type Y = *[AnyDenotation { type Tpe <: AnyType; type Raw <: AnyType#Raw }] } =
-    App1 { s: S => *[AnyDenotation { type Tpe <: AnyType; type Raw <: AnyType#Raw }] }
+  implicit def empty[S <: AnyKList { type Bound <: AnyDenotation { type Tpe <: T } }, T <: AnyType]
+  : AnyApp1At[Reorder[|[T], S], S] { type Y = *[AnyDenotation { type Tpe <: T }] } =
+    App1 { s: S => *[AnyDenotation { type Tpe <: T }] }
 
   implicit def nonEmpty[
     TailToTake <: AnyProductType {
@@ -20,7 +20,7 @@ case object Reorder {
     },
     From <: AnyKList { type Bound <: AnyDenotation }, Rest <: AnyKList { type Bound <: AnyDenotation },
     HeadToTake <: AnyType { type Raw >: V }, V,
-    STailToTake <: TailToTake#Raw //AnyKList { type Bound >: (HeadToTake := V) <: AnyDenotation }
+    STailToTake <: TailToTake#Raw
   ](implicit
     pick: AnyApp1At[pickByType[HeadToTake], From] { type Y = (HeadToTake := V, Rest) },
     take: AnyApp1At[Reorder[TailToTake, Rest], Rest] { type Y = STailToTake }
@@ -41,8 +41,8 @@ class pickByType[T <: AnyType] extends DepFn1[
 
 case object pickByType extends pickInTailReally {
   implicit def foundInHead[
-    H <: AnyType { type Raw >: V }, V,
-    Ds <: AnyKList { type Bound >: (H := V) <: AnyDenotation }
+    H <: AnyType, V <: H#Raw,
+    Ds <: AnyKList { type Bound >: (H := H#Raw) <: AnyDenotation }
   ]
   : AnyApp1At[
       pickByType[H],
@@ -55,8 +55,8 @@ trait pickInTailReally {
 
 implicit def foundInTail[
   H <: AnyType { type Raw >: V }, V,
-  Ds <: AnyKList { type Bound = AnyDenotation },
-  Rest <: AnyKList { type Bound = AnyDenotation },
+  Ds <: AnyKList { type Bound >: (H := V) <: AnyDenotation },
+  Rest <: AnyKList { type Bound >: (H := V) <: AnyDenotation },
   P <: AnyType { type Raw >: W }, W
 ]
 (implicit

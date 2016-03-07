@@ -151,6 +151,17 @@ class RecordTypeTests extends org.scalatest.FunSuite {
     //     *[AnyDenotation]
     //   )
     // }
+
+    case object buh extends RecordType(id × |[AnyType])
+
+    val z = buh := id(2) :: *[AnyDenotation { type Tpe <: AnyType }]
+    assertResult(z) {
+
+      buh.from(
+        id(2)     ::
+        *[AnyDenotation { type Tpe <: AnyType }]
+      )(Reorder.nonEmpty(pickByType.foundInHead, Reorder.empty))//(Reorder.nonEmpty(pickByType.foundInHead, Reorder.nonEmpty(pickByType.foundInHead, Reorder.empty)))
+    }
   }
 
   test("product type interop") {
