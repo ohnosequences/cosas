@@ -58,9 +58,6 @@ case object AnyDenotationParser {
 }
 
 
-
-
-
 /* This is a DepFn which parses a _KList of denotations_ from a Map of pairs (type label -> value: V) */
 class ParseDenotations[V, Ts <: AnyProductType] extends DepFn1[
   Map[String, V],
@@ -82,8 +79,13 @@ case object ParseDenotations {
   // TODO: improve parameters names
   implicit def nonEmpty[
     V,
-    H <: Ts#B { type Raw >: HR }, HR, Ts <: AnyProductType { type Raw >: Ds },
-    Ds <: AnyKList.withBound[AnyDenotation { type Tpe <: Ts#B }]
+    H <: AnyType { type Raw >: HR }, HR,
+    Ts <: AnyProductType {
+      type Types <: AnyKList { type Bound >: H <: AnyType }
+      type Raw <: AnyKList {
+        type Bound >: (H := H#Raw) <: AnyDenotation { type Tpe <: Types#Bound; type Value <: Types#Bound#Raw  } }
+    },
+    Ds <: Ts#Raw
   ](implicit
     parseH: DenotationParser[H,HR,V],
     parseRest: AnyApp1At[ParseDenotations[V,Ts], Map[String,V]] { type Y  = Either[ParseDenotationsError,Ds] }

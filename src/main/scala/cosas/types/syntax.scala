@@ -18,11 +18,6 @@ case object syntax {
     def =~=(w: D#Tpe := D#Value): Boolean = d.value == w.value
   }
 
-  // final case class BuhArgh[T <: AnyProductType](val t: AnyProductType.Is[T]) {
-  //
-  //   def :×:[H <: T#Types#Bound](h: H): H :×: T = new :×:(h,t)
-  // }
-
   final case class AnyProductTypeSyntax[H0 <: AnyType](val h: H0) extends AnyVal {
 
     def ×[
@@ -36,11 +31,11 @@ case object syntax {
 
   final case class AnyProductTypeDenotationSyntax[L <: AnyProductType, Vs <: L#Raw](val vs: L := Vs) extends AnyVal {
 
-    // def project[T <: AnyType, V <: T#Raw](t: T)(implicit
-    //   p: AnyApp1At[Project[L,T], L := Vs] { type Y = T := V }
-    // )
-    // : T := V =
-    //   p( vs )
+    def project[T <: AnyType, V <: T#Raw](t: T)(implicit
+      p: AnyApp1At[Project[L,T], L := Vs] { type Y = T := V }
+    )
+    : T := V =
+      p( vs )
 
     def at[D <: AnyDenotation, N <: AnyNat](position: N)(implicit
       getAt: AnyApp1At[Vs at N, Vs] { type Y = D }

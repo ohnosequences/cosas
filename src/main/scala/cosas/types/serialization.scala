@@ -53,7 +53,7 @@ trait SerializeDenotationsError
 case class KeyPresent[V](val key: String, val map: Map[String,V]) extends SerializeDenotationsError
 case class ErrorSerializing[SE <: DenotationSerializerError](val err: SE) extends SerializeDenotationsError
 
-class SerializeDenotations[V, Denotations <: AnyKList.withBound[AnyDenotation]] extends DepFn2[
+class SerializeDenotations[V, Denotations <: AnyKList.Of[AnyDenotation]] extends DepFn2[
   Map[String,V], Denotations,
   Either[SerializeDenotationsError, Map[String,V]]
 ]

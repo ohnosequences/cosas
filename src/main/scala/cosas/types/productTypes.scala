@@ -16,6 +16,18 @@ case object AnyProductType {
   type Of[+B <: AnyType] = AnyProductType { type Types <: AnyKList.Of[B] }
   type withBound[B <: AnyType] = AnyProductType { type Types <: AnyKList.withBound[B] }
 
+  type CompatibleWith[H <: AnyType] = AnyProductType {
+    type Types <: AnyKList { type Bound >: H <: AnyType }
+    type Raw <: AnyKList { type Bound >: (H := H#Raw) <: AnyDenotation { type Tpe <: Types#Bound } }
+  }
+
+  type RawBoundOf[T <: AnyProductType] = AnyKList {
+    type Bound <: AnyDenotation {
+        type Tpe <: T#B;
+        type Value <: T#Raw
+    }
+  }
+
   implicit def productTypeDenotationSyntax[L <: AnyProductType, Vs <: L#Raw](ds: L := Vs)
   : syntax.AnyProductTypeDenotationSyntax[L,Vs] =
     syntax.AnyProductTypeDenotationSyntax(ds)
@@ -47,7 +59,7 @@ case class ×[
   H0 <: AnyType,
   T0 <: AnyProductType {
     type Types <: AnyKList { type Bound >: H0 <: AnyType }
-    type Raw <: AnyKList { type Bound >: (H0 := H0#Raw) <: AnyDenotation { type Tpe <: Types#Bound }  }
+    type Raw <: AnyKList { type Bound >: (H0 := H0#Raw) <: AnyDenotation { type Tpe <: Types#Bound; type Value <: Types#Bound#Raw } }
   }
 ](val tail: T0, val head: H0) extends AnyProductType {
 
