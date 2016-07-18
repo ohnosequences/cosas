@@ -26,15 +26,15 @@ case class KNilOf[+A]() extends AnyEmptyKList {
   type Bound = A @uv
 }
 
-sealed trait AnyNonEmptyKList extends Any with AnyKList {
+sealed trait AnyNonEmptyKList extends AnyKList {
 
   type Head <: Bound
-  def  head: Head
+  val  head: Head
 
   type Tail <: AnyKList
   def  tail: Tail
 
-  type Bound >: Tail#Bound <: Tail#Bound // NOTE again this is for forcing type inference
+  type Bound >: Tail#Bound <: Tail#Bound @uv // NOTE again this is for forcing type inference
 
   type AllTypes = Tail#AllTypes#or[Head]
   type Union = AllTypes#union

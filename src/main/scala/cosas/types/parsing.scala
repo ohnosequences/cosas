@@ -58,9 +58,6 @@ case object AnyDenotationParser {
 }
 
 
-
-
-
 /* This is a DepFn which parses a _KList of denotations_ from a Map of pairs (type label -> value: V) */
 class ParseDenotations[V, Ts <: AnyProductType] extends DepFn1[
   Map[String, V],
@@ -76,19 +73,26 @@ case class ErrorParsing[PE <: DenotationParserError](val err: PE) extends ParseD
 case object ParseDenotations {
 
   implicit def emptyParam[V, T <: AnyType]
-  : AnyApp1At[ParseDenotations[V, |[T]], Map[String,V]] { type Y =  Either[ParseDenotationsError,*[AnyDenotation]] } =
-    App1 { map: Map[String,V] => Right(*[AnyDenotation]) }
+  : AnyApp1At[ParseDenotations[V, |[T]], Map[String,V]] {
+    type Y =  Either[ParseDenotationsError, *[AnyDenotation { type Tpe <: T }]]
+  } =
+    App1 { map: Map[String,V] => Right(*[AnyDenotation { type Tpe <: T; type Value <: T#Raw }]) }
 
   // TODO: improve parameters names
   implicit def nonEmpty[
     V,
-    H <: Ts#Types#Bound { type Raw >: HR }, HR, Ts <: AnyProductType { type Raw >: Ds },
-    Ds <: AnyKList.withBound[AnyDenotation]
+    H <: AnyType { type Raw >: HR }, HR,
+    Ts <: AnyProductType {
+      type Types <: AnyKList { type Bound >: H <: AnyType }
+      type Raw <: AnyKList {
+        type Bound >: (H := H#Raw) <: AnyDenotation { type Tpe <: Types#Bound; type Value <: Types#Bound#Raw  } }
+    },
+    Ds <: Ts#Raw
   ](implicit
     parseH: DenotationParser[H,HR,V],
     parseRest: AnyApp1At[ParseDenotations[V,Ts], Map[String,V]] { type Y  = Either[ParseDenotationsError,Ds] }
   )
-  : AnyApp1At[ParseDenotations[V, H :×: Ts], Map[String,V]] { type Y = Either[ParseDenotationsError, (H := HR) :: Ds] } =
+  : AnyApp1At[ParseDenotations[V, H × Ts], Map[String,V]] { type Y = Either[ParseDenotationsError, (H := HR) :: Ds] } =
     App1 { map: Map[String,V] => {
 
       map.get(parseH.labelRep).fold[Either[ParseDenotationsError, (H := HR) :: Ds]](
@@ -100,7 +104,7 @@ case object ParseDenotations {
 
           r => parseRest(map).fold[Either[ParseDenotationsError, (H := HR) :: Ds]] (
             err => Left(err),
-            td  => Right(r :: (td: Ds))
+            td  => Right((r: (H := HR)) :: (td: Ds))
           )
         )
       )

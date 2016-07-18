@@ -32,10 +32,10 @@ case object AnyRecordType {
   type withKeys[Ks <: AnyProductType] = AnyRecordType { type Keys = Ks }
 
   implicit def recordTypeSyntax[RT <: AnyRecordType](rt: RT)
-  : syntax.RecordTypeSyntax[RT] =
-    syntax.RecordTypeSyntax(rt)
+  : records.syntax.RecordTypeSyntax[RT] =
+    records.syntax.RecordTypeSyntax(rt)
 
   implicit def recordDenotationSyntax[RT <: AnyRecordType, Vs <: RT#Raw](rv: RT := Vs)
-  : syntax.RecordTypeDenotationSyntax[RT, Vs] =
-    syntax.RecordTypeDenotationSyntax(rv)
+  : records.syntax.RecordTypeDenotationSyntax[RT, Vs] =
+    records.syntax.RecordTypeDenotationSyntax(rv)
 }

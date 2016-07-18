@@ -53,7 +53,7 @@ case object syntax {
     // ): RT := RTRaw =
     //    rt := (takeFirst(values): RTRaw)
 
-    def from[Vs <: AnyKList.withBound[AnyDenotation], RTRaw <: RT#Raw](vs: Vs)(implicit
+    def from[Vs <: AnyKList.Of[AnyDenotation], RTRaw <: RT#Raw](vs: Vs)(implicit
       reorder: AnyApp1At[Reorder[RT#Keys, Vs], Vs] { type Y = RTRaw }
     )
     : RT := RTRaw =

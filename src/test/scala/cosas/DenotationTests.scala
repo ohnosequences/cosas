@@ -5,6 +5,8 @@ import DenotationTestsContext._
 
 case object DenotationTestsContext {
 
+  import AnyProductType._
+
   case object Color extends AnyType { val label = "Color"; type Raw = String }
   type Color = Color.type
   object User extends AnyType {  val label = "User"; type Raw = Any  }
@@ -15,15 +17,14 @@ case object DenotationTestsContext {
 
   val FavoriteColor = (User ==> Color)
 
-  val colorAndFriend = Color :×: Friend :×: |[AnyType]
+  val colorAndFriend = Color × (Friend × |[AnyType])
 
   sealed trait Colors extends AnyType { type Raw = Any; lazy val label: String = toString }
   case object Blue    extends Colors
   case object Yellow  extends Colors
   case object White   extends Colors
   case object Red     extends Colors
-
-  }
+}
 
 class DenotationTests extends org.scalatest.FunSuite {
 
@@ -141,17 +142,18 @@ class DenotationTests extends org.scalatest.FunSuite {
 
     val friend = (zz getFirst Friend)
 
-    assert { (zz getFirst Friend) =~= (zz project Friend)  }
+    // assert { (zz getFirst Friend) =~= (zz project Friend)  }
     // NOTE 0-based indexes
     assert { (zz getFirst Friend) =~= (zz at _1) }
 
+    import AnyProductType._
     // NOTE a bounded product type
-    val FranceFlag = Blue :×: White :×: Red :×: |[Colors]
+    val FranceFlag = Blue × (White × (Red × |[Colors]))
 
-    val viveLaFrance = FranceFlag :=  (Blue := "Vive")    ::
-                                      (White := "la")     ::
-                                      (Red := "France!")  :: *[AnyDenotation]
+    val viveLaFrance = FranceFlag :=
+      (Blue := "Vive")    ::
+      (White := "la")     ::
+      (Red := "France!")  ::
+      *[AnyDenotation { type Tpe <: Colors}]
   }
-
-
 }
