@@ -2,6 +2,7 @@ package ohnosequences.cosas.tests
 
 import ohnosequences.cosas._, klists._, fns._
 import KListTestsContext._
+import ohnosequences.test._
 
 case object KListTestsContext {
 
@@ -14,7 +15,7 @@ case object KListTestsContext {
 
 class KListTests extends org.scalatest.FunSuite {
 
-  test("HLists are KLists with bound Any") {
+  test("HLists are KLists with bound Any", ReleaseOnlyTest) {
 
     val s = "12312" :: *[Any]
 
@@ -46,7 +47,7 @@ class KListTests extends org.scalatest.FunSuite {
 
   }
 
-  test("KLists are covariant in bound and values") {
+  test("KLists are covariant in bound and values", ReleaseOnlyTest) {
 
     val oh = A0 :: A1 :: A0 :: *[A]
     val oh_any: AnyKList.Of[Any] = oh
