@@ -1,16 +1,10 @@
-Nice.scalaProject
-
 name          := "cosas"
 organization  := "ohnosequences"
 description   := "esas cosas raras con muchos tipos"
 
-scalaVersion  := "2.11.7"
+scalaVersion  := "2.11.8"
 // will update
 // crossScalaVersions  := Seq("2.12.0-M3")
-
-libraryDependencies ++= Seq (
-  "org.scalatest"  %% "scalatest" % "2.2.5" % Test
-)
 
 // shows time for each test:
 testOptions in Test += Tests.Argument("-oD")
@@ -31,3 +25,6 @@ wartremoverExcluded ++= Seq(
 )
 
 bucketSuffix  := "era7.com"
+
+wartremoverErrors   in (Compile, compile) -= Wart.Any
+wartremoverWarnings in (Compile, compile) += Wart.Any
