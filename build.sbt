@@ -1,15 +1,15 @@
-Nice.scalaProject
-
 name          := "cosas"
 organization  := "ohnosequences"
 description   := "esas cosas raras con muchos tipos"
 
-scalaVersion  := "2.11.7"
+scalaVersion  := "2.11.11"
 // will update
 // crossScalaVersions  := Seq("2.12.0-M3")
 
+bucketSuffix  := "era7.com"
+
 libraryDependencies ++= Seq (
-  "org.scalatest"  %% "scalatest" % "2.2.5" % Test
+  "org.scalatest"  %% "scalatest" % "3.0.4" % Test
 )
 
 // shows time for each test:
@@ -25,9 +25,13 @@ coverageExcludedPackages := "ohnosequences.cosas.Distinct;ohnosequences.cosas.No
 
 // for debugging
 // scalacOptions ++= Seq("-Xlog-implicits")
-incOptions := incOptions.value.withNameHashing(false)
+// incOptions := incOptions.value.withNameHashing(false)
+
 wartremoverExcluded ++= Seq(
   baseDirectory.value / "src" / "main" / "scala" / "cosas" / "subtyping.scala"
 )
 
-bucketSuffix  := "era7.com"
+wartremoverErrors in (Test, compile) --= Seq(
+  Wart.Product,
+  Wart.Serializable
+)
