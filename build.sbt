@@ -22,15 +22,10 @@ coverageHighlighting := true
 // ambiguous implicit trick => untestable
 coverageExcludedPackages := "ohnosequences.cosas.Distinct;ohnosequences.cosas.NotSubtypeOf"
 
-// for debugging
-// scalacOptions ++= Seq("-Xlog-implicits")
-// incOptions := incOptions.value.withNameHashing(false)
-
-wartremoverExcluded ++= Seq(
-  baseDirectory.value / "src" / "main" / "scala" / "cosas" / "subtyping.scala"
-)
-
 wartremoverErrors in (Test, compile) --= Seq(
   Wart.Product,
   Wart.Serializable
 )
+
+// for debugging
+// scalacOptions ++= Seq("-Xlog-implicits")
