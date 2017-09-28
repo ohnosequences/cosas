@@ -1,7 +1,5 @@
 package ohnosequences.cosas.fns
 
-import ohnosequences.cosas._
-
 /* Dependent functions aka dependent products */
 trait AnyDepFn extends Any {
   type Out

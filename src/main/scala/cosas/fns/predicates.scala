@@ -1,7 +1,5 @@
 package ohnosequences.cosas.fns
 
-import ohnosequences.cosas._
-
 trait AnyPredicate extends Any with AnyDepFn1 { type Out = Unit }
 
 case object AnyPredicate {

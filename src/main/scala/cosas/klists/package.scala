@@ -1,7 +1,5 @@
 package ohnosequences.cosas
 
-import ohnosequences.cosas.fns._
-
 package object klists {
 
   type  ::[+H <: T#Bound, +T <: AnyKList] = KCons[H,T]

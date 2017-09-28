@@ -1,6 +1,6 @@
 package ohnosequences.cosas.types
 
-import ohnosequences.cosas._, klists._, fns._
+import ohnosequences.cosas._, klists._
 
 // TODO reproduce KList
 trait AnyProductType extends AnyType {

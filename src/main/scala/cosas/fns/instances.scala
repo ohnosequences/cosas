@@ -1,7 +1,5 @@
 package ohnosequences.cosas.fns
 
-import ohnosequences.cosas._
-
 trait AnyFn1 extends Any with AnyDepFn1 {
 
   def f: In1 => Out

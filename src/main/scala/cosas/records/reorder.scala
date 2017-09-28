@@ -1,6 +1,6 @@
 package ohnosequences.cosas.types
 
-import ohnosequences.cosas._, types._, klists._, fns._
+import ohnosequences.cosas._, klists._, fns._
 
 class Reorder[Ts <: AnyProductType, Vs <: AnyKList { type Bound = AnyDenotation }] extends DepFn1[
   Vs,
