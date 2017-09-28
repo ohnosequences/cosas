@@ -113,7 +113,9 @@ case object FoldRight {
     appFold: AnyApp3At[ FoldRight[F],
       F, Z, T
     ] { type Y = FoldOut },
-    appF: AnyApp2At[F, H, FoldOut] { type Y = FOut }
+    appF: AnyApp2At[
+      F, H, FoldOut
+    ] { type Y = FOut }
   ): AnyApp3At[ FoldRight[F],
       F, Z, H :: T
     ] { type Y = FOut } =

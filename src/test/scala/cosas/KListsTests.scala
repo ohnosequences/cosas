@@ -317,12 +317,17 @@ class KListTests extends org.scalatest.FunSuite {
       sum.foldRight(0)(3 :: 2 :: 1 :: *[Int])
     }
 
-    val z = cons.foldRight(*[Int])(1 :: *[Int])(FoldRight.cons[
-      cons.type,
-      *[Int],
-      Int, *[Int],
-      *[Int], Int :: *[Int]
-    ])
+    val z = cons.foldRight(*[Int])(1 :: *[Int])(
+      FoldRight.cons[
+        cons.type,
+        *[Int],
+        Int, *[Int],
+        *[Int], Int :: *[Int]
+      ](
+        FoldRight.empty,
+        cons.default
+      )
+    )
 
     assertResult(1 :: 2 :: 3 :: 4 :: 5 :: 6 :: *[Int]) {
       cons.foldRight(4 :: 5 :: 6 :: *[Int])(1 :: 2 :: 3 :: *[Int])

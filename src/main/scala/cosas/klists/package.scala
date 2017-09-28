@@ -14,14 +14,14 @@ package object klists {
   def   KNil[A]: KNil[A] = new KNilOf[A]
 
   type cons = Cons.type
-  val  cons: cons = Cons
+  val  cons: Cons.type = Cons
 
   type snoc = Snoc.type
-  val  snoc: snoc = Snoc
+  val  snoc: Snoc.type = Snoc
 
   type uncons = Uncons.type
-  val uncons: uncons = Uncons
+  val uncons: Uncons.type = Uncons
 
   type noDuplicates = NoDuplicates.type
-  val  noDuplicates: noDuplicates = NoDuplicates
+  val  noDuplicates: NoDuplicates.type = NoDuplicates
 }

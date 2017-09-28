@@ -7,10 +7,10 @@ case object syntax {
   case class KListSyntax[L <: AnyKList](val l: L) extends AnyVal {
 
     def uncons[H <: T#Bound, T <: AnyKList](implicit
-      uncons: AnyApp1At[uncons, L] { type Y = (H,T) }
+      unconsApp: AnyApp1At[Uncons.type, L] { type Y = (H,T) }
     )
     : (H,T) =
-      uncons(l)
+      Uncons(l)
 
     def at[N <: AnyNat, Z <: L#Bound](n: N)(implicit a: AnyApp1At[L at N, L] { type Y = Z })
     : Z =
@@ -122,9 +122,9 @@ case object syntax {
       M <: AnyKList { type Bound >: L#Bound },
       LM <: AnyKList { type Bound = M#Bound }
     ](m: M)(implicit
-      foldr: AnyApp3At[FoldRight[cons], cons, M, L] { type Y = LM }
+      foldr: AnyApp3At[FoldRight[Cons.type], Cons.type, M, L] { type Y = LM }
     ): LM =
-      foldr(cons, m, l)
+      foldr(Cons, m, l)
 
     def map[
       F <: AnyDepFn1 { type In1 >: L#Bound; type Out >: U0 },
@@ -140,9 +140,9 @@ case object syntax {
     def reverse[
       R <: AnyKList.withBound[L#Bound]
     ](implicit
-      foldl: AnyApp3At[FoldLeft[snoc], snoc, *[L#Bound], L] { type Y = R }
+      foldl: AnyApp3At[FoldLeft[Snoc.type], Snoc.type, *[L#Bound], L] { type Y = R }
     ): R =
-      foldl(snoc, *[L#Bound], l)
+      foldl(Snoc, *[L#Bound], l)
 
     def filter[
       P <: AnyPredicate { type In1 >: L#Bound },

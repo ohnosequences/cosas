@@ -2,9 +2,8 @@ name          := "cosas"
 organization  := "ohnosequences"
 description   := "esas cosas raras con muchos tipos"
 
-scalaVersion  := "2.11.11"
-// will update
-// crossScalaVersions  := Seq("2.12.0-M3")
+crossScalaVersions := Seq("2.11.11", "2.12.3")
+scalaVersion  := crossScalaVersions.value.last
 
 bucketSuffix  := "era7.com"
 

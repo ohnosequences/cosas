@@ -8,7 +8,7 @@ sealed trait AnyRecordType extends AnyType {
   val  keys: Keys
 
   // NOTE should be provided implicitly:
-  val noDuplicates: noDuplicates isTrueOn Keys#Types
+  val noDuplicatesProof: NoDuplicates.type isTrueOn Keys#Types
 
   type Raw = Keys#Raw
 
@@ -18,7 +18,7 @@ sealed trait AnyRecordType extends AnyType {
 class RecordType[Ks <: AnyProductType](
   val keys: Ks
 )(implicit
-  val noDuplicates: noDuplicates isTrueOn Ks#Types
+  val noDuplicatesProof: NoDuplicates.type isTrueOn Ks#Types
 ) extends AnyRecordType {
 
   type Keys = Ks
