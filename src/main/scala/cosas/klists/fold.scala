@@ -28,7 +28,7 @@ case object FoldLeft {
     App3 { (f: Fn2[B, A, B], z: B, l: L) =>
 
       // TODO: remove this before release
-      println { "using foldLeft from std List" }
+      // println { "using foldLeft from std List" }
 
       l.asList.foldLeft(z)(f.f)
     }
@@ -86,7 +86,7 @@ case object FoldRight {
     App3 { (f: Fn2[A, B, B], z: B, l: L) =>
 
       // TODO: remove this before release
-      println { "using foldRight from std List" }
+      // println { "using foldRight from std List" }
 
       l.asList.foldRight(z)(f.f)
     }
@@ -113,7 +113,9 @@ case object FoldRight {
     appFold: AnyApp3At[ FoldRight[F],
       F, Z, T
     ] { type Y = FoldOut },
-    appF: AnyApp2At[F, H, FoldOut] { type Y = FOut }
+    appF: AnyApp2At[
+      F, H, FoldOut
+    ] { type Y = FOut }
   ): AnyApp3At[ FoldRight[F],
       F, Z, H :: T
     ] { type Y = FOut } =

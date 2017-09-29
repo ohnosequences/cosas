@@ -26,6 +26,7 @@ trait AllDistinctIfNoAmbiguity {
 
 final case class SubtypeOf[A, B] private[cosas](val witness: SubtypeOf.type) extends AnyVal {
 
+  @SuppressWarnings(Array("org.wartremover.warts.AsInstanceOf"))
   def asRight(a : A): A with B = a.asInstanceOf[A with B]
 }
 

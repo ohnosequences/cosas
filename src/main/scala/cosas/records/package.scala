@@ -1,6 +1,6 @@
 package ohnosequences.cosas
 
-import ohnosequences.cosas._, types._, klists._
+import types._, klists._
 
 package object records {
 

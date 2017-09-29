@@ -1,6 +1,6 @@
 package ohnosequences.cosas.klists
 
-import ohnosequences.cosas._, typeUnions._, fns._
+import ohnosequences.cosas._, typeUnions._
 
 sealed trait AnyKList extends Any {
 

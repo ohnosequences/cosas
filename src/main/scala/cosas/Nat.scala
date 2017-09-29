@@ -1,6 +1,6 @@
 package ohnosequences.cosas
 
-import ohnosequences.cosas._, fns._, typeUnions._
+import fns._, typeUnions._
 
 trait AnyNat { n =>
 
