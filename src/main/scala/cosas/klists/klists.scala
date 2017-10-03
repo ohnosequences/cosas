@@ -9,14 +9,13 @@ sealed trait AnyKList extends Any {
   type Length <: AnyNat
 
   type AllTypes <: AnyTypeUnion
-  // NOTE: should be AllTypes#union, but we can't set it here; scalac bugs
-  type Union >: AllTypes#union <: AllTypes#union
+
+  type Union = AllTypes#union
 }
 
 sealed trait AnyEmptyKList extends Any with AnyKList {
 
   type AllTypes = TypeUnion.empty
-  type Union = AllTypes#union
 
   type Length = _0
 }
@@ -37,7 +36,6 @@ sealed trait AnyNonEmptyKList extends Any with AnyKList {
   type Bound >: Tail#Bound <: Tail#Bound // NOTE again this is for forcing type inference
 
   type AllTypes = Tail#AllTypes#or[Head]
-  type Union = AllTypes#union
 
   type Length = Successor[Tail#Length]
 }
