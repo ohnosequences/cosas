@@ -9,6 +9,7 @@ case object KListTestsContext {
 
   case object A0 extends A { val boo = true }
   case object A1 extends A { val boo = false }
+  case object A2 extends A { val boo = true }
 
 }
 
@@ -60,6 +61,27 @@ class KListTests extends org.scalatest.FunSuite {
     def foo[L <: AnyNonEmptyKList.Of[A]](l: L): Boolean = l.head.boo
 
     assert{ foo(oh) === true }
+  }
+
+  test("can convert normal Lists to KLists and back") {
+
+    val as = A0 :: A1 :: A2 :: Nil
+    val aks = (A0 :: A1 :: A2 :: *[A])
+
+    // list -> klist
+    assert { AnyKList.fromList(as) === aks }
+
+    // list -> klist -> list
+    assert { AnyKList.fromList(as).asList === as }
+
+    // klist -> list -> klist
+    assert { AnyKList.fromList(aks.asList) === aks }
+
+    // ensuring correct order:
+    assert {
+      AnyKList.fromList(1 :: 2 :: 3 :: 4 :: Nil) ===
+      (1 :: 2 :: 3 :: 4 :: *[Int])
+    }
   }
 
   test("can convert KLists to lists of their bound") {
