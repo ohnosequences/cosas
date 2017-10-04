@@ -158,18 +158,15 @@ class RecordTypeTests extends org.scalatest.FunSuite {
   }
 
 
-  ignore("can check if record has properties") {
+  test("can check if record has a given key") {
 
-    // implicitly[simpleUser.SetOfTypes HasProperties (id.type :: name.type :: KNil[AnyDenotation])]
-    // implicitly[simpleUser.SetOfTypes HasProperties (name.type :: id.type :: KNil)]
-    // implicitly[simpleUser.SetOfTypes HasProperties (name.type :: KNil)]
-    // implicitly[simpleUser.SetOfTypes HasProperties (id.type :: KNil)]
-    //
-    // implicitly[simpleUser.SetOfTypes HasProperty name.type]
-    // implicitly[simpleUser.SetOfTypes HasProperty id.type]
-    //
-    // assertTypeError { """implicitly[simpleUser.SetOfTypes HasProperties (email.type :: id.type :: KNil)]""" }
-    // assertTypeError { """implicitly[simpleUser.SetOfTypes HasProperties (email.type :: name.type :: color.type :: KNil)]""" }
+    implicitly[simpleUser.type hasKey id.type]
+    implicitly[simpleUser.type hasKey name.type]
+    implicitly[simpleUser.type hasNoKey email.type]
+    implicitly[simpleUser.type hasNoKey color.type]
+
+    assertTypeError { """implicitly[simpleUser.type hasKey email.type]""" }
+    assertTypeError { """implicitly[simpleUser.type hasNoKey id.type]""" }
   }
 
   case object propertyConverters {
